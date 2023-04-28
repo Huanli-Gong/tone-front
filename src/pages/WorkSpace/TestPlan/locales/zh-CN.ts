@@ -74,7 +74,7 @@ export default {
   'plan.function': '功能',
   'plan.perf_baseline.placeholder': '请选择性能基线',
   'plan.performance': '性能',
-  
+
   // 'plan.func_baseline_aliyun.placeholder': '请选择云上功能基线',
   // 'plan.cloud.function': '云上｜功能',
   // 'plan.cloud.performance': '云上｜性能',
@@ -132,6 +132,7 @@ export default {
   'plan.report_description.placeholder': '请输入报告描述',
   'plan.timed.trigger': '定时触发',
   'plan.cron_info.reject': '规则错误，请核对触发规则是否正确',
+  'plan.cron_info.empty': '触发规则不能为空',
 
   /* 触发规则说明格式 */
   "plan.trigger.rule.format": "触发规则格式",

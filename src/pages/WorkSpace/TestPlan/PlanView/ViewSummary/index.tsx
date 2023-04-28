@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Breadcrumb, Row, Typography } from 'antd'
-import React,{ useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { FormattedMessage, useRequest, history } from 'umi'
+import { FormattedMessage, history } from 'umi'
 import { RenderDataRow } from '../components'
 import ViewTable from '../components/ViewTable'
-import { useClientSize , writeDocumentTitle } from '@/utils/hooks'
+import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import { requestCodeMessage } from '@/utils/utils'
 import { queryPlanViewList } from '@/pages/WorkSpace/TestPlan/PlanView/services'
 
@@ -48,15 +49,15 @@ const LinkSpan = styled.span`
 const ViewDetail = (props: any) => {
     const { route, match } = props
     const { plan_id, ws_id } = match.params
-    const [ data, setData ] = useState<any>({})
-    writeDocumentTitle( `Workspace.TestPlan.${ route.name }` )
+    const [data, setData] = useState<any>({})
+    writeDocumentTitle(`Workspace.TestPlan.${route.name}`)
 
     const { height: layoutHeight, width: layoutWidth } = useClientSize()
 
     const queryPlanViewListData = async (param: any = { ws_id, plan_id }) => {
-        const { data, code, msg } = await queryPlanViewList(param)
+        const { data: $data, code, msg } = await queryPlanViewList(param)
         if (code === 200)
-            setData(data)
+            setData($data)
         else
             requestCodeMessage(code, msg)
     }
@@ -71,12 +72,12 @@ const ViewDetail = (props: any) => {
                 <Row style={{ marginBottom: 8 }}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <LinkSpan onClick={() => history.push(`/ws/${ ws_id }/test_plan/view`)}>
+                            <LinkSpan onClick={() => history.push(`/ws/${ws_id}/test_plan/view`)}>
                                 <FormattedMessage id={`Workspace.TestPlan.View`} />
                             </LinkSpan>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <FormattedMessage id={`Workspace.TestPlan.${ route.name }`} />
+                            <FormattedMessage id={`Workspace.TestPlan.${route.name}`} />
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Row>
@@ -89,7 +90,7 @@ const ViewDetail = (props: any) => {
                 </DescriptionRow>
             </DetailHeader>
             <DetailBody >
-                <ViewTable plan_id={plan_id} ws_id={ws_id} showPagination={true} callBackViewTotal={queryPlanViewListData}/>
+                <ViewTable plan_id={plan_id} ws_id={ws_id} showPagination={true} callBackViewTotal={queryPlanViewListData} />
             </DetailBody>
         </DetailContainer>
     )
