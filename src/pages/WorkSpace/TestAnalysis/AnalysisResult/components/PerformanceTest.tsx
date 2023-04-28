@@ -1,3 +1,8 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react/self-closing-comp */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useContext, useState, useRef, useEffect, memo, useMemo } from 'react';
 import { Space, Empty, Row, Col, Select, Button, Typography, Tooltip } from 'antd';
 import { ReportContext } from '../Provider';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import React from 'react'
 import { Form, Row, Col, Input, Button, Radio, Divider } from 'antd'
 import { DeleteFormListItem } from '../DeleteFormListItem'

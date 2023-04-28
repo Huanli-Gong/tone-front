@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable @typescript-eslint/no-shadow */
 import { Drawer, Space, Typography, Form, Button, message, Menu, Modal, Dropdown, Input } from 'antd'
-import React, { forwardRef, useState, useImperativeHandle } from 'react'
+import { forwardRef, useState, useImperativeHandle } from 'react'
 import { useIntl, FormattedMessage } from 'umi'
 import { createBranch, updateBranch, deleteBranch, checkGitlab } from '../services'
 import { MoreOutlined } from '@ant-design/icons'

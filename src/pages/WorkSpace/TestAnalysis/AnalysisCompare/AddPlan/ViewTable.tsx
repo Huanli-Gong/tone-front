@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+/* eslint-disable @typescript-eslint/no-shadow */
+import { useState, useEffect } from 'react'
 import { Table } from 'antd'
 import { useRequest, useIntl, FormattedMessage, useParams } from 'umi'
 import _ from 'lodash'
@@ -18,9 +19,9 @@ const ViewTable = (props: any) => {
     const { planId, setSelectedRowFn, selectedRow, } = props
     // const selectedPlanId = window.sessionStorage.getItem('selectedPlanId') || '' // 已选的计划Id
     const page_default_params = { plan_id: planId, ws_id, page_num: 1, page_size: 9999 }
-    let [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
+    const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
     const [autoFocus, setFocus] = useState(true)
-    const [params, setParams] = useState(page_default_params)
+    const [params, setParams] = useState<any>(page_default_params)
     const { data: dataSource, loading, run } = useRequest(
         (data) => queryPlanResultList(data),
         {
@@ -122,8 +123,8 @@ const ViewTable = (props: any) => {
 
     return (
         <Table
-            rowSelection={rowSelection}
-            columns={columns}
+            rowSelection={rowSelection as any}
+            columns={columns as any}
             dataSource={dataSource.data}
             size="small"
             loading={loading}

@@ -1,3 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable @typescript-eslint/no-shadow */
 import React, { useContext, memo, useMemo, useState, useEffect } from 'react';
 import { Empty, Row, Col, Typography, Space, Button, Select } from 'antd';
 import { ReportContext } from '../Provider';
@@ -7,7 +12,7 @@ import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/DiffTootip';
 import { toShowNum, handleCaseColor } from '@/components/AnalysisMethods/index';
 import { JumpResult } from '@/utils/hooks';
-import { useIntl, FormattedMessage, useParams } from 'umi'
+import { useIntl, FormattedMessage } from 'umi'
 const { Option } = Select
 import {
     TestDataTitle,

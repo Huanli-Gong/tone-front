@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Select, Badge, Typography, Form } from 'antd'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { standloneServerList, queryClusterServer, queryClusterStandaloneServer, queryClusterGroupServer } from './services';
@@ -166,7 +167,7 @@ const ServerObjectSelect = (props: any) => {
 
     if (["ip", "server_tag_id"].includes(serverObjectType))
         return <></>
-        
+
     return (
         <Form.Item noStyle>
             <Form.Item

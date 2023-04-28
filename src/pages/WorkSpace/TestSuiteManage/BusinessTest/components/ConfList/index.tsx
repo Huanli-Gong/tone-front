@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useState } from 'react';
 import { Drawer } from 'antd';
-import { useIntl, FormattedMessage } from 'umi';
+import { FormattedMessage } from 'umi';
 import moment from 'moment';
 import CodeViewer from '@/components/CodeViewer'
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
@@ -13,7 +14,6 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents';
  * @description conf级列表
  */
 const List = ({ suite_id, type, dataSource }: any) => {
-	const { formatMessage } = useIntl()
 	// 预览doc
 	const [showDoc, setShowDoc] = useState<any>({ visible: false, doc: '' })
 
@@ -25,14 +25,14 @@ const List = ({ suite_id, type, dataSource }: any) => {
 			fixed: 'left',
 			width: 150,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
 			},
 		},
 		{
 			title: <FormattedMessage id="suite.domain" />,
 			dataIndex: 'domain_name_list',
 			width: 100,
-			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
 		},
 		{
 			title: <FormattedMessage id="suite.timeout" />,
@@ -47,7 +47,7 @@ const List = ({ suite_id, type, dataSource }: any) => {
 			dataIndex: 'ci_type',
 			width: 120,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
 			}
 		},
 		{
@@ -55,7 +55,7 @@ const List = ({ suite_id, type, dataSource }: any) => {
 			dataIndex: 'gmt_created',
 			width: 170,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'}</ColumnEllipsisText>
 			}
 		},
 		{

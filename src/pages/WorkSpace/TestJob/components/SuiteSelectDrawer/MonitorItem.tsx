@@ -30,7 +30,7 @@ const MonitorItem: React.FC<AnyType> = (props) => {
                                         label={null}
                                         {...field}
                                         name={[field.name, 'items']}
-                                        fieldKey={[field.fieldKey, 'items']}
+                                        fieldKey={[field.fieldKey as any, 'items']}
                                     >
                                         <Select style={{ width: 140 }}
                                             placeholder={suiteForm?.console?.length > 1 ?
@@ -43,7 +43,7 @@ const MonitorItem: React.FC<AnyType> = (props) => {
                                         label={null}
                                         {...field}
                                         name={[field.name, 'servers']}
-                                        fieldKey={[field.fieldKey, 'servers']}
+                                        fieldKey={[field.fieldKey as any, 'servers']}
                                     >
                                         <Select style={{ width: 140 }}
                                             placeholder={suiteForm?.console?.length > 1 ?

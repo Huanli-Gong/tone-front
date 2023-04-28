@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useState, useEffect } from 'react';
 import { Popover, Table, Radio } from 'antd';
 import styles from './index.less'
 import { FilterFilled } from '@ant-design/icons';
@@ -27,7 +29,7 @@ export default (props: any) => {
     const [autoFocus, setFocus] = useState(true)
     const [refAllJob, setRefAllJob] = useState(jobList)
     const [params, setParams] = useState(page_default_params)
-    let [selectedRowKeys, setSelectedRowKeys] = useState<any>(defaultSelKeys)
+    const [selectedRowKeys, setSelectedRowKeys] = useState<any>(defaultSelKeys)
     const fn = () => {
         setVisiblePopover(false)
     }
@@ -130,7 +132,7 @@ export default (props: any) => {
         selectedRowKeys,
         // onSelect: selectedChange,
         preserveSelectedRowKeys: false,
-        renderCell: (checked, record) => {
+        renderCell: (checked: any, record: { id: any; }) => {
             return (
                 <Radio.Group onChange={onChange} value={selectedRowKeys[0]}>
                     <Radio value={record.id} />
@@ -146,7 +148,7 @@ export default (props: any) => {
                     rowSelection={rowSelection}
                     size="small"
                     rowKey="id"
-                    columns={columns}
+                    columns={columns as any}
                     dataSource={jobList}
                     pagination={false}
                 />

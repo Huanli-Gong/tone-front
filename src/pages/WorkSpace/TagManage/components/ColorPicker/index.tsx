@@ -1,3 +1,6 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from 'react';
 import reactCSS from 'reactcss';
 import { SketchPicker } from 'react-color';
@@ -108,12 +111,12 @@ const colorPicker: React.FC<any> = ({ value, onChange }) => {
 	return (
 		<div>
 			<div style={styles.swatch} className={CustomStyle.click} onClick={handleClick}>
-				<div style={styles.color} className={CustomStyle.waves} />
+				<div style={styles.color as any} className={CustomStyle.waves} />
 			</div>
 			{displayColorPicker ?
-				<div style={styles.popover}>
-					<div style={styles.cover} onClick={handleClose}></div>
-					<div style={styles.warp}>
+				<div style={styles.popover as any}>
+					<div style={styles.cover as any} onClick={handleClose} />
+					<div style={styles.warp as any}>
 						<div style={{ background: "#fff", width: 244, paddingLeft: '16px' }}>
 							{
 								colors.map((item, index) => {
@@ -163,13 +166,13 @@ const colorPicker: React.FC<any> = ({ value, onChange }) => {
 										borderRadius: '2px',
 										background: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`
 									}}
-									></div>
+									/>
 								</div>
 							</div>
 						</div>
 						{show && <Divider style={{ margin: 0 }} />}
 						{show && <div style={{ padding: '6px' }}>
-							<SketchPicker className={CustomStyle.picker} width={212} color={color} onChange={handleChange} presetColors={[]} />
+							<SketchPicker className={CustomStyle.picker} width={212 as any} color={color} onChange={handleChange} presetColors={[]} />
 						</div>
 						}
 					</div>

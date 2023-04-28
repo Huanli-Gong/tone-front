@@ -1,3 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-shadow */
 import React, { useState, useEffect } from 'react'
 import { Space, Row, Col, Select, Divider, Button, DatePicker, Modal } from 'antd'
 import { FilterFilled } from '@ant-design/icons';
@@ -80,7 +83,7 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
 
     const getProductList = async (id: any) => {
         setLoading(true)
-        let result = await queryProductList({ ws_id, product_id: id })
+        const result = await queryProductList({ ws_id, product_id: id })
         if (result.code === 200) {
             let data = result.data.filter((val: any) => val?.trim())
             data = data.map((item: any, index: number) => ({ label: index, value: item }))
@@ -95,9 +98,9 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
 
     const getProductData = async () => {
         setLoading(true)
-        let result = await queryProduct({ ws_id })
+        const result = await queryProduct({ ws_id })
         if (result.code === 200) {
-            let data = _.isArray(result.data) ? result.data : []
+            const data = _.isArray(result.data) ? result.data : []
             setAllProduct(data)
             if (!!data.length) setPruductId(undefined)
         } else {
@@ -108,7 +111,7 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
 
     const getJobList = async () => {
         setLoading(true)
-        let data = await queryJobList(params)
+        const data = await queryJobList(params)
         if (data.code === 200) {
             setDataSource(data)
             setLoading(false)

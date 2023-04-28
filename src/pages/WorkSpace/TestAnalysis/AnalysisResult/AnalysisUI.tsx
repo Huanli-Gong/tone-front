@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import styled from 'styled-components';
 import { Row, Typography } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';

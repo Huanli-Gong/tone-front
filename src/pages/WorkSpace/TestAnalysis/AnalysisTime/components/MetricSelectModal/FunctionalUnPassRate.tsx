@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from "react"
 import { useRequest, useLocation } from "umi"
 import { Table, Row, Col, Select } from "antd"
@@ -124,7 +125,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                     }}
                     onRow={
                         record => ({
-                            onClick: event => {
+                            onClick: () => {
                                 setSelectSubcase([record])
                             }
                         })

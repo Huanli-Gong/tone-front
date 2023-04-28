@@ -1,10 +1,11 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable @typescript-eslint/no-shadow */
 import React from 'react';
 import { Tooltip, Space, Typography } from 'antd';
 import { FormattedMessage } from 'umi'
 import { ReactComponent as BaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
 import { ReactComponent as BaseLine } from '@/assets/svg/Report/BaseLine.svg';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
-import _ from 'lodash';
 import { PerfGroupData, EnvGroupR } from '../AnalysisUI';
 
 const Identify: React.FC<any> = (props) => {

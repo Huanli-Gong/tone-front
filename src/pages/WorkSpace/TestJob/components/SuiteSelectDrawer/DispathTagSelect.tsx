@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Select, Form, Tag } from 'antd'
 import { queryDispatchTags } from './services';
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { DrawerProvider } from './Provider'
 import { useParams, useIntl, FormattedMessage } from 'umi'
 import { tagRender } from '../untils'

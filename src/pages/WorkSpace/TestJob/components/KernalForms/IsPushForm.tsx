@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import React, { useEffect } from 'react'
 import { Form, Radio, Select } from 'antd'
 import ScriptsListForm from './ScriptsFormList'
 import styles from './index.less'
 import { itemLayout } from './untils'
-import { FormInstance } from 'antd/lib/form'
+import type { FormInstance } from 'antd/lib/form'
 import { useIntl, FormattedMessage } from 'umi'
 import PackagesFormItem from "@/pages/SystemConf/KernelManage/components/PackagesFormItem"
 

@@ -2,7 +2,6 @@ import React from 'react';
 import { Tooltip, Row, Col } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { FormattedMessage } from 'umi'
-import _ from 'lodash';
 import styled from 'styled-components';
 
 const TitleFont = styled.span`

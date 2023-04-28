@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-shadow */
 import React, { useImperativeHandle, useEffect, useState } from 'react'
 import { Form, Input, Select, InputNumber } from 'antd'
 import styles from './index.less'
@@ -28,8 +30,8 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
             reset: () => {
                 form.resetFields()
             },
-            setVal: (data: Object) => {
-                let reg = /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
+            setVal: (data: any) => {
+                const reg = /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
                 const callbackApi = _.get(data, 'callback_api') || ""
                 const flag = reg.test(callbackApi)
                 setRegCallbackUrl(callbackApi && !flag)
@@ -50,7 +52,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
         try {
             const { code, data } = await queryReportTemplateList({ ws_id, page_size: 99999 })
             if (code === 200) {
-                let dataSource = _.isArray(data) ? data : []
+                const dataSource = _.isArray(data) ? data : []
                 const defaultTem = _.find(dataSource, { is_default: true })
                 if (reportTemplateDataRef) reportTemplateDataRef.current = dataSource
                 setReportTemplate(dataSource)
@@ -121,7 +123,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
         setCallbackUrl(value)
         const values = _.cloneDeep(form.getFieldsValue())
         form.setFieldsValue({ ...values, callback_api: value })
-        let reg = /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
+        const reg = /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
         const flag = reg.test(value)
         setRegCallbackUrl(value && !flag)
     }

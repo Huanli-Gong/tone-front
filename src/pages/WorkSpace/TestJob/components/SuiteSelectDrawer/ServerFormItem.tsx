@@ -1,4 +1,5 @@
-import React, { memo, useCallback, useContext } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { memo, useCallback, useContext } from 'react'
 import { Form, Col, Radio, Row, Select, Input, InputNumber } from 'antd'
 import { useIntl, FormattedMessage } from 'umi';
 import { formatter, QusetionIconTootip } from '../untils'

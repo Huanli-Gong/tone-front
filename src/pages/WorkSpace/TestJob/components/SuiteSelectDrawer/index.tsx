@@ -1,5 +1,9 @@
+/* eslint-disable prefer-const */
+/* eslint-disable no-param-reassign */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Drawer, Form, Spin, Space, Input, Tooltip, Button, Alert, Radio, InputNumber } from 'antd'
-import React, { forwardRef, useImperativeHandle, useState, useMemo, useCallback, memo, useEffect } from 'react'
+import { forwardRef, useImperativeHandle, useState, useMemo, useCallback, memo, useEffect } from 'react'
 import { useIntl, FormattedMessage } from 'umi';
 import styled from 'styled-components'
 import { DrawerProvider } from './Provider'
@@ -155,7 +159,7 @@ const SuiteDrawer = (props: any, ref: any) => {
     }
     const changeServerSelect = (params: any) => {
         const { server_object_id, server_tag_id, ip, is_instance, customer_server } = params
-        let flag = location.search.indexOf('inheriting_machine') !== -1
+        const flag = location.search.indexOf('inheriting_machine') !== -1
 
         if (lodash.isNull(ip)) {
             setServerObjectType('ip')
@@ -251,7 +255,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                 }
             }
             else {
-                let params: any = { ...initialValues, ...dataSource }
+                const params: any = { ...initialValues, ...dataSource }
                 if (dataSource.console == undefined) params.console = true
                 const { env_info } = dataSource
                 if (env_info && env_info.length === 0) {
@@ -655,7 +659,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                                                         <span style={{ marginTop: 5, display: 'block' }}>=</span>
                                                         <Form.Item
                                                             name={[field.name, 'val']}
-                                                            fieldKey={[field.fieldKey, 'val']}
+                                                            fieldKey={[field.fieldKey as any, 'val']}
                                                         >
                                                             <Input disabled={isNullEnv} autoComplete="off" placeholder={evn[index].des || formatMessage({ id: 'select.suite.value' })} />
                                                         </Form.Item>
@@ -712,7 +716,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                                 </Form.Item>
                             </>
                         }
-{/* 
+                        {/* 
                         {
                             // 注释监控配置
                             (contrl.includes('monitor') && checked) &&
