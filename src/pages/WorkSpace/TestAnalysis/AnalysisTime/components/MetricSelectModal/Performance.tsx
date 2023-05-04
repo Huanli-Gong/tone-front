@@ -92,7 +92,7 @@ const Performance: React.FC<AnyType> = (props) => {
                                 placeholder="请选择Test Suite"
                                 value={activeSuite}
                                 filterOption={(input, option: any) =>
-                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    option.label?.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                 }
                                 showSearch
                                 options={
@@ -115,18 +115,16 @@ const Performance: React.FC<AnyType> = (props) => {
                                     requestMetricList({ test_suite_id: activeSuite, test_case_id })
                                 }}
                                 filterOption={(input, option: any) =>
-                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    option.label?.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                 }
                                 showSearch
                                 placeholder="请选择Test Conf"
                                 value={activeConf}
                                 options={
-                                    confList.map((i: any) => (
-                                        {
-                                            value: i.id,
-                                            label: i.name
-                                        }
-                                    ))
+                                    confList.map((i: any) => ({
+                                        value: i.id,
+                                        label: i.name
+                                    }))
                                 }
                             />
                         </Row>
