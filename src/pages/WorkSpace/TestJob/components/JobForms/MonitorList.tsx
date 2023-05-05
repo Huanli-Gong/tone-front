@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-key */
+/* eslint-disable prefer-const */
 import { useEffect, useState, } from 'react'
 import { Form, Button } from 'antd'
 import MonitorConfig from './MonitorConfig'
@@ -21,7 +23,7 @@ export default ({ disabled, template, formComponent }: any) => {
     }, [template])
     const setFormsValueFn = (index: number, value: string,) => {
         const formValues = _.cloneDeep(formComponent.getFieldsValue())
-        const monitorInfo = _.isArray(_.get(formValues, 'monitor_info')) ? _.get(formValues, 'monitor_info') : []
+        let monitorInfo = _.isArray(_.get(formValues, 'monitor_info')) ? _.get(formValues, 'monitor_info') : []
         if (value) {
             monitorInfo[index] = { ...formValues.monitor_info[index], monitor_type: value }
             if (value === 'case_machine') monitorInfo[index] = { ...formValues.monitor_info[index], server: '' }
@@ -43,15 +45,14 @@ export default ({ disabled, template, formComponent }: any) => {
                                         fields.map(
                                             (field, index) => (
                                                 <MonitorConfig
-                                                    key={field}
                                                     setFormsValueFn={setFormsValueFn}
                                                     field={field}
                                                     index={index}
                                                     disabled={disabled}
                                                     typeDisabled={typeDisabled}
                                                     form={formComponent}
-                                                    remove={remove}
-                                                />
+                                                    remove={remove} />
+
                                             )
                                         )
                                     }

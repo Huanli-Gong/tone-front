@@ -2,6 +2,12 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-shadow */
+
 import React, { useState, useEffect } from 'react';
 import { useClientSize } from '@/utils/hooks';
 import { FilterFilled } from '@ant-design/icons'
@@ -107,6 +113,7 @@ export default (props: any) => {
                 setPruductVersion(defaultProVersion)
             }
         } else {
+            /* @ts-ignore */
             requestCodeMessage(result?.code, result?.msg)
         }
         setLoading(false)

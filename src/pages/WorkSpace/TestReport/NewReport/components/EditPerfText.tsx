@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable @typescript-eslint/no-shadow */
+import { useEffect, useState } from 'react';
 import { Typography, Input, notification, message } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { useIntl, Access, useAccess, useLocation } from 'umi';
@@ -62,7 +64,7 @@ export const PerfTextArea = ({
 
     const handleBlur = async () => {
         const { item_suite_id, suite_name } = suite
-        let obj: any = {
+        const obj: any = {
             item_suite_id,
         }
         obj[field] = title
@@ -130,7 +132,7 @@ export const GroupItemText = ({
     {
         name: string,
         rowKey: any,
-        btn: Boolean,
+        btn: boolean,
         dataSource: any,
         setDataSource: any,
         defaultHolder?: string,
@@ -149,7 +151,7 @@ export const GroupItemText = ({
                 if (ele.rowKey == rowKey) {
                     ele.name = title
                 }
-                let list = ele.list.map((l: any) => {
+                const list = ele.list.map((l: any) => {
                     if (l.rowKey == rowKey) {
                         l.name = title
                     }

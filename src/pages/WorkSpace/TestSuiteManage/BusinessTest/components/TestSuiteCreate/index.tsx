@@ -483,7 +483,7 @@ export default (props: any) => {
 
   const toolTipSetting = {
     ellipsis: {
-      shwoTitle: false,
+      showTitle: false,
     },
     render: (_: any) => {
       if (_ && _ !== '[]') {

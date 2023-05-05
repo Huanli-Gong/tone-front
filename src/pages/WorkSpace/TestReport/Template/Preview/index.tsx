@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { useClientSize } from '@/utils/hooks'
-import React, { memo, useEffect, useState, useRef, useLayoutEffect } from 'react'
+import React, { memo, useEffect, useState, useRef } from 'react'
 import { ReportBodyContainer, ReportBody } from '../styled'
 import Catalog from '@/pages/WorkSpace/TestReport/Template/components/TemplateCatalog'
 // import TemplateBreadcrumb from '@/pages/WorkSpace/TestReport/Template/components/TemplateBreadcrumb'
@@ -56,9 +58,9 @@ const SettingRow: React.FC<any> = ({ show, title, id, desc }) => (
     show ?
         <CustomRow id={`preview_${id}`}>
             <Space direction="vertical">
-                <Typography.Text strong><span className="line"></span>{title}</Typography.Text>
-                <span style={{ whiteSpace:'pre-wrap'}}>
-                    {desc || <FormattedMessage id="report.content.needs.to.generate"/>}
+                <Typography.Text strong><span className="line" />{title}</Typography.Text>
+                <span style={{ whiteSpace: 'pre-wrap' }}>
+                    {desc || <FormattedMessage id="report.content.needs.to.generate" />}
                 </span>
             </Space>
         </CustomRow> :
@@ -203,10 +205,10 @@ const TemplatePreview = (props: any) => {
                 <PreviewBar>
                     <Row align="middle">
                         <Space>
-                            <span onClick={handleBack} ><ArrowLeftOutlined style={{ fontSize: 20, cursor:'pointer' }} /></span>
+                            <span onClick={handleBack} ><ArrowLeftOutlined style={{ fontSize: 20, cursor: 'pointer' }} /></span>
                             <Space size={0}>
-                                <Typography.Title level={4}><FormattedMessage id="report.template.preview"/></Typography.Title>
-                                <span style={{ color: 'rgba(0,0,0,0.45)' }}><FormattedMessage id="report.take.3.control.groups"/></span>
+                                <Typography.Title level={4}><FormattedMessage id="report.template.preview" /></Typography.Title>
+                                <span style={{ color: 'rgba(0,0,0,0.45)' }}><FormattedMessage id="report.take.3.control.groups" /></span>
                             </Space>
                         </Space>
                     </Row>
@@ -229,9 +231,9 @@ const TemplatePreview = (props: any) => {
                             </Description>
                         </CustomRow>
 
-                        <SettingRow title={formatMessage({id: 'report.test.background'})} id={'need_test_background'} show={dataSource?.need_test_background} desc={dataSource?.background_desc}/>
-                        <SettingRow title={formatMessage({id: 'report.test.method'})} id={'need_test_method'} show={dataSource?.need_test_method}  desc={dataSource?.test_method_desc}/>
-                        <SettingRow title={formatMessage({id: 'report.test.conclusion'})} id={'need_test_conclusion'} show={dataSource?.need_test_conclusion}  desc={dataSource?.test_conclusion_desc}/>
+                        <SettingRow title={formatMessage({ id: 'report.test.background' })} id={'need_test_background'} show={dataSource?.need_test_background} desc={dataSource?.background_desc} />
+                        <SettingRow title={formatMessage({ id: 'report.test.method' })} id={'need_test_method'} show={dataSource?.need_test_method} desc={dataSource?.test_method_desc} />
+                        <SettingRow title={formatMessage({ id: 'report.test.conclusion' })} id={'need_test_conclusion'} show={dataSource?.need_test_conclusion} desc={dataSource?.test_conclusion_desc} />
 
                         {
                             dataSource.need_test_summary &&
@@ -245,31 +247,31 @@ const TemplatePreview = (props: any) => {
                         />
 
                         <CustomRow >
-                            <div id={'preview_test_data'} style={{ marginBottom: 8 }}><Typography.Text strong><FormattedMessage id="report.test.data"/></Typography.Text></div>
+                            <div id={'preview_test_data'} style={{ marginBottom: 8 }}><Typography.Text strong><FormattedMessage id="report.test.data" /></Typography.Text></div>
                             <GroupTableRow ref={groupRowRef} >
-                                <div><Typography.Text strong><FormattedMessage id="report.comparison.group"/></Typography.Text></div>
+                                <div><Typography.Text strong><FormattedMessage id="report.comparison.group" /></Typography.Text></div>
                                 <div>
                                     <Space>
                                         <BaseGroupIcon style={{ transform: 'translateY(2px)' }} />
-                                        <Typography.Text strong><FormattedMessage id="report.benchmark.group"/></Typography.Text>
+                                        <Typography.Text strong><FormattedMessage id="report.benchmark.group" /></Typography.Text>
                                     </Space>
                                 </div>
-                                <div><Typography.Text strong><FormattedMessage id="report.comparison.group1"/></Typography.Text></div>
-                                <div><Typography.Text strong><FormattedMessage id="report.comparison.group2"/></Typography.Text></div>
+                                <div><Typography.Text strong><FormattedMessage id="report.comparison.group1" /></Typography.Text></div>
+                                <div><Typography.Text strong><FormattedMessage id="report.comparison.group2" /></Typography.Text></div>
                             </GroupTableRow>
                             {
                                 fixedRow.show &&
                                 <div style={{ width: fixedRow.width, background: '#fff', position: 'fixed', top: 50, height: 50, border: '1px solid rgba(0,0,0,0.10)', zIndex: 5, }}>
                                     <GroupTableRow style={{ border: 'none', paddingLeft: 32, paddingRight: 32 }} >
-                                        <div><Typography.Text strong><FormattedMessage id="report.comparison.group"/></Typography.Text></div>
+                                        <div><Typography.Text strong><FormattedMessage id="report.comparison.group" /></Typography.Text></div>
                                         <div>
                                             <Space>
                                                 <BaseGroupIcon style={{ transform: 'translateY(2px)' }} />
-                                                <Typography.Text strong><FormattedMessage id="report.benchmark.group"/></Typography.Text>
+                                                <Typography.Text strong><FormattedMessage id="report.benchmark.group" /></Typography.Text>
                                             </Space>
                                         </div>
-                                        <div><Typography.Text strong><FormattedMessage id="report.comparison.group1"/></Typography.Text></div>
-                                        <div><Typography.Text strong><FormattedMessage id="report.comparison.group2"/></Typography.Text></div>
+                                        <div><Typography.Text strong><FormattedMessage id="report.comparison.group1" /></Typography.Text></div>
+                                        <div><Typography.Text strong><FormattedMessage id="report.comparison.group2" /></Typography.Text></div>
                                     </GroupTableRow>
                                 </div>
                             }
@@ -282,7 +284,7 @@ const TemplatePreview = (props: any) => {
                                         style={{ marginBottom: 8 }}
                                     >
                                         <Typography.Text strong>
-                                            <FormattedMessage id="performance.test"/>
+                                            <FormattedMessage id="performance.test" />
                                         </Typography.Text>
                                     </div>
                                     <PerformanceTest
@@ -302,7 +304,7 @@ const TemplatePreview = (props: any) => {
                                         style={{ marginBottom: 8 }}
                                     >
                                         <Typography.Text strong>
-                                            <FormattedMessage id="functional.test"/>
+                                            <FormattedMessage id="functional.test" />
                                         </Typography.Text>
                                     </div>
                                     <FunctionalTest

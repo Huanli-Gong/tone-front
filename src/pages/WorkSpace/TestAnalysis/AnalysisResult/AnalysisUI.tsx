@@ -127,7 +127,7 @@ interface EnvGroupLProps {
     enLocale?: boolean,
 }
 
-const setEnvGroupWdith = (l: number, enLocale: boolean) => {
+const setEnvGroupWdith = (l: number) => {
     if (l == 1) return (`calc( 100% - ${110}px )`)
     return (`calc((100% - ${110}px) / ${l})`)
 }

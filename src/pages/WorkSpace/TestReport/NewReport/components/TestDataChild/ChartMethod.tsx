@@ -8,7 +8,7 @@ export const handleColor = (name: any) => {
     return dict[name]
 }
 
-export const switchExpectation = (str:string) => {
+export const switchExpectation = (str: string) => {
     let text = '';
     switch (str) {
         case 'increase':

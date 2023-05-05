@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
-/* eslint-disable prefer-const */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-shadow */
 import { useState, useEffect, useRef } from 'react'
 import { Collapse, Spin, Row, Divider, Space, Button } from 'antd'
@@ -121,7 +121,8 @@ const ViewCollapse = (props: any) => {
                     <CollapseContainer
                         collapsible="header"
                         activeKey={activeKey}
-                        key={activeKey as any}
+                        /* @ts-ignore */
+                        key={activeKey}
                         onChange={handleChange}
                         expandIcon={(panelProps) => {
                             return panelProps.isActive ?

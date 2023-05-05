@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { useState } from 'react';
 import { Tooltip, Drawer, Table } from 'antd';
 import { CaretRightFilled, CaretDownFilled, QuestionCircleOutlined } from '@ant-design/icons';
@@ -16,7 +16,7 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents';
  * @module 业务测试
  * @description suite级列表
  */
-const List = ({ business_id, dataSource }: any) => {
+const List = ({ dataSource }: any) => {
 	const { formatMessage } = useIntl()
 	const [loading, setLoading] = useState<any>(false)
 	// 复选行

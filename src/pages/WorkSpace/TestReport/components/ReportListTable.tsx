@@ -1,4 +1,6 @@
-import React, { memo, useEffect, useState } from 'react'
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { memo, useEffect, useState } from 'react'
 import { Space, Popconfirm, message, Spin, DatePicker, Divider, Button } from 'antd'
 import { OptBtn, ClsResizeTable } from './styled'
 import { Access, useAccess, useIntl, FormattedMessage } from 'umi'

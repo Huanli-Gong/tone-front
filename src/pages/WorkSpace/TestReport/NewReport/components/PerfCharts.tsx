@@ -1,3 +1,7 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState, useMemo } from 'react'
 import { Row, Space, Typography, Tooltip } from 'antd'
 import { useIntl, FormattedMessage } from 'umi';
@@ -25,7 +29,7 @@ const ModalHeader = styled(FullRow)`
     word-break: break-all;
 `
 interface DotProp {
-    color: String
+    color: string
 }
 
 const Dot = styled.div<DotProp>`
@@ -71,7 +75,7 @@ interface JumpChartProp {
 
 const ChartModal = (props: any) => {
     const { formatMessage } = useIntl()
-    const { chartType, suite_id, conf_list, group_jobs, suite_name, envData, base_index } = props
+    const { chartType, suite_id, conf_list, suite_name, envData, base_index } = props
     const [legend, setLegend] = useState<string>('')
     const [current, setCurrent] = useState<any>(null)
     const [loading, setLoading] = useState(false)
@@ -92,9 +96,9 @@ const ChartModal = (props: any) => {
         obj.is_all = 0
         obj.async_request = 1
         obj.base_index = base_index
-        let jobList:any = []
+        let jobList: any = []
         let conf_info: any = []
-        let arr:any = []
+        let arr: any = []
         conf_list?.forEach((conf: any, index: number) => {
             arr = conf.conf_compare_data || conf.compare_conf_list
             conf_info.push({
@@ -102,11 +106,11 @@ const ChartModal = (props: any) => {
                 conf_name: conf.conf_name
             })
         })
-        arr.forEach((item:any) => {
+        arr.forEach((item: any) => {
             jobList.push({ job_list: [].concat(item.obj_id) })
-            
+
         });
-        obj.group_jobs =  jobList
+        obj.group_jobs = jobList
         obj.conf_info = conf_info
         obj.show_type = 2
         if (chartType === '2') {
@@ -130,16 +134,16 @@ const ChartModal = (props: any) => {
     }
     const legData = useMemo(() => {
         let le: any = []
-        let newData:any = cloneDeep(envData)
+        let newData: any = cloneDeep(envData)
         newData.compare_groups.splice(base_index, 0, envData.base_group)
         for (let compare = newData.compare_groups, k = 0; k < compare.length; k++) {
             le.push({
                 name: `${compare[k].tag}`,
                 inner: <Space align="start" style={{ cursor: 'pointer' }}>
                     <Dot color={color[k]} />
-                    { 
+                    {
                         base_index === k &&
-                        <Tooltip title={formatMessage({id: 'report.benchmark.group'})}>
+                        <Tooltip title={formatMessage({ id: 'report.benchmark.group' })}>
                             <GaryBaseIcon style={{ transform: 'translateY(3px)', marginLeft: 8 }} />
                         </Tooltip>
                     }
@@ -155,7 +159,7 @@ const ChartModal = (props: any) => {
             <ModalHeader>
                 <Space align="start">
                     <Space style={{ whiteSpace: 'nowrap', marginRight: 16 }}>
-                        <Typography.Text strong><FormattedMessage id="report.legend.comparison.group"/></Typography.Text>
+                        <Typography.Text strong><FormattedMessage id="report.legend.comparison.group" /></Typography.Text>
                     </Space>
                     {
                         legData.map((i: any, idx: number) =>
@@ -172,7 +176,7 @@ const ChartModal = (props: any) => {
                         <ModalSlider>
                             <Space direction="vertical">
                                 <SliderTitle>
-                                    {formatMessage({id: 'report.conf.list'}, {data: `(${conf_list.length})`})}
+                                    {formatMessage({ id: 'report.conf.list' }, { data: `(${conf_list.length})` })}
                                 </SliderTitle>
                                 {
                                     conf_list.map(
@@ -202,7 +206,7 @@ const ChartModal = (props: any) => {
                         <ModalSlider>
                             <Space direction="vertical">
                                 <SliderTitle>
-                                    {formatMessage({id: 'report.conf.list'}, {data: `(${conf_list.length})`})}
+                                    {formatMessage({ id: 'report.conf.list' }, { data: `(${conf_list.length})` })}
                                 </SliderTitle>
                                 {
                                     conf_list.map((conf: any, idx: any) => (

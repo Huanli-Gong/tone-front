@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 
 
@@ -42,13 +43,13 @@ const CustomDrawer = (props: any, ref: any) => {
         setPedding(true)
         form.validateFields()
             .then(
-                async () => {
+                async (values) => {
                     /* some code ... */
                     onOk()
                     handleClose()
                 }
             )
-            .catch(() => { })
+            .catch((err) => { })
         setPedding(false)
     }
 

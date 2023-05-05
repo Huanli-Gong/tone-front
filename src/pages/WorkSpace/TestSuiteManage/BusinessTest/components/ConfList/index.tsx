@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import { Drawer } from 'antd';
 import { FormattedMessage } from 'umi';
@@ -13,7 +12,7 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents';
  * @module 业务测试
  * @description conf级列表
  */
-const List = ({ suite_id, type, dataSource }: any) => {
+const List = ({ type, dataSource }: any) => {
 	// 预览doc
 	const [showDoc, setShowDoc] = useState<any>({ visible: false, doc: '' })
 
@@ -25,14 +24,14 @@ const List = ({ suite_id, type, dataSource }: any) => {
 			fixed: 'left',
 			width: 150,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }}  >{text}</ColumnEllipsisText>
 			},
 		},
 		{
 			title: <FormattedMessage id="suite.domain" />,
 			dataIndex: 'domain_name_list',
 			width: 100,
-			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }}  >{text}</ColumnEllipsisText>
 		},
 		{
 			title: <FormattedMessage id="suite.timeout" />,
@@ -47,7 +46,7 @@ const List = ({ suite_id, type, dataSource }: any) => {
 			dataIndex: 'ci_type',
 			width: 120,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }}  >{text}</ColumnEllipsisText>
 			}
 		},
 		{
@@ -88,7 +87,7 @@ const List = ({ suite_id, type, dataSource }: any) => {
 				width={376}
 				title={<FormattedMessage id="suite.description.details" />}
 				onClose={() => setShowDoc({ visible: false, doc: '' })}
-				visible={showDoc.visible}
+				open={showDoc.visible}
 			>
 				<CodeViewer code={showDoc.doc} />
 			</Drawer>

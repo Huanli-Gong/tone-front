@@ -1,8 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable prefer-const */
-/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable no-param-reassign */
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-shadow */
+
 import React, { useContext, memo, useMemo, useState, useEffect } from 'react';
 import { Empty, Row, Col, Typography, Space, Button, Select } from 'antd';
 import { ReportContext } from '../Provider';

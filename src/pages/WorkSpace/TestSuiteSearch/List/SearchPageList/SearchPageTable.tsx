@@ -1,4 +1,5 @@
 /* eslint-disable react/no-array-index-key */
+/* eslint-disable no-var */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import { Space, Pagination, message, Typography } from 'antd'
@@ -94,7 +95,7 @@ const SearchPageList: React.FC<any> = (props: any) => {
   // 让字符串中特定字符红色显示
   const matchTextColor = (params: string) => {
     if (params && keyword) {
-      const reg = new RegExp("(" + keyword + ")", "g");
+      var reg = new RegExp("(" + keyword + ")", "g");
       const newStr: any = params.replace(reg, `<span style='color: #f00;opacity:1'>${keyword}</span>`)
       return <span dangerouslySetInnerHTML={{ __html: newStr }} />
     }

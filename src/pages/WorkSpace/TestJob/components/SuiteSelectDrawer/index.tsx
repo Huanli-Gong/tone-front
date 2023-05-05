@@ -1,5 +1,5 @@
-/* eslint-disable prefer-const */
 /* eslint-disable no-param-reassign */
+/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Drawer, Form, Spin, Space, Input, Tooltip, Button, Alert, Radio, InputNumber } from 'antd'
@@ -659,7 +659,8 @@ const SuiteDrawer = (props: any, ref: any) => {
                                                         <span style={{ marginTop: 5, display: 'block' }}>=</span>
                                                         <Form.Item
                                                             name={[field.name, 'val']}
-                                                            fieldKey={[field.fieldKey as any, 'val']}
+                                                            /* @ts-ignore */
+                                                            fieldKey={[field.fieldKey, 'val']}
                                                         >
                                                             <Input disabled={isNullEnv} autoComplete="off" placeholder={evn[index].des || formatMessage({ id: 'select.suite.value' })} />
                                                         </Form.Item>

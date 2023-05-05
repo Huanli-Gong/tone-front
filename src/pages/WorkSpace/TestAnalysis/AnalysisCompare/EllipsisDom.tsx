@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useState, useRef, useEffect } from "react";
 import { Tooltip } from "antd"
 import styles from './style.less';

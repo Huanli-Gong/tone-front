@@ -1,4 +1,8 @@
-import React, { memo, useEffect, useRef, useState, useMemo } from 'react'
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable no-param-reassign */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { memo, useEffect, useRef, useState } from 'react'
 import { Row, Space, Typography } from 'antd'
 import { useIntl, FormattedMessage } from 'umi'
 import styled from 'styled-components'
@@ -21,7 +25,7 @@ const ModalHeader = styled(FullRow)`
     padding:0 20px;
 `
 interface DotProp {
-    color: String
+    color: string
 }
 
 const Dot = styled.div<DotProp>`
@@ -72,60 +76,59 @@ const TypeChart: React.FC<any> = memo(
         const myChart = useRef<any>()
 
         useEffect(() => {
-            if (modal) {
-                // const duration = time.reduce((p: any, c: any, i: number) => parseInt(p += (c * Math.pow(2, i))), 0)
-                const duration = time.reduce((p: any, c: any) => p += c * 2, 0)
-                // console.log(duration)
-                const rageMax: number = data.length > 4 ? parseInt((parseFloat((4 / data.length) as any) * 100) as any) : data.length
-                const opt: any = {
-                    animation: false,
-                    title: { subtext: 'more is better' },
-                    grid: { left: 40, right: 8 },
-                    xAxis: {
-                        data, axisTick: { show: false },
-                        axisLabel: {
-                            interval: 0, width: 110,
-                            formatter: (value: string) => value.length > 16 ? value.substr(0, 16) + '...' : value
-                        }
-                    },
-                    yAxis: {
-                        type: 'value', axisLine: { show: false }, axisTick: { show: false },
-                        splitLine: { show: true, lineStyle: { type: 'dashed' }, },
-                        axisLabel: { showMinLabel: true, showMaxLabel: true, fontSize: 10, },
-                        // boundaryGap: true,
-                        min: 0, max: 5000
-                    },
-                }
-                opt.dataZoom = [
-                    chartType !== 1 &&
-                    {
-                        show: true, realtime: true, start: 0, end: rageMax,
-                        left: '20%', height: 8, right: '20%',
-                    },
-                    {
-                        type: 'inside', realtime: true, zoomOnMouseWheel: false,
-                        start: 0, end: rageMax
+            if (!modal) return
+            // const duration = time.reduce((p: any, c: any, i: number) => parseInt(p += (c * Math.pow(2, i))), 0)
+            const duration = time.reduce((p: any, c: any) => p += c * 2, 0)
+            // console.log(duration)
+            const rageMax: number = data.length > 4 ? parseInt((parseFloat((4 / data.length) as any) * 100) as any) : data.length
+            const opt: any = {
+                animation: false,
+                title: { subtext: 'more is better' },
+                grid: { left: 40, right: 8 },
+                xAxis: {
+                    data, axisTick: { show: false },
+                    axisLabel: {
+                        interval: 0, width: 110,
+                        formatter: (value: string) => value.length > 16 ? value?.substr(0, 16) + '...' : value
                     }
-                ].filter(Boolean);
-
-                const timer = setTimeout(() => {
-                    const chartObj = echarts.init(
-                        chart.current, undefined,
-                        {
-                            renderer: 'svg', height: 376,
-                            width: chartType === 1 ? 268 : modal?.clientWidth
-                        }
-                    )
-                    chartObj.showLoading()
-                    chartObj.setOption(opt as any)
-                    chartObj.hideLoading()
-                    myChart.current = chartObj
-                }, duration)
-
-                return () => {
-                    timer && clearTimeout(timer)
-                    myChart.current && myChart.current.dispose()
+                },
+                yAxis: {
+                    type: 'value', axisLine: { show: false }, axisTick: { show: false },
+                    splitLine: { show: true, lineStyle: { type: 'dashed' }, },
+                    axisLabel: { showMinLabel: true, showMaxLabel: true, fontSize: 10, },
+                    // boundaryGap: true,
+                    min: 0, max: 5000
+                },
+            }
+            opt.dataZoom = [
+                chartType !== 1 &&
+                {
+                    show: true, realtime: true, start: 0, end: rageMax,
+                    left: '20%', height: 8, right: '20%',
+                },
+                {
+                    type: 'inside', realtime: true, zoomOnMouseWheel: false,
+                    start: 0, end: rageMax
                 }
+            ].filter(Boolean);
+
+            const timer = setTimeout(() => {
+                const chartObj = echarts.init(
+                    chart.current, undefined,
+                    {
+                        renderer: 'svg', height: 376,
+                        width: chartType === 1 ? 268 : modal?.clientWidth
+                    }
+                )
+                chartObj.showLoading()
+                chartObj.setOption(opt as any)
+                chartObj.hideLoading()
+                myChart.current = chartObj
+            }, duration)
+
+            return () => {
+                timer && clearTimeout(timer)
+                myChart.current && myChart.current.dispose()
             }
         }, [modal, time])
 
@@ -157,7 +160,7 @@ const ConfMetricRow = styled.div<ConfRowProp>`
 `
 
 interface ConfChartProp {
-    metric_list: Array<string>
+    metric_list: any[];
     is_active: boolean
     chartType: string | number
     test_conf_name?: string
@@ -246,20 +249,20 @@ const ChartModal: React.FC<any> = (props: any) => {
         <Wrapper show={show}>
             <ModalHeader>
                 <Space>
-                    <Typography.Text strong><FormattedMessage id="report.legend.comparison.group"/></Typography.Text>
+                    <Typography.Text strong><FormattedMessage id="report.legend.comparison.group" /></Typography.Text>
                     <Space size={28}>
                         <Space align="center">
                             <Dot color="#3BA0FF" />
                             <GaryBaseIcon style={{ transform: 'translateY(3px)', marginLeft: 8 }} />
-                            <Typography.Text strong><FormattedMessage id="report.benchmark.group"/></Typography.Text>
+                            <Typography.Text strong><FormattedMessage id="report.benchmark.group" /></Typography.Text>
                         </Space>
                         <Space align="center">
                             <Dot color="#36CBCB" />
-                            <Typography.Text strong><FormattedMessage id="report.comparison.group1"/></Typography.Text>
+                            <Typography.Text strong><FormattedMessage id="report.comparison.group1" /></Typography.Text>
                         </Space>
                         <Space align="center">
                             <Dot color="#36CBCB" />
-                            <Typography.Text strong><FormattedMessage id="report.comparison.group2"/></Typography.Text>
+                            <Typography.Text strong><FormattedMessage id="report.comparison.group2" /></Typography.Text>
                         </Space>
                     </Space>
                 </Space>
@@ -274,7 +277,7 @@ const ChartModal: React.FC<any> = (props: any) => {
                 <ModalSlider>
                     <Space direction="vertical">
                         <SliderTitle>
-                            {formatMessage({id: 'report.conf.list'}, {data: `(${caseLen})`})}
+                            {formatMessage({ id: 'report.conf.list' }, { data: `(${caseLen})` })}
                         </SliderTitle>
                         {
                             case_source.map(

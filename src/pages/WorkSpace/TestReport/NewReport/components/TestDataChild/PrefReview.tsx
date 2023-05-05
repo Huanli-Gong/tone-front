@@ -1,7 +1,13 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable prefer-const */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
 import { useIntl, FormattedMessage, getLocale } from 'umi';
 import { ReportContext } from '../../Provider';
-import { Typography, Space, Button, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
+import { Typography, Space, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
 import { PerfTextArea, GroupItemText } from '../EditPerfText';
 // import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
@@ -164,7 +170,7 @@ const Performance = (props: any) => {
         let dataSource = child
         let newArr: any = []
         let newData: any = []
-        suite.conf_list.map((conf: any, index: number) => {
+        suite.conf_list.map((conf: any) => {
             let metric_list: any = []
             conf.metric_list.map((metric: any) => {
                 let result = metric.compare_data[i]
@@ -230,7 +236,7 @@ const Performance = (props: any) => {
                         {
                             !getCompareType(item) ?
                                 <JumpResult ws_id={wsId} job_id={item?.obj_id || item} /> :
-                                <div style={{ height: 38 }}></div>
+                                <div style={{ height: 38 }} />
                         }
                     </PrefDataText>
                 )

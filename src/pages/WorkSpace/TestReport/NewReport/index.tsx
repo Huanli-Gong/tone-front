@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react';
 import { Col, Breadcrumb, Button, message, Spin, Row, Space } from 'antd';
 import { ReactComponent as IconEdit } from '@/assets/svg/icon_edit.svg';
@@ -16,7 +19,7 @@ import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { ReportContext } from './Provider';
 import Clipboard from 'clipboard';
 import _ from 'lodash';
-import { ReportTemplate, ReportBodyContainer, ReportWarpper, ReportBread, BreadDetailL, BreadDetailR, Btn } from './ReportUI';
+import { ReportTemplate, ReportBodyContainer, ReportWarpper, ReportBread, BreadDetailL, BreadDetailR } from './ReportUI';
 import { CreatePageData, EditPageData } from './hooks';
 
 const Report = (props: any) => {

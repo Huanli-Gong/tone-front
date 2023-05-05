@@ -1,11 +1,10 @@
-import React, { memo, useState } from 'react'
+import React from 'react'
 import { Space, Input, Button, Row } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
-import { useIntl, FormattedMessage } from 'umi'
-import produce from 'immer'
+import { FormattedMessage } from 'umi'
 
 const EditSpan: React.FC<Record<string, any>> = (props) => {
-    const { onOk, title, style, icon, width, rowkey } = props
+    const { onOk, title, style, icon, width } = props
 
     /* const getEditState = () => {
         const templateEdit = sessionStorage.getItem('template_edit')
@@ -92,8 +91,8 @@ const EditSpan: React.FC<Record<string, any>> = (props) => {
                 />
                 {/* 操作宽度 104 */}
                 <Space>
-                    <Button size="small" onClick={handleCancel}><FormattedMessage id="operation.cancel"/></Button>
-                    <Button size="small" type="primary" onClick={handleSave}><FormattedMessage id="operation.ok"/></Button>
+                    <Button size="small" onClick={handleCancel}><FormattedMessage id="operation.cancel" /></Button>
+                    <Button size="small" type="primary" onClick={handleSave}><FormattedMessage id="operation.ok" /></Button>
                 </Space>
             </Row>
         )

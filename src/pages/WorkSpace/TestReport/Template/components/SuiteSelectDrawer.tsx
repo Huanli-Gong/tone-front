@@ -79,7 +79,7 @@ const CustomDrawer = (props: any, ref: any) => {
                 if (!!res.length) {
                     for (let i = 0; i < res.length; i++) {
                         if (res[i].name.indexOf(n) === -1) {
-                            let key = []
+                            const key = []
                             key.push(res[i].id + '')
                             setExpandedKeys(key)
                         } else {
@@ -110,9 +110,9 @@ const CustomDrawer = (props: any, ref: any) => {
 
             run({ domain, ws_id, test_type, name, page_size: 100 })
                 .then(ret => {
-                    let list = []
+                    const list = []
 
-                    let checkIds = _.list.reduce((pre: any, cur: any) => {
+                    const checkIds = _.list.reduce((pre: any, cur: any) => {
                         return pre.concat(
                             cur.case_source.reduce(
                                 (p: any, c: any) => p.concat(c.test_conf_id), []
@@ -178,26 +178,26 @@ const CustomDrawer = (props: any, ref: any) => {
             footer={
                 <div style={{ textAlign: 'right', }} >
                     <Space>
-                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
-                        <Button type="primary" onClick={handleOk} ><FormattedMessage id="operation.ok"/></Button>
+                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
+                        <Button type="primary" onClick={handleOk} ><FormattedMessage id="operation.ok" /></Button>
                     </Space>
                 </div>
             }
             visible={visible}
             destroyOnClose={true}
             width={634}  /*自定义*/
-            title={<FormattedMessage id="report.case.list"/>}
+            title={<FormattedMessage id="report.case.list" />}
             onClose={handleClose}
         >
             <Spin spinning={loading} style={{ width: '100%', height: '100%' }}>
                 <Input.Search
-                    placeholder={formatMessage({id: 'please.enter'}) }
+                    placeholder={formatMessage({ id: 'please.enter' })}
                     onSearch={(value: any) => onNameChange(value.replace(/\s+/g, ""))}
                     style={{ width: 420 }}
                 />
                 {
                     <div style={{ position: 'relative', paddingTop: '16px', display: 'flex' }}>
-                        <div className={styles.nav}><FormattedMessage id="report.domain"/>：</div>
+                        <div className={styles.nav}><FormattedMessage id="report.domain" />：</div>
                         <div style={{ width: 500 }}>
                             <Button
                                 type={domain === '' ? 'primary' : 'ghost'}
@@ -205,7 +205,7 @@ const CustomDrawer = (props: any, ref: any) => {
                                 style={{ marginRight: 8, marginBottom: 8, border: 'none' }}
                                 onClick={() => handleDomainChange('')}
                             >
-                                <FormattedMessage id="report.all.s"/>
+                                <FormattedMessage id="report.all.s" />
                             </Button>
                             {
                                 domainList.map((item: any, index: number) => {
@@ -241,7 +241,7 @@ const CustomDrawer = (props: any, ref: any) => {
                             onClick={() => setExpand(!expand)}
                             icon={expand ? <UpOutlined /> : <DownOutlined />}
                         >
-                            {expand ? <FormattedMessage id="operation.collapse"/>: <FormattedMessage id="operation.expand"/>}
+                            {expand ? <FormattedMessage id="operation.collapse" /> : <FormattedMessage id="operation.expand" />}
                         </Button>
                     </div>
                 }
@@ -256,7 +256,7 @@ const CustomDrawer = (props: any, ref: any) => {
                 {
                     data.length === 0 &&
                     <div style={{ height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="no.use.case"/>} />
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="no.use.case" />} />
                     </div>
                 }
             </Spin>

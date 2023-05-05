@@ -1,4 +1,9 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-shadow */
+
 import { useState, useEffect } from 'react'
 import { Table } from 'antd'
 import { useRequest, useIntl, FormattedMessage, useParams } from 'umi'
@@ -123,7 +128,8 @@ const ViewTable = (props: any) => {
 
     return (
         <Table
-            rowSelection={rowSelection as any}
+            /* @ts-ignore */
+            rowSelection={rowSelection}
             columns={columns as any}
             dataSource={dataSource.data}
             size="small"

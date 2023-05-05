@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm } from 'antd'
 
@@ -873,8 +873,10 @@ const TestJob: React.FC<any> = (props) => {
                             onClick={
                                 () => {
                                     if (name === 'JobTypePreview') history.push(`/ws/${ws_id}/job/types`)
-                                    else
-                                        history.push((access.IsWsSetting() ? { pathname: `/ws/${ws_id}/job/templates`, state: state || {} } : "./") as any)
+                                    else {
+                                        /* @ts-ignore */
+                                        history.push(access.IsWsSetting() ? { pathname: `/ws/${ws_id}/job/templates`, state: state || {} } : "./")
+                                    }
                                 }
                             }
                         >

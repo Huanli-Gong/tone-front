@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Spin } from 'antd';
 import { FormattedMessage } from 'umi'

@@ -1,6 +1,12 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-shadow */
+
 import { Drawer, Space, Button, Spin, Table, Typography, Divider, Tabs } from 'antd'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons'
 import { forwardRef, useState, useImperativeHandle, useEffect, useRef } from 'react'
@@ -188,7 +194,8 @@ export default forwardRef(
             }
         }
 
-        const selectedChange = (record: any, selected: any) => {
+        /* @ts-ignore */
+        const selectedChange = (record, selected, selectedRows) => {
             // 去掉未选组的job 开始
             let arrKeys = tab === 'functional' ? _.cloneDeep(selectedFunRowKeys) : _.cloneDeep(selectedPersRowKeys)
             const objKeys = tab === 'functional' ? allObjKeyFun : allObjKeyPerf
@@ -202,11 +209,13 @@ export default forwardRef(
                     // 二级
                     childKeys = objKeys[record.level_id]
                     arrKeys = [...arrKeys, record.suite_id + '']
-                    const flag = childKeys.every((val: any) => arrKeys.includes(val))
+                    /* @ts-ignore */
+                    const flag = childKeys.every(val => arrKeys.includes(val))
                     if (flag) arrKeys = [...arrKeys, ...childKeys, record.level_id]
                 }
 
-                arrKeys = arrKeys.map((keys: any) => String(keys))
+                /* @ts-ignore */
+                arrKeys = arrKeys.map(keys => String(keys))
                 arrKeys = Array.from(new Set(arrKeys))
             } else {
                 let childKeys: any = []

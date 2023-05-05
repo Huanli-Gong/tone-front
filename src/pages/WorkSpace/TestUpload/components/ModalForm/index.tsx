@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { forwardRef, useState, useEffect } from 'react'
 import { Modal, Space, Spin, Alert, Form, Button, message, Input, Select, Row } from 'antd'
 import { useParams, FormattedMessage, useIntl } from 'umi';
@@ -136,7 +137,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
   }
 
   // 选产品
-  const productOnChange = (value: any) => {
+  const productOnChange = () => {
     // case1.重置控件
     form.setFieldsValue({ project_id: undefined });
     // case2.根据选择的产品，请求项目。
