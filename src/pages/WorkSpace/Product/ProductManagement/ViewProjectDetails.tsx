@@ -1,4 +1,7 @@
-import React, { forwardRef, useState, useImperativeHandle, useRef, useEffect } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-shadow */
+import { forwardRef, useState, useImperativeHandle, useRef, useEffect } from 'react';
 import { useRequest, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import { isUndefined } from 'lodash'
 import { Drawer, Space, Typography, Table, Button, message, Popconfirm, Row, Col, Dropdown, Menu, Modal } from 'antd';
@@ -89,19 +92,19 @@ export default forwardRef(
             title: <EllipsisPopover title={formatMessage({ id: "product.repositories" })} placement={'top'} />,
             dataIndex: 'branch_name',
             ellipsis: true,
-            render: (text: string) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+            render: (text: string) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
         },
         {
             title: 'GitUrl',
             dataIndex: 'git_url',
             ellipsis: true,
-            render: (text: string) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+            render: (text: string) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
         },
         {
             title: 'Branch',
             dataIndex: 'branch_name',
             ellipsis: true,
-            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
         },
         {
             title: <QusetionIconTootip title={formatMessage({ id: 'product.is_master' })} desc={formatMessage({ id: 'product.is_master.desc' })} />,

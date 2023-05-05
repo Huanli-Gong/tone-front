@@ -49,7 +49,7 @@ const ViewCollapse = (props: any) => {
     const allSelectedData: any = useRef(null);
 
     const getViewAllPlanList = async (params: any) => {
-        let data = await queryPlanViewList(params)
+        const data = await queryPlanViewList(params)
         defaultOption(data)
     }
 

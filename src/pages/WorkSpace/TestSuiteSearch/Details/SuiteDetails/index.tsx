@@ -161,7 +161,7 @@ const SuiteDetails: React.FC = () => {
                                         <div className={styles['details-description-tag']}>
                                             {dataSet.test_type && <TypeTag type={dataSet.test_type} />}
                                             {dataSet.domain_name_list && dataSet.domain_name_list.split(',').map((item: string) =>
-                                                <Tag color='#F2F4F6' style={{ color: '#515B6A' }}>{item}</Tag>
+                                                <Tag key={item} color='#F2F4F6' style={{ color: '#515B6A' }}>{item}</Tag>
                                             )}
                                         </div>
                                         <span><FormattedMessage id="test.suite.explain" />：</span>
@@ -194,8 +194,8 @@ const SuiteDetails: React.FC = () => {
                                     <div className={styles.detailInfo_card} style={{ marginBottom: 20 }}>
                                         <div className={styles.card_head}><FormattedMessage id="test.suite.details.info" /></div>
                                         <div className={styles.card_content}>
-                                            {detailInfo.map((item, i) =>
-                                                <div className={styles.card_row} key={i}>
+                                            {detailInfo.map((item) =>
+                                                <div className={styles.card_row} key={item.name}>
                                                     <span className={styles['test-columns-label']}>{item.name}</span>
                                                     <span className={styles['test-columns-name']}>{item.value}</span>
                                                 </div>

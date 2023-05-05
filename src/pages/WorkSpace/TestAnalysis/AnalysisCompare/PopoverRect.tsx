@@ -38,7 +38,7 @@ export default (props: any) => {
     const [autoFocus, setFocus] = useState(true)
     const [refAllJob, setRefAllJob] = useState(jobList)
     const [params, setParams] = useState(page_default_params)
-    let [selectedRowKeys, setSelectedRowKeys] = useState<any>(defaultSelKeys)
+    const [selectedRowKeys, setSelectedRowKeys] = useState<any>(defaultSelKeys)
     const fn = () => {
         setVisiblePopover(false)
     }

@@ -53,8 +53,8 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
     const [visible, setVisible] = React.useState(false)
     const [isFetch, setIsFetch] = React.useState(false)
 
-    const handleTabClick = (tab: string) => {
-        setTab(tab)
+    const handleTabClick = ($tab: string) => {
+        setTab($tab)
     }
 
     const getemptyTableDom = () => {
@@ -193,10 +193,10 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
             const id: any = Object.keys(confData).map((keys: any) => String(keys))
             let result = []
             let selectedKeys: any = []
-            result = Object.values(confData).map((item: any, index: number) => {
+            result = Object.values(confData).map((item: any) => {
                 if (item.conf_dic && JSON.stringify(item.conf_dic) !== '{}') {
                     selectedKeys = [...Object.keys(item.conf_dic).map((i: any) => + i)]
-                    item.conf_list = Object.values(item.conf_dic).map((value: any, index: number) => {
+                    item.conf_list = Object.values(item.conf_dic).map((value: any) => {
                         return (
                             {
                                 key: value.conf_id,
@@ -259,7 +259,7 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
                     let brr: any = []
                     arr = arr.map((item: any, groupIndex: number) => {
                         let suite_list = item.suite_list.map((i: any) => {
-                            let conf_list = i.conf_list.map((conf: any, num: number) => {
+                            let conf_list = i.conf_list.map((conf: any) => {
                                 let job_list = conf.job_list.map((child: any, idx: number) => {
                                     return {
                                         ...child,

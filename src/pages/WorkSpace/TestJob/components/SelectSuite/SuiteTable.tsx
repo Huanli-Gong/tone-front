@@ -315,7 +315,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 			setIndeterminateSuite(!!selectedRowKeys.length && selectedRowKeys.length < dataSource.length)
 			setSuiteAll(selectedRowKeys.length == dataSource.length)
 		},
-		getCheckboxProps: (record: any) => ({
+		getCheckboxProps: () => ({
 			disabled: selectedCaseKeys.length > 0
 		}),
 	};

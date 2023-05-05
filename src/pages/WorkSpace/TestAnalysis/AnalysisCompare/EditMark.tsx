@@ -53,7 +53,7 @@ export default forwardRef(
                 title={
                     formatMessage({ id: 'analysis.edit.mark.name' })
                 }
-                width="375"
+                width={375}
                 onClose={handleClose}
                 open={visible}
                 className={styles.add_baseline_drawer}

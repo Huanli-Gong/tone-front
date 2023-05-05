@@ -24,7 +24,7 @@ const ViewTable = (props: any) => {
     const { planId, setSelectedRowFn, selectedRow, } = props
     // const selectedPlanId = window.sessionStorage.getItem('selectedPlanId') || '' // 已选的计划Id
     const page_default_params = { plan_id: planId, ws_id, page_num: 1, page_size: 9999 }
-    let [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
+    const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
     const [autoFocus, setFocus] = useState(true)
     const [params, setParams] = useState<any>(page_default_params)
     const { data: dataSource, loading, run } = useRequest(

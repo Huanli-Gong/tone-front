@@ -5,7 +5,7 @@ import { DeleteFormListItem } from '../DeleteFormListItem'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import _ from 'lodash'
 import styles from './index.less'
-export default ({ field, index, disabled, remove, setFormsValueFn, typeDisabled,form }: any) => {
+export default ({ field, index, disabled, remove, setFormsValueFn, typeDisabled, form }: any) => {
     const { formatMessage } = useIntl()
 
     const handleMachineType = (value: string) => {
@@ -13,12 +13,12 @@ export default ({ field, index, disabled, remove, setFormsValueFn, typeDisabled,
     }
     const formValue = form.getFieldsValue()
     const monitorInfo = _.isArray(_.get(formValue, 'monitor_info')) ? _.get(formValue, 'monitor_info') : []
-    const machineType = monitorInfo[index] && monitorInfo[index]['monitor_type'] || 'case_machine'
+    const machineType = monitorInfo[index] && monitorInfo[index].monitor_type || 'case_machine'
     const styleObj = {
         color: 'rgba(0, 0, 0, 0.45)',
         cursor: 'pointer',
         transform: 'translateY(0)',
-        position:'initial',
+        position: 'initial',
     }
 
     return (
@@ -38,14 +38,14 @@ export default ({ field, index, disabled, remove, setFormsValueFn, typeDisabled,
 
             <Col span={18} style={{ position: 'relative' }}>
                 {machineType === 'custom_machine' &&
-                    <Form.Item name={[field.name, "server"]} 
-                    rules={[
-                        { 
-                            required: true,pattern: /^[A-Za-z0-9\._-]+$/, 
-                            message: formatMessage({id: 'job.form.custom.machine.message'}),
-                        }
-                    ]}>
-                        <Input placeholder={`${formatMessage({id: 'job.form.input.machine.ip'})}${!BUILD_APP_ENV ? "/SN" : ""}${formatMessage({id: 'job.form.address'})}`} allowClear disabled={disabled} />
+                    <Form.Item name={[field.name, "server"]}
+                        rules={[
+                            {
+                                required: true, pattern: /^[A-Za-z0-9\._-]+$/,
+                                message: formatMessage({ id: 'job.form.custom.machine.message' }),
+                            }
+                        ]}>
+                        <Input placeholder={`${formatMessage({ id: 'job.form.input.machine.ip' })}${!BUILD_APP_ENV ? "/SN" : ""}${formatMessage({ id: 'job.form.address' })}`} allowClear disabled={disabled} />
                     </Form.Item>
                 }
                 {
@@ -55,10 +55,10 @@ export default ({ field, index, disabled, remove, setFormsValueFn, typeDisabled,
                         content={
                             <Descriptions title={<FormattedMessage id="job.form.monitor.instructions" />}
                                 bordered column={1} size="small" className={styles.monitorDes}>
-                                <Descriptions.Item label={<FormattedMessage id="job.form.case.machine" />} labelStyle={{paddingTop: '5px',paddingBottom: '5px'}}>
+                                <Descriptions.Item label={<FormattedMessage id="job.form.case.machine" />} labelStyle={{ paddingTop: '5px', paddingBottom: '5px' }}>
                                     <FormattedMessage id="job.form.only.monitor.all.use.cases.machine" />
                                 </Descriptions.Item>
-                                <Descriptions.Item label={<FormattedMessage id="job.form.custom.machine" />} labelStyle={{paddingTop: '5px',paddingBottom: '5px'}}>
+                                <Descriptions.Item label={<FormattedMessage id="job.form.custom.machine" />} labelStyle={{ paddingTop: '5px', paddingBottom: '5px' }}>
                                     <FormattedMessage id="job.form.users.can.enter.IP" />{`${!BUILD_APP_ENV ? "/SN" : ""}`}<FormattedMessage id="job.form.add.machine.monitoring" />
                                 </Descriptions.Item>
                             </Descriptions>

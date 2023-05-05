@@ -25,19 +25,19 @@ export default forwardRef(
         const [suitData, setSuitData] = useState<any>({})
         const [loading, setLoading] = useState(true)
         const [tab, setTab] = useState('functional')
-        let [selectedFunRowKeys, setSelectedFunRowKeys] = useState<any>([])
-        let [selectedPersRowKeys, setSelectedPersRowKeys] = useState<any>([])
+        const [selectedFunRowKeys, setSelectedFunRowKeys] = useState<any>([])
+        const [selectedPersRowKeys, setSelectedPersRowKeys] = useState<any>([])
 
-        let [allObjKeyFun, setAllObjKeyFun] = useState<any>([])
-        let [allObjKeyPerf, setAllObjKeyPerf] = useState<any>([])
+        const [allObjKeyFun, setAllObjKeyFun] = useState<any>([])
+        const [allObjKeyPerf, setAllObjKeyPerf] = useState<any>([])
 
         const [expandKeyFun, setExpandKeyFun] = useState<string[]>([])
         const [expandKeyPerf, setExpandKeyPerf] = useState<string[]>([])
         const allFunRowKeys: any = useRef(null)
         const allPersRowKeys: any = useRef(null)
 
-        const handleTabClick = (tab: string) => {
-            setTab(tab)
+        const handleTabClick = ($tab: string) => {
+            setTab($tab)
         }
         useEffect(() => {
             try {
@@ -280,7 +280,7 @@ export default forwardRef(
             }
             const obj = item.conf_dic
             item.children = Object.values(obj)
-            item.children = item.children.map((value: any, index: number) => {
+            item.children = item.children.map((value: any) => {
                 return (
                     {
                         key: value.conf_id,

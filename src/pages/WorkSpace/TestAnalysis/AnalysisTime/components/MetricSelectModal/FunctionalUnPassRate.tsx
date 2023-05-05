@@ -67,7 +67,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                                 placeholder="请选择Test Suite"
                                 value={activeSuite}
                                 filterOption={(input, option: any) =>
-                                    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    option.label?.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                 }
                                 showSearch
                                 options={

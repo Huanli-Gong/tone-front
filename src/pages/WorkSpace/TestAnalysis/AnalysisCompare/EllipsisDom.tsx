@@ -2,10 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Tooltip } from "antd"
 import styles from './style.less';
-const ButtonEllipsis: React.FC<any> = ({ title,autoStyle,children,refData }) => {
-	useEffect(() => {
-		isEllipsis()
-	}, [refData]);
+const ButtonEllipsis: React.FC<any> = ({ title, autoStyle, children, refData }) => {
 	const ellipsis = useRef<any>(null)
 	const [show, setShow] = useState<boolean>(false)
 	const isEllipsis = () => {
@@ -13,18 +10,21 @@ const ButtonEllipsis: React.FC<any> = ({ title,autoStyle,children,refData }) => 
 		const scrollWidth = ellipsis.current.scrollWidth
 		setShow(clientWidth < scrollWidth)
 	};
-	const renderChildren =() => {
+	useEffect(() => {
+		isEllipsis()
+	}, [refData]);
+	const renderChildren = () => {
 		return (
-			children?React.cloneElement(children):title||'-'
+			children ? React.cloneElement(children) : title || '-'
 		)
 	}
 	return (
-		show?
+		show ?
 			<Tooltip placement="topLeft" title={title} >
 				<div ref={ellipsis} className={styles.ellipsis} style={autoStyle}>
 					{renderChildren()}
 				</div>
-			</Tooltip>:
+			</Tooltip> :
 			<div ref={ellipsis} className={styles.ellipsis} style={autoStyle}>
 				{renderChildren()}
 			</div>

@@ -20,7 +20,7 @@ const getConfKeysAndSort = (suites: any[]) => suites.reduce((pre: any[], cur: an
     return pre.concat(cur.test_case_list.map((i: any) => i.id))
 }, []).sort((a, b) => a - b)
 
-const SaveTipModal = React.forwardRef((props, ref) => {
+const SaveTipModal: any = React.forwardRef((props, ref) => {
     const { onSave, btnLoad }: any = props
     const { ws_id, test_type }: any = useParams()
 
@@ -93,7 +93,7 @@ const TestSuiteCreate: React.FC = () => {
     const [leftTableLoading, setLeftTableLoading] = useState(true)
 
     /* ws下初始用例 */
-    const [wsSuiteAllKeys, setWsSuiteAllKey] = React.useState([])
+    const [wsSuiteAllKeys, setWsSuiteAllKey] = React.useState<any>([])
     const [defaultSuiteList, setDefaultSuiteList] = React.useState([])
 
     const saveTipRef = React.useRef<any>(null)
@@ -671,7 +671,7 @@ const TestSuiteCreate: React.FC = () => {
                                     Table.EXPAND_COLUMN,
                                     { title: 'Test Suite', dataIndex: 'name', },
                                     { title: formatMessage({ id: 'suite.business_name' }), dataIndex: 'business_name', },
-                                    { title: formatMessage({ id: 'suite.test_type' }), dataIndex: 'test_type', render: (text: any, record: any) => <>{test_type_enum.map((item) => item.value === text ? formatMessage({ id: item.value }) : '')}</>, },
+                                    { title: formatMessage({ id: 'suite.test_type' }), dataIndex: 'test_type', render: (text: any) => <>{test_type_enum.map((item) => item.value === text ? formatMessage({ id: item.value }) : '')}</>, },
                                 ]
                                 :
                                 [
@@ -720,7 +720,7 @@ const TestSuiteCreate: React.FC = () => {
                                     />
                                 ),
                                 columnWidth: 24,
-                                renderCell(_, record, index) {
+                                renderCell(_, record) {
                                     const { hasAdd, addCaseCount } = record
                                     let color = '#1890ff'
                                     if (addCaseCount === 'all')

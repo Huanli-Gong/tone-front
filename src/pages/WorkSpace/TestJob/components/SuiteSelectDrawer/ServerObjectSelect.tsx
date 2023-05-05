@@ -167,7 +167,7 @@ const ServerObjectSelect = (props: any) => {
 
     if (["ip", "server_tag_id"].includes(serverObjectType))
         return <></>
-        
+
     return (
         <Form.Item noStyle>
             <Form.Item

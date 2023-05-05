@@ -1,3 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect } from 'react';
 import { Button, Space, Drawer, Form, Input, message, Popconfirm, Pagination, Spin, Row } from 'antd';
 import { FormattedMessage, useIntl, useParams } from 'umi'
