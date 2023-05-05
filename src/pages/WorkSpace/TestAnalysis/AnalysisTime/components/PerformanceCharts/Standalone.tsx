@@ -262,6 +262,9 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
                 axisLabel: {
                     showMaxLabel: true,
                 },
+                axisPointer: {
+                    z: 9999
+                }
             },
             yAxis: {
                 type: 'value',
