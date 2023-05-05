@@ -184,6 +184,7 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
                     width: 1,
                     type: 'dashed'
                 },
+                z: 9999,
                 data: xAxis?.map((i: any) => ({ date: i, value: baseline_data.value })),
             })
             pre.title.push([{
@@ -296,8 +297,8 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
                 zlevel: 100
             },
             series: [
-                ...baseline,
                 ...series,
+                ...baseline,
             ],
         })
 
