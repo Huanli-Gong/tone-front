@@ -6,7 +6,7 @@ import { Button, Tabs, Pagination, Drawer, Tooltip, Row, Table, Typography, Spin
 import { CaretRightFilled, CaretDownFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { querySuiteList, queryDomains } from './service';
 import { history, useIntl, FormattedMessage } from 'umi'
-import { suiteChange } from '@/components/Public/TestSuite/index.js';
+import { suiteChange } from '@/components/Public/TestSuite';
 import styles from './style.less';
 import CaseTable from './components/CaseTable';
 import BusinessTest from './BusinessTest';

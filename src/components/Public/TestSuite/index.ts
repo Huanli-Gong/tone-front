@@ -1,4 +1,5 @@
 
+/* @ts-ignore */
 const suiteChange = (text, record) => {
     let name = record.view_type
     let result = name.match(/\(([^)]*)\)/)
