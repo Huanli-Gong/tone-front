@@ -13,26 +13,26 @@ export const standloneServerList = async function (params: any) {
 }
 
 //查询领域
-export function getDomain () {
+export function getDomain() {
     return request('/api/case/test_domain/')
 }
 
-export function queryDispatchTags ( params : any ) {
-    return request(`/api/server/server_tag/` , { params })
+export function queryDispatchTags(params: any) {
+    return request(`/api/server/server_tag/`, { params })
 }
 
-export function checkIpAndSn ( params : any ) {
-    return request(`/api/server/test_server/channel/check/` , { params })
+export function checkIpAndSn(params: any) {
+    return request(`/api/server/test_server/channel/check/`, { params })
 }
 
-export function queryClusterServer ( params : any ) {
-    return request(`/api/server/test_cluster/` , { params })
+export function queryClusterServer(params: any) {
+    return request(`/api/server/test_cluster/`, { params })
 }
 
-export function queryClusterStandaloneServer ( params : any ) {
-    return request(`/api/server/cloud_server/` , { params })
+export function queryClusterStandaloneServer(params: any) {
+    return request(`/api/server/cloud_server/`, { params })
 }
 
-export function queryClusterGroupServer ( params : any ) {
-    return request(`/api/server/test_cluster/` , { params })
+export function queryClusterGroupServer(params: any) {
+    return request(`/api/server/test_cluster/`, { params })
 }

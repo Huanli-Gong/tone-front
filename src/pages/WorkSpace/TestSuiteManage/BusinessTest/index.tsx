@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect } from 'react';
 import { message, Table, Pagination } from 'antd';
 import { FilterFilled, CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
 import { useIntl, FormattedMessage, useParams, useLocation } from 'umi';
@@ -16,7 +18,7 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents';
 export default () => {
 	const { ws_id } = useParams() as any
 	const { formatMessage } = useIntl()
-	const location = useLocation()
+	const location = useLocation() as any
 	const [loading, setLoading] = useState<any>(false)
 	const [data, setData] = useState<any>({ data: [], total: 0, page_num: 1 })
 	const [pageSize, setPageSize] = useState<number>(10);

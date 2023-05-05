@@ -1,7 +1,6 @@
-import React, { useContext, memo } from 'react';
+import { useContext, memo } from 'react';
 import { ReportContext } from '../Provider';
 import { FormattedMessage, getLocale } from 'umi'
-import _ from 'lodash';
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
 import {
     ModuleWrapper,
@@ -22,7 +21,7 @@ const ReportTestEnv = () => {
 
     return (
         <ModuleWrapper id="need_test_env">
-            <SubTitle><span className="line"></span>
+            <SubTitle><span className="line" />
                 <FormattedMessage id="analysis.test.env" />
             </SubTitle>
             <EnvGroup>

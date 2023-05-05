@@ -1,6 +1,9 @@
-import { Drawer, Space, Button, Spin, Table, Typography, message, Divider, Tabs } from 'antd'
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable prefer-const */
+import { Drawer, Space, Button, Spin, Table, Typography, Divider, Tabs } from 'antd'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons'
-import React, { forwardRef, useState, useImperativeHandle, useEffect, useRef } from 'react'
+import { forwardRef, useState, useImperativeHandle, useEffect, useRef } from 'react'
 import { useIntl, FormattedMessage } from 'umi'
 import { querySuiteList } from './services'
 import styles from './index.less'
@@ -16,19 +19,19 @@ export default forwardRef(
         const [suitData, setSuitData] = useState<any>({})
         const [loading, setLoading] = useState(true)
         const [tab, setTab] = useState('functional')
-        let [selectedFunRowKeys, setSelectedFunRowKeys] = useState<any>([])
-        let [selectedPersRowKeys, setSelectedPersRowKeys] = useState<any>([])
+        const [selectedFunRowKeys, setSelectedFunRowKeys] = useState<any>([])
+        const [selectedPersRowKeys, setSelectedPersRowKeys] = useState<any>([])
 
-        let [allObjKeyFun, setAllObjKeyFun] = useState<any>([])
-        let [allObjKeyPerf, setAllObjKeyPerf] = useState<any>([])
+        const [allObjKeyFun, setAllObjKeyFun] = useState<any>([])
+        const [allObjKeyPerf, setAllObjKeyPerf] = useState<any>([])
 
         const [expandKeyFun, setExpandKeyFun] = useState<string[]>([])
         const [expandKeyPerf, setExpandKeyPerf] = useState<string[]>([])
         const allFunRowKeys: any = useRef(null)
         const allPersRowKeys: any = useRef(null)
 
-        const handleTabClick = (tab: string) => {
-            setTab(tab)
+        const handleTabClick = ($tab: string) => {
+            setTab($tab)
         }
         useEffect(() => {
             try {
@@ -43,7 +46,7 @@ export default forwardRef(
 
                 const ohead = document.querySelectorAll('tr[data-row-key = "test_conf"]>td')
                 Array.from(ohead).forEach((ele: any) => (ele.style.background = 'rgba(0,0,0,0.02)'))
-                
+
                 const checkTr = document.querySelectorAll('tr[data-row-key = "test_conf"]>td[class = "ant-table-cell ant-table-selection-column"]>label')
                 Array.from(checkTr).forEach((ele: any) => ele.style.opacity = 0)
 
@@ -52,7 +55,7 @@ export default forwardRef(
             } catch (error) {
                 console.log(error)
             }
-           
+
         }, [suitData, tab])
 
         const getSuitDetail = async (params: any) => {
@@ -74,20 +77,20 @@ export default forwardRef(
                     secondFunKeys = [...secondFunKeys, ...Object.keys(objConf)]
                     const id = obj.suite_id
                     allObjKeyFun[id] = Object.keys(objConf)
-                    allObjKeyFun[id] = allObjKeyFun[id].map(keys => String(keys))
-                    
+                    allObjKeyFun[id] = allObjKeyFun[id].map((keys: any) => String(keys))
+
                 })
                 arrVal2.forEach((obj: any) => {
                     const objConf = obj.conf_dic || {}
                     secondPersKeys = [...secondPersKeys, ...Object.keys(objConf)]
                     const id = obj.suite_id
                     allObjKeyPerf[id] = Object.keys(objConf)
-                    allObjKeyPerf[id] = allObjKeyPerf[id].map(keys => String(keys))
+                    allObjKeyPerf[id] = allObjKeyPerf[id].map((keys: any) => String(keys))
                 })
 
                 secondFunKeys = secondFunKeys.map((keys: any) => String(keys))
                 secondPersKeys = secondPersKeys.map((keys: any) => String(keys))
-      
+
                 allFunRowKeys.current = [...secondFunKeys, ...arrKey1]
                 allPersRowKeys.current = [...secondPersKeys, ...arrKey2]
 
@@ -106,16 +109,16 @@ export default forwardRef(
                 setLoading(false)
             }
         }
-        
+
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = formatMessage({id: 'analysis.select.benchmark.group'}), data: any = {}) => {
+                show: (title: string = formatMessage({ id: 'analysis.select.benchmark.group' }), data: any = {}) => {
                     setVisible(true)
                     setTitle(title)
                     setEditer(data)
                     let arr = _.get(data, 'members')
-                    const paramData = {
+                    const paramData: any = {
                         func_data: [],
                         perf_data: []
                     }
@@ -184,8 +187,8 @@ export default forwardRef(
                 setFn(brr)
             }
         }
-        
-        const selectedChange = (record, selected, selectedRows) => {
+
+        const selectedChange = (record: any, selected: any) => {
             // 去掉未选组的job 开始
             let arrKeys = tab === 'functional' ? _.cloneDeep(selectedFunRowKeys) : _.cloneDeep(selectedPersRowKeys)
             const objKeys = tab === 'functional' ? allObjKeyFun : allObjKeyPerf
@@ -199,11 +202,11 @@ export default forwardRef(
                     // 二级
                     childKeys = objKeys[record.level_id]
                     arrKeys = [...arrKeys, record.suite_id + '']
-                    const flag = childKeys.every(val => arrKeys.includes(val))
+                    const flag = childKeys.every((val: any) => arrKeys.includes(val))
                     if (flag) arrKeys = [...arrKeys, ...childKeys, record.level_id]
                 }
-                
-                arrKeys = arrKeys.map(keys => String(keys))
+
+                arrKeys = arrKeys.map((keys: any) => String(keys))
                 arrKeys = Array.from(new Set(arrKeys))
             } else {
                 let childKeys: any = []
@@ -245,7 +248,7 @@ export default forwardRef(
                 key: 'Test Suite',
             }
         ]
- 
+
         let oneLevelFunData: any = []
         let oneLevelPerslData: any = []
         let obj1 = _.cloneDeep(suitData).func_suite_dic || {}
@@ -257,7 +260,7 @@ export default forwardRef(
         oneLevelFunData = arrVal1.map((obj: any, index: number) => ({ ...obj, suite_id: arrKey1[index] }))
         oneLevelPerslData = arrVal2.map((obj: any, index: number) => ({ ...obj, suite_id: arrKey2[index] }))
         let oneLevelDetailData = tab === 'functional' ? oneLevelFunData : oneLevelPerslData
-        
+
         oneLevelDetailData = oneLevelDetailData.map((item: any) => {
             const aa = {
                 key: 2234,
@@ -268,7 +271,7 @@ export default forwardRef(
             }
             const obj = item.conf_dic
             item.children = Object.values(obj)
-            item.children = item.children.map((value: any, index: number) => {
+            item.children = item.children.map((value: any) => {
                 return (
                     {
                         key: value.conf_id,
@@ -286,7 +289,7 @@ export default forwardRef(
         })
 
         return (
-            <Drawer 
+            <Drawer
                 maskClosable={false}
                 keyboard={false}
                 title={title}
@@ -344,7 +347,7 @@ export default forwardRef(
 
                                 expandedRowKeys: tab === 'functional' ? expandKeyFun : expandKeyPerf,
                                 //expandedRowKeys: tab === 'functional' ? selectedFunRowKeys : selectedPersRowKeys,
-                                
+
                                 expandIcon: ({ expanded, onExpand, record }: any) => {
                                     if (!record.children) return
                                     return (

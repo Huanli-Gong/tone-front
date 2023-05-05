@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Radio, Button, Divider } from 'antd';
-import { useIntl, FormattedMessage } from 'umi'
+import { FormattedMessage } from 'umi'
 import styles from '../../style.less';
 
 const FilterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {

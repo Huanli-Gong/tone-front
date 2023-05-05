@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { Input, Modal, message, Form, Select, Space, Typography, Tooltip } from 'antd'
-import React, { useState, useImperativeHandle, forwardRef, useCallback } from 'react'
-import { useRequest, history, useIntl, FormattedMessage } from 'umi'
+import { useState, useImperativeHandle, forwardRef, useCallback } from 'react'
+import { useRequest, useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
 import { PlusOutlined } from '@ant-design/icons'
 import { queryRepositoryList, queryBranchList, createBranchAndRelation } from '../services'
@@ -158,7 +160,7 @@ export default forwardRef(
                             rules={[{ required: true, message: formatMessage({ id: 'product.repositories.cannot.be.empty' }) }]}>
                             <Select
                                 placeholder={<FormattedMessage id="product.please.select.the.repositories" />}
-                                notFoundContent={<div style={{ height: 0 }}></div>}
+                                notFoundContent={<div style={{ height: 0 }} />}
                                 onChange={handleChangeRepoid}
                                 options={data?.map(
                                     (item: any) => ({

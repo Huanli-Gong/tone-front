@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, memo, useRef, useMemo } from 'react';
 import { Col, Button, message } from 'antd';
 import { ReactComponent as IconLink } from '@/assets/svg/icon_link.svg'
@@ -190,7 +191,7 @@ const Report: React.FC = () => {
     const handleCreatReportOk = () => { // suiteData：已选的
         saveReportDraw.current?.show({})
     }
-    
+
     const creatReportCallback = (reportData: any) => { // suiteData：已选的
         history.push({
             pathname: `/ws/${ws_id}/test_create_report`,
@@ -294,7 +295,7 @@ const Report: React.FC = () => {
                                 <TestEnv />
                             }
                             <ModuleWrapper style={{ position: 'relative' }} id="test_data" ref={testDataRef}>
-                                <SubTitle><span className="line"></span><FormattedMessage id="analysis.job.data" /></SubTitle>
+                                <SubTitle><span className="line" /><FormattedMessage id="analysis.job.data" /></SubTitle>
                                 <PerformanceTest parentDom={testDataRef} scrollLeft={scrollLeft} />
                                 <FunctionalTest scrollLeft={scrollLeft} />
                             </ModuleWrapper>

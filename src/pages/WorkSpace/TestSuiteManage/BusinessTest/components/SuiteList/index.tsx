@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import { Tooltip, Drawer, Table } from 'antd';
 import { CaretRightFilled, CaretDownFilled, QuestionCircleOutlined } from '@ant-design/icons';
@@ -31,7 +33,7 @@ const List = ({ business_id, dataSource }: any) => {
 			fixed: 'left',
 			width: 120,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} width={120} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} width={120} >{text}</ColumnEllipsisText>
 			},
 		},
 		{
@@ -47,7 +49,7 @@ const List = ({ business_id, dataSource }: any) => {
 			dataIndex: 'domain_name_list',
 			width: 100,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text || '-'} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text || '-'}</ColumnEllipsisText>
 			}
 		},
 		{
@@ -93,7 +95,7 @@ const List = ({ business_id, dataSource }: any) => {
 			},
 			render: (_: any, record: any) => {
 				return (
-					<ColumnEllipsisText ellipsis={{ tooltip: true }} children={record.description} />
+					<ColumnEllipsisText ellipsis={{ tooltip: true }} >{record.description}</ColumnEllipsisText>
 				)
 			}
 		},
@@ -107,7 +109,7 @@ const List = ({ business_id, dataSource }: any) => {
 			dataIndex: 'gmt_created',
 			width: 170,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text || '-'} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text || '-'}</ColumnEllipsisText>
 			}
 		},
 	];

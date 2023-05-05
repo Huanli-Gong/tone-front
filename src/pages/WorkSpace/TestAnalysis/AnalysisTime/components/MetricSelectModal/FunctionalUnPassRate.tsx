@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from "react"
 import { useRequest, useLocation } from "umi"
 import { Table, Row, Col, Select } from "antd"
@@ -66,7 +67,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                                 placeholder="请选择Test Suite"
                                 value={activeSuite}
                                 filterOption={(input, option: any) =>
-                                    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    option.label?.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                 }
                                 showSearch
                                 options={
@@ -124,7 +125,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                     }}
                     onRow={
                         record => ({
-                            onClick: event => {
+                            onClick: () => {
                                 setSelectSubcase([record])
                             }
                         })

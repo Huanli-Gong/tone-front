@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React from 'react'
 import { Form, Row, Col, Input, Radio, Button } from 'antd'
 import { FormattedMessage, useLocation } from 'umi';

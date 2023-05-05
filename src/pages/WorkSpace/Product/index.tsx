@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { Layout, Tabs } from 'antd'
-import { history, useIntl, FormattedMessage } from 'umi'
+import { useState } from 'react'
+import { Tabs } from 'antd'
+import { history, FormattedMessage } from 'umi'
 
 import ProductManagement from './ProductManagement'
 import CodeManagement from './CodeManagement'
@@ -14,9 +14,9 @@ export default (props: any) => {
     const { location } = props
     const [key, setTab] = useState(location.query.t || 'product')
 
-    const handleTab = (key: string) => {
-        setTab(key)
-        history.push(`/ws/${ws_id}/product?t=${key}`)
+    const handleTab = ($key: string) => {
+        setTab($key)
+        history.push(`/ws/${ws_id}/product?t=${$key}`)
     }
 
     return (
@@ -27,15 +27,15 @@ export default (props: any) => {
                     onChange={handleTab}
                     className={styles.tab_style}
                 >
-                    <Tabs.TabPane tab={<FormattedMessage id="product.manage"/>} key="product"/>
-                    <Tabs.TabPane tab={<FormattedMessage id="code.manage"/>} key="code"/>
+                    <Tabs.TabPane tab={<FormattedMessage id="product.manage" />} key="product" />
+                    <Tabs.TabPane tab={<FormattedMessage id="code.manage" />} key="code" />
                 </Tabs>
             }
         >
             {
                 key === 'product' ?
-                <ProductManagement /> :
-                <CodeManagement ws_id={ws_id} />
+                    <ProductManagement /> :
+                    <CodeManagement ws_id={ws_id} />
             }
         </TabCard>
     )

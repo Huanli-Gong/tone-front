@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable prefer-const */
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useEffect } from 'react'
 import _ from 'lodash'
 

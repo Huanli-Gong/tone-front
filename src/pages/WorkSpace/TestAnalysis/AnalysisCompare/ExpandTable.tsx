@@ -1,4 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react'
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable no-param-reassign */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useRef, useEffect } from 'react'
 import { Table, Space, Radio, Tag, Popover } from 'antd'
 import { FilterFilled } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words'
@@ -82,7 +86,7 @@ export default (props: any) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: params.job_id ? '#1890ff' : undefined }} />,
-            render: (_: any, row: any) => _,
+            render: (_: any) => _,
         },
         {
             title: <FormattedMessage id="analysis.job.name" />,
@@ -148,7 +152,7 @@ export default (props: any) => {
         })
         allConf[currentIndex].job_list = arr
         setAllConf(allConf)
-        let num = currentTab.slice(currentTab.length - 1)
+        const num = currentTab.slice(currentTab.length - 1)
         setSelectedRowKeys([e.target.value])
         handleChangeDefaultJob(allConf, currentIndex, num)
         // setPopoverVisible(false)
@@ -177,7 +181,7 @@ export default (props: any) => {
                     columns={columns}
                     dataSource={data}
                     pagination={false}
-                    onRow={(record, index) => {
+                    onRow={(record) => {
                         return {
                             onClick(e: any) {
                                 e.stopPropagation();
@@ -187,7 +191,7 @@ export default (props: any) => {
                                 ))
                                 allConf[currentIndex].job_list = arr
                                 setAllConf(allConf)
-                                let num = currentTab.slice(currentTab.length - 1)
+                                const num = currentTab.slice(currentTab.length - 1)
                                 setSelectedRowKeys([record.job_id])
                                 handleChangeDefaultJob(allConf, currentIndex, num)
                             }
@@ -215,7 +219,7 @@ export default (props: any) => {
         <>
             {Object.values(allConf).map((row: any, index: number) => {
                 if (isNaN(tab)) return ''
-                let jobList = row.job_list
+                const jobList = row.job_list
                 let selJob = (jobList[0] && jobList[0]['job_id']) || ''
                 jobList.forEach((item: any) => {
                     if (item && item.isSelect) selJob = item.job_id
@@ -232,7 +236,7 @@ export default (props: any) => {
                                 content={getContent(refAllJob)}
                                 trigger="click"
                                 overlayClassName={styles.popover_job}
-                                visible={currentJobIndex === row.conf_id && popoverVisible}
+                                open={currentJobIndex === row.conf_id && popoverVisible}
                             >
                                 <SelectJob onClick={(e) => handleSelectJob(e, jobList, index, selJob, row.conf_id)}>
                                     <FormattedMessage id="analysis.select.job" />

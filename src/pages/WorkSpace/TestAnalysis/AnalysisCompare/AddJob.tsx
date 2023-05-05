@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect } from 'react';
 import { useClientSize } from '@/utils/hooks';
@@ -94,7 +97,7 @@ export default (props: any) => {
     // 获取产品版本数据
     const getProductList = async (id: any) => {
         setLoading(true)
-        let result = await queryProductList({ product_id: id, ws_id })
+        const result = await queryProductList({ product_id: id, ws_id })
         if (result.code === 200) {
             let data = result.data.filter((val: any) => val?.trim())
             data = data.map((item: any, index: number) => ({ label: index, value: item }))
@@ -104,7 +107,7 @@ export default (props: any) => {
                 setPruductVersion(defaultProVersion)
             }
         } else {
-            requestCodeMessage(code, msg)
+            requestCodeMessage(result?.code, result?.msg)
         }
         setLoading(false)
     }
@@ -157,7 +160,7 @@ export default (props: any) => {
 
     const getJobList = async (params: any) => {
         setLoading(true)
-        let data = await queryJobList(params)
+        const data = await queryJobList(params)
         defaultOption(data)
     }
 
@@ -238,7 +241,7 @@ export default (props: any) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: params.job_id ? '#1890ff' : undefined }} />,
-            render: (_: any, row: any) => _,
+            render: (_: any) => _,
         },
         {
             title: <FormattedMessage id="analysis.job.name" />,
@@ -322,7 +325,7 @@ export default (props: any) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: params.creators && params.creators !== '[]' ? '#1890ff' : undefined }} />,
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="analysis.test_time" />,
@@ -369,7 +372,7 @@ export default (props: any) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: baselineParam.name ? '#1890ff' : undefined }} />,
-            render: (_: any, row: any) => _,
+            render: (_: any) => _,
         },
         {
             title: <FormattedMessage id="analysis.test_type" />,
@@ -401,7 +404,7 @@ export default (props: any) => {
             },
             dataIndex: 'creator_name',
             ...getUserFilter(baselineParam, setBaselineParam, 'creator'),
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="analysis.gmt_created" />,
@@ -417,8 +420,8 @@ export default (props: any) => {
     ]
 
     const selectedChange = (record: any, selected: any) => {
-        let selectKey = tabKey === '1' ? selectedRowKeys : selectedBaselineKeys
-        let selectRow = tabKey === '1' ? selectRowData : selectedBaselineData
+        const selectKey = tabKey === '1' ? selectedRowKeys : selectedBaselineKeys
+        const selectRow = tabKey === '1' ? selectRowData : selectedBaselineData
         // 去掉未选组的job 开始
         let arrKeys = _.cloneDeep(selectKey)
         let arrData = _.cloneDeep(selectRow)
@@ -536,8 +539,8 @@ export default (props: any) => {
         // height: scollMaxHeight
     }
 
-    let testData = _.isArray(dataSource.data) ? dataSource.data : []
-    let baseData = _.isArray(baselineData.data) ? baselineData.data : []
+    const testData = _.isArray(dataSource.data) ? dataSource.data : []
+    const baseData = _.isArray(baselineData.data) ? baselineData.data : []
     const commonCur = currentGroup && _.get(currentGroup, 'members').length
     // 产品版本disable逻辑
     const flag = commonCur || tabKey === '2'

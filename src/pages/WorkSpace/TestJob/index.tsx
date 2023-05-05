@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm } from 'antd'
 
@@ -37,8 +41,6 @@ interface PropsTypes {
     moreFormInfo?: any,
     new_test_config?: any
 }
-
-const isEmpty = (s: any) => [null, undefined, ""].includes(s)
 
 const TestJob: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
@@ -290,7 +292,7 @@ const TestJob: React.FC<any> = (props) => {
         }
 
         const testConfigData = result ? result.new_test_config : test_config
-        
+
         if (testConfigData.length > 0) {
             const test_conf = testConfigData.map((item: any) => {
                 const {
@@ -872,7 +874,7 @@ const TestJob: React.FC<any> = (props) => {
                                 () => {
                                     if (name === 'JobTypePreview') history.push(`/ws/${ws_id}/job/types`)
                                     else
-                                        history.push(access.IsWsSetting() ? { pathname: `/ws/${ws_id}/job/templates`, state: state || {} } : "./")
+                                        history.push((access.IsWsSetting() ? { pathname: `/ws/${ws_id}/job/templates`, state: state || {} } : "./") as any)
                                 }
                             }
                         >

@@ -1,8 +1,7 @@
 import { Drawer, Space, Button, Form, Input } from 'antd'
-import React, { forwardRef, useState, useImperativeHandle } from 'react'
+import { forwardRef, useState, useImperativeHandle } from 'react'
 import { useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
-import _ from 'lodash'
 
 export default forwardRef(
     (props: any, ref: any) => {
@@ -54,7 +53,7 @@ export default forwardRef(
                 title={
                     formatMessage({ id: 'analysis.edit.mark.name' })
                 }
-                width="375"
+                width={375}
                 onClose={handleClose}
                 open={visible}
                 className={styles.add_baseline_drawer}

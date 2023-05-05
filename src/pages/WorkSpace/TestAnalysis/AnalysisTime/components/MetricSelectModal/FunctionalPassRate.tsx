@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from "react"
 import { Table, Row, Select, Col } from "antd"
 import styles from '../index.less'
@@ -52,7 +53,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                             setActiveConf(null)
                         }}
                         filterOption={(input, option: any) =>
-                            option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            option.label?.toLowerCase().indexOf(input?.toLowerCase()) >= 0
                         }
                         showSearch
                         placeholder="请选择Test Suite"
@@ -84,7 +85,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                     }}
                     onRow={
                         record => ({
-                            onClick: event => {
+                            onClick: () => {
                                 setActiveConf(record.id)
                             }
                         })

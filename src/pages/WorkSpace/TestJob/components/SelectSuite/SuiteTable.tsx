@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Button, Table, Card, Switch, Space, Checkbox, Row, Tag, Tooltip } from 'antd';
 
@@ -313,7 +314,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 			setIndeterminateSuite(!!selectedRowKeys.length && selectedRowKeys.length < dataSource.length)
 			setSuiteAll(selectedRowKeys.length == dataSource.length)
 		},
-		getCheckboxProps: (record: any) => ({
+		getCheckboxProps: () => ({
 			disabled: selectedCaseKeys.length > 0
 		}),
 	};

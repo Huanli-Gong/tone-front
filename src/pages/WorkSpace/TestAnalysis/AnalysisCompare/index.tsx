@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable no-param-reassign */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react';
 import { useClientSize } from '@/utils/hooks';

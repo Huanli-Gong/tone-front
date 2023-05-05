@@ -1,5 +1,5 @@
 import React from "react"
-import { useIntl, useAccess, Access } from "umi"
+import { useAccess, Access } from "umi"
 import { Space, Divider, Row, Typography } from "antd"
 
 type DropdownRenderProps = {
@@ -10,7 +10,6 @@ type DropdownRenderProps = {
 const DropdownRender: React.FC<DropdownRenderProps> = (props) => {
     const { menu, uri } = props
     const access = useAccess()
-    const intl = useIntl()
 
     return (
         <Space direction="vertical" style={{ width: "100%" }} size={0}>

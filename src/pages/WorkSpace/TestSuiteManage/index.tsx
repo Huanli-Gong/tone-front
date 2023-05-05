@@ -1,8 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-shadow */
 import React, { useState, useEffect } from 'react';
 import { Button, Tabs, Pagination, Drawer, Tooltip, Row, Table, Typography, Spin } from 'antd';
 import { CaretRightFilled, CaretDownFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { querySuiteList, queryDomains } from './service';
-import { history, useIntl, FormattedMessage, getLocale } from 'umi'
+import { history, useIntl, FormattedMessage } from 'umi'
 import { suiteChange } from '@/components/Public/TestSuite/index.js';
 import styles from './style.less';
 import CaseTable from './components/CaseTable';
@@ -17,7 +20,6 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const SuiteManagement: React.FC<any> = (props) => {
 	const { formatMessage } = useIntl()
-	const enLocale = getLocale() === 'en-US'
 	const { ws_id } = props.match.params
 	const access = useAccess();
 	const testType = props.location.query.test_type || 'functional'
@@ -180,7 +182,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 			},
 			render: (_: any, row: any) => {
 				return (
-					<ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.description} />
+					<ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.description}</ColumnEllipsisText>
 				)
 			}
 		},
