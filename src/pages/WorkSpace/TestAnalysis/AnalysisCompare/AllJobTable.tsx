@@ -218,7 +218,7 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: params.creators && params.creators !== '[]' ? '#1890ff' : undefined }} />,
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="analysis.test_time" />,
