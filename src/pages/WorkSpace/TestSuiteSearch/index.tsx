@@ -28,7 +28,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   const [showInitialList, setShowInitialList] = useState(true);
   // 搜索栏
   const [loading, setLoading] = useState(false)
-  const [refresh, setRefresh] = useState(false)
+  const [refresh, setRefresh] = useState<any>(new Date().getTime())
   const [tabKey, setTabKey] = useState('all');
   const [itemTotal, setItemTotal] = useState<any>({
     "total_num": 0,
@@ -71,7 +71,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
         setShowInitialList(false);
       }
       getSearchListQuantity({ search_key: value })
-      setRefresh(!refresh)
+      setRefresh(new Date().getTime())
       history.push({
         pathname: `/ws/${ws_id}/suite_search/key`,
         query: {

@@ -27,7 +27,7 @@ const SuiteManagement: React.FC<any> = () => {
 
     const [data, setData] = useState<any>([]);
     const [autoFocus, setFocus] = useState<boolean>(true)
-    const [refresh, setRefresh] = useState<boolean>(true)
+    const [refresh, setRefresh] = useState<any>(new Date().getTime())
     const [loading, setLoading] = useState<boolean>(true)
     const [visible, setVisible] = useState<boolean>(false)
     const [fetching, setFetching] = useState<boolean>(false)
@@ -50,6 +50,8 @@ const SuiteManagement: React.FC<any> = () => {
     const handlePage = (page_num: number, page_size: any) => {
         setListParams((p: any) => ({ ...p, page_num, page_size }))
     }
+
+    const flush = () => setRefresh(new Date().getTime())
 
     const editOuter = (row: any) => {
         formSuite.resetFields()
@@ -95,7 +97,8 @@ const SuiteManagement: React.FC<any> = () => {
             setFetching(false)
         }, 1)
         message.success(formatMessage({ id: 'operation.success' }));
-        outId ? setRefresh(!refresh) : listParams?.page_num == 1 ? setRefresh(!refresh) : setListParams((p: any) => ({ ...p, page_num: 1 }))
+
+        outId ? flush() : listParams?.page_num == 1 ? flush() : setListParams((p: any) => ({ ...p, page_num: 1 }))
     }
 
     const onSuiteSubmit = () => {
@@ -138,7 +141,7 @@ const SuiteManagement: React.FC<any> = () => {
         }
         setListParams((p: any) => ({ ...p, page_num: Math.round((data.total - 1) / listParams.page_size) || 1 }))
         message.success(formatMessage({ id: 'operation.success' }));
-        setRefresh(!refresh)
+        setRefresh(new Date().getTime())
     }
 
     // <FormattedMessage id=""/>
@@ -368,6 +371,7 @@ const SuiteManagement: React.FC<any> = () => {
                         <Form.Item
                             name="name"
                             label={<FormattedMessage id="job.tags.tag.name" />}
+                            /* @ts-ignore */
                             validateStatus={validateStatus}
                             help={msg}
                             rules={[{ required: true }]}
