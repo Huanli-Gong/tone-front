@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Select, Badge, Typography, Form } from 'antd'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { standloneServerList, queryClusterServer, queryClusterStandaloneServer, queryClusterGroupServer } from './services';

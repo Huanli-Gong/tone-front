@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import { memo } from 'react'
 import { BodyBreadcrumb } from '../styled'
 import { Breadcrumb, Typography } from 'antd'
 import { FormattedMessage, Link, useParams } from 'umi'

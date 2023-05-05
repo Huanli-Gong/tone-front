@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Popover } from 'antd';
 import styles from './index.less'
-import _ from 'lodash'
 import { ReactComponent as Ellipsis } from '@/assets/svg/ellipsis.svg'
-export default (props:any) => {
+export default (props: any) => {
 
     const [visiblePopover, setVisiblePopover] = useState(false);
-    const { current, currentIndex, contentMark, handleEllipsis,currentEditGroupIndex,iconStyles={},typeName } = props
+    const { current, currentIndex, contentMark, handleEllipsis, currentEditGroupIndex, iconStyles = {}, typeName } = props
 
     const fn = () => {
         setVisiblePopover(false)
@@ -32,7 +31,7 @@ export default (props:any) => {
             overlayClassName={`${styles.popover_mark} ${styles[typeName]}`}
             open={visiblePopover && currentEditGroupIndex === currentIndex}
         >
-           <Ellipsis className={styles.icon} onClick={handleClick} style={iconStyles}/>
+            <Ellipsis className={styles.icon} onClick={handleClick} style={iconStyles} />
         </Popover>
     )
 }

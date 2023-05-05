@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useState, useRef } from 'react';
 import { FormattedMessage, useIntl, useAccess, Access, useModel } from 'umi';
 import { message, Button, Spin } from 'antd';
 import NotLoggedIn from '@/components/Public/NotLoggedIn'
@@ -17,19 +18,21 @@ export default (props: any) => {
   const [itemTotal, setItemTotal] = useState(0);
   const uploadTable: any = useRef(null)
 
+  /* @ts-ignore */
   const { initialState, setInitialState } = useModel('@@initialState')
   const { authList } = initialState;
 
   const access = useAccess()
 
   // 1.获取数量(该接口废弃)
+  /* @ts-ignore */
   const getItemTotal = async () => {
     try {
       const res = await querySummary({}) || {}
       if (res.code === 200) {
         setItemTotal(res.data || 0)
       } else {
-        message.error(res.msg || formatMessage({id: 'request.failed'}) )
+        message.error(res.msg || formatMessage({ id: 'request.failed' }))
       }
     } catch (e) {
       console.log(e)
@@ -37,6 +40,7 @@ export default (props: any) => {
   }
 
   // tab
+  /* @ts-ignore */
   const onTabsChange = (key: string) => {
     setTab(key)
   }
@@ -61,6 +65,7 @@ export default (props: any) => {
     { name: formatMessage({ id: 'TestUpload.tab.record' }), key: 'record' },
   ]
 
+  /* @ts-ignore */
   const itemTotalStyle = (key: any) => {
     const selectedStyle = { backgroundColor: '#E6F7FF', color: '#1890FF', marginTop: -3 }
     const othersStyle = { backgroundColor: '#0000000a', color: '#000', marginTop: -3 }
@@ -69,7 +74,7 @@ export default (props: any) => {
 
   const operations = (
     <Access accessible={access.IsWsSetting()}>
-        <Button type="primary" onClick={uploadClick}><FormattedMessage id={"TestUpload.tab.tabBarExtraContent.upload"} /></Button>
+      <Button type="primary" onClick={uploadClick}><FormattedMessage id={"TestUpload.tab.tabBarExtraContent.upload"} /></Button>
     </Access>
   )
 

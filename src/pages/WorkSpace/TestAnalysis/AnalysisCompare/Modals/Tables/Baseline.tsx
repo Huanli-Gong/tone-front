@@ -18,7 +18,7 @@ const DEFAULTPARAM = {
 
 const BaselineSelect: React.FC<AnyType> = (props) => {
     const { selectedRowDatas, setSelectedRowDatas } = props
-    
+
     const { ws_id } = useParams() as any
     const { formatMessage } = useIntl()
 
@@ -86,7 +86,7 @@ const BaselineSelect: React.FC<AnyType> = (props) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: listParams?.name ? '#1890ff' : undefined }} />,
-            render: (_: any, row: any) => _,
+            render: (_: any) => _,
         },
         {
             title: <FormattedMessage id="analysis.test_type" />,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useContext, useRef } from 'react'
 import { Form, Input } from 'antd'
 import { useIntl, FormattedMessage } from 'umi';

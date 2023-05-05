@@ -1,8 +1,12 @@
-import { Drawer, Space, Button, Form, Input, Select, message, Divider, Spin } from 'antd'
-import React, { forwardRef, useState, useImperativeHandle, useEffect } from 'react'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import { Drawer, Space, Button, Form, Input, Select, Spin } from 'antd'
+import { forwardRef, useState, useImperativeHandle, useEffect } from 'react'
 import { queryReportTemplateList } from '../services'
 import styled from 'styled-components'
-import _, { result } from 'lodash'
+import _ from 'lodash'
 import { useIntl, FormattedMessage, useParams } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
 const { Option } = Select;
@@ -48,7 +52,7 @@ export default forwardRef(
         )
 
         const fetchTemplateList = async () => {
-            let { data, code, msg } = await queryReportTemplateList({ page_size: 9999, page_num: 1, ws_id })
+            const { data, code, msg } = await queryReportTemplateList({ page_size: 9999, page_num: 1, ws_id })
             if (code === 200) setTemplate(data)
             setLoading(false)
             if (code !== 200) requestCodeMessage(code, msg)

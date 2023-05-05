@@ -1,4 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-var */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable prefer-const */
+import React, { useEffect, useMemo, useRef } from 'react';
 import * as echarts from 'echarts';
 import { toPercentage, handleIcon } from '@/components/AnalysisMethods/index';
 import { handleColor, switchExpectation } from './ChartMethod';
@@ -14,13 +19,13 @@ const TypeChart = (props: any) => {
         });
     }, [name])
 
-    const ChartList = useMemo(()=> {
-        let obj : any = {
-            series:[], // 结果List
-            xAxisData:[], // 横坐标name
-            legData:[], // 图例
-            subText:[], // 副标题
-            dataZoom_end:100,
+    const ChartList = useMemo(() => {
+        let obj: any = {
+            series: [], // 结果List
+            xAxisData: [], // 横坐标name
+            legData: [], // 图例
+            subText: [], // 副标题
+            dataZoom_end: 100,
         }
         let metricData: any = [] // test_value
         let result = [] // 组装后数组处理的容器
@@ -56,10 +61,10 @@ const TypeChart = (props: any) => {
                 })
             }
         } else {
-            if(chartType == '2'){
+            if (chartType == '2') {
                 if (data.length > 5) {
                     obj.dataZoom_end = (5 / data.length) * 100;
-                } 
+                }
                 for (let i = 0; i < data.length; i++) {
                     // metricData.push({
                     //     value: data[i].test_value,
@@ -83,10 +88,10 @@ const TypeChart = (props: any) => {
                     })
                 } // metric 对比数据 遍历
             }
-            if(chartType == '3'){
+            if (chartType == '3') {
                 if (data.metric_list.length > 5) {
                     obj.dataZoom_end = (5 / data.metric_list.length) * 100;
-                } 
+                }
                 for (let b = 0, metric = data.metric_list; b < metric.length; b++) {
                     obj.xAxisData.push(metric[b].metric)
                     len = metric[b].compare_data.length
@@ -98,8 +103,8 @@ const TypeChart = (props: any) => {
                             value: item.test_value,
                             compare_value: item.compare_value,
                             compare_result: item.compare_result,
-                            cv_threshold:metric.cv_threshold,
-                            cmp_threshold:metric.cmp_threshold
+                            cv_threshold: metric.cv_threshold,
+                            cmp_threshold: metric.cmp_threshold
                         })
                     })
                 })
@@ -119,14 +124,14 @@ const TypeChart = (props: any) => {
             }
         }
         return obj;
-    },[ data ])
-    
+    }, [data])
+
     useEffect(() => {
         const { series, subText, xAxisData, legData, dataZoom_end } = ChartList
         const duration = time.reduce((p: any, c: any) => p += c * 2, 0)
         let option = {
             title: {
-                subtext: chartType == '3' ? '' : switchExpectation(subText.toString()) 
+                subtext: chartType == '3' ? '' : switchExpectation(subText.toString())
             },
             grid: {
                 left: 40,
@@ -265,8 +270,8 @@ const TypeChart = (props: any) => {
                     start: 0,
                     end: dataZoom_end,
                     zoomOnMouseWheel: false,
-                    moveOnMouseMove:true,
-                    moveOnMouseWheel:true,
+                    moveOnMouseMove: true,
+                    moveOnMouseWheel: true,
                     preventDefaultMouseMove: false,
                 }
             ],
@@ -278,15 +283,15 @@ const TypeChart = (props: any) => {
             });
             chartObj.setOption(option as any)
             callBackColor(chartObj.getOption().color)
-            chartDom.current  = chartObj
-        }, duration )
-        
+            chartDom.current = chartObj
+        }, duration)
+
         return () => {
             timer && clearTimeout(timer)
             chartDom.current && chartDom.current.dispose()
         }
-        
-    }, [ ChartList ])
+
+    }, [ChartList])
 
     return (
         <div ref={chart} style={{ width: chartType !== '1' ? '100%' : 268, height: 340, display: 'inline-block', flexShrink: 0 }} />

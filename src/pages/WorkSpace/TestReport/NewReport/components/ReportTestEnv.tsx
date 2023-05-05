@@ -1,4 +1,4 @@
-import React, { useContext, memo } from 'react';
+import { useContext, memo } from 'react';
 import { useIntl, FormattedMessage } from 'umi';
 import { SettingTextArea, SettingRegUpdate } from './EditPublic';
 import { ReportContext } from '../Provider';
@@ -38,7 +38,7 @@ const ReportTestEnv = () => {
                     text: val
                 }
             } else {
-                let env = _.cloneDeep(environmentResult)
+                const env = _.cloneDeep(environmentResult)
                 env[text] = val
                 env.base_group = compareGroupData.base_group
                 env.compare_groups = compareGroupData.compare_groups
@@ -53,7 +53,7 @@ const ReportTestEnv = () => {
 
     return (
         <ModuleWrapper style={{ width: groupLen > 3 ? groupLen * 390 : 1200 }} id="need_test_env" className="position_mark">
-            <SubTitle><span className="line"></span><FormattedMessage id="report.test.env" /></SubTitle>
+            <SubTitle><span className="line" /><FormattedMessage id="report.test.env" /></SubTitle>
             {
                 (domainResult?.is_default || (!domainResult?.is_default && domainResult?.need_env_description)) &&
                 <>

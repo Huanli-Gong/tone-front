@@ -1,7 +1,8 @@
+/* eslint-disable react/jsx-key */
 import React from "react"
 
 import { itemLayout } from './untils'
-import { FormInstance } from 'antd'
+import type { FormInstance } from 'antd'
 import { Form, Input, Row, Col } from 'antd'
 import { FormattedMessage } from 'umi'
 import { CopyLinkSpan } from "@/pages/WorkSpace/TestJob/components/untils"

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import { Layout, Menu, Space, Popover } from 'antd'
 import styles from './index.less'
@@ -8,6 +9,7 @@ import AdCompoent from './components/Ad'
 
 const { document }: any = window
 
+/* @ts-ignore */
 const filterUnaccessible = (arr: any[]) => arr.reduce((pre, cur) => {
     const { routes, unaccessible } = cur
     if (!unaccessible)
@@ -15,6 +17,7 @@ const filterUnaccessible = (arr: any[]) => arr.reduce((pre, cur) => {
     return pre
 }, [])
 
+/* @ts-ignore */
 const filterHideInMenu = (arr: any[]) => arr.reduce((pre, cur) => {
     const { routes, hideInMenu } = cur
     if (!hideInMenu)

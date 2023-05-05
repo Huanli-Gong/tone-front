@@ -1,9 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useState, useEffect, useCallback } from 'react';
 import { Table, PageHeader, Layout, Button, Row, Space, Select, Input, Typography, Modal, Tooltip, Spin, message } from 'antd'
 import { history } from 'umi'
 import { PlusCircleFilled, MinusCircleFilled, CaretRightFilled, SearchOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { ReactComponent as UnFullExpand } from '@/assets/svg/un_full.svg'
-import { unionBy, cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash'
 import CodeViewer from '@/components/CodeViewer'
 import { saveSuiteCaseList, queryWsCaseConfirm } from '@/pages/WorkSpace/TestSuiteManage/TestSuiteCreate/service'
 import { queryDomains, queryBusinessSuite, queryWorkspaceBusinessSuite } from '../../../service'
@@ -24,8 +30,8 @@ export default (props: any) => {
   // 左边数据
   const [leftDataSource, setLeftDataSource] = useState<any>([])
   // 展开
-  const [expandRows, setExpandRows] = useState<Array<number>>([])
-  const [expandRowsL2, setExpandRowsL2] = useState<Array<number>>([])
+  const [expandRows, setExpandRows] = useState<any[]>([])
+  const [expandRowsL2, setExpandRowsL2] = useState<any[]>([])
 
 
   const [padding, setPadding] = useState(false)
@@ -315,7 +321,7 @@ export default (props: any) => {
   }
   const resetLevel1 = (business_id: any) => {
     const addItem = rightDataSource.filter((item: any) => item.id === business_id)
-    const tempList = leftDataSource.concat(addItem).sort((a, b) => a.id - b.id)
+    const tempList = leftDataSource.concat(addItem).sort((a: { id: number; }, b: { id: number; }) => a.id - b.id)
     setLeftDataSource(tempList)
   }
   const resetLevel2 = (business_id: any, suite_id: any) => {
@@ -329,7 +335,7 @@ export default (props: any) => {
       // 父级数据已存在
       let suitItem = addItem.test_suite_list.filter((item: any) => item.id === suite_id)[0]
       tempList[k].test_suite_list.push(suitItem)
-      tempList[k].test_suite_list.sort((a, b) => a.id - b.id)
+      tempList[k].test_suite_list.sort((a: { id: number; }, b: { id: number; }) => a.id - b.id)
       const list = cloneDeep(tempList)
       setLeftDataSource(list)
     } else {
@@ -340,7 +346,7 @@ export default (props: any) => {
         test_suite_list: addItem.test_suite_list.filter((item: any) => item.id === suite_id)
       }
       tempList.push(item)
-      tempList.sort((a, b) => a.id - b.id)
+      tempList.sort((a: { id: number; }, b: { id: number; }) => a.id - b.id)
       setLeftDataSource([...tempList])
     }
     setLeftTableLoading(false)
@@ -362,7 +368,7 @@ export default (props: any) => {
       if (m || m === 0) {
         // suit级也已存在
         tempList[k].test_suite_list[m].test_case_list.push(confItem[0])
-        tempList[k].test_suite_list[m].test_case_list.sort((a, b) => a.id - b.id)
+        tempList[k].test_suite_list[m].test_case_list.sort((a: { id: number; }, b: { id: number; }) => a.id - b.id)
       } else {
         // suit级不存在
         tempList[k].test_suite_list.push({ ...suiteItem, test_case_list: confItem })
@@ -477,7 +483,7 @@ export default (props: any) => {
 
   const toolTipSetting = {
     ellipsis: {
-      shwoTitle: false,
+      showTitle: false,
     },
     render: (_: any) => {
       if (_ && _ !== '[]') {
@@ -629,8 +635,8 @@ export default (props: any) => {
                   title: '描述',
                   dataIndex: 'description',
                   ellipsis: {
-                    shwoTitle: false,
-                  }, 
+                    showTitle: false,
+                  },
                   render(text: any) {
                     return (
                       text ?
@@ -660,7 +666,7 @@ export default (props: any) => {
                         { title: '测试类型', dataIndex: 'test_type', ...toolTipSetting },
                         { title: '变量', dataIndex: 'var', ...toolTipSetting },
                         { title: '说明', dataIndex: 'description', ...toolTipSetting }
-                      ]}
+                      ] as any}
                       pagination={false}
                       expandable={{
                         expandedRowKeys: expandRowsL2,
@@ -688,7 +694,7 @@ export default (props: any) => {
                                 },
                                 { title: '变量', dataIndex: 'var', ...toolTipSetting },
                                 { title: '说明', dataIndex: 'description', ...toolTipSetting }
-                              ]}
+                              ] as any}
                               showHeader={false}
                               pagination={false}
                             />

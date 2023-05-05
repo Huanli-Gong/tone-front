@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Space, Typography, Badge, message, Button, Modal, Spin } from 'antd'
-import React, { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { history, useModel, FormattedMessage, useIntl, useParams, useLocation } from 'umi'
 import { queryTestTemplateList, deleteTestTemplate, queryTemplateDel } from './service'
 import { ExclamationCircleOutlined } from '@ant-design/icons'

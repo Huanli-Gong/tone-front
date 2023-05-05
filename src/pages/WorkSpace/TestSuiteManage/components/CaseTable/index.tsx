@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/no-array-index-key */
 import React, { useState } from 'react';
 import { Tabs, Tooltip, Drawer, Typography, Space } from 'antd';
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
@@ -10,7 +12,7 @@ import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
 import type { TableColumnsType } from 'antd';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
-const SuiteManagement: React.FC<any> = ({ record: dataSource, id, type, ws_id, domains }) => {
+const SuiteManagement: React.FC<any> = ({ record: dataSource, id, type, ws_id }) => {
     const { TabPane } = Tabs;
     const [innerKey, setInnerKey] = useState<string>('case')
     const [expandInnerKey, setExpandInnerKey] = useState<string[]>([])
@@ -26,11 +28,11 @@ const SuiteManagement: React.FC<any> = ({ record: dataSource, id, type, ws_id, d
             title: 'Test Conf', dataIndex: 'name',
             ellipsis: true, width: 300,
             fixed: 'left',
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="suite.alias" />, dataIndex: 'alias', ellipsis: true,
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="suite.domain" />, dataIndex: 'domain_name_list', width: 100,

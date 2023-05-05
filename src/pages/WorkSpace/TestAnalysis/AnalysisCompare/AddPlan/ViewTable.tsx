@@ -1,4 +1,10 @@
-import React, { useState, useEffect } from 'react'
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-shadow */
+
+import { useState, useEffect } from 'react'
 import { Table } from 'antd'
 import { useRequest, useIntl, FormattedMessage, useParams } from 'umi'
 import _ from 'lodash'
@@ -20,7 +26,7 @@ const ViewTable = (props: any) => {
     const page_default_params = { plan_id: planId, ws_id, page_num: 1, page_size: 9999 }
     let [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
     const [autoFocus, setFocus] = useState(true)
-    const [params, setParams] = useState(page_default_params)
+    const [params, setParams] = useState<any>(page_default_params)
     const { data: dataSource, loading, run } = useRequest(
         (data) => queryPlanResultList(data),
         {
@@ -122,8 +128,9 @@ const ViewTable = (props: any) => {
 
     return (
         <Table
+            /* @ts-ignore */
             rowSelection={rowSelection}
-            columns={columns}
+            columns={columns as any}
             dataSource={dataSource.data}
             size="small"
             loading={loading}

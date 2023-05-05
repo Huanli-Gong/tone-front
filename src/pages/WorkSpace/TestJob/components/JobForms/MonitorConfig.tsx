@@ -1,4 +1,4 @@
-import React from 'react'
+/* eslint-disable @typescript-eslint/dot-notation */
 import { Form, Row, Select, Col, Input, Popover, Descriptions } from 'antd'
 import { useIntl, FormattedMessage } from 'umi'
 import { DeleteFormListItem } from '../DeleteFormListItem'
@@ -64,6 +64,7 @@ export default ({ field, index, disabled, remove, setFormsValueFn, typeDisabled,
                             </Descriptions>
                         }
                     >
+                        {/* @ts-ignore */}
                         <QuestionCircleOutlined style={machineType === 'custom_machine' ?
                             { ...styleObj, position: 'absolute', right: -20, transform: 'translateY(-11px)' } : styleObj} />
                     </Popover>

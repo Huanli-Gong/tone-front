@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import React, { useState, useRef, useEffect } from 'react';
 import { Space, Button, Input, Divider } from 'antd';
 import { useIntl, FormattedMessage } from 'umi'

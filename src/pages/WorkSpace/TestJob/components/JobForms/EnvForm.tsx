@@ -1,4 +1,7 @@
-import React, { useState, useImperativeHandle, useEffect } from 'react'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { useState, useImperativeHandle, useEffect } from 'react'
 import { Form, Radio, Row, Col, Select, Input, Space, Typography } from 'antd'
 import styles from './index.less'
 import type { FormProps } from './'
@@ -43,7 +46,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 setMonitor(false)
                 setKernal("no") /* project_id ? 'install_build_kernel' : 'no' */
             },
-            setVal: (data: Object) => {
+            setVal: (data: any) => {
                 // eslint-disable-next-line prefer-const
                 let { rpm_info, script_info, kernel_version, kernel_info, build_pkg_info }: any = data
                 rpm_info = rpm_info || [{ pos: 'before', rpm: '' }]

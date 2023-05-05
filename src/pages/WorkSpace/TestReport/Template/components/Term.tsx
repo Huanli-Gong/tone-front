@@ -1,9 +1,10 @@
-import React, { memo, useRef } from 'react'
+/* eslint-disable react/no-array-index-key */
+import React, { useRef } from 'react'
 
 import { useRefWidth } from '../hooks'
 import { Term, TermTitle, Suite, SuiteTitle, Case } from '../styled'
 import { Space, Typography, Col, Row, Button } from 'antd'
-import { Access, useIntl, FormattedMessage } from 'umi'
+import { Access, FormattedMessage } from 'umi'
 import EditSpan from './EditSpan'
 import { CloseOutlined, MinusCircleOutlined } from '@ant-design/icons'
 import { ReactComponent as TermIcon } from '@/assets/svg/TestReport/TestItem.svg'
@@ -50,7 +51,7 @@ const TestTerm: React.FC<Record<string, any>> = ({ source, dataItem }) => {
                             ghost
                             onClick={() => suiteSelectRef.current.show(source, source.rowkey, dataItem)}
                         >
-                            <FormattedMessage id="report.select.case"/>
+                            <FormattedMessage id="report.select.case" />
                         </Button>
                     </Row>
                 </Access>

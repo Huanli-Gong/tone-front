@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from "react"
 import { Table, Row, Select, Col } from "antd"
 import styles from '../index.less'
@@ -84,7 +85,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                     }}
                     onRow={
                         record => ({
-                            onClick: event => {
+                            onClick: () => {
                                 setActiveConf(record.id)
                             }
                         })

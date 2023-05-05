@@ -1,3 +1,5 @@
+/* eslint-disable prefer-const */
+/* eslint-disable no-param-reassign */
 import { Space } from 'antd';
 import React from 'react'
 import styled from 'styled-components'

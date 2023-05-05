@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React, { useContext, memo, useMemo } from 'react';
 import { FormattedMessage } from 'umi';
 import { ReportContext } from '../Provider';
@@ -109,7 +110,7 @@ const ReportSummary = () => {
 
     return (
         <ModuleWrapper style={{ width: groupLen > 3 ? groupLen * 390 : 1200 }} id="need_test_summary" className="position_mark">
-            <SubTitle><span className="line"></span>Summary</SubTitle>
+            <SubTitle><span className="line" />Summary</SubTitle>
             <Summary>
                 <Group>
                     <GroupTitle gLen={groupLen}><FormattedMessage id="report.comparison.group.name" /></GroupTitle>

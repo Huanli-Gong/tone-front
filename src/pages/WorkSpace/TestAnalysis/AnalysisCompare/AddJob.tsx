@@ -1,4 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-shadow */
+
 import React, { useState, useEffect } from 'react';
 import { useClientSize } from '@/utils/hooks';
 import { FilterFilled } from '@ant-design/icons'
@@ -104,6 +110,7 @@ export default (props: any) => {
                 setPruductVersion(defaultProVersion)
             }
         } else {
+            /* @ts-ignore */
             requestCodeMessage(code, msg)
         }
         setLoading(false)
@@ -238,7 +245,7 @@ export default (props: any) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: params.job_id ? '#1890ff' : undefined }} />,
-            render: (_: any, row: any) => _,
+            render: (_: any) => _,
         },
         {
             title: <FormattedMessage id="analysis.job.name" />,
@@ -322,7 +329,7 @@ export default (props: any) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: params.creators && params.creators !== '[]' ? '#1890ff' : undefined }} />,
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="analysis.test_time" />,
@@ -369,7 +376,7 @@ export default (props: any) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: baselineParam.name ? '#1890ff' : undefined }} />,
-            render: (_: any, row: any) => _,
+            render: (_: any) => _,
         },
         {
             title: <FormattedMessage id="analysis.test_type" />,
@@ -401,7 +408,7 @@ export default (props: any) => {
             },
             dataIndex: 'creator_name',
             ...getUserFilter(baselineParam, setBaselineParam, 'creator'),
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="analysis.gmt_created" />,

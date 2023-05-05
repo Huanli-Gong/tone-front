@@ -1,4 +1,3 @@
-import React from 'react';
 import _ from 'lodash';
 import { Tag, Tooltip, } from 'antd';
 import { useIntl, FormattedMessage, getLocale } from 'umi';

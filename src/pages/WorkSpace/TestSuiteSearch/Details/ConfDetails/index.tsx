@@ -1,3 +1,6 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Col, Row, Tag, Table, message } from 'antd';
 import { history, useIntl, FormattedMessage, useParams } from 'umi';

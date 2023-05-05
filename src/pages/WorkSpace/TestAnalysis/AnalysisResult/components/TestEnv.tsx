@@ -1,7 +1,17 @@
-import React, { useContext, memo } from 'react';
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable no-param-reassign */
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-shadow */
+
+import { useContext, memo } from 'react';
 import { ReportContext } from '../Provider';
 import { FormattedMessage, getLocale } from 'umi'
-import _ from 'lodash';
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
 import {
     ModuleWrapper,
@@ -22,7 +32,7 @@ const ReportTestEnv = () => {
 
     return (
         <ModuleWrapper id="need_test_env">
-            <SubTitle><span className="line"></span>
+            <SubTitle><span className="line" />
                 <FormattedMessage id="analysis.test.env" />
             </SubTitle>
             <EnvGroup>

@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react';
 import { Typography, Input, notification, message } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { useIntl, FormattedMessage, Access, useAccess } from 'umi';
@@ -33,10 +36,10 @@ export const SettingTextArea = ({
         space?: string,
         fontStyle?: any,
         defaultHolder?: string,
-        btn: Boolean,
-        btnConfirm: Boolean,
-        isInput?: Boolean,
-        onOk: Function
+        btn: boolean,
+        btnConfirm: boolean,
+        isInput?: boolean,
+        onOk: any
     }) => {
 
     const { formatMessage } = useIntl()
@@ -115,7 +118,7 @@ export const SettingRegUpdate = ({
         space?: string,
         fontStyle?: any,
         defaultHolder?: string,
-        creator:number,
+        creator: number,
     }) => {
     const access = useAccess();
     const { formatMessage } = useIntl()
@@ -152,7 +155,7 @@ export const SettingRegUpdate = ({
 
     const handleBlur = async () => {
         const { id } = saveData
-        let obj: any = {
+        const obj: any = {
             report_id: id,
         }
         if (field === 'custom') {

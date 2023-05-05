@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useRequest, useIntl, useParams } from "umi"
 import React from "react"
 import { queryPerfAnalysisList } from '../../services';

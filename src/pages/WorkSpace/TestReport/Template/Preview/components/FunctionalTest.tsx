@@ -1,6 +1,7 @@
+/* eslint-disable react/no-array-index-key */
 import React, { memo, useRef } from 'react'
 import { Row, Space, Typography, Select, Button } from 'antd'
-import { useIntl, FormattedMessage, getLocale } from 'umi'
+import { FormattedMessage, getLocale } from 'umi'
 import styled from 'styled-components'
 import { CaretRightOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg'
@@ -179,15 +180,15 @@ const TermItem: React.FC<any> = ({ name, list, rowkey, field }) => {
                     <Typography.Text strong style={{ width: titleWidth - 410 - 30, display: 'inline-block' }}>{name}</Typography.Text>
                 </Space>
                 <Space >
-                    <Typography.Text><FormattedMessage id="report.filter"/>：</Typography.Text>
+                    <Typography.Text><FormattedMessage id="report.filter" />：</Typography.Text>
                     <Select value={''} style={{ width: 200 }}>
-                        <Select.Option value=""><FormattedMessage id="report.all.s"/></Select.Option>
+                        <Select.Option value=""><FormattedMessage id="report.all.s" /></Select.Option>
                     </Select>
                     <Button onClick={handleOpenAll} disabled={true}>
                         {/* {
                             expandedKeys.length === allCaseKeys.length ? '收起所有' : '展开所有'
                         } */}
-                        <FormattedMessage id="report.btn.collapse.all"/>
+                        <FormattedMessage id="report.btn.collapse.all" />
                     </Button>
                 </Space>
             </TermTitle>
@@ -202,22 +203,22 @@ const TermItem: React.FC<any> = ({ name, list, rowkey, field }) => {
                                 <CaseConfHeader >
                                     <Row>Conf</Row>
                                     <Row>
-                                        <FormattedMessage id="report.total/pass/fail"/>
+                                        <FormattedMessage id="report.total/pass/fail" />
                                     </Row>
                                     <Row justify="space-between">
-                                        <FontText><FormattedMessage id="report.total/pass/fail"/></FontText>
-                                        <Space style={{ color:'rgba(0,0,0,0.45)'}} size={enLocale? 4: 8}>
-                                            <FontText><FormattedMessage id="report.comparison.results"/></FontText>
+                                        <FontText><FormattedMessage id="report.total/pass/fail" /></FontText>
+                                        <Space style={{ color: 'rgba(0,0,0,0.45)' }} size={enLocale ? 4 : 8}>
+                                            <FontText><FormattedMessage id="report.comparison.results" /></FontText>
                                             <IconArrow />
-                                            <QuestionCircleOutlined style={{ color:'rgba(0,0,0,0.45)'}}/>
+                                            <QuestionCircleOutlined style={{ color: 'rgba(0,0,0,0.45)' }} />
                                         </Space>
                                     </Row>
                                     <Row justify="space-between">
-                                        <FontText><FormattedMessage id="report.total/pass/fail"/></FontText>
-                                        <Space size={enLocale? 4: 8}>
-                                            <FontText><FormattedMessage id="report.comparison.results"/></FontText>
+                                        <FontText><FormattedMessage id="report.total/pass/fail" /></FontText>
+                                        <Space size={enLocale ? 4 : 8}>
+                                            <FontText><FormattedMessage id="report.comparison.results" /></FontText>
                                             <IconArrow />
-                                            <QuestionCircleOutlined style={{ color:'rgba(0,0,0,0.45)'}}/>
+                                            <QuestionCircleOutlined style={{ color: 'rgba(0,0,0,0.45)' }} />
                                         </Space>
                                     </Row>
                                 </CaseConfHeader>

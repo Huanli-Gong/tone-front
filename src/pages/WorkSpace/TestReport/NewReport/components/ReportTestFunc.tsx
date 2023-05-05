@@ -1,6 +1,9 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable prefer-const */
 import React, { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { Empty, Popconfirm } from 'antd';
-import { useIntl, FormattedMessage } from 'umi';
+import { FormattedMessage } from 'umi';
 import { ReportContext } from '../Provider';
 import { ReactComponent as TestGroupIcon } from '@/assets/svg/Report/TestGroup.svg';
 import FuncIndex from './TestDataChild/FuncReview';
@@ -16,13 +19,11 @@ import {
 import _ from 'lodash';
 
 const ReportTestFunc: React.FC<any> = () => {
-    const { formatMessage } = useIntl()
     const { obj, setObj, domainResult, btnState, routeName, isOldReport } = useContext(ReportContext)
 
     const data = useMemo(() => {
         if (Array.isArray(domainResult.func_item)) {
-            let data = _.cloneDeep(domainResult.func_item)
-            return data
+            return _.cloneDeep(domainResult.func_item)
         }
     }, [domainResult])
 
@@ -36,7 +37,7 @@ const ReportTestFunc: React.FC<any> = () => {
         ** 删除测试项 测试组
     */
     const handleDelete = (name: string, domain: any, rowKey: any) => {
-        setDataSource(deleteMethod(dataSource,name,domain,rowKey))
+        setDataSource(deleteMethod(dataSource, name, domain, rowKey))
     }
 
     // 保存报告数据整理
@@ -46,7 +47,7 @@ const ReportTestFunc: React.FC<any> = () => {
             dataSource.map((item: any, idx: number) => {
                 if (item.is_group) {
                     item.list.map((child: any, index: number) => {
-                        let suite_list = simplify(child, idx, index, 'group',isOldReport)
+                        let suite_list = simplify(child, idx, index, 'group', isOldReport)
                         new_func_data.push({
                             name: `${item.name}:${child.name}`,
                             suite_list
@@ -69,7 +70,7 @@ const ReportTestFunc: React.FC<any> = () => {
 
     return (
         <>
-            <TestDataTitle><FormattedMessage id="functional.test"/></TestDataTitle>
+            <TestDataTitle><FormattedMessage id="functional.test" /></TestDataTitle>
             <TestWrapper id="func_item" className="position_mark">
                 {/* 有组有项 */}
                 {
@@ -120,7 +121,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                                         )
                                                     })
                                                 }
-                                            </> 
+                                            </>
                                             :
                                             <FuncIndex
                                                 child={item}

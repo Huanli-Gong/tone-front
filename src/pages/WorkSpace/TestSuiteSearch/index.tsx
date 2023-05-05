@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react';
 import { Spin, Input, Tabs, Space, Badge } from 'antd';
 import { SearchOutlined, UpOutlined } from '@ant-design/icons';
@@ -91,7 +92,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
     }
   };
 
-  const handleScroll = (e: any) => {
+  const handleScroll = () => {
     const top = testSuiteSearch_wrapper.current.scrollTop
     setListScrollTop(top)
   }
@@ -147,7 +148,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
         ) : (
           <div>
             <Tabs defaultActiveKey="all" onChange={onTabsChange}>
-              {tabList.map((item, i) => (
+              {tabList.map((item) => (
                 <TabPane key={item.key} tab={
                   <span>{item.name} <Badge count={itemTotal[item.fieldName]} overflowCount={999} showZero
                     style={tabKey === item.key ? selectedStyle : othersStyle} />

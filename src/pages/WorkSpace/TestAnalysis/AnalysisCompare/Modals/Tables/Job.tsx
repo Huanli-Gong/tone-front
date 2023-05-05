@@ -50,7 +50,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
     const [productVersions, setProductVersions] = React.useState([])
 
     const getProductVersionsList = async (id: any) => {
-        const { data, msg, code } = await queryProductList({ ws_id, product_id: id })
+        const { data, code } = await queryProductList({ ws_id, product_id: id })
         if (code === 200)
             return data || []
         return []
@@ -119,7 +119,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
                 if (visible) setFocus(!autoFocus)
             },
             filterIcon: () => <FilterFilled style={{ color: listParams?.job_id ? '#1890ff' : undefined }} />,
-            render: (_: any, row: any) => _,
+            render: (_: any) => _,
         },
         {
             title: <FormattedMessage id="analysis.job.name" />,

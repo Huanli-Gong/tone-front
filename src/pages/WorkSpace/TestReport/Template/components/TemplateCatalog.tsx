@@ -1,3 +1,6 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { memo, useState, useMemo } from 'react'
 import { ReactComponent as CatalogCollapsed } from '@/assets/svg/TestReport/collapsed.svg'
 import { useIntl, FormattedMessage } from 'umi'
@@ -15,7 +18,7 @@ const TemplateCatalog = (props: any) => {
     const { formatMessage } = useIntl()
     const { dataSource, collapsed, contrl, setDataSource, setCollapsed, prefix = "" } = props
     const [count, setCount] = useState<any>(0)
-    const [roundHeight, setRoundHeight] = useState<Number>(3)
+    const [roundHeight, setRoundHeight] = useState<any>(3)
     const containerDom = prefix ? "#report-body-container-preview" : "#report-body-container"
     /* 
             dragOverGapTop 拖拽上
@@ -55,13 +58,13 @@ const TemplateCatalog = (props: any) => {
         return pre.concat(cur)
     }
 
-    const treeDataRefreshRowkey = (i: any, rowkey: string) => {
+    const treeDataRefreshRowkey = (i: any) => {
         if (i.is_group) {
             return {
                 name: i.title,
                 rowkey: uuidv4(),
                 is_group: i.is_group,
-                list: i.children.map((x: any, idx: number) => treeDataRefreshRowkey(x))
+                list: i.children.map((x: any) => treeDataRefreshRowkey(x))
             }
         }
         return {
@@ -102,7 +105,7 @@ const TemplateCatalog = (props: any) => {
 
         return dataArray.map(
             (i: any) => {
-                const name = i === 'perf_item' ? formatMessage({id: 'performance.test'}) : formatMessage({id: 'functional.test'})
+                const name = i === 'perf_item' ? formatMessage({ id: 'performance.test' }) : formatMessage({ id: 'functional.test' })
                 const show = i === 'perf_item' ? 'need_perf_data' : 'need_func_data'
                 if (dataSource && dataSource[i] && dataSource[show]) {
                     const treeData = dataSource[i].map(
@@ -212,6 +215,7 @@ const TemplateCatalog = (props: any) => {
             if (!isNaN(y) && scrollTop < y) {
                 if (Object.prototype.toString.call(c) === "[object String]") {
                     const treeNode = document.querySelector(`#${prefix}left_tree_${c}`) as HTMLDivElement
+                    /* @ts-ignore */
                     setRoundHeight($dom?.offsetParent?.offsetTop + treeNode?.offsetTop)
                     setCount(`${c}_${n}`)
                     return
@@ -263,12 +267,12 @@ const TemplateCatalog = (props: any) => {
             <CatalogExpand onClick={() => setCollapsed(!collapsed)} >
                 <CatalogCollapsed />
                 <CatalogExpandInnerIcon>
-                    {collapsed ? <RightOutlined title={formatMessage({id: 'operation.expand'})} /> : <LeftOutlined title={formatMessage({id: 'operation.collapse'})} />}
+                    {collapsed ? <RightOutlined title={formatMessage({ id: 'operation.expand' })} /> : <LeftOutlined title={formatMessage({ id: 'operation.collapse' })} />}
                 </CatalogExpandInnerIcon>
             </CatalogExpand>
             {/* 内容部分 */}
             <CatalogBody>
-                <CatalogTitle><Typography.Text strong><FormattedMessage id="report.catalogue"/></Typography.Text></CatalogTitle>
+                <CatalogTitle><Typography.Text strong><FormattedMessage id="report.catalogue" /></Typography.Text></CatalogTitle>
                 <Row style={{ position: 'relative', paddingLeft: 13, borderLeft: '1px solid #e5e5e5' }} id="left-catalog-wrapper">
                     {
                         roundHeight > 0 &&
@@ -280,12 +284,12 @@ const TemplateCatalog = (props: any) => {
                     <Space direction="vertical" style={{ width: '100%' }}>
                         {
                             [
-                                ["need_test_background", formatMessage({id: 'report.test.background'}) ],
-                                ["need_test_method", formatMessage({id: 'report.test.method'}) ],
-                                ["need_test_conclusion", formatMessage({id: 'report.test.conclusion'}) ],
+                                ["need_test_background", formatMessage({ id: 'report.test.background' })],
+                                ["need_test_method", formatMessage({ id: 'report.test.method' })],
+                                ["need_test_conclusion", formatMessage({ id: 'report.test.conclusion' })],
                                 ["need_test_summary", "Summary"],
-                                ["need_test_env", formatMessage({id: 'report.test.env'}), "need_env_description"],
-                                ["test_data", formatMessage({id: 'report.test.data'})]
+                                ["need_test_env", formatMessage({ id: 'report.test.env' }), "need_env_description"],
+                                ["test_data", formatMessage({ id: 'report.test.data' })]
                             ].map((n: any, i: any) => {
                                 const [field, title, field_2] = n
                                 if (field === "test_data" || !prefix || (dataSource[field] || dataSource[field_2]))

@@ -1,4 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable no-param-reassign */
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-shadow */
+
+import { useState, useEffect } from 'react';
 import { Popover, Table, Radio } from 'antd';
 import styles from './index.less'
 import { FilterFilled } from '@ant-design/icons';
@@ -130,6 +141,7 @@ export default (props: any) => {
         selectedRowKeys,
         // onSelect: selectedChange,
         preserveSelectedRowKeys: false,
+        /* @ts-ignore */
         renderCell: (checked, record) => {
             return (
                 <Radio.Group onChange={onChange} value={selectedRowKeys[0]}>
@@ -146,7 +158,7 @@ export default (props: any) => {
                     rowSelection={rowSelection}
                     size="small"
                     rowKey="id"
-                    columns={columns}
+                    columns={columns as any}
                     dataSource={jobList}
                     pagination={false}
                 />

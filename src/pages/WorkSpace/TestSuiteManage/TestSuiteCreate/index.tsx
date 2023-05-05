@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useMemo } from 'react'
 import { Table, PageHeader, Layout, Button, Row, Space, Select, Input, Typography, Modal, Tooltip, Spin, message } from 'antd'
 import { history, useParams, useIntl, FormattedMessage } from 'umi'
@@ -170,6 +174,7 @@ const TestSuiteCreate: React.FC = () => {
         setFlag(false)
         setSuiteList(suiteListArr)
         setDefaultSuiteList(suiteListArr)
+        /* @ts-ignore */
         setWsSuiteAllKey(getConfKeysAndSort(wsHasSuiteArr))
         setLoading(false)
         setLeftTableLoading(false)
@@ -197,6 +202,7 @@ const TestSuiteCreate: React.FC = () => {
             defaultSuiteList.reduce((pre: any[], cur: any) => {
                 const { test_case_list } = cur
                 const cases = test_case_list?.reduce((p: any[], c: any) => {
+                    /* @ts-ignore */
                     if (wsSuiteAllKeys.includes(c.id))
                         return p.concat(c)
                     return p
@@ -556,7 +562,7 @@ const TestSuiteCreate: React.FC = () => {
                                                         }
                                                     />
                                                 ),
-                                                renderCell(_, record, index) {
+                                                renderCell(_, record) {
                                                     return (
                                                         <MinusCircleFilled
                                                             style={{ color: 'red' }}
@@ -845,6 +851,7 @@ const TestSuiteCreate: React.FC = () => {
                     <FormattedMessage id="suite.view.reference.details" />
                 </div>
             </Modal>
+            {/* @ts-ignore */}
             <SaveTipModal ref={saveTipRef} onSave={handleSave} btnLoad={btnLoad} />
         </Layout.Content>
     )

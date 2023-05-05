@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable prefer-const */
 import React from 'react';
 import { message } from 'antd';
 import { parse } from 'querystring';

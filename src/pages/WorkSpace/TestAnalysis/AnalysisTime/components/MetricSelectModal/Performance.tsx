@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from "react"
 import { useIntl, useLocation } from "umi"
 import { Table, Row, Col, Select } from "antd"
@@ -148,7 +149,7 @@ const Performance: React.FC<AnyType> = (props) => {
                     }}
                     onRow={
                         record => ({
-                            onClick: event => {
+                            onClick: () => {
                                 if (selectMetric.includes(record)) {
                                     setSelectMetric(selectMetric.filter((i: any) => i !== record))
                                 }
