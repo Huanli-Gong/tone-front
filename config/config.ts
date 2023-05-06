@@ -13,7 +13,7 @@ const buildPublicPath = `{${REPLACE_KEY}}/`;
 const publicPath = isDev ? '/' : buildPublicPath;
 
 export default defineConfig({
-    hash: false,
+    hash: true,
     antd: {},
     runtimePublicPath: !isDev,
     publicPath: publicPath,

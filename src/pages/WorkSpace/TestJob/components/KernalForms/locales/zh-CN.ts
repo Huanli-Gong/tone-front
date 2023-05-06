@@ -30,9 +30,9 @@ const text = {
   'cpu_arch': 'CpuArch',
   'cpu_arch.message': '请选择CpuArch',
   'cpu_arch.placeholder': '请选择',
-  'commit_id.placeholder': '请输入',
-  'build_config.placeholder': '请输入编译工具的分支',
-  'build_machine.placeholder': '请输入编译工具的分支',
+  'commit_id.placeholder': 'HEAD(默认是最新的commit)',
+  'build_config.placeholder': '请输入',
+  'build_machine.placeholder': '请输入',
 
   'cbc.product': "产品配置",
   'cbc.product.empty': "请选择产品配置"

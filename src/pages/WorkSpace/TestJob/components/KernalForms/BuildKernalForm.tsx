@@ -20,6 +20,7 @@ type IProps = {
 }
 
 const BuildKernelForm: React.FC<IProps> = (props) => {
+    console.log(props)
     const { disabled, project_id, form, needScriptList, isPlan = false } = props
     const { formatMessage } = useIntl()
     const [codeBranch, setCodeBranch] = useState<any>(form?.getFieldValue('code_repo'))
@@ -52,7 +53,11 @@ const BuildKernelForm: React.FC<IProps> = (props) => {
     const handleCbpSelectChange = (val: any) => {
         const idx = cbpProductList.findIndex((i: any) => i.id === val)
         const product = cbpProductList[idx]
-        form?.setFieldsValue({ code_repo: product.repo, code_branch: product.builder_branch })
+        form?.setFieldsValue({
+            code_repo: product.repo,
+            code_branch: product?.current_branch,
+            compile_branch: product.builder_branch
+        })
     }
 
     return (

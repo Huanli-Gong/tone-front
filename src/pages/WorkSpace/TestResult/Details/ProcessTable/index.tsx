@@ -16,14 +16,14 @@ const Wrapper = styled.div`
 `
 // 结果详情 - 执行过程
 export default ({ job_id, onRef, test_type, provider_name }: any) => {
-    const [refresh, setRefresh] = useState(false)
+    const [refresh, setRefresh] = useState<any>(new Date().getTime())
     const testType = matchTestType(test_type)
 
     useImperativeHandle(
         onRef,
         () => ({
             refresh: () => {
-                setRefresh(!refresh)
+                setRefresh(new Date().getTime())
             }
         })
     )
