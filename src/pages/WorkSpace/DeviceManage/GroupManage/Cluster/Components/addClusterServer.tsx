@@ -221,7 +221,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                     <Form.Item name="private_ip" label={<FormattedMessage id="device.private_ip" />}>
                         <Input autoComplete="off" placeholder={formatMessage({ id: 'device.private_ip.placeholder' })} />
                     </Form.Item>
-                    <Form.Item name="role" label={<FormattedMessage id="device.role" />} rules={[{ required: true }]}>
+                    <Form.Item name="role" label={<FormattedMessage id="device.role" />} rules={[{ required: true, message: formatMessage({ id: "placeholder.enter.device.role" }) }]}>
                         <Select getPopupContainer={node => node.parentNode} placeholder={<FormattedMessage id="device.role.placeholder" />}>
                             <Select.Option value="local">local</Select.Option>
                             <Select.Option value="remote">remote</Select.Option>
@@ -245,6 +245,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                         label={<FormattedMessage id="device.var_name" />}
                         rules={[{
                             required: true,
+                            message: formatMessage({ id: `placeholder.enter.device.var_name` })
                             // pattern: /^[A-Za-z0-9]+$/g,
                             // message: '仅允许包含字母、数字'
                         }]}

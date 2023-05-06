@@ -1031,6 +1031,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 rules={[
                                     {
                                         required: true,
+                                        message: formatMessage({ id: `placeholder.enter.device.var_name` })
                                     },
                                 ]}
                             >

@@ -128,6 +128,7 @@ const EditServerDrawer = (props: any, ref: any) => {
                 <Form.Item name="var_name" label={<FormattedMessage id="device.var_name" />}
                     rules={[{
                         required: true,
+                        message: formatMessage({ id: `placeholder.enter.device.var_name` })
                         // pattern: /^[A-Za-z0-9]+$/g,
                         // message: '仅允许包含字母、数字'
                     }]}>

@@ -495,28 +495,30 @@ const Standalone = (props: any, ref: any) => {
                             </Typography.Link>
                             {
                                 !BUILD_APP_ENV &&
+                                (
                                     row.sub_server_list && row.device_type === '物理机' ?
-                                    <Dropdown
-                                        placement="bottomRight"
-                                        overlay={
-                                            <Menu
-                                                onClick={(item) => hanldeClickMenu(item, _)}
-                                            >
-                                                <Menu.Item key={'data'}><FormattedMessage id="device.synchronization.data" /></Menu.Item>
-                                                <Menu.Item key={'vm'}><FormattedMessage id="device.synchronization.vm" /></Menu.Item>
-                                            </Menu>
-                                        }
-                                        trigger={['click', 'hover']}
-                                    >
-                                        <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                            <FormattedMessage id="device.synchronization" /> <DownOutlined />
-                                        </a>
-                                    </Dropdown> :
-                                    <Typography.Link
-                                        onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => handleUpdateTestServer(_.id)}
-                                    >
-                                        <FormattedMessage id="device.synchronization" />
-                                    </Typography.Link>
+                                        <Dropdown
+                                            placement="bottomRight"
+                                            overlay={
+                                                <Menu
+                                                    onClick={(item) => hanldeClickMenu(item, _)}
+                                                >
+                                                    <Menu.Item key={'data'}><FormattedMessage id="device.synchronization.data" /></Menu.Item>
+                                                    <Menu.Item key={'vm'}><FormattedMessage id="device.synchronization.vm" /></Menu.Item>
+                                                </Menu>
+                                            }
+                                            trigger={['click', 'hover']}
+                                        >
+                                            <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                                                <FormattedMessage id="device.synchronization" /> <DownOutlined />
+                                            </a>
+                                        </Dropdown> :
+                                        <Typography.Link
+                                            onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => handleUpdateTestServer(_.id)}
+                                        >
+                                            <FormattedMessage id="device.synchronization" />
+                                        </Typography.Link>
+                                )
                             }
                         </Space>
                     </Access>

@@ -128,7 +128,8 @@ export default {
   'device.local.server': '是否Local机器',
   'device.private_ip.ip': '私有IP',
   'device.private_ip.ip.placeholder': '请输入私有IP',
-
+  'placeholder.enter.device.var_name': "请输入运行变量名",
+  'placeholder.enter.device.role': "请选择角色",
   // 云上机器
   // 'standalone': '单机',
   // 'cluster': '集群',
