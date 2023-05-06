@@ -48,5 +48,5 @@ export const formatYamlToJson = async (data: any) => {
 
 //查询cbp产品列表
 export const queryCbpProduct = async () => {
-    return request(`/api/job/test/{PRODUCT}`)
+    return request(`/api/job/test/product`)
 }
