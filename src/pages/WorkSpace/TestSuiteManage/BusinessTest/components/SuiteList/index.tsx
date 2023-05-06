@@ -6,7 +6,7 @@ import { CaretRightFilled, CaretDownFilled, QuestionCircleOutlined } from '@ant-
 import { useIntl, FormattedMessage } from 'umi';
 import CodeViewer from '@/components/CodeViewer'
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
-import { suiteChange } from '@/components/Public/TestSuite/index.js';
+import { suiteChange } from '@/components/Public/TestSuite';
 import { test_type_enum, runList } from '@/utils/utils'
 import ConfList from '../ConfList';
 import styles from './index.less';

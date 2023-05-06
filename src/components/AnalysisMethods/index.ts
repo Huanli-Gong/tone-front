@@ -1,4 +1,5 @@
 
+//@ts-nocheck
 // 填充颜色
 const handleColor = (name) => {
     const dict = {

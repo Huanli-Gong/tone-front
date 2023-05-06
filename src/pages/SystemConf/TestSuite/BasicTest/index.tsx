@@ -6,7 +6,7 @@ import { CaretRightFilled, CaretDownFilled, FilterFilled, EditOutlined, Question
 import { suiteList, addSuite, editSuite, delSuite, syncSuite, manual, lastSync, batchDeleteMetric } from '../service';
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
 import Highlighter from 'react-highlight-words';
-import { suiteChange } from '@/components/Public/TestSuite/index.js';
+import { suiteChange } from '@/components/Public/TestSuite';
 import styles from './style.less';
 import CaseTable from './components/CaseTable';
 import SelectCheck from '@/components/Public//SelectCheck';
