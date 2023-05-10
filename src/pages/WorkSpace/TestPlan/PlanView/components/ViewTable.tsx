@@ -4,7 +4,7 @@ import { Space, Popconfirm, message, Spin, Tooltip, } from 'antd'
 import type { TableColumnProps } from "antd"
 import styled from 'styled-components'
 import { StateTagRender, RenderCountTags } from './'
-import { useRequest, history, Access, useAccess, useIntl, FormattedMessage } from 'umi'
+import { useRequest, history, Access, useAccess, useIntl, FormattedMessage, useParams } from 'umi'
 import { queryPlanResult, deletePlanInstance } from '../services'
 import CommonPagination from '@/components/CommonPagination'
 import { getSearchFilter, getCheckboxFilter } from '@/components/TableFilters'
@@ -38,9 +38,10 @@ const ViewAllPlan = styled.div`
 
 const ViewTable = (props: ViewTableProps) => {
     const { formatMessage } = useIntl()
+    const { ws_id } = useParams() as any
     // 权限
     const access = useAccess()
-    const { plan_id, ws_id, showPagination = false, callBackViewTotal } = props
+    const { plan_id, showPagination = false, callBackViewTotal } = props
     const [pageParam, setPageParam] = useState<any>({ page_size: 10, page_num: 1, ws_id, plan_id })
     const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
     const [allGroup, setAllGroup] = useState<any>([])
@@ -243,7 +244,6 @@ const ViewTable = (props: ViewTableProps) => {
                 <CompareBar
                     selectedRowKeys={selectedRowKeys}
                     allGroup={allGroup}
-                    wsId={ws_id}
                     selectedChange={handleCancle}
                 />
                 {
