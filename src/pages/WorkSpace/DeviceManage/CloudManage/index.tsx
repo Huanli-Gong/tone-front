@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Tabs } from 'antd';
 import { FormattedMessage, useLocation, history } from 'umi'
 import Standalone from './Standalone'
