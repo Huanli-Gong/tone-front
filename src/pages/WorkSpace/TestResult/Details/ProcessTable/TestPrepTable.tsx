@@ -163,7 +163,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
             style={{ marginBottom: 10, borderTop: 'none' }}
         >
             <ResizeHooksTable
-                dataSource={data || []}
+                dataSource={data.map((i: any) => ({ ...i, server_id: i.server_id || i.server })) || []}
                 columns={columns}
                 name={TABLE_NAME}
                 onColumnsChange={() => setColumnsChange(uuidv4())}
