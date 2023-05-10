@@ -163,7 +163,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
             style={{ marginBottom: 10, borderTop: 'none' }}
         >
             <ResizeHooksTable
-                dataSource={data.map((i: any) => ({ ...i, server_id: i.server_id || i.server })) || []}
+                dataSource={data?.map((i: any, idx: number) => ({ ...i, server_id: `${i.server_id || i.server}-${idx}` }))}
                 columns={columns}
                 name={TABLE_NAME}
                 onColumnsChange={() => setColumnsChange(uuidv4())}
@@ -188,11 +188,11 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                                 return (
                                     <div
                                         style={{ width: "100%", display: "flex", flexDirection: "column" }}
-                                        key={uuidv4()}
+                                        key={getServerId}
                                     >
                                         <Table
                                             key={item}
-                                            dataSource={[{ server: item, id: uuidv4(), server_id: getServerId }]}
+                                            dataSource={[{ server: item, id: getServerId, server_id: getServerId }]}
                                             columns={clusterColumns}
                                             size={'small'}
                                             rowKey="id"
@@ -204,7 +204,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                                             columnsChange={columnsChange}
                                             parentTableName={TABLE_NAME}
                                             dataSource={
-                                                source.map((i: any) => ({ id: uuidv4(), ...i }))
+                                                source.map((i: any) => ({ id: getServerId, ...i }))
                                             }
                                         />
                                     </div>
@@ -216,7 +216,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                                 parentTableName={TABLE_NAME}
                                 columnsChange={columnsChange}
                                 {...record}
-                                dataSource={record.server_list.map((i: any) => ({ id: uuidv4(), ...i }))}
+                                dataSource={record.server_list.map((i: any) => ({ id: i.server_id, ...i }))}
                             />
                         )
                     },
