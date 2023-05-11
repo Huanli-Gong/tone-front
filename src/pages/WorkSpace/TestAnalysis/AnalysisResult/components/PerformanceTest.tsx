@@ -96,12 +96,19 @@ const GroupBarWrapper: React.FC<any> = (props) => {
     }
 }
 
+const compareTerms = ['decline', 'increase', 'normal', 'invalid', 'na']
+
+const compare = (prop: any) => {
+    return function (a: any, b: any) {
+        return a[prop] - b[prop]
+    }
+}
+
 const ReportTestPref: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group, wsId } = useContext(ReportContext)
     const { parentDom, scrollLeft } = props
-    const [arrowStyle, setArrowStyle] = useState('')
-    const [num, setNum] = useState(0)
+    const [sortKeys, setSortKeys] = useState<any>([])
     const [dataSource, setDataSource] = useState<any>([])
     const [btn, setBtn] = useState<boolean>(true)
     const [btnName, setBtnName] = useState<string>('')
@@ -158,36 +165,29 @@ const ReportTestPref: React.FC<any> = (props) => {
             </TestItemFunc>
         )
     }
-    const compare = (prop: any) => {
-        return function (a: any, b: any) {
-            return a[prop] - b[prop]
-        }
-    }
-    //差异化排序
-    const handleArrow = (suite: any, i: any) => {
-        setNum(i)
-        setArrowStyle(suite.suite_id)
 
-        const compareTerms = ['decline', 'increase', 'normal', 'invalid', 'na']
+    //差异化排序
+    const handleArrow = (suite: any, i: any, conf: any) => {
+        if (sortKeys.includes(conf.conf_id)) return
+        setSortKeys((p: any) => p.concat(conf.conf_id))
+
         const endList = suite.conf_list
             .reduce((pre: any[], cur: any) => {
-                return pre.concat({
-                    ...cur,
-                    metric_list: cur.metric_list.reduce((p: any[], c: any) => {
-                        const { compare_result } = c.compare_data[i]
-                        let sortNum = 4
-                        if (compare_result) {
-                            const idx = compareTerms.indexOf(compare_result)
-                            sortNum = idx
-                        }
-                        return p.concat({ ...c, sortNum })
-                    }, [])
-                })
+                if (cur.conf_id === conf.conf_id)
+                    return pre.concat({
+                        ...cur,
+                        metric_list: cur.metric_list.reduce((p: any[], c: any) => {
+                            const { compare_result } = c.compare_data[i]
+                            let sortNum = 4
+                            if (compare_result) {
+                                const idx = compareTerms.indexOf(compare_result)
+                                sortNum = idx
+                            }
+                            return p.concat({ ...c, sortNum })
+                        }, []).sort(compare('sortNum'))
+                    })
+                return pre.concat(cur)
             }, [])
-            .map((item: any) => ({
-                ...item,
-                metric_list: item.metric_list.sort(compare('sortNum'))
-            }))
 
         setDataSource(
             dataSource.map((item: any) => {
@@ -290,8 +290,8 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                                     <Col span={12}>
                                                                                         <RightResult>
                                                                                             <FormattedMessage id="analysis.comparison/tracking.results" />
-                                                                                            <span onClick={() => handleArrow(conf, cid)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
-                                                                                                {arrowStyle == item.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
+                                                                                            <span onClick={() => handleArrow(item, i, conf)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
+                                                                                                {sortKeys.includes(conf.conf_id) ? <IconArrowBlue /> : <IconArrow />}
                                                                                             </span>
                                                                                             <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
                                                                                                 title={
