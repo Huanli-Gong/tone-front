@@ -268,6 +268,7 @@ const Performance = (props: any) => {
                                                         name={suite[name]}
                                                         field={name}
                                                         suite={suite}
+                                                        creator={domainResult?.creator}
                                                     />
                                                 </TestContent>
                                             </SigleWrapper>

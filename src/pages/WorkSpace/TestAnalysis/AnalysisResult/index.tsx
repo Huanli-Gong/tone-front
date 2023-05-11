@@ -230,6 +230,9 @@ const Report: React.FC = () => {
         }
     }, [environmentResult.compare_groups])
 
+    const containerRef = React.useRef<HTMLDivElement>(null)
+    const containerScroll = useScroll(containerRef)
+
     return (
         <ReportContext.Provider
             value={{
@@ -250,6 +253,7 @@ const Report: React.FC = () => {
                     overflow: 'auto',
                     background: "#f5f5f5"
                 }}
+                ref={containerRef}
             >
                 {
                     compareLen !== suiteLen && <MyLoading>
@@ -296,8 +300,8 @@ const Report: React.FC = () => {
                             }
                             <ModuleWrapper style={{ position: 'relative' }} id="test_data" ref={testDataRef}>
                                 <SubTitle><span className="line" /><FormattedMessage id="analysis.job.data" /></SubTitle>
-                                <PerformanceTest parentDom={testDataRef} scrollLeft={scrollLeft} />
-                                <FunctionalTest scrollLeft={scrollLeft} />
+                                <PerformanceTest parentDom={testDataRef} scrollLeft={scrollLeft} containerScroll={containerScroll} />
+                                <FunctionalTest scrollLeft={scrollLeft} containerScroll={containerScroll} />
                             </ModuleWrapper>
                         </ResultContent>
                     </Col>

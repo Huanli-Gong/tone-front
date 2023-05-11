@@ -43,7 +43,7 @@ import _ from 'lodash';
 const ReportTestFunc: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const { allGroupData, compareResult, baselineGroupIndex, group, wsId } = useContext(ReportContext)
-    const { scrollLeft } = props
+    const { scrollLeft, containerScroll } = props
     const { func_data_result } = compareResult
     const [arrowStyle, setArrowStyle] = useState('')
     const [num, setNum] = useState(0)
@@ -206,6 +206,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
             </TestItemFunc>
         )
     }
+
     return (
         <>
             <Row style={{ maxWidth: document.body.clientWidth - 40 + scrollLeft }}>
@@ -221,9 +222,9 @@ const ReportTestFunc: React.FC<any> = (props) => {
                     !!dataSource.length ?
                         dataSource.map((item: any, idx: number) => {
                             return (
-                                <div key={idx}>
+                                <React.Fragment key={idx}>
                                     <TestSuite>
-                                        <SuiteName>{item.suite_name}</SuiteName>
+                                        <SuiteName style={{ textIndent: containerScroll?.left }}>{item.suite_name}</SuiteName>
                                         <TestConf>
                                             {(item.conf_list && item.conf_list.length) ?
                                                 <>
@@ -296,7 +297,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                             }
                                         </TestConfWarpper>
                                     </TestSuite>
-                                </div>
+                                </React.Fragment>
                             )
                         }) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 }
