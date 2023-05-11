@@ -257,7 +257,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                     const expand = expandKeys.includes(conf.conf_id)
                                                     let conf_data = conf.conf_compare_data || conf.compare_conf_list
                                                     return (
-                                                        <div key={cid}>
+                                                        <React.Fragment key={cid}>
                                                             <TestCase expand={expand}>
                                                                 <CaseTitle gLen={group}>
                                                                     <EllipsisPulic title={conf.conf_name}>
@@ -288,7 +288,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                             <ExpandSubcases
                                                                 {...conf}
                                                             />
-                                                        </div>
+                                                        </React.Fragment>
                                                     )
                                                 })
                                                 :

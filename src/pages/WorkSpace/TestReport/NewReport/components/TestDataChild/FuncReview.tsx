@@ -341,7 +341,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                             }
                             let dataList = isOldReport ? metricList : (conf.conf_compare_data || conf.compare_conf_list)
                             return (
-                                <div key={cid}>
+                                <React.Fragment key={cid}>
                                     <TestCase expand={expand}>
                                         <DelBtn conf={conf} cid={cid} />
                                         <CaseTitle gLen={groupLen}>
@@ -375,7 +375,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                         {...conf}
                                         btn={btnState}
                                     />
-                                </div>
+                                </React.Fragment>
                             )
                         })
                     }

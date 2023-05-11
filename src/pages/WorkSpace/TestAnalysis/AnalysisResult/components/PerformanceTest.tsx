@@ -274,7 +274,8 @@ const ReportTestPref: React.FC<any> = (props) => {
                                         {
                                             btn ?
                                                 (item.conf_list && item.conf_list.length) ? item.conf_list.map((conf: any, cid: number) => (
-                                                    !!conf.metric_list.length && <div key={cid}>
+                                                    !!conf.metric_list.length &&
+                                                    <div key={cid}>
                                                         <TestConf>
                                                             <ConfTitle gLen={group}><FormattedMessage id="analysis.TestConf/metric" /></ConfTitle>
                                                             {
@@ -289,7 +290,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                                     <Col span={12}>
                                                                                         <RightResult>
                                                                                             <FormattedMessage id="analysis.comparison/tracking.results" />
-                                                                                            <span onClick={() => handleArrow(item, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
+                                                                                            <span onClick={() => handleArrow(conf, cid)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
                                                                                                 {arrowStyle == item.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
                                                                                             </span>
                                                                                             <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
@@ -340,7 +341,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                             </MetricTitle>
                                                                             {
                                                                                 Array.isArray(metric.compare_data) && !!metric.compare_data.length &&
-                                                                                metric.compare_data.map((item: any, i: number) => (
+                                                                                metric.compare_data?.slice(0, group)?.map((item: any, i: number) => (
                                                                                     <MetricText gLen={group} key={i}>
                                                                                         <Row justify="space-between">
                                                                                             <Col span={item && item.compare_result ? 12 : 20}>
