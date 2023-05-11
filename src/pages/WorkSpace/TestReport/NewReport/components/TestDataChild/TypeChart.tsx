@@ -57,7 +57,8 @@ const TypeChart = (props: any) => {
                     name: obj.legData[j],
                     barWidth: '10px',
                     barGap: '80%',
-                    barCategoryGap: '40%'
+                    barCategoryGap: '40%',
+                    barMinHeight: 1,
                 })
             }
         } else {
@@ -119,7 +120,8 @@ const TypeChart = (props: any) => {
                     name: obj.legData[m],
                     barWidth: '10px',
                     barGap: '80%',
-                    barCategoryGap: '40%'
+                    barCategoryGap: '40%',
+                    barMinHeight: 1,
                 })
             }
         }
