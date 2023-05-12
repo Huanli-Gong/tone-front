@@ -73,14 +73,10 @@ const ListTable: React.FC<IProps> = (props) => {
         const { code, msg, ...rest } = await queryTestResultList(pageQuery)
         if (code !== 200) return
         const { total } = rest
-        if (total === 0) {
-            setSource(rest)
-            setLoading(false)
-            return
-        }
+
         const { page_num, page_size } = pageQuery
         const totalPage = Math.ceil((total - 1) / page_size)
-        if (page_num > totalPage) {
+        if (totalPage > 0 && page_num > totalPage) {
             setPageQuery((p: any) => ({ ...p, page_num: totalPage >= 1 ? totalPage : 1 }))
         }
         else {
