@@ -107,6 +107,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
 
     // 差异化排序
     const handleArrow = (conf: any, i: any) => {
+        console.log("func test handleArrow")
         setNum(i)
         setArrowStyle(conf.suite_id)
         let pre: any = []

@@ -170,7 +170,29 @@ const Performance = (props: any) => {
     }
     // 差异化排序
     const handleArrow = (suite: any, conf: any, i: number) => {
-        if (sortKeys.includes(conf.conf_id)) return
+        if (sortKeys.includes(conf.conf_id)) {
+            setSortKeys((p: any) => p.filter((iy: any) => iy !== conf.conf_id))
+            setPerData((p: any) => ({
+                ...p,
+                list: p.list.map((ix: any) => {
+                    if (ix.suite_id === suite.suite_id) {
+                        return {
+                            ...ix,
+                            conf_list: ix.conf_list.map((confs: any) => {
+                                if (confs.conf_id === conf.conf_id) {
+                                    const currentSuite = child.list?.filter((xy: any) => xy.suite_id === suite.suite_id).at(0)
+                                    const useConfList = currentSuite.conf_list?.filter((confs: any) => confs.conf_id === conf.conf_id)
+                                    return useConfList.at(0) || confs
+                                }
+                                return confs
+                            })
+                        }
+                    }
+                    return ix
+                })
+            }))
+            return
+        }
         const newConf = {
             ...conf,
             metric_list: conf.metric_list?.reduce((pre: any, metric: any) => {
@@ -180,12 +202,15 @@ const Performance = (props: any) => {
                 })
             }, []).sort(compare('sortNum'))
         }
+
         setSortKeys((p: any) => {
             if (p.includes(conf.conf_id)) return p
             return p.concat(conf.conf_id)
         })
+
         setPerData((p: any) => ({
-            ...p, list: p.list.map((y: any) => {
+            ...p,
+            list: p.list.map((y: any) => {
                 if (y.suite_id === suite.suite_id) {
                     return {
                         ...suite,

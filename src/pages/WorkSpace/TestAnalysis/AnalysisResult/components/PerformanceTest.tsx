@@ -168,7 +168,20 @@ const ReportTestPref: React.FC<any> = (props) => {
 
     //差异化排序
     const handleArrow = (suite: any, i: any, conf: any) => {
-        if (sortKeys.includes(conf.conf_id)) return
+        if (sortKeys.includes(conf.conf_id)) {
+            const { perf_data_result } = compareResult
+            setSortKeys((p: any) => p.filter((iy: any) => iy !== conf.conf_id))
+            setDataSource((p: any) => p.map((item: any) => {
+                if (item.suite_id === suite.suite_id) {
+                    return {
+                        ...item,
+                        conf_list: perf_data_result.filter((ix: any) => ix.suite_id === suite.suite_id)[0]?.conf_list
+                    }
+                }
+                return item
+            }))
+            return
+        }
         setSortKeys((p: any) => p.concat(conf.conf_id))
 
         const endList = suite.conf_list
