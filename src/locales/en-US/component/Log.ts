@@ -23,7 +23,7 @@ export default {
   'log.listName.channel_type': 'Channel',
   'log.listName.ips': 'Server',
   'log.listName.ip': 'Server',
-  'log.listName.name': 'Server Name',
+  'log.listName.name': 'Tag Name',
   'log.listName.state': 'Usage Status',
   'log.listName.description': 'Remarks',
   'log.listName.owner': 'Owner',

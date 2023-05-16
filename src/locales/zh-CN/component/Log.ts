@@ -23,7 +23,7 @@ export default {
   'log.listName.channel_type': '控制通道',
   'log.listName.ips': '机器',
   'log.listName.ip': '机器',
-  'log.listName.name': '机器名称',
+  'log.listName.name': '标签名称',
   'log.listName.state': '使用状态',
   'log.listName.description': '备注',
   'log.listName.owner': 'Owner',
