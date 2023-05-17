@@ -24,6 +24,7 @@ export default forwardRef(
         useImperativeHandle(
             ref, () => ({
                 show: (_: any = false) => {
+                    console.log(_)
                     setVisible(true)
                     if (_ !== false) {
                         setData(_)
@@ -33,7 +34,7 @@ export default forwardRef(
                 hide: handleClose
             })
         )
-        console.log(props)
+
         const handleOk = () => {
             if (padding) return
             setPadding(true)
@@ -41,6 +42,7 @@ export default forwardRef(
                 .validateFields()
                 .then(
                     async (values: any) => {
+                        const { note } = values
                         let editor_obj = 'perf_analysis'
                         if (test_type !== 'performance') {
                             editor_obj = 'func_case_analysis'
@@ -48,11 +50,19 @@ export default forwardRef(
                                 editor_obj = 'func_conf_analysis'
                             }
                         }
-                        const { code, msg } = await updateAnalysisNote({
+                        const params: any = {
                             editor_obj,
-                            result_obj_id: data.result_obj_id,
-                            note: values.note
-                        })
+                            note
+                        }
+
+                        if (test_type === "performance") {
+                            params.test_job_id = data.job_id
+                        }
+                        else {
+                            params.result_obj_id = data.result_obj_id
+                        }
+
+                        const { code, msg } = await updateAnalysisNote(params)
                         setPadding(false)
                         if (code !== 200) return requestCodeMessage(code, msg)
                         onOk()
