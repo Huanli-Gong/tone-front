@@ -121,7 +121,7 @@ const TabPaneCard: React.FC<any> = (props) => {
     const getAnalysisFormData = () => {
         const params: any = test_type === 'functional' ? { show_type } : { provider_env }
         const values = form.getFieldsValue()
-        const { project_id, tag, time } = values
+        const { time, ...rest } = values
 
         if (time && time.length > 0) {
             const [start_time, end_time] = time
@@ -129,10 +129,10 @@ const TabPaneCard: React.FC<any> = (props) => {
             params.end_time = moment(end_time).format('YYYY-MM-DD')
         }
 
-        if (tag)
-            params.tag = tag
-        params.project_id = project_id
-        return params
+        return {
+            ...params,
+            ...rest
+        }
     }
 
     const fetchAnalysis = (data: any) => {
@@ -272,7 +272,10 @@ const TabPaneCard: React.FC<any> = (props) => {
     }
 
     const handleListChange = (list: any[]) => {
-        setTableData((p: any) => p.concat(list.filter((i: any) => !p.map((x: any) => x.id).includes(i.id))).sort((a: any, b: any) => b.id - a.id))
+        setTableData((p: any) => {
+            const ids = list.map(((i: any) => i.id))
+            return p.filter((i: any) => !ids.includes(i.id)).concat(list).sort((a: any, b: any) => b.id - a.id)
+        })
     }
 
     return (
