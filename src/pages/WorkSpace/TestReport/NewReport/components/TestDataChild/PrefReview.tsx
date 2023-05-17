@@ -70,7 +70,7 @@ const compare = ($props: any) => {
 const Performance = (props: any) => {
     const { formatMessage } = useIntl()
 
-    const { child, name, btn, id, onDelete, dataSource, setDataSource, containerScroll } = props
+    const { child, name, btn, id, onDelete, dataSource, setDataSource } = props
     const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
 
     const [filterName, setFilterName] = useState('all')
@@ -150,7 +150,8 @@ const Performance = (props: any) => {
             <TestItemFunc>
                 <Space>
                     {
-                        btn && <Space>
+                        btn &&
+                        <Space>
                             <Typography.Text><FormattedMessage id="report.filter" />: </Typography.Text>
                             <Select defaultValue="all" style={{ width: enLocale ? 336 : 200 }} value={filterName} onSelect={handleConditions}
                                 getPopupContainer={node => node.parentNode}
@@ -253,20 +254,26 @@ const Performance = (props: any) => {
 
     // suite遍历
     const RenderSuite = () => {
+        const { containerScroll } = useContext(ReportContext)
         return (
             Array.isArray(perData.list) && !!perData.list.length ? perData.list.map((suite: any, id: number) => (
                 <TestSuite key={id}>
                     <SuiteName>
-                        {suite.suite_name}
-                        <Popconfirm
-                            title={<FormattedMessage id="delete.prompt" />}
-                            onConfirm={() => handleDelete('suite', suite, id)}
-                            cancelText={<FormattedMessage id="operation.cancel" />}
-                            okText={<FormattedMessage id="operation.delete" />}
-                        >
-                            {btnState && <CloseBtn />}
-                        </Popconfirm>
-                        <ChartTypeChild containerScroll={containerScroll} btn={btn} isReport={true} obj={perData} suiteId={suite.suite_id} setPerData={setPerData} />
+                        <Typography.Text style={{ display: "inline-block", textIndent: containerScroll?.left > 50 ? containerScroll?.left - 50 : 0 }}>
+                            {suite.suite_name}
+                        </Typography.Text>
+                        {
+                            btnState &&
+                            <Popconfirm
+                                title={<FormattedMessage id="delete.prompt" />}
+                                onConfirm={() => handleDelete('suite', suite, id)}
+                                cancelText={<FormattedMessage id="operation.cancel" />}
+                                okText={<FormattedMessage id="operation.delete" />}
+                            >
+                                <CloseBtn />
+                            </Popconfirm>
+                        }
+                        <ChartTypeChild btn={btn} isReport={true} obj={perData} suiteId={suite.suite_id} setPerData={setPerData} />
                     </SuiteName>
                     <TestConfWarpper>
                         {!domainResult.is_default &&

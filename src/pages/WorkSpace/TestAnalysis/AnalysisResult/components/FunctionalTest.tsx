@@ -42,8 +42,8 @@ import _ from 'lodash';
 
 const ReportTestFunc: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
-    const { allGroupData, compareResult, baselineGroupIndex, group, wsId } = useContext(ReportContext)
-    const { scrollLeft, containerScroll } = props
+    const { allGroupData, compareResult, baselineGroupIndex, group, wsId, containerScroll } = useContext(ReportContext)
+    const { scrollLeft } = props
     const { func_data_result } = compareResult
     const [arrowStyle, setArrowStyle] = useState('')
     const [num, setNum] = useState(0)

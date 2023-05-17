@@ -219,7 +219,8 @@ const Report = (props: any) => {
             creator,
             isOldReport: saveReportData?.old_report,
             setCollapsed,
-            setObj
+            setObj,
+            containerScroll
         }}>
             <Spin spinning={loading}>
                 <ReportTemplate height={windowHeight - 50} >
@@ -237,7 +238,7 @@ const Report = (props: any) => {
                                     {domainResult?.is_default && <ReportTestEnv />}
                                     {!domainResult?.is_default && domainResult?.need_test_summary && <ReportSummary />}
                                     {!domainResult?.is_default && domainResult?.need_test_env && <ReportTestEnv />}
-                                    <ReportTestPref containerScroll={containerScroll} />
+                                    <ReportTestPref />
                                 </div>
                             </Col>
                         </ReportWarpper>

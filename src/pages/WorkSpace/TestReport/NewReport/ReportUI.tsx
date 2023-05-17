@@ -523,7 +523,7 @@ export const ConfData = styled.div<GroupRowProps>`
 `
 export const TestConfWarpper = styled.div`
     margin: 0px 15px 0px 17px;
-    border-top:1px solid rgba(0,0,0,0.10);
+    /* border-top:1px solid rgba(0,0,0,0.10); */
 `
 interface Expand {
     expand: boolean

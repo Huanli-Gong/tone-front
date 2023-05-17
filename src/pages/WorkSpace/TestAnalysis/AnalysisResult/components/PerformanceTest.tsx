@@ -106,8 +106,8 @@ const compare = (prop: any) => {
 
 const ReportTestPref: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
-    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group, wsId } = useContext(ReportContext)
-    const { parentDom, scrollLeft, containerScroll } = props
+    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group, wsId, containerScroll } = useContext(ReportContext)
+    const { parentDom, scrollLeft } = props
     const [sortKeys, setSortKeys] = useState<any>([])
     const [dataSource, setDataSource] = useState<any>([])
     const [btn, setBtn] = useState<boolean>(true)

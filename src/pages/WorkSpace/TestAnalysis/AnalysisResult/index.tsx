@@ -242,7 +242,8 @@ const Report: React.FC = () => {
                 compareResult,
                 envData,
                 group,
-                wsId: ws_id || shareWsId
+                wsId: ws_id || shareWsId,
+                containerScroll
             }}
         >
             <div
@@ -300,8 +301,8 @@ const Report: React.FC = () => {
                             }
                             <ModuleWrapper style={{ position: 'relative' }} id="test_data" ref={testDataRef}>
                                 <SubTitle><span className="line" /><FormattedMessage id="analysis.job.data" /></SubTitle>
-                                <PerformanceTest parentDom={testDataRef} scrollLeft={scrollLeft} containerScroll={containerScroll} />
-                                <FunctionalTest scrollLeft={scrollLeft} containerScroll={containerScroll} />
+                                <PerformanceTest parentDom={testDataRef} scrollLeft={scrollLeft} />
+                                <FunctionalTest scrollLeft={scrollLeft} />
                             </ModuleWrapper>
                         </ResultContent>
                     </Col>

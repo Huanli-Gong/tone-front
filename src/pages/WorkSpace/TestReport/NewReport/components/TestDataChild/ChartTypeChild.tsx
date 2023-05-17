@@ -3,7 +3,7 @@ import { Typography, Space, Select, } from 'antd';
 import { FormattedMessage } from 'umi';
 
 const ChartTypeChild = (props: any) => {
-    const { btn, isReport, obj, suiteId, setPerData, containerScroll } = props;
+    const { btn, isReport, obj, suiteId, setPerData } = props;
     const [chartType, setChartType] = useState('1')
     const hanldeChangeChartType = (val: string) => {
         setChartType(val)
@@ -35,7 +35,7 @@ const ChartTypeChild = (props: any) => {
         <>
             {!btn &&
                 <Space style={{ position: 'absolute', right: 12 }}>
-                    <Typography.Text style={{ textIndent: containerScroll?.left }}><FormattedMessage id="report.view" />：</Typography.Text>
+                    <Typography.Text ><FormattedMessage id="report.view" />：</Typography.Text>
                     <Select value={chartType} style={{ width: 395 }} onChange={hanldeChangeChartType}>
                         <Select.Option value="1"><FormattedMessage id="report.type1" /></Select.Option>
                         <Select.Option value="2"><FormattedMessage id="report.type2" /></Select.Option>

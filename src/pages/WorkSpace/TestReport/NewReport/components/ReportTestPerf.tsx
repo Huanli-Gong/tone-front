@@ -70,7 +70,6 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 }
 
 const ReportTestPref: React.FC<AnyType> = (props) => {
-    const { containerScroll } = props
     const { btnState, obj, setObj, envData, domainResult, groupLen, isOldReport } = useContext(ReportContext)
     const testDataRef = useRef(null)
     const groupRowRef = useRef<any>(null)
@@ -203,7 +202,6 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
                                                                         id={child.rowKey}
                                                                         dataSource={dataSource}
                                                                         setDataSource={setDataSource}
-                                                                        containerScroll={containerScroll}
                                                                         onDelete={handleDelete}
                                                                     />
                                                                 </div>
@@ -219,7 +217,6 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
                                                     btn={btn}
                                                     id={item.rowKey}
                                                     dataSource={dataSource}
-                                                    containerScroll={containerScroll}
                                                     setDataSource={setDataSource}
                                                     onDelete={handleDelete}
                                                 />
