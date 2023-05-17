@@ -163,11 +163,11 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
             style={{ marginBottom: 10, borderTop: 'none' }}
         >
             <ResizeHooksTable
-                dataSource={data?.map((i: any, idx: number) => ({ ...i, server_id: `${i.server_id || i.server}-${idx}` }))}
+                dataSource={data?.map((i: any, idx: number) => ({ ...i, rowkey: `${i.server_id || i.server}-${idx}` }))}
                 columns={columns}
                 name={TABLE_NAME}
                 onColumnsChange={() => setColumnsChange(uuidv4())}
-                rowKey="server_id"
+                rowKey="rowkey"
                 loading={loading}
                 size="small"
                 className={styles.prepTable}
@@ -177,8 +177,8 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                     expandedRowClassName: () => 'expanded-row-padding-no',
                     expandedRowKeys: expandedKeys,
                     onExpand: (expanded: any, record) => {
-                        return expanded ? setExpandedKeys(expandedKeys.concat(record.server_id)) :
-                            setExpandedKeys(expandedKeys.filter((i: any) => i !== record.server_id))
+                        return expanded ? setExpandedKeys(expandedKeys.concat(record.rowkey)) :
+                            setExpandedKeys(expandedKeys.filter((i: any) => i !== record.rowkey))
                     },
                     expandedRowRender: (record: any) => {
                         if (record.server_type === 'cluster') {
