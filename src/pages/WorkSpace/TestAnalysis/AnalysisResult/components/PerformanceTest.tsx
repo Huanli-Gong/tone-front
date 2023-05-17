@@ -281,7 +281,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                 <TestSuite key={idx}>
                                     <SuiteName style={{ textIndent: containerScroll?.left }}>
                                         {item.suite_name}
-                                        <ChartTypeChild btn={btn} isReport={false} obj={dataSource} suiteId={item.suite_id} setPerData={setDataSource} />
+                                        <ChartTypeChild containerScroll={containerScroll} btn={btn} isReport={false} obj={dataSource} suiteId={item.suite_id} setPerData={setDataSource} />
                                     </SuiteName>
                                     <TestConfWarpper>
                                         {

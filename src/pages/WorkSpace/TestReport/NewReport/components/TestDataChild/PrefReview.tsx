@@ -70,7 +70,7 @@ const compare = ($props: any) => {
 const Performance = (props: any) => {
     const { formatMessage } = useIntl()
 
-    const { child, name, btn, id, onDelete, dataSource, setDataSource } = props
+    const { child, name, btn, id, onDelete, dataSource, setDataSource, containerScroll } = props
     const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
 
     const [filterName, setFilterName] = useState('all')
@@ -266,7 +266,7 @@ const Performance = (props: any) => {
                         >
                             {btnState && <CloseBtn />}
                         </Popconfirm>
-                        <ChartTypeChild btn={btn} isReport={true} obj={perData} suiteId={suite.suite_id} setPerData={setPerData} />
+                        <ChartTypeChild containerScroll={containerScroll} btn={btn} isReport={true} obj={perData} suiteId={suite.suite_id} setPerData={setPerData} />
                     </SuiteName>
                     <TestConfWarpper>
                         {!domainResult.is_default &&

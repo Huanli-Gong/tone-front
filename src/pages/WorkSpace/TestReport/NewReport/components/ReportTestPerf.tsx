@@ -26,10 +26,11 @@ import {
     CloseBtn,
 } from '../ReportUI';
 
-const GroupBar = styled.div<{ width: number, y: number }>`
+const GroupBar = styled.div<{ width?: number, y?: number, top?: any }>`
     background: #fff;
-    position: absolute;
-    top: 57px;
+    position: fixed;
+    /* top: 57px; */
+    top: ${({ top }) => top || 0}px;
     height: 50px;
     border: 1px solid rgba(0,0,0,0.10);
     z-index: 5;
@@ -52,7 +53,8 @@ const GroupBarWrapper: React.FC<any> = (props) => {
         return (
             <GroupBar
                 width={width}
-                y={top - testOffset - floatRow.offsetTop}
+                top={50}
+            // y={top - testOffset - floatRow.offsetTop}
             >
                 <Summary style={{ border: 'none', paddingLeft: 34, paddingRight: 31 }}>
                     <Group>
@@ -67,7 +69,8 @@ const GroupBarWrapper: React.FC<any> = (props) => {
     }
 }
 
-const ReportTestPref = () => {
+const ReportTestPref: React.FC<AnyType> = (props) => {
+    const { containerScroll } = props
     const { btnState, obj, setObj, envData, domainResult, groupLen, isOldReport } = useContext(ReportContext)
     const testDataRef = useRef(null)
     const groupRowRef = useRef<any>(null)
@@ -200,6 +203,7 @@ const ReportTestPref = () => {
                                                                         id={child.rowKey}
                                                                         dataSource={dataSource}
                                                                         setDataSource={setDataSource}
+                                                                        containerScroll={containerScroll}
                                                                         onDelete={handleDelete}
                                                                     />
                                                                 </div>
@@ -215,6 +219,7 @@ const ReportTestPref = () => {
                                                     btn={btn}
                                                     id={item.rowKey}
                                                     dataSource={dataSource}
+                                                    containerScroll={containerScroll}
                                                     setDataSource={setDataSource}
                                                     onDelete={handleDelete}
                                                 />
