@@ -107,8 +107,9 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
             setChartData({})
             return
         }
+        if (!data) return
         const { job_list, metric_map, case_map } = data
-        if (job_list.length > 0) {
+        if (job_list && job_list.length > 0) {
             setChartData(test_type === 'performance' ? metric_map : case_map)
             setTableData(job_list)
             return

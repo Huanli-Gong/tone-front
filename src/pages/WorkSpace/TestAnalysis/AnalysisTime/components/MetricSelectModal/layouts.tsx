@@ -24,7 +24,6 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
     React.useImperativeHandle(ref, () => ({
         show: async (vals: any) => {
             setVisible(true)
-            console.log(vals)
             setBasicValues(vals)
         },
     }))
