@@ -160,7 +160,9 @@ const AnalysisTime: React.FC<any> = (props) => {
                     <Col span={24}>
                         <TabPaneCard
                             info={info}
-                            setInfo={(i: any) => setInfo((p: any) => ({ ...p, ...i }))}
+                            setInfo={(i: any) => {
+                                setInfo((p: any) => ({ ...p, ...i }))
+                            }}
                         />
                     </Col>
                 </Row>

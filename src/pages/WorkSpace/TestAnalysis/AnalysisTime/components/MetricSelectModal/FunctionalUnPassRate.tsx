@@ -7,13 +7,13 @@ import styles from '../index.less'
 
 
 const FunctionalPassRate: React.FC<AnyType> = (props) => {
-    const { suiteList, test_type, isFetching, show_type, onChange } = props
+    const { suiteList, test_type, isFetching, show_type, onChange, basicValues } = props
     const { query }: any = useLocation()
 
     const getQueryValue = (queryName: any) => {
-        if (test_type === "functional" && query[queryName]) {
-            return query[queryName]
-        }
+        if (test_type !== "functional") return undefined
+        if (basicValues) return basicValues[queryName]
+        if (query[queryName]) return query[queryName]
         return undefined
     }
 
@@ -24,7 +24,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
 
     const [activeSuite, setActiveSuite] = React.useState<any>(+ getQueryValue("test_suite_id") || undefined)
     const [activeConf, setActiveConf] = React.useState<any>(+ getQueryValue("test_case_id") || undefined)
-    const [selectSubcase, setSelectSubcase] = React.useState<any>(undefined)
+    const [selectSubcase, setSelectSubcase] = React.useState<any>(getQueryValue("sub_case_name") || undefined)
 
     React.useEffect(() => {
         if (suiteList.length > 0)
@@ -120,13 +120,15 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                     className={styles.selectTable}
                     rowSelection={{
                         type: 'radio',
-                        selectedRowKeys: selectSubcase,
-                        onChange: (list: any) => setSelectSubcase(list)
+                        selectedRowKeys: [selectSubcase],
+                        onChange: (list: any) => {
+                            setSelectSubcase(list.at(0))
+                        }
                     }}
                     onRow={
                         record => ({
                             onClick: () => {
-                                setSelectSubcase([record])
+                                setSelectSubcase(record)
                             }
                         })
                     }

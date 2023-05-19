@@ -41,13 +41,13 @@ const SuiteConfMetric = (props: any) => {
                     label="Suite"
                     labelStyle={{ ...fontStyle, paddingLeft: 10 }}
                 >
-                    {str[0]}
+                    {str?.at(0)}
                 </Descriptions.Item>
                 <Descriptions.Item
                     label="Conf"
                     labelStyle={{ ...fontStyle, paddingLeft: 12 }}
                 >
-                    {str[1]}
+                    {str?.at(1)}
                 </Descriptions.Item>
                 <Descriptions.Item
                     label="Metric"
@@ -55,9 +55,9 @@ const SuiteConfMetric = (props: any) => {
                     labelStyle={{ ...fontStyle }}
                 >
                     {props?.metric?.map(
-                        (item: any, i: number) =>
+                        (item: any) =>
                             // eslint-disable-next-line react/no-array-index-key
-                            <div key={i}>{item}</div>)
+                            <div key={item}>{item}</div>)
                     }
                 </Descriptions.Item>
             </Descriptions>
@@ -111,7 +111,7 @@ const TabPaneCard: React.FC<any> = (props) => {
 
     const handleSelectMertric = () => {
         if (form.getFieldValue('project_id')) {
-            selectMetricRef.current.show()
+            selectMetricRef.current.show(metricData)
         } else {
             message.error(formatMessage({ id: 'analysis.selected.error' }))
         }
@@ -194,7 +194,6 @@ const TabPaneCard: React.FC<any> = (props) => {
         return () => {
             setChartData(null)
             setTableData([])
-            setMetricData({})
             setFetchData([])
             form.resetFields()
         }
@@ -236,8 +235,10 @@ const TabPaneCard: React.FC<any> = (props) => {
                 params.end_time = moment(end).format("YYYY-MM-DD")
 
                 if (title) {
-                    if (test_type !== "performance")
+                    if (test_type !== "performance") {
+                        setLoading(false)
                         requestAnalysisData(params)
+                    }
                     else {
                         const metrics = $metric?.map((i: any) => ({
                             ...params,
