@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Drawer, Space, Button, Form, Input, Typography, message, Divider } from 'antd'
-import React, { forwardRef, useState, useImperativeHandle } from 'react'
+import { forwardRef, useState, useImperativeHandle } from 'react'
 import { useIntl, FormattedMessage } from 'umi'
 import { copyReportTemplateList } from '../services'
 import styled from 'styled-components'
@@ -56,13 +57,13 @@ export default forwardRef(
         const defaultOption = (code: number, msg: string) => {
             if (code === 200) {
                 props.onOk()
-                message.success(formatMessage({id: 'request.copy.success'}) )
+                message.success(formatMessage({ id: 'request.copy.success' }))
                 setVisible(false)
                 form.resetFields() //重置一组字段到 initialValues
             }
             else {
                 if (code === 201) {
-                    const localeStr = formatMessage({id: 'report.template.already.exists'})
+                    const localeStr = formatMessage({ id: 'report.template.already.exists' })
                     form.setFields([{ name: "name", errors: [localeStr] }])
                 } else {
                     message.error(msg)
@@ -96,7 +97,7 @@ export default forwardRef(
                         <Space>
                             <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
                             <Button type="primary" disabled={padding} onClick={handleOk}>
-                                {editer && editer.name ? <FormattedMessage id="operation.update" />: <FormattedMessage id="operation.confirm" />}
+                                {editer && editer.name ? <FormattedMessage id="operation.update" /> : <FormattedMessage id="operation.confirm" />}
                             </Button>
                         </Space>
                     </div>
@@ -121,14 +122,14 @@ export default forwardRef(
                         rules={[{
                             required: true,
                             pattern: /^[\u4E00-\u9FA5A-Za-z0-9\._-]{1,64}$/g,
-                            message: formatMessage({id: 'report.new.template.message'})
+                            message: formatMessage({ id: 'report.new.template.message' })
                         }]}
                     >
-                        <Input autoComplete="auto" placeholder={formatMessage({id: 'report.new.template.placeholder'}) } />
+                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'report.new.template.placeholder' })} />
                     </Form.Item>
                     <Form.Item label={<FormattedMessage id="report.description.input" />}
                         name="description">
-                        <Input.TextArea placeholder={formatMessage({id: 'report.description.placeholder'}) } />
+                        <Input.TextArea placeholder={formatMessage({ id: 'report.description.placeholder' })} />
                     </Form.Item>
                 </Form>
             </TemplateDrawer>

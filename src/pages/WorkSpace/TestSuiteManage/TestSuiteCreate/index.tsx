@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useMemo } from 'react'
 import { Table, PageHeader, Layout, Button, Row, Space, Select, Input, Typography, Modal, Tooltip, Spin, message } from 'antd'
 import { history, useParams, useIntl, FormattedMessage } from 'umi'
@@ -16,7 +20,7 @@ const getConfKeysAndSort = (suites: any[]) => suites.reduce((pre: any[], cur: an
     return pre.concat(cur.test_case_list.map((i: any) => i.id))
 }, []).sort((a, b) => a - b)
 
-const SaveTipModal = React.forwardRef((props, ref) => {
+const SaveTipModal: any = React.forwardRef((props, ref) => {
     const { onSave, btnLoad }: any = props
     const { ws_id, test_type }: any = useParams()
 
@@ -89,7 +93,7 @@ const TestSuiteCreate: React.FC = () => {
     const [leftTableLoading, setLeftTableLoading] = useState(true)
 
     /* ws下初始用例 */
-    const [wsSuiteAllKeys, setWsSuiteAllKey] = React.useState([])
+    const [wsSuiteAllKeys, setWsSuiteAllKey] = React.useState<any>([])
     const [defaultSuiteList, setDefaultSuiteList] = React.useState([])
 
     const saveTipRef = React.useRef<any>(null)
@@ -170,6 +174,7 @@ const TestSuiteCreate: React.FC = () => {
         setFlag(false)
         setSuiteList(suiteListArr)
         setDefaultSuiteList(suiteListArr)
+        /* @ts-ignore */
         setWsSuiteAllKey(getConfKeysAndSort(wsHasSuiteArr))
         setLoading(false)
         setLeftTableLoading(false)
@@ -197,6 +202,7 @@ const TestSuiteCreate: React.FC = () => {
             defaultSuiteList.reduce((pre: any[], cur: any) => {
                 const { test_case_list } = cur
                 const cases = test_case_list?.reduce((p: any[], c: any) => {
+                    /* @ts-ignore */
                     if (wsSuiteAllKeys.includes(c.id))
                         return p.concat(c)
                     return p
@@ -232,7 +238,7 @@ const TestSuiteCreate: React.FC = () => {
 
         let addCaseCount: any = 0
         let hasAdd = record.hasAdd
-        const addCaseList: Array<any> = []
+        const addCaseList: any[] = []
 
         const test_case_list = record.test_case_list.map(
             (item: { isAdd: any, id: any }) => {
@@ -371,7 +377,8 @@ const TestSuiteCreate: React.FC = () => {
             if (data.code === 200) {
                 setBtnLoad(false)
                 message.success(formatMessage({ id: 'operation.success' }))
-                callback?.()
+                if (callback && Object.prototype.toString.call(callback) === '[object Function]')
+                    callback()
                 history.push(`/ws/${ws_id}/test_suite?test_type=${test_type}`)
             }
             else
@@ -555,7 +562,7 @@ const TestSuiteCreate: React.FC = () => {
                                                         }
                                                     />
                                                 ),
-                                                renderCell(_, record, index) {
+                                                renderCell(_, record) {
                                                     return (
                                                         <MinusCircleFilled
                                                             style={{ color: 'red' }}
@@ -664,7 +671,7 @@ const TestSuiteCreate: React.FC = () => {
                                     Table.EXPAND_COLUMN,
                                     { title: 'Test Suite', dataIndex: 'name', },
                                     { title: formatMessage({ id: 'suite.business_name' }), dataIndex: 'business_name', },
-                                    { title: formatMessage({ id: 'suite.test_type' }), dataIndex: 'test_type', render: (text: any, record: any) => <>{test_type_enum.map((item) => item.value === text ? formatMessage({ id: item.value }) : '')}</>, },
+                                    { title: formatMessage({ id: 'suite.test_type' }), dataIndex: 'test_type', render: (text: any) => <>{test_type_enum.map((item) => item.value === text ? formatMessage({ id: item.value }) : '')}</>, },
                                 ]
                                 :
                                 [
@@ -713,7 +720,7 @@ const TestSuiteCreate: React.FC = () => {
                                     />
                                 ),
                                 columnWidth: 24,
-                                renderCell(_, record, index) {
+                                renderCell(_, record) {
                                     const { hasAdd, addCaseCount } = record
                                     let color = '#1890ff'
                                     if (addCaseCount === 'all')
@@ -844,6 +851,7 @@ const TestSuiteCreate: React.FC = () => {
                     <FormattedMessage id="suite.view.reference.details" />
                 </div>
             </Modal>
+            {/* @ts-ignore */}
             <SaveTipModal ref={saveTipRef} onSave={handleSave} btnLoad={btnLoad} />
         </Layout.Content>
     )

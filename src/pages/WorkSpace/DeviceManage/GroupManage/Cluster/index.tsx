@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, forwardRef, useImperativeHandle } from 'react'
+import { useState, useCallback, useRef, forwardRef, useImperativeHandle } from 'react'
 import styles from './index.less'
 import { useIntl, FormattedMessage, useParams } from 'umi'
 import { Layout, Button, Space, Tag, message, Typography, Spin, Modal, Table } from 'antd'
@@ -29,7 +29,7 @@ const Cluster = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const access = useAccess();
-    const { loading, dataSource, params, total, refresh, setParams, setRefresh } = usePageInit(ws_id)
+    const { loading, dataSource, params, total, setParams, setRefresh } = usePageInit(ws_id)
     // 刷新子表格的标记
     const [syncServerLoading, setSyncServerLoading] = useState(false)
 
@@ -60,7 +60,7 @@ const Cluster = (props: any, ref: any) => {
 
     const defaultOption = (data: any) => {
         if (data.code === 200) {
-            setRefresh(!refresh)
+            setRefresh(new Date().getTime())
             message.success(formatMessage({ id: 'operation.success' }))
             setDeleteVisible(false)
         }
@@ -228,7 +228,7 @@ const Cluster = (props: any, ref: any) => {
                 run_mode="cluster"
                 ref={createClusterRef}
                 onFinish={() => {
-                    setRefresh(!refresh)
+                    setRefresh(new Date().getTime())
                 }}
             />
             <AddClusterServer

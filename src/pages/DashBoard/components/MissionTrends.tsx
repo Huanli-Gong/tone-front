@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useRef, useState } from 'react'
 import { queryChartData } from '../services';
-import { message, DatePicker, Row } from 'antd'
-import { useIntl, FormattedMessage } from 'umi'
+import { DatePicker, Row } from 'antd'
+import { FormattedMessage } from 'umi'
 import { Container, Title } from './styled'
 import * as antv from '@antv/g2';
 import moment from 'moment'
@@ -17,7 +18,7 @@ const switchName = (name: string) => {
     }
 }
 
-const MissionTrends = (props: any) => {
+const MissionTrends = () => {
     const myChart: any = useRef(null)
     const chartRef: any = useRef(null)
 
@@ -34,14 +35,14 @@ const MissionTrends = (props: any) => {
         const start_time = moment(timer[0]).format(DATE_FORMMATER)
         const end_time = moment(timer[1]).format(DATE_FORMMATER)
         const { data, code, msg } = await queryChartData({ chart_type: DEFAULT_CHART_TYPE, start_time, end_time })
-        if (code !== 200) return requestCodeMessage( code , msg )
+        if (code !== 200) return requestCodeMessage(code, msg)
 
         const result = data.reduce((pre: any, cur: any) => {
             return pre.concat(
                 Object.keys(cur).reduce((p: any, c: any) => {
                     const { date } = cur
-                    if ( c !== 'date' ) {
-                        return p.concat({ date , name : switchName(c) , count : cur[c ] })
+                    if (c !== 'date') {
+                        return p.concat({ date, name: switchName(c), count: cur[c] })
                     }
                     return p
                 }, [])
@@ -65,7 +66,7 @@ const MissionTrends = (props: any) => {
                 alignTick: true
             }
         })
-        
+
         chart.legend({
             position: 'top-right',
         });
@@ -101,12 +102,12 @@ const MissionTrends = (props: any) => {
         <Container >
             <Title >
                 <Row justify="space-between">
-                    <span><FormattedMessage id="sys.dashboard.trend.chart"/></span>
+                    <span><FormattedMessage id="sys.dashboard.trend.chart" /></span>
                     <DatePicker.RangePicker
                         value={timer}
                         onChange={handleTimerChange}
                         format={DATE_FORMMATER}
-                        allowClear={ false }
+                        allowClear={false}
                     />
                 </Row>
             </Title>

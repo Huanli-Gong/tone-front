@@ -18,7 +18,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 	const [expandInnerLoading, setExpandInnerLoading] = useState<boolean>(true)
 	const [objectId, setObjectId] = useState<number>()
 	const [metricId, setMetricId] = useState<number>()
-	const [refresh, setRefresh] = useState<boolean>(true)
+	const [refresh, setRefresh] = useState<any>(new Date().getTime())
 
 	const metricEditer: any = useRef(null)
 
@@ -83,7 +83,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 		const { code, msg } = metricId ? await editMetric(metricId, params) : await addMetric(params)
 		if (code === 200) {
 			metricEditer.current.hide()
-			setRefresh(!refresh)
+			setRefresh(new Date().getTime())
 		}
 		else {
 			requestCodeMessage(code, msg)
@@ -99,7 +99,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 
 		if (code === 200) {
 			message.success(formatMessage({ id: 'operation.success' }));
-			setRefresh(!refresh)
+			setRefresh(new Date().getTime())
 		}
 		else requestCodeMessage(code, msg)
 	}

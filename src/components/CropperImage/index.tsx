@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { forwardRef, useRef } from 'react'
 
 import { Modal, Row } from 'antd'
@@ -25,10 +26,11 @@ type IProps = {
     onOk: (data: any) => void
 }
 
-const CropperModal: React.ForwardRefRenderFunction<{}, IProps> = (props, ref) => {
+const CropperModal: React.ForwardRefRenderFunction<AnyType, IProps> = (props, ref) => {
     const { onCancel, onOk } = props
 
     const [avatar, setAvatar] = React.useState('')
+    const [visible, setVisible] = React.useState(false)
 
     React.useImperativeHandle(ref, () => ({
         show(url: string) {
@@ -37,7 +39,6 @@ const CropperModal: React.ForwardRefRenderFunction<{}, IProps> = (props, ref) =>
         }
     }))
 
-    const [visible, setVisible] = React.useState(false)
 
     const cropper = useRef<any>(null)
 
@@ -69,7 +70,7 @@ const CropperModal: React.ForwardRefRenderFunction<{}, IProps> = (props, ref) =>
 
     return (
         <Modal
-            visible={visible}
+            open={visible}
             onCancel={handleCancel}
             onOk={handleOk}
             title="图片裁切"

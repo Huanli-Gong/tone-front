@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useState } from 'react'
+import { forwardRef, useImperativeHandle, useState } from 'react'
 import { Drawer, Space, Button, Form, Input, Select, Radio, Badge } from 'antd'
 
 import { updateClusterServer } from '../../services'
@@ -51,7 +51,7 @@ const EditServerDrawer = (props: any, ref: any) => {
                 }
             )
             .catch(
-                (err: any) => {
+                () => {
                     setPadding(false)
                 }
             )
@@ -63,7 +63,7 @@ const EditServerDrawer = (props: any, ref: any) => {
             keyboard={false}
             title={<FormattedMessage id="device.device.edit" />}
             forceRender={true}
-            visible={visible}
+            open={visible}
             width="376"
             destroyOnClose={true}
             onClose={hanldeClose}
@@ -128,6 +128,7 @@ const EditServerDrawer = (props: any, ref: any) => {
                 <Form.Item name="var_name" label={<FormattedMessage id="device.var_name" />}
                     rules={[{
                         required: true,
+                        message: formatMessage({ id: `placeholder.enter.device.var_name` })
                         // pattern: /^[A-Za-z0-9]+$/g,
                         // message: '仅允许包含字母、数字'
                     }]}>

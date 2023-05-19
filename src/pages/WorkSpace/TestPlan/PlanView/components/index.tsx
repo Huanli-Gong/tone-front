@@ -1,15 +1,16 @@
+/* eslint-disable no-param-reassign */
 import { Space } from 'antd';
 import React from 'react'
-import { useIntl, FormattedMessage } from 'umi'
+import { FormattedMessage } from 'umi'
 import styled from 'styled-components'
 
 interface StateTagprop {
-    color : string;
+    color: string;
 }
 
 const StateTag = styled.span<StateTagprop>`
     color:${props => props.color};
-    background : ${props => hex2rgb( props.color )};
+    background : ${props => hex2rgb(props.color)};
     height: 18px;
     min-width: 36px;
     font-size: 14px;
@@ -21,7 +22,7 @@ const StateTag = styled.span<StateTagprop>`
 `
 const StateTagCircle = styled.span<StateTagprop>`
     color:${props => props.color};
-    background : ${props => hex2rgb( props.color )};
+    background : ${props => hex2rgb(props.color)};
     height: 18px;
     min-width: 36px;
     font-size: 14px;
@@ -34,13 +35,13 @@ const StateTagCircle = styled.span<StateTagprop>`
 `
 
 
-function hex2rgb( a: string ) {
+function hex2rgb(a: string) {
     if (a == "") {
         return ""
     }
     a = a.substring(1);
     a = a.toLowerCase();
-    let b = new Array();
+    const b = new Array();
     for (let x = 0; x < 3; x++) {
         b[0] = a.substr(x * 2, 2);
         b[3] = "0123456789abcdef";
@@ -56,47 +57,47 @@ export const failColr = '#C84C5A'
 export const complateColr = '#39C15B'
 export const runningColr = '#649FF6'
 
-export const StateTagRender : React.FC<any>= ( { state } ) => {
-    switch ( state ) {
-        case 'pending':  return <StateTag color={ pendingColr } >Pending</StateTag>
-        case 'running':  return <StateTag color={ runningColr } >Running</StateTag>
-        case 'success':  return <StateTag color={ complateColr } >Complete</StateTag>
-        case 'fail':  return <StateTag color={ failColr } >Fail</StateTag>
-        default : return <>-</>
+export const StateTagRender: React.FC<any> = ({ state }) => {
+    switch (state) {
+        case 'pending': return <StateTag color={pendingColr} >Pending</StateTag>
+        case 'running': return <StateTag color={runningColr} >Running</StateTag>
+        case 'success': return <StateTag color={complateColr} >Complete</StateTag>
+        case 'fail': return <StateTag color={failColr} >Fail</StateTag>
+        default: return <>-</>
     }
     return <>-</>
 }
 
-export const RenderCountTags = ( { total , pass , fail } : any ) => (
+export const RenderCountTags = ({ total, pass, fail }: any) => (
     <Space>
-        <StateTagCircle color={ runningColr } >{ total || '-' }</StateTagCircle>
-        <StateTagCircle color={ complateColr } >{ pass || '-'}</StateTagCircle>
-        <StateTagCircle color={ failColr } >{ fail || '-'}</StateTagCircle>
+        <StateTagCircle color={runningColr} >{total || '-'}</StateTagCircle>
+        <StateTagCircle color={complateColr} >{pass || '-'}</StateTagCircle>
+        <StateTagCircle color={failColr} >{fail || '-'}</StateTagCircle>
     </Space>
 )
 
-const DataRowSpace = styled( Space )`
+const DataRowSpace = styled(Space)`
     span { font-size : 12px; }
 `
-export const RenderDataRow = ( props : any ) => (
+export const RenderDataRow = (props: any) => (
     <DataRowSpace>
         <div>
-            <span><FormattedMessage id="plan.trigger_count"/>：</span><span style={{ marginRight: 8, color: runningColr }}>{ props.trigger_count }</span>
-            <span><FormattedMessage id="plan.success"/>：</span><span style={{ marginRight: 8, color: complateColr }}>{ props.success_count }</span>
-            <span><FormattedMessage id="plan.fail"/>：</span><span style={{ marginRight: 8, color: failColr }}>{ props.fail_count }</span>
+            <span><FormattedMessage id="plan.trigger_count" />：</span><span style={{ marginRight: 8, color: runningColr }}>{props.trigger_count}</span>
+            <span><FormattedMessage id="plan.success" />：</span><span style={{ marginRight: 8, color: complateColr }}>{props.success_count}</span>
+            <span><FormattedMessage id="plan.fail" />：</span><span style={{ marginRight: 8, color: failColr }}>{props.fail_count}</span>
         </div>
         {
-            props.last_time && 
+            props.last_time &&
             <>
-                <span><FormattedMessage id="plan.last_time"/>：</span> 
-                <span>{ props.last_time }</span>
+                <span><FormattedMessage id="plan.last_time" />：</span>
+                <span>{props.last_time}</span>
             </>
         }
         {
-            props.next_time && 
+            props.next_time &&
             <>
-                <span><FormattedMessage id="plan.next_time"/>：</span> 
-                <span>{ props.next_time }</span>
+                <span><FormattedMessage id="plan.next_time" />：</span>
+                <span>{props.next_time}</span>
             </>
         }
     </DataRowSpace>

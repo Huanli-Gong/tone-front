@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { memo, useEffect, useState, useRef, useMemo } from 'react'
 import { Space, Popconfirm, message, Spin } from 'antd'
 import { OptBtn, ClsResizeTable } from './styled'
@@ -107,7 +110,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             width: 180,
             title: <FormattedMessage id="report.columns.creator_name" />,
             ...getUserFilter(params, setParams, 'creator'),
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
         },
         {
             dataIndex: 'update_user_name',
@@ -117,7 +120,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             },
             title: <FormattedMessage id="report.columns.update_user_name" />,
             ...getUserFilter(params, setParams, 'update_user'),
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
         },
         {
             dataIndex: 'description',
@@ -126,7 +129,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 shwoTitle: false,
             },
             title: <FormattedMessage id="report.columns.description" />,
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
         },
         {
             dataIndex: 'gmt_created',
@@ -135,7 +138,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 shwoTitle: false,
             },
             title: <FormattedMessage id="report.columns.gmt_created" />,
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
         },
         {
             dataIndex: 'gmt_modified',
@@ -144,7 +147,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 shwoTitle: false,
             },
             title: <FormattedMessage id="report.columns.gmt_modified.s" />,
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,

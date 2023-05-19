@@ -1,5 +1,7 @@
+/* eslint-disable react/jsx-no-target-blank */
 import React from 'react'
-import { Badge, Tag, Select, Drawer, Space, Button, Form, Popover, FormItemProps } from 'antd'
+import { Badge, Tag, Select, Drawer, Space, Button, Form, Popover } from 'antd'
+import type { FormItemProps } from "antd"
 import { queryMember } from '@/services/Workspace'
 import { useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'

@@ -1,4 +1,5 @@
-import React, { forwardRef, useState, useEffect } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { forwardRef, useState, useEffect } from 'react'
 import { message, Select, Pagination, Divider } from 'antd'
 import { FormattedMessage } from 'umi';
 import { debounce } from 'lodash';
@@ -10,19 +11,24 @@ import { debounce } from 'lodash';
  * @param {func} fetchListData 请求函数。
  * @param {Object} SelectItem 下拉框选项的{ key, name}字段名。
  */
-const PaginSelect = forwardRef((props, ref, ) => {
-  const { 
-    parentId, 
-    fetchListData = ()=> {}, 
-    SelectItem: { key, name}, 
+const PaginSelect = forwardRef((props, ref,) => {
+  const {
+    /* @ts-ignore */
+    parentId,
+    /* @ts-ignore */
+    fetchListData = () => { },
+    /* @ts-ignore */
+    SelectItem: { key, name },
+    /* @ts-ignore */
     refresh = false,
+    /* @ts-ignore */
     placeholder = <FormattedMessage id="upload.list.Drawer.select.placeholder" />
   } = props;
   // console.log('parentId:', parentId);
 
   // 分页参数、数据源
   const [dataSource, setDataSource] = useState([]);
-  const [pagination, setPagination] =  useState({
+  const [pagination, setPagination] = useState({
     total: 0,
     page_num: 1,
     page_size: 20,
@@ -32,7 +38,7 @@ const PaginSelect = forwardRef((props, ref, ) => {
   const [loading, setLoading] = useState(false);
 
   // 1.请求数据
-  const fetchList = async(query) => {
+  const fetchList = async (query: { parentId?: any; searchKeyword?: any; page?: any; pageSize?: any; } | undefined) => {
     const tempValue = { parentId, searchKeyword, ...pagination, ...query };
     try {
       setLoading(true)
@@ -52,33 +58,35 @@ const PaginSelect = forwardRef((props, ref, ) => {
         message.error(msg || '请求数据失败');
       }
       setLoading(false);
-    } catch(e) {
+    } catch (e) {
       setLoading(false);
       console.log(e);
     }
   }
-  
-  useEffect(()=> {
+
+  useEffect(() => {
     if (parentId || parentId === 0) {
       // case1.有依赖项的数据源查询
       fetchList({ parentId });
       setSearchKeyword('');
       setSelectValue(undefined);
+      /* @ts-ignore */
       props.onChange();
     }
   }, [parentId])
 
-  useEffect(()=> {
-    if (parentId === null && refresh ) {
+  useEffect(() => {
+    if (parentId === null && refresh) {
       // case2.无依赖项的数据源查询
+      /* @ts-ignore */
       fetchList();
     }
   }, [refresh])
 
   // 搜索
-  const handleSearch = (value) => {
+  const handleSearch = (value: any) => {
     if (parentId || parentId === 0 || parentId === null) {
-      
+
       if (value) {
         setSearchKeyword(value);
         fetchList({ searchKeyword: value, page: 1, pageSize: 10 });
@@ -87,25 +95,31 @@ const PaginSelect = forwardRef((props, ref, ) => {
         fetchList({ searchKeyword: '', page: 1, pageSize: 10 });
         // 查而未选： 数据源发生改变，表单中select选项要清除。
         setSelectValue(undefined);
+        /* @ts-ignore */
         props.onChange();
       }
     }
   }
 
   // 分页请求
+  /* @ts-ignore */
   const onChange = (page, pageSize) => {
     fetchList({ page, pageSize });
     setSelectValue(undefined);
+    /* @ts-ignore */
     props.onChange();
   };
 
   // 选中某一项回调
+  /* @ts-ignore */
   const handleSelect = (value) => {
     setSelectValue(value);
+    /* @ts-ignore */
     props.onChange(value);
   }
-  
+
   return (
+    /* @ts-ignore */
     <div ref={ref}>
       <Select
         disabled={parentId === null ? false : !(parentId || parentId === 0)}

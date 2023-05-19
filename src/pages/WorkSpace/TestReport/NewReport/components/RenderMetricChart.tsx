@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/no-array-index-key */
 import React,{ useMemo } from "react";
 import { Typography, Spin } from 'antd';
 import NoTypeChart from './TestDataChild/NoChartReview';

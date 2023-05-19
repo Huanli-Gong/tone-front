@@ -1,5 +1,7 @@
-import { Button, Layout, Row, Col, Typography, Space, Spin, Popconfirm, Dropdown, Menu, message, Tooltip, Popover } from 'antd'
-import React, { useState, useEffect, useRef } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Button, Layout, Row, Col, Typography, Spin, Popconfirm, Dropdown, Menu, message } from 'antd'
+import { useState, useEffect, useRef } from 'react'
 import styles from './index.less'
 import { MinusCircleOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons'
 import { useRequest, useIntl, FormattedMessage } from 'umi'
@@ -76,10 +78,10 @@ export default (props: any) => {
     const fetchFinally = (code: number, msg: string) => {
         if (code === 200) {
             setCurrent({})
-            message.success(formatMessage({id: 'operation.success'}) )
+            message.success(formatMessage({ id: 'operation.success' }))
             refresh()
         }
-        else requestCodeMessage( code , msg )
+        else requestCodeMessage(code, msg)
     }
 
     const handleDelete = async (item: any) => {
@@ -110,10 +112,10 @@ export default (props: any) => {
                 <Row justify="space-between">
                     <div className={styles.product_left}>
                         <div className={styles.create_button_wrapper}>
-                            <Button type="primary" onClick={handleAddWareHouse}><FormattedMessage id="product.new.repositories"/></Button>
+                            <Button type="primary" onClick={handleAddWareHouse}><FormattedMessage id="product.new.repositories" /></Button>
                         </div>
                         <Row justify="space-between" className={styles.left_title}>
-                            <Typography.Text><FormattedMessage id="product.repositories"/> ({data?.length && `${data?.length}`})</Typography.Text>
+                            <Typography.Text><FormattedMessage id="product.repositories" /> ({data?.length && `${data?.length}`})</Typography.Text>
                         </Row>
                         <Row className={styles.all_product}>
                             {
@@ -132,10 +134,10 @@ export default (props: any) => {
                                                     <Typography.Text >{item.name}</Typography.Text>
                                                 </EllipsisPulic>
                                                 <Popconfirm
-                                                    title={<FormattedMessage id="product.delete.this.repositories"/>}
+                                                    title={<FormattedMessage id="product.delete.this.repositories" />}
                                                     onConfirm={() => handleDelete(item)}
-                                                    okText={<FormattedMessage id="operation.confirm"/>}
-                                                    cancelText={<FormattedMessage id="operation.cancel"/>}
+                                                    okText={<FormattedMessage id="operation.confirm" />}
+                                                    cancelText={<FormattedMessage id="operation.cancel" />}
                                                 >
                                                     <MinusCircleOutlined
                                                         className={hover === item.id ? styles.remove_active : styles.remove}
@@ -154,7 +156,7 @@ export default (props: any) => {
                                 <Row>
                                     <Col span={8}>
                                         <Row className={styles.detail_item_row}>
-                                            <Typography.Text strong><FormattedMessage id="product.repositories"/>：</Typography.Text>
+                                            <Typography.Text strong><FormattedMessage id="product.repositories" />：</Typography.Text>
                                             <EllipsisPulic title={current.name} />
                                         </Row>
                                     </Col>
@@ -166,7 +168,7 @@ export default (props: any) => {
                                     </Col>
                                     <Col span={8}>
                                         <Row className={styles.detail_item_row}>
-                                            <Typography.Text strong><FormattedMessage id="product.repositories.desc"/>：</Typography.Text>
+                                            <Typography.Text strong><FormattedMessage id="product.repositories.desc" />：</Typography.Text>
                                             <EllipsisPulic title={current.description} />
                                         </Row>
                                     </Col>
@@ -191,7 +193,7 @@ export default (props: any) => {
                                             overlayStyle={{ cursor: 'pointer' }}
                                             overlay={
                                                 <Menu>
-                                                    <Menu.Item onClick={hanldeEdit}><FormattedMessage id="product.edit.info"/></Menu.Item>
+                                                    <Menu.Item onClick={hanldeEdit}><FormattedMessage id="product.edit.info" /></Menu.Item>
                                                 </Menu>
                                             }
                                         >
@@ -202,21 +204,21 @@ export default (props: any) => {
                         </Row>
                         <Row className={styles.right_branch_context}>
                             <Row style={{ width: '100%', height: 62 }}>
-                                <Typography.Text className={styles.product_right_all_branch}><FormattedMessage id="product.all.branch"/> ({BranchData.data?.length && `${BranchData.data?.length}`})</Typography.Text>
+                                <Typography.Text className={styles.product_right_all_branch}><FormattedMessage id="product.all.branch" /> ({BranchData.data?.length && `${BranchData.data?.length}`})</Typography.Text>
                             </Row>
                             <Row className={styles.right_branch_context_wrapper} >
                                 <div className={styles.right_branch_context_box_father}>
                                     {
                                         BranchData.data?.map((item: any) => (
-                                            <div style={{ width: '22%' }}>
-                                                <div className={styles.right_branch_context_box_child} onClick={() => hanldeBranch(item)} key={item.id}>
+                                            <div style={{ width: '22%' }} key={item.id}>
+                                                <div className={styles.right_branch_context_box_child} onClick={() => hanldeBranch(item)} >
                                                     <EllipsisPulic title={item.name}>
                                                         <Typography.Text className={styles.right_branch_context_box_child_firstLine}>{item.name}</Typography.Text>
-                                                        <div style={{ height : 6 }}></div>
+                                                        <div style={{ height: 6 }} />
                                                     </EllipsisPulic>
                                                     <EllipsisPulic title={item.description}>
                                                         <Typography.Text className={styles.right_branch_context_box_child_secondLine}>{item.description}</Typography.Text>
-                                                        <div style={{ height : 6 }}></div>
+                                                        <div style={{ height: 6 }} />
                                                     </EllipsisPulic>
                                                     {/* <Tooltip title={item.name} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
                                                         <div className={styles.right_branch_context_box_child_firstLine}>{item.name}</div>
@@ -233,7 +235,7 @@ export default (props: any) => {
                                             <>
                                                 <div className={styles.right_branch_context_box_child}>
                                                     <div className={styles.right_branch_context_box_child_empty}>
-                                                        <span onClick={hanldCreateBranch}><PlusOutlined /><i><FormattedMessage id="product.new.branch"/></i></span>
+                                                        <span onClick={hanldCreateBranch}><PlusOutlined /><i><FormattedMessage id="product.new.branch" /></i></span>
                                                     </div>
                                                 </div>
                                             </> : null

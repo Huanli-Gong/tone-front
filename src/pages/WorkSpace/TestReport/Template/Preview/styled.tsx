@@ -7,20 +7,20 @@ export const PreviewTableTr = styled(Row)`
 `
 export const FullRow = styled(Row).attrs({
     enLocale: getLocale() === 'en-US'
-})`
+}) <AnyType>`
     width : 100%;
     border-left:1px solid rgba(0,0,0,0.10);
     background: #FDFEFF;
 
     & ${PreviewTableTr} { 
-        width:calc( (100% - ${props => props.enLocale ? 110: 90}px) / 3 );
+        width:calc( (100% - ${props => props.enLocale ? 110 : 90}px) / 3 );
         height: ${props => props.height || 40}px;
         border-top: 1px solid rgba(0,0,0,0.10);
         border-right: 1px solid rgba(0,0,0,0.10);
         padding:0 16px;
     }
     & ${PreviewTableTr}:first-child {
-        width: ${props => props.enLocale ? 110: 90}px;
+        width: ${props => props.enLocale ? 110 : 90}px;
     }
 `
 

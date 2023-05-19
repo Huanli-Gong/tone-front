@@ -1,5 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/jsx-key */
 import React, { useMemo } from "react";
-import { Typography, Spin } from 'antd';
+import { Typography } from 'antd';
 import NoTypeChart from './TestDataChild/NoChartReview';
 import TypeChart from './TestDataChild/TypeChart';
 import styled from 'styled-components';
@@ -32,7 +36,7 @@ const ConfMetricRow = styled.div<ConfRowProp>`
 `
 
 const ConfChart = (props: any) => {
-    const { callBackColor, legend, envData, loading, chartData, time, is_active, chartType } = props
+    const { callBackColor, legend, envData, chartData, time, is_active, chartType } = props
     if (chartType === '1') {
         return (
             <ConfMetricRow is_active={is_active}>
@@ -103,7 +107,7 @@ const RenderConfChart: React.FC<any> = (props) => {
                 </div>
             )
         )
-    },[ current, legend, loading, chartConf, chartType ])
+    }, [current, legend, loading, chartConf, chartType])
     return data;
 }
 export default RenderConfChart;

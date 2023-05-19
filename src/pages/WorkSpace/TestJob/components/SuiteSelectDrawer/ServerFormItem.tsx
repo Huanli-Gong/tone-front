@@ -1,4 +1,5 @@
-import React, { memo, useCallback, useContext } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { memo, useCallback, useContext } from 'react'
 import { Form, Col, Radio, Row, Select, Input, InputNumber } from 'antd'
 import { useIntl, FormattedMessage } from 'umi';
 import { formatter, QusetionIconTootip } from '../untils'
@@ -9,7 +10,6 @@ import CustomServer from './CustomServer'
 import { DrawerProvider } from './Provider'
 
 import styles from '../SelectSuite/style.less';
-import _ from 'lodash'
 
 export default memo(
     (props: any) => {
@@ -18,6 +18,7 @@ export default memo(
         const {
             setServerObjectType, setServerType, setMask, settingType, setServerList, setTagList,
         } = useContext<any>(DrawerProvider)
+
         const handleServerTypeChange = useCallback(
             ({ target }) => {
                 setServerType(target.value)
@@ -25,6 +26,7 @@ export default memo(
             },
             [],
         )
+
         const handleServerObjectTypeChange = useCallback(
             (value) => {
                 setServerList([])
@@ -44,6 +46,7 @@ export default memo(
             }
             else setServerType('custom')
         }
+
         return (
             <>
                 {
@@ -103,14 +106,14 @@ export default memo(
                                         value={serverObjectType}
                                         onChange={handleServerObjectTypeChange}
                                         placeholder={formatMessage({ id: 'select.suite.multiple.values' })}
-                                        title={formatMessage({id: `select.suite.${serverObjectType === 'ip'? 'random': serverObjectType}`})}
+                                    // title={formatMessage({ id: `select.suite.${serverObjectType === 'ip' ? 'random' : serverObjectType}` })}
                                     >
                                         <Select.Option value={'ip'}><FormattedMessage id="select.suite.random" /></Select.Option>
                                         {
                                             (server_type === 'aliyun' && run_mode === 'standalone') ?
                                                 <>
-                                                    <Select.Option value={'instance'} title={formatMessage({id: 'select.suite.instance'})}><FormattedMessage id="select.suite.instance" /></Select.Option>
-                                                    <Select.Option value={'setting'} title={formatMessage({id: 'select.suite.setting'})}><FormattedMessage id="select.suite.setting" /></Select.Option>
+                                                    <Select.Option value={'instance'} title={formatMessage({ id: 'select.suite.instance' })}><FormattedMessage id="select.suite.instance" /></Select.Option>
+                                                    <Select.Option value={'setting'} title={formatMessage({ id: 'select.suite.setting' })}><FormattedMessage id="select.suite.setting" /></Select.Option>
                                                 </> :
                                                 <Select.Option value={'server_object_id'}><FormattedMessage id="select.suite.server_object_id" /></Select.Option>
                                         }

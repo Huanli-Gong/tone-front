@@ -1,4 +1,4 @@
-import React, { memo, useRef, } from 'react'
+import { memo, useRef } from 'react'
 import { Table, Card } from 'antd'
 import { useAccess, useParams, FormattedMessage } from 'umi'
 import EditMarks from './EditMarks'
@@ -8,7 +8,7 @@ import ServerLink from '@/components/MachineWebLink/index';
 export default memo(
     (props: any) => {
         const { ws_id } = useParams() as any
-        const { refresh, dataSource, testType, showType } = props
+        const { refresh, dataSource, test_type, show_type } = props
         const editMarks: any = useRef(null)
         const access = useAccess()
 
@@ -20,13 +20,21 @@ export default memo(
             {
                 title: <FormattedMessage id="analysis.table.column.id" />,
                 dataIndex: 'job_id'
-            }, {
+            },
+            {
                 title: <FormattedMessage id="analysis.table.column.name" />,
                 dataIndex: 'job_name',
                 render: (_: any, row: any) => (
-                    <a target="_blank" rel="noreferrer" href={`${location.origin}/ws/${ws_id}/test_result/${row.job_id}`}>{_}</a>
+                    <a
+                        target="_blank"
+                        rel="noreferrer"
+                        href={`${location.origin}/ws/${ws_id}/test_result/${row.job_id}`}
+                    >
+                        {_}
+                    </a>
                 )
-            }, {
+            },
+            {
                 title: <FormattedMessage id="analysis.table.column.server" />,
                 dataIndex: 'server',
                 render: (_: any, row: any) => (
@@ -36,13 +44,16 @@ export default memo(
                         provider={row.server_provider}
                     />
                 )
-            }, {
+            },
+            {
                 title: <FormattedMessage id="analysis.table.column.creator" />,
                 dataIndex: 'creator'
-            }, {
+            },
+            {
                 title: <FormattedMessage id="analysis.table.column.startTime" />,
                 dataIndex: 'start_time'
-            }, {
+            },
+            {
                 title: <FormattedMessage id="analysis.table.column.emdTime" />,
                 dataIndex: 'end_time'
             },
@@ -65,7 +76,7 @@ export default memo(
 
         return (
             <>
-                <Card style={{ marginTop: 10, width: '100%' }}>
+                <Card style={{ width: '100%', marginTop: 10 }}>
                     <Table
                         rowKey="job_id"
                         columns={columns}
@@ -77,8 +88,8 @@ export default memo(
                 <EditMarks
                     ref={editMarks}
                     ws_id={ws_id}
-                    showType={showType}
-                    testType={testType}
+                    show_type={show_type}
+                    test_type={test_type}
                     onOk={refresh}
                 />
             </>

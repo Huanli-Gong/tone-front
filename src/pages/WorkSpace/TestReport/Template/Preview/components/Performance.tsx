@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable react/no-array-index-key */
 import React, { memo, useState, useRef } from 'react'
 import { Row, Typography, Space, Button, Select } from 'antd'
 import styled from 'styled-components'
@@ -116,12 +118,12 @@ const IssueRow = styled(FullRow).attrs({
         border-bottom:1px solid rgba(0,0,0,0.1);
     }
     &>div:first-child{
-        width: ${props => props.enLocale? 132: 75}px;
+        width: ${props => props.enLocale ? 132 : 75}px;
         color:rgba(0,0,0,.85);
     }
     &>div:last-child{
         color:rgba(0,0,0,.65);
-        width:calc(100% - ${props => props.enLocale? 132: 75}px);
+        width:calc(100% - ${props => props.enLocale ? 132 : 75}px);
     }
 `
 
@@ -184,13 +186,13 @@ const CaseTr = styled(FullRow)`
 
 const TableHeaderOptionRow: React.FC<any> = (props) => (
     <SuiteCaseOption {...props} >
-        <Row align="bottom"><FormattedMessage id="report.conf/metric"/></Row>
+        <Row align="bottom"><FormattedMessage id="report.conf/metric" /></Row>
         {
             new Array(3).fill('').map((i: any, idx: number) => (
                 <Row justify="space-between" key={idx}>
-                    <Typography.Text><FormattedMessage id="report.result"/></Typography.Text>
+                    <Typography.Text><FormattedMessage id="report.result" /></Typography.Text>
                     {idx !== 0 && <Space>
-                        <Typography.Text><FormattedMessage id="report.comparison/tracking.results"/></Typography.Text>
+                        <Typography.Text><FormattedMessage id="report.comparison/tracking.results" /></Typography.Text>
                         <IconArrow />
                         <QuestionCircleOutlined />
                     </Space>}
@@ -206,7 +208,7 @@ const ConfTable: React.FC<any> = memo(
             <CaseTable show={show}>
                 <CaseHeader>
                     <div><Typography.Text strong ellipsis>{test_conf_name}</Typography.Text></div>
-                    <div></div>
+                    <div />
                     <div><IconLink /></div>
                     <div><IconLink /></div>
                 </CaseHeader>
@@ -240,7 +242,7 @@ const ToolRow: React.FC<any> = ({ data, title, desc }) => (
     <IssueRow>
         <div><Typography.Text strong>{title}</Typography.Text></div>
         <div>
-            {desc || <FormattedMessage id="report.content.needs.to.generate"/>}
+            {desc || <FormattedMessage id="report.content.needs.to.generate" />}
         </div>
     </IssueRow>
 )
@@ -249,16 +251,16 @@ const ToolHeaderRow: React.FC<any> = ({ data, title }) => (
     data &&
     <IssueRow>
         <div><Typography.Text strong>{title}</Typography.Text></div>
-        <div><FormattedMessage id="report.content.get.from.suite"/></div>
+        <div><FormattedMessage id="report.content.get.from.suite" /></div>
     </IssueRow>
 )
 
 const SuiteConfTools: React.FC<SuiteConfToolsProps> = ({ perf_conf, formatMessage }) => (
     <ToolsIssue>
-        <ToolHeaderRow title={formatMessage({id: 'report.test.tools'})} data={perf_conf.need_test_suite_description} />
-        <ToolRow title={formatMessage({id: 'report.test.env'})} data={perf_conf.need_test_env} />
-        <ToolRow title={formatMessage({id: 'report.test.description'})} data={perf_conf.need_test_description} />
-        <ToolRow title={formatMessage({id: 'report.test.conclusion'})} data={perf_conf.need_test_conclusion} />
+        <ToolHeaderRow title={formatMessage({ id: 'report.test.tools' })} data={perf_conf.need_test_suite_description} />
+        <ToolRow title={formatMessage({ id: 'report.test.env' })} data={perf_conf.need_test_env} />
+        <ToolRow title={formatMessage({ id: 'report.test.description' })} data={perf_conf.need_test_description} />
+        <ToolRow title={formatMessage({ id: 'report.test.conclusion' })} data={perf_conf.need_test_conclusion} />
     </ToolsIssue>
 )
 
@@ -284,13 +286,13 @@ const TermItem: React.FC<any> = memo(
                     </Typography.Text>
                     <Space align="start">
                         <Space>
-                            <Typography.Text><FormattedMessage id="report.filter"/>：</Typography.Text>
+                            <Typography.Text><FormattedMessage id="report.filter" />：</Typography.Text>
                             <Select value={''} style={{ width: 200 }}>
-                                <Select.Option value=""><FormattedMessage id="report.all.s"/></Select.Option>
+                                <Select.Option value=""><FormattedMessage id="report.all.s" /></Select.Option>
                             </Select>
                         </Space>
                         <Button onClick={handleChangeModal}>
-                            {!modalType ? formatMessage({id: 'report.list.view'}): formatMessage({id: 'report.chart.view'})}
+                            {!modalType ? formatMessage({ id: 'report.list.view' }) : formatMessage({ id: 'report.chart.view' })}
                         </Button>
                     </Space>
                 </TermTitle>
@@ -310,18 +312,18 @@ const TermItem: React.FC<any> = memo(
                                             {
                                                 !modalType &&
                                                 <Space style={{ height: 32 }}>
-                                                    <Typography.Text><FormattedMessage id="report.view"/>：</Typography.Text>
+                                                    <Typography.Text><FormattedMessage id="report.view" />：</Typography.Text>
                                                     <Select value={chartType} style={{ width: 395 }} onChange={hanldeChangeChartType}>
-                                                        <Select.Option value={1}><FormattedMessage id="report.type1"/></Select.Option>
-                                                        <Select.Option value={2}><FormattedMessage id="report.type2"/></Select.Option>
-                                                        <Select.Option value={3}><FormattedMessage id="report.type3"/></Select.Option>
+                                                        <Select.Option value={1}><FormattedMessage id="report.type1" /></Select.Option>
+                                                        <Select.Option value={2}><FormattedMessage id="report.type2" /></Select.Option>
+                                                        <Select.Option value={3}><FormattedMessage id="report.type3" /></Select.Option>
                                                     </Select>
                                                 </Space>
                                             }
                                         </SuiteTitle>
                                         <SuiteBody >
                                             {(!is_default && JSON.stringify(perf_conf) !== '{}') &&
-                                                <SuiteConfTools perf_conf={perf_conf} formatMessage={formatMessage}/>}
+                                                <SuiteConfTools perf_conf={perf_conf} formatMessage={formatMessage} />}
                                             <ChartModal
                                                 {...suite}
                                                 show={!modalType}

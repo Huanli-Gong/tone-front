@@ -1,10 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable prefer-const */
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
 import { ReportContext } from '../../Provider';
 import { Button, Space, Select, Typography, Popconfirm, Empty, Row, Col } from 'antd';
 import { useIntl, FormattedMessage } from 'umi';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
 import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
-import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
+// import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
 import { ReactComponent as TestItemIcon } from '@/assets/svg/Report/TestItem.svg';
@@ -202,7 +207,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
         )
     }
 
-    const DelBtnEmpty: React.FC<any> = (props: any) => {
+    const DelBtnEmpty: React.FC<any> = () => {
         return btnState && <PrefDataDel empty={true} />
     }
 

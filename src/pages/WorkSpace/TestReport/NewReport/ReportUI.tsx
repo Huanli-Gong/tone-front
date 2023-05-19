@@ -147,7 +147,7 @@ export const BreadDetailR = styled(BreadDetailL)`
     white-space:nowrap;
 `
 interface BtnWarpper {
-    btnState: Boolean;
+    btnState: boolean;
 }
 export const Btn = styled.span<BtnWarpper>`
     position:absolute;
@@ -252,9 +252,6 @@ export const PerfResultData = styled.div<GroupRowProps>`
         border-right:none;
     }
 `
-interface StrNumProps {
-    strNum: number  // 字符串长度
-}
 //width: ${({ strNum }) => (strNum * 20) + 'px' }
 
 export const Statistical = styled.span`

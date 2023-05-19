@@ -1,10 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Card, message, Button } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
 import TestConfTable from './TestConfTable'
 import { evnPrepareState } from '../components'
 import ConfPopoverTable from './ConfPopoverTable'
-import _ from 'lodash';
 import { updateSuiteCaseOption, queryProcessSuiteList } from '../service'
 import { useRequest, useAccess, Access, useModel, useIntl, FormattedMessage, useParams } from 'umi';
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
@@ -23,9 +23,10 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
     const { formatMessage } = useIntl()
     const { initialState } = useModel('@@initialState');
     const access = useAccess()
-    const [skipBtn, setSkipBtn] = useState<Boolean>(false)
+    const [skipBtn, setSkipBtn] = useState<boolean>(false)
     const [suiteId, setSuiteId] = useState<number>(0)
     const [columnsRefresh, setColumnsRefresh] = React.useState(uuid())
+    const [expandedKeys, setExpandedKeys] = useState<any>([])
 
     const stopLocals = formatMessage({ id: 'ws.result.details.stop.suite' })
     const skipLocals = formatMessage({ id: 'ws.result.details.skip.suite' })
@@ -41,6 +42,47 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
     useEffect(() => {
         run()
     }, [refresh])
+
+    const handleStopSuite = async (_: any) => {
+        // 添加用户id
+        const { user_id } = initialState?.authList
+        const q = user_id ? { user_id } : {}
+
+        const { code, msg } = await updateSuiteCaseOption({
+            ...q,
+            editor_obj: 'test_job_suite',
+            test_job_suite_id: _.id,
+            state: 'stop'
+        })
+        if (code !== 200) {
+            requestCodeMessage(code, msg)
+            return
+        }
+        run()
+        message.success(formatMessage({ id: 'operation.success' }))
+    }
+
+    const handleSkipSuite = async (_: any) => {
+        // 添加用户id
+        const { user_id } = initialState?.authList
+
+        const { code, msg } = await updateSuiteCaseOption({
+            editor_obj: 'test_job_suite',
+            state: 'skip',
+            test_job_suite_id: _.id,
+            user_id
+        })
+        if (code === 200) {
+            setSuiteId(_.id)
+            setSkipBtn(true)
+            message.success(formatMessage({ id: 'operation.success' }))
+            run()
+        } else {
+            setSkipBtn(false)
+            requestCodeMessage(code, msg)
+            return
+        }
+    }
 
     const columns: any = [
         {
@@ -59,7 +101,7 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
         },
         {
             title: <FormattedMessage id="ws.result.details.env.preparation" />,
@@ -163,49 +205,6 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
             }
         }
     ]
-
-    const handleStopSuite = async (_: any) => {
-        // 添加用户id
-        const { user_id } = initialState?.authList
-        const q = user_id ? { user_id } : {}
-
-        const { code, msg } = await updateSuiteCaseOption({
-            ...q,
-            editor_obj: 'test_job_suite',
-            test_job_suite_id: _.id,
-            state: 'stop'
-        })
-        if (code !== 200) {
-            requestCodeMessage(code, msg)
-            return
-        }
-        run()
-        message.success(formatMessage({ id: 'operation.success' }))
-    }
-
-    const [expandedKeys, setExpandedKeys] = useState<any>([])
-
-    const handleSkipSuite = async (_: any) => {
-        // 添加用户id
-        const { user_id } = initialState?.authList
-
-        const { code, msg } = await updateSuiteCaseOption({
-            editor_obj: 'test_job_suite',
-            state: 'skip',
-            test_job_suite_id: _.id,
-            user_id
-        })
-        if (code === 200) {
-            setSuiteId(_.id)
-            setSkipBtn(true)
-            message.success(formatMessage({ id: 'operation.success' }))
-            run()
-        } else {
-            setSkipBtn(false)
-            requestCodeMessage(code, msg)
-            return
-        }
-    }
 
     return (
         <Card

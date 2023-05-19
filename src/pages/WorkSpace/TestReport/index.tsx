@@ -1,4 +1,5 @@
-import React, { useCallback, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useCallback, useState } from 'react';
 import { writeDocumentTitle, useClientSize } from '@/utils/hooks';
 import { Button, Layout, Tabs } from 'antd';
 import { history, useAccess, FormattedMessage } from 'umi';

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react'
 import styles from './style.less';
-import _ from 'lodash'
 import { ResizeHooksTable } from '@/utils/table.hooks';
 
 export default (props: any) => {
@@ -18,7 +18,7 @@ export default (props: any) => {
 			setSelectedKeys(selectedRowKeys)
 			setSelectedCaseKeysFn({ [record.id]: selectedRowKeys })
 		},
-		getCheckboxProps: (record: any) => ({
+		getCheckboxProps: () => ({
 			disabled: selectedSuiteKeys.length > 0
 		}),
 	};
@@ -32,12 +32,13 @@ export default (props: any) => {
 		<ResizeHooksTable
 			style={styleObj}
 			hasChange={columnsChange}
-			rowKey={record => record.id + ''}
+			rowKey={$record => $record.id + ''}
 			refreshDeps={refreshDeps}
 			className={styles.conf_table}
 			rowSelection={!disabled ? rowSelectionCase : undefined}
 			columns={columnsInner}
 			onColumnsChange={onColumnsChange}
+			rowClassName={(_, index) => index % 2 === 0 ? "inner-odd" : "inner-even"}
 			name="ws-test-job-suite-inner"
 			dataSource={record.test_case_list || []}
 			pagination={false}

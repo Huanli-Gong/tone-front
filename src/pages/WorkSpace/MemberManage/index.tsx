@@ -27,7 +27,7 @@ export default (props: any) => {
     const [memberList, setMemberList] = useState<any[]>([])
     const [options, setOptions] = useState<any>([])
     const [visible, setVisible] = useState(false)
-    const [refresh, setRefresh] = useState(false)
+	const [refresh, setRefresh] = useState<any>(new Date().getTime())
     const [padding, setPadding] = useState(false)
     const [select, setSelect] = useState<any[]>([]);
     const [roleData, setRoleData] = useState<any[]>([]);
@@ -114,7 +114,7 @@ export default (props: any) => {
                         message.success(formatMessage({ id: 'operation.success' }))
                         setVisible(false)
                         //getMemberCounts()
-                        setRefresh(!refresh)
+                        setRefresh(new Date().getTime())
                     }
                     else {
                         requestCodeMessage(data.code, data.msg)

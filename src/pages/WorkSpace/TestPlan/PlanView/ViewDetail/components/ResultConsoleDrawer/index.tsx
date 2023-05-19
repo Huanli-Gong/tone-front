@@ -1,6 +1,5 @@
-import React, { forwardRef, useState, useImperativeHandle } from 'react'
-import { Drawer, Space, Form, Button, message, Row } from 'antd'
-import { FormattedMessage  } from 'umi';
+import { forwardRef, useState, useImperativeHandle } from 'react'
+import { Drawer } from 'antd'
 import CodeEditer from '@/components/CodeEditer';
 import styles from './index.less';
 
@@ -12,11 +11,12 @@ const DrawerForm = forwardRef((props, ref) => {
   useImperativeHandle(
     ref,
     () => ({
-        show: (title= '', propsData) => {
-            // console.log('propsData',propsData);
-            setVisible(true);
-            setCurrent({ config_value: propsData });
-        }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      show: (title = '', propsData: any) => {
+        // console.log('propsData',propsData);
+        setVisible(true);
+        setCurrent({ config_value: propsData });
+      }
     })
   )
 
@@ -27,9 +27,9 @@ const DrawerForm = forwardRef((props, ref) => {
 
   return (
     <div className={styles.ConsoleDrawer}>
-      <Drawer 
-        maskClosable={ false }
-        keyboard={ false }
+      <Drawer
+        maskClosable={false}
+        keyboard={false}
         onClose={handleClose}
         visible={visible}
         placement="bottom"
@@ -37,16 +37,16 @@ const DrawerForm = forwardRef((props, ref) => {
         maskStyle={{ opacity: 0 }}
         bodyStyle={{ padding: 0 }}
         footer={null}>
-          <div className={styles.ConsoleDrawer_content}>
-            <CodeEditer
-                code={current.config_value}
-                onChange={(value: any) => setCurrent({
-                    ...current,
-                    config_value: value,
-                })}
-                readOnly="nocursor"
-            />
-          </div>
+        <div className={styles.ConsoleDrawer_content}>
+          <CodeEditer
+            code={current.config_value}
+            onChange={(value: any) => setCurrent({
+              ...current,
+              config_value: value,
+            })}
+            readOnly="nocursor"
+          />
+        </div>
       </Drawer>
     </div>
   )

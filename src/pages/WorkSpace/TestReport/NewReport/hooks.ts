@@ -1,11 +1,15 @@
-import React, { useEffect, useMemo, useState } from 'react'
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useEffect, useMemo, useState } from 'react'
 import { detailTemplate, reportDetail } from '../services';
 import { message } from 'antd';
 import { redirectErrorPage, requestCodeMessage } from '@/utils/utils';
 import _ from 'lodash';
 import { fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
 import { queryCompareResultList } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/services'
-import { history } from 'umi';
+
 export const CreatePageData = (props: any) => {
     const [logoData, setLogoData] = useState<any[]>([])
     const [loading, setLoading] = useState<boolean>(true)

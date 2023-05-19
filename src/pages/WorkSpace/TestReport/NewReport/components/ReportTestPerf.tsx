@@ -1,12 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable prefer-const */
 import React, { useContext, useState, useEffect, useRef, memo, useMemo } from 'react';
 import { Popconfirm, Empty, Row, Button } from 'antd';
-import { useIntl, FormattedMessage } from 'umi';
+import { FormattedMessage } from 'umi';
 import { ReportContext } from '../Provider';
 import ReportTestFunc from './ReportTestFunc';
 import { ReactComponent as TestGroupIcon } from '@/assets/svg/Report/TestGroup.svg';
 import { GroupItemText } from './EditPerfText';
 import Performance from './TestDataChild/PrefReview'
-import _ from 'lodash';
 import { useScroll } from 'ahooks';
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
 import { simplify, deleteMethod } from './ReportFunction'
@@ -52,12 +54,12 @@ const GroupBarWrapper: React.FC<any> = (props) => {
                 width={width}
                 y={top - testOffset - floatRow.offsetTop}
             >
-                 <Summary style={{ border: 'none', paddingLeft: 34, paddingRight: 31 }}>
-                        <Group>
-                            <PerfGroupTitle gLen={groupLen}><FormattedMessage id="report.comparison.group.name"/></PerfGroupTitle>
-                            <Identify envData={envData} group={groupLen} isData={true}/>
-                        </Group>
-                    </Summary>
+                <Summary style={{ border: 'none', paddingLeft: 34, paddingRight: 31 }}>
+                    <Group>
+                        <PerfGroupTitle gLen={groupLen}><FormattedMessage id="report.comparison.group.name" /></PerfGroupTitle>
+                        <Identify envData={envData} group={groupLen} isData={true} />
+                    </Group>
+                </Summary>
             </GroupBar>
         )
     } else {
@@ -66,7 +68,6 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 }
 
 const ReportTestPref = () => {
-    const { formatMessage } = useIntl()
     const { btnState, obj, setObj, envData, domainResult, groupLen, isOldReport } = useContext(ReportContext)
     const testDataRef = useRef(null)
     const groupRowRef = useRef<any>(null)
@@ -87,7 +88,7 @@ const ReportTestPref = () => {
     }
 
     useEffect(() => {
-        setBtnName(btn ? 'chart': 'table')
+        setBtnName(btn ? 'chart' : 'table')
     }, [btn])
 
     useEffect(() => {
@@ -129,7 +130,7 @@ const ReportTestPref = () => {
     }, [dataSource])
 
     return (
-        <ModuleWrapper 
+        <ModuleWrapper
             style={{
                 width: groupLen > 3 ? groupLen * 390 : 1200,
                 position: 'relative'
@@ -138,11 +139,11 @@ const ReportTestPref = () => {
             id="test_data"
             className="position_mark"
         >
-            <SubTitle><span className="line"></span><FormattedMessage id="report.test.data"/></SubTitle>
+            <SubTitle><span className="line" /><FormattedMessage id="report.test.data" /></SubTitle>
             <Summary ref={groupRowRef} style={{ paddingLeft: 34, paddingRight: 31 }}>
                 <Group>
-                    <PerfGroupTitle gLen={groupLen}><FormattedMessage id="report.comparison.group.name"/></PerfGroupTitle>
-                    <Identify envData={envData} group={groupLen} isData={true}/>
+                    <PerfGroupTitle gLen={groupLen}><FormattedMessage id="report.comparison.group.name" /></PerfGroupTitle>
+                    <Identify envData={envData} group={groupLen} isData={true} />
                 </Group>
             </Summary>
             <GroupBarWrapper
@@ -155,7 +156,7 @@ const ReportTestPref = () => {
                 (domainResult.is_default || (!domainResult.is_default && domainResult.need_perf_data)) &&
                 <>
                     <Row justify='space-between'>
-                        <TestDataTitle><FormattedMessage id="performance.test"/></TestDataTitle>
+                        <TestDataTitle><FormattedMessage id="performance.test" /></TestDataTitle>
                         <Button onClick={switchMode} style={{ marginTop: 12 }}>
                             {btnName === 'chart' ? <FormattedMessage id="report.chart.btn" /> : <FormattedMessage id="report.table.btn" />}
                         </Button>

@@ -1,5 +1,5 @@
 import React, { useState, useImperativeHandle, useEffect } from 'react';
-import { UserTable, UserList, RoleChangeParams, TableListParams } from '../../data.d';
+import type { UserTable, UserList, RoleChangeParams, TableListParams } from '../../data.d';
 import { Avatar, Space, message, Popconfirm, Typography } from 'antd';
 import { userManagementList, roleChange, requestResetPassword } from '../../service';
 import CommonTable from '@/components/Public/CommonTable';
@@ -25,15 +25,20 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
     const initParams = { page_num: 1, page_size: 10, role_id: role_id }
     const [autoFocus, setFocus] = useState<boolean>(true)
     const [lastName, setLastName] = useState<string>()
+    const resetRef = useRef<{ show: (p: { password: string, username: string }) => void }>(null)
 
-    const getManagementList = async (initParams: TableListParams) => {
+    const getManagementList = async ($initParams: TableListParams) => {
         setLoading(true)
         setData({ data: [] })
-        const dataSource = await userManagementList(initParams)
+        const dataSource = await userManagementList($initParams)
         setData(dataSource)
         setLoading(false)
     };
 
+    const refresh = () => {
+        const params = { role_id: role_id, page_num: page, page_size: size, keyword: keyword }
+        getManagementList(params)
+    }
 
     useEffect(() => {
         refresh()
@@ -44,18 +49,13 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
         setSize(page_size)
     }
 
-    const refresh = () => {
-        let params = { role_id: role_id, page_num: page, page_size: size, keyword: keyword }
-        getManagementList(params)
-    }
-
     useImperativeHandle(onRef, () => ({
-        search: (keyword: string) => {
-            getManagementList({ ...initParams, ...{ page_size: size, keyword: keyword, role_id: role_id } })
+        search: ($keyword: string) => {
+            getManagementList({ ...initParams, ...{ page_size: size, keyword: $keyword, role_id: role_id } })
             setKeyword(keyword)
         },
-        select: (role_id: number) => {
-            getManagementList({ ...initParams, ...{ page_size: size, keyword: keyword, role_id: role_id } })
+        select: ($role_id: number) => {
+            getManagementList({ ...initParams, ...{ page_size: size, keyword: keyword, role_id: $role_id } })
             setRole(role_id)
         },
         handleTab: refresh
@@ -66,13 +66,22 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
             user_id: row.id,
             role_id: val
         }
-        const data = await roleChange(params)
-        if (data.code === 200) {
+        const result = await roleChange(params)
+        if (result.code === 200) {
             message.success(formatMessage({ id: 'operation.success' }));
             refresh()
         } else {
-            message.error(data.msg);
+            message.error(result.msg);
         }
+    }
+
+    const resetPasswordConfirm = async (row: any) => {
+        const { code, data: $data, msg } = await requestResetPassword({ user_id: row.id })
+        if (code !== 200) {
+            message.error(msg ?? $data)
+            return
+        }
+        resetRef.current?.show({ password: $data, username: row.username })
     }
 
     const columns = [
@@ -140,7 +149,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
             dataIndex: 'ws_list',
             render: (_: number, row: UserTable) => (
                 (row.ws_list && row.ws_list.length > 0) &&
-                <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.ws_list.join('、')} />
+                <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.ws_list.join('、')}</ColumnEllipsisText>
             ),
             ellipsis: {
                 showTitle: false
@@ -172,18 +181,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
         }
     ];
 
-    const resetPasswordConfirm = async (row: any) => {
-        const { code, data, msg } = await requestResetPassword({ user_id: row.id })
-        if (code !== 200) {
-            message.error(msg ?? data)
-            return
-        }
-        resetRef.current?.show({ password: data, username: row.username })
-    }
-
     const list: UserTable[] = data.data
-
-    const resetRef = useRef<{ show: (p: { password: string, username: string }) => void }>(null)
 
     return (
         <div>

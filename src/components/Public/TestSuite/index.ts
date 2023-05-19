@@ -1,10 +1,10 @@
-import React from 'react';
 
+/* @ts-ignore */
 const suiteChange = (text, record) => {
-    let name = record.view_type 
+    let name = record.view_type
     let result = name.match(/\(([^)]*)\)/)
     if (result) {
-        return result[1]; 
+        return result[1];
     } else {
         return record.view_type || '-'
     }

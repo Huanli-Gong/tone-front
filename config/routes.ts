@@ -103,18 +103,6 @@ const routes = [
 		component: '@/pages/WorkSpace/TestAnalysis/AnalysisResult'
 	},
 	{
-		path: '/ws/:ws_id/message',
-		//layout: false,
-		hideInMenu: true,
-		component: './TaskMessage',
-	},
-	{
-		path: '/ws/:ws_id/refenerce/:type',
-		//name: 'RefenerceDetail',
-		hideInMenu: true,
-		component: '@/pages/WorkSpace/RefenerceDetail',
-	},
-	{
 		path: '/ws/:ws_id',
 		name: 'Workspace',
 		component: '@/pages/WorkSpace',
@@ -506,6 +494,20 @@ const routes = [
 						access: 'WsMemberNoPermission',
 					}
 				]
+			},
+			{
+				path: '/ws/:ws_id/message',
+				inNav: true,
+				//layout: false,
+				hideInMenu: true,
+				component: './TaskMessage',
+			},
+			{
+				path: '/ws/:ws_id/refenerce/:type',
+				//name: 'RefenerceDetail',
+				inNav: true,
+				hideInMenu: true,
+				component: '@/pages/WorkSpace/RefenerceDetail',
 			},
 			{ //Test suite管理
 				path: '/ws/:ws_id/test_suite',

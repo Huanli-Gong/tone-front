@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect, useImperativeHandle, useRef } from 'react';
 import type { UserTable, TableListParams, ApproveParams, UserList } from '../../data';
 import { Modal, Row, Col, Avatar, Space, Button, message, Spin, Badge, Typography } from 'antd';
@@ -55,8 +57,8 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
     const getList = async (initParams: TableListParams) => {
         setLoading(true)
         setData([])
-        const data = await joinList(initParams)
-        setData(data)
+        const $data = await joinList(initParams)
+        setData($data)
         setLoading(false)
     };
 
@@ -67,14 +69,14 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
     }, [status]);
 
     const onChange = (page_num: any, page_size: any) => {
-        const initParams = { page_num: page_num, page_size: page_size, status: status }
-        getList(initParams)
+        const $initParams = { page_num: page_num, page_size: page_size, status: status }
+        getList($initParams)
         setPage(page_num)
         setSize(page_size)
     }
 
     const refresh = () => {
-        let params = { page_num: page, page_size: size, status: status }
+        const params = { page_num: page, page_size: size, status: status }
         getList(params)
     }
 
@@ -87,8 +89,8 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
     const getInfo = async (row: UserTable) => {
         setVisible(true)
         setModalLoading(true)
-        const data = await info(row.id)
-        data && setModal(data.data)
+        const $data = await info(row.id)
+        $data && setModal($data.data)
         setModalLoading(false)
     }
 
@@ -100,10 +102,10 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
             id: modal.id,
             reason: action == 'refuse' ? reason : undefined,
         }
-        const data = await approve(params)
+        const $data = await approve(params)
         refusePop.current.hide()
-        if (data.code !== 200) {
-            requestCodeMessage(data.code, data.msg)
+        if ($data.code !== 200) {
+            requestCodeMessage($data.code, $data.msg)
             setActionLoading(false)
             return
         }
@@ -209,7 +211,7 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
 
     const Footer = status == 0 ?
         <Space>
-            <RefusePopover ref={refusePop} onOk={(data: any) => check('refuse', data)} />
+            <RefusePopover ref={refusePop} onOk={($data: any) => check('refuse', $data)} />
             <Button loading={actionLoading} onClick={() => check('pass')} type="primary"><FormattedMessage id="operation.pass" /></Button>
         </Space> :
         null

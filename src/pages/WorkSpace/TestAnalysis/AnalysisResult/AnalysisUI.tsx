@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import styled from 'styled-components';
 import { Row, Typography } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
@@ -126,7 +127,7 @@ interface EnvGroupLProps {
     enLocale?: boolean,
 }
 
-const setEnvGroupWdith = (l: number, enLocale: boolean) => {
+const setEnvGroupWdith = (l: number) => {
     if (l == 1) return (`calc( 100% - ${110}px )`)
     return (`calc((100% - ${110}px) / ${l})`)
 }

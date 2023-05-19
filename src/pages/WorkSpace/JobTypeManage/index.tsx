@@ -1,6 +1,7 @@
-import React, { useCallback, useRef, useEffect, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useCallback, useRef, useEffect, useState } from 'react'
 import { Table, Space, Button, Badge, message, Modal } from 'antd'
-import { useRequest, history, useModel, useIntl, FormattedMessage, getLocale } from 'umi'
+import { useRequest, history, useModel, useIntl, FormattedMessage, getLocale, useParams } from 'umi'
 import { queryJobTypeList, jobSwitch, deleteJob, queryJobTypeDel } from './services'
 import { requestCodeMessage, switchServerType, switchTestType } from '@/utils/utils'
 import { CheckCircleOutlined, CheckCircleFilled, ExclamationCircleOutlined } from '@ant-design/icons'
@@ -9,10 +10,10 @@ import { JobTypeDeleteModal, EditTalbeCell } from './components'
 import { SingleTabCard } from '@/components/UpgradeUI'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
-export default (props: any) => {
+export default () => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
-    const { ws_id } = props.match.params
+    const { ws_id } = useParams() as any
     const [deleteDefault, setDeleteDefault] = useState(false);
     const [DefaultJob, setDefaultJob] = useState({});
     const deleteModal: any = useRef(null)
@@ -56,8 +57,8 @@ export default (props: any) => {
     }, [data])
 
     const handleDeleteJobType = async (job: any) => {
-        const data = await queryJobTypeDel({ jt_id: job.id })
-        if (data.data.length > 0) {
+        const res = await queryJobTypeDel({ jt_id: job.id })
+        if (res.data.length > 0) {
             deleteModal.current.show(job)
         } else {
             setDeleteDefault(true)
@@ -79,11 +80,11 @@ export default (props: any) => {
 
     // 编辑
     const handleEditJobType = useCallback(
-        (ws_id, _id) => {
-            if (ws_id && (_id || _id === 0)) {
+        (_id) => {
+            if (_id || _id === 0) {
                 history.push(`/ws/${ws_id}/job/update/${_id}`)
             }
-        }, []
+        }, [ws_id]
     )
 
     // 预览
@@ -170,7 +171,7 @@ export default (props: any) => {
             fixed: 'right',
             render: (_: any) => (
                 <Space>
-                    <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleEditJobType(ws_id, _.id)}>
+                    <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleEditJobType(_.id)}>
                         <FormattedMessage id="operation.edit" />
                     </Button>
                     <Button onClick={() => handlePreviewJobType(_.id)} style={{ padding: 0 }} size="small" type="link">

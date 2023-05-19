@@ -1,3 +1,12 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-shadow */
+
 import { useEffect } from 'react'
 import _ from 'lodash'
 

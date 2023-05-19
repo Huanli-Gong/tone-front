@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { InputNumber, Space, Typography, Button, Switch } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useIntl, FormattedMessage } from 'umi'
 
 const BrokenRecovery = (props: any) => {
@@ -17,13 +19,13 @@ const BrokenRecovery = (props: any) => {
     }, [auto_recover_server, recover_server_protect_duration])
 
     const time = useMemo(() => {
-        let day: number = 60 * 24, hours: number = 60;
+        const day: number = 60 * 24, hours: number = 60;
 
         const getHours: number = minute % day
 
-        const dayStr: string = minute / day >= 1 ? `${parseInt((minute / day) as any)}${formatMessage({id: 'devOps.day'})}` : ''
-        const hourStr: string = getHours >= 60 ? `${parseInt((getHours / hours) as any)}${formatMessage({id: 'devOps.hours.s'})}` : ''
-        const minuteStr: string = `${parseInt((getHours % hours) as any)}${formatMessage({id: 'devOps.minute'})}`
+        const dayStr: string = minute / day >= 1 ? `${parseInt((minute / day) as any)}${formatMessage({ id: 'devOps.day' })}` : ''
+        const hourStr: string = getHours >= 60 ? `${parseInt((getHours / hours) as any)}${formatMessage({ id: 'devOps.hours.s' })}` : ''
+        const minuteStr: string = `${parseInt((getHours % hours) as any)}${formatMessage({ id: 'devOps.minute' })}`
 
         return dayStr + hourStr + minuteStr
     }, [minute])
@@ -51,9 +53,9 @@ const BrokenRecovery = (props: any) => {
     return (
         <Space>
             <Switch
-                checkedChildren={<FormattedMessage id="operation.open"/>}
+                checkedChildren={<FormattedMessage id="operation.open" />}
                 checked={tigger}
-                unCheckedChildren={<FormattedMessage id="operation.close"/>}
+                unCheckedChildren={<FormattedMessage id="operation.close" />}
                 onChange={hanldeChange}
             />
             {
@@ -69,9 +71,9 @@ const BrokenRecovery = (props: any) => {
                                     value={minute}
                                     onChange={(val: any) => setMinute(val)}
                                 />
-                                <Typography.Text><FormattedMessage id="devOps.minute"/></Typography.Text>
-                                <Button size="small" onClick={handleCancel}><FormattedMessage id="operation.cancel"/></Button>
-                                <Button size="small" type="primary" onClick={handleOk}><FormattedMessage id="operation.update"/></Button>
+                                <Typography.Text><FormattedMessage id="devOps.minute" /></Typography.Text>
+                                <Button size="small" onClick={handleCancel}><FormattedMessage id="operation.cancel" /></Button>
+                                <Button size="small" type="primary" onClick={handleOk}><FormattedMessage id="operation.update" /></Button>
                             </>
                             :
                             <>

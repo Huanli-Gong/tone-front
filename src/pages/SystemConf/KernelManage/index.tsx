@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react'
-import { Badge, message, Table, Typography, Space, Button, Spin, Popconfirm, TableColumnProps } from 'antd'
+import { Badge, message, Table, Typography, Space, Button, Spin, Popconfirm } from 'antd'
+import type { TableColumnProps } from "antd"
 import { useIntl, FormattedMessage, getLocale } from 'umi'
 import { queryKernelList, deleteKernel, updateSyncKernel } from './services'
 import CommonPagination from '@/components/CommonPagination'
@@ -9,13 +11,13 @@ import { SingleTabCard } from '@/components/UpgradeUI'
 import { requestCodeMessage } from '@/utils/utils'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
-export default (props: any) => {
+export default () => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
 
     const [dataSource, setDataSource] = useState<any>([])
     const [loading, setLoading] = useState(true)
-    const [refresh, setRefresh] = useState(false)
+    const [refresh, setRefresh] = useState<any>(new Date().getTime())
     const [total, setTotal] = useState(0)
     const createDrawer: any = useRef(null)
     const [pageParams, setPageParams] = useState<any>({ page_num: 1, page_size: 10 })
@@ -35,7 +37,7 @@ export default (props: any) => {
         const { code, msg } = await deleteKernel({ kernel_id: _.id })
         if (code === 200) {
             setPageParams({ ...pageParams, page_num: Math.round((total - 1) / pageParams.page_size) || 1 })
-            setRefresh(!refresh)
+            setRefresh(new Date().getTime())
             message.success(formatMessage({ id: 'operation.success' }))
         }
         else requestCodeMessage(code, msg)
@@ -50,7 +52,7 @@ export default (props: any) => {
     }
 
     const handleSubmit = () => {
-        setRefresh(!refresh)
+        setRefresh(new Date().getTime())
     }
     const handleUpdateKernel = function* (version: string) {
         message.loading({ content: formatMessage({ id: 'operation.synchronizing' }) })

@@ -30,9 +30,9 @@ const text =  {
   'cpu_arch': 'CpuArch',
   'cpu_arch.message': 'Select CpuArch',
   'cpu_arch.placeholder': 'Select',
-  'commit_id.placeholder': 'Enter',
-  'build_config.placeholder': 'Enter Compile Branch',
-  'build_machine.placeholder': 'Enter Compile Branch',
+  'commit_id.placeholder': 'HEAD (default to the latest commit)',
+  'build_config.placeholder': 'Enter',
+  'build_machine.placeholder': 'Enter',
 
   'cbc.product': "Product Config",
   'cbc.product.empty': "Enter Product Config"

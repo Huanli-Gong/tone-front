@@ -1,6 +1,6 @@
 import { requestCodeMessage } from '@/utils/utils'
-import { Drawer, Space, Button, Form, Row, Input, Typography, message } from 'antd'
-import React, { useState, forwardRef, useImperativeHandle } from 'react'
+import { Drawer, Space, Button, Form, Row, Input, Typography } from 'antd'
+import { useState, forwardRef, useImperativeHandle } from 'react'
 import { useIntl, FormattedMessage } from 'umi'
 import { updateAnalysisNote } from '../services'
 
@@ -33,7 +33,7 @@ export default forwardRef(
                 hide: handleClose
             })
         )
-        
+
         const handleOk = () => {
             if (padding) return
             setPadding(true)
@@ -69,9 +69,9 @@ export default forwardRef(
             <Drawer
                 maskClosable={false}
                 keyboard={false}
-                width="376"
+                width={376}
                 title={<FormattedMessage id="analysis.edit.note" />}
-                visible={visible}
+                open={visible}
                 onClose={handleClose}
                 bodyStyle={{ padding: 0 }}
                 footer={

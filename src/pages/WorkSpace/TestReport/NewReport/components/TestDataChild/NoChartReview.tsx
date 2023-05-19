@@ -1,8 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 const TypeChart: React.FC<any> = ({ setLegend, name, envData, data, chartType, loading }) => {
     const chart = useRef<any>()
     useEffect(() => {
+        /* @ts-ignore */
         const rageMax: number = data.length > 4 ? parseInt(parseFloat(4 / data.length) * 100) : data.length
         const myChart = echarts.init(chart.current)
         myChart.clear()
@@ -46,6 +49,7 @@ const TypeChart: React.FC<any> = ({ setLegend, name, envData, data, chartType, l
                 start: 0,
                 end: rageMax,
                 left: '20%',
+                /* @ts-ignore */
                 height: 8,
                 right: '20%',
             },

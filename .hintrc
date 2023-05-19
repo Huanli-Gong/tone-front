@@ -4,11 +4,13 @@
   ],
   "hints": {
     "no-inline-styles": "off",
-    "axe/structure": [
+    "axe/structure": "off",
+    "axe/name-role-value": [
       "default",
       {
-        "listitem": "off"
+        "link-name": "off"
       }
-    ]
+    ],
+    "axe/text-alternatives": "off"
   }
 }

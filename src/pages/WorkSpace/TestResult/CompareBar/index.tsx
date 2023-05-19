@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Space, Popconfirm, Button, message, Popover } from 'antd';
 import { history, Access, useAccess, useIntl, FormattedMessage, useParams } from 'umi'
 import _ from 'lodash'
@@ -6,7 +6,7 @@ import styles from './index.less'
 import { Scrollbars } from 'react-custom-scrollbars';
 import { CloseOutlined, RightOutlined } from '@ant-design/icons'
 import SaveReport from '@/pages/WorkSpace/TestReport/components/SaveReport'
-import { querySuiteList, queryCompareResultList, queryEenvironmentResultList, queryDomainGroup } from '../services'
+import { querySuiteList, queryEenvironmentResultList, queryDomainGroup } from '../services'
 import { handleDomainList, getSelectedDataFn } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { requestCodeMessage } from '@/utils/utils';
@@ -97,7 +97,7 @@ export default (props: any) => {
     }, [allSelectRowData])
 
     const getSuitDetail = async (params: any) => {
-        let { data, code, msg } = await querySuiteList(params)
+        const { data, code, msg } = await querySuiteList(params)
         if (code === 200) {
             setSuitData(data)
         } else {
@@ -160,7 +160,7 @@ export default (props: any) => {
         return baselineGroup
     }
 
-    const handlEenvironment = (selData: any) => {
+    const handlEenvironment = () => {
         // const { obj: baseObj } = getJobRefSuit(selData)
         const compare_groups: [] = []
         const baselineGroup = getBaselineGroup()
@@ -192,15 +192,15 @@ export default (props: any) => {
 
     const creatReportCallback = (reportData: any) => {
         // suitData：已选的
-        let func_suite = suitData.func_suite_dic || {}
-        let perf_suite = suitData.perf_suite_dic || {}
+        const func_suite = suitData.func_suite_dic || {}
+        const perf_suite = suitData.perf_suite_dic || {}
         const baseIndex = 0;
-        let func_keys = Object.keys(func_suite) || []
-        let perf_keys = Object.keys(perf_suite) || []
+        const func_keys = Object.keys(func_suite) || []
+        const perf_keys = Object.keys(perf_suite) || []
         const duplicate: any = []
-        let allGroupData: any = []
+        const allGroupData: any = []
         allGroupData.push({ members: allSelectRowData })
-        let newSuiteData = {
+        const newSuiteData = {
             func_suite_dic: getSelectedDataFn(
                 func_suite,
                 allGroupData,
@@ -217,7 +217,7 @@ export default (props: any) => {
             )
         }
         const params: any = handleDomainList(newSuiteData)
-        const paramEenvironment = handlEenvironment(newSuiteData)
+        const paramEenvironment = handlEenvironment()
         Promise.all([queryEenvironmentResultFn(paramEenvironment), queryDomainGroupFn(params)])
             .then((result: any) => {
                 if (_.get(result[0], 'code') === 200 && _.get(result[1], 'code') === 200) {
@@ -288,7 +288,7 @@ export default (props: any) => {
                                 {
                                     firstRowData.map((obj: any) => {
                                         return (
-                                            <Popconfirm title={<FormattedMessage id="delete.prompt" />}
+                                            <Popconfirm key={obj.id} title={<FormattedMessage id="delete.prompt" />}
                                                 okText={<FormattedMessage id="operation.delete" />}
                                                 cancelText={<FormattedMessage id="operation.cancel" />}
                                                 onConfirm={_.partial(handleDelete, obj)} placement="topLeft">
@@ -302,7 +302,7 @@ export default (props: any) => {
                                 {
                                     secondRowData.map((obj: any) => {
                                         return (
-                                            <Popconfirm title={<FormattedMessage id="delete.prompt" />}
+                                            <Popconfirm key={obj.id} title={<FormattedMessage id="delete.prompt" />}
                                                 okText={<FormattedMessage id="operation.delete" />}
                                                 cancelText={<FormattedMessage id="operation.cancel" />}
                                                 onConfirm={_.partial(handleDelete, obj)} placement="topLeft">

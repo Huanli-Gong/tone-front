@@ -1,9 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, forwardRef, useImperativeHandle } from 'react';
 import { message, Space, Popover, Popconfirm } from 'antd';
 import type { TableColumnsType } from "antd"
 import { useIntl, FormattedMessage, Access, useAccess, useRequest, useParams } from 'umi';
 import { QuestionCircleOutlined } from '@ant-design/icons'
-import moment from 'moment';
 import CommonTable from '@/components/Public/CommonTable';
 import { test_type_enum, AccessTootip } from '@/utils/utils';
 import ModalForm from '../ModalForm';
@@ -17,7 +17,7 @@ import { queryBaselineList } from '@/pages/WorkSpace/BaselineManage/services';
 export default forwardRef((props: any, ref: any) => {
     const { formatMessage } = useIntl();
     const { ws_id } = useParams() as any;
-    const [data, setData] = React.useState<any>({ data: [], total: 0, page_num: 1, page_size: 20 });
+    const [source, setSource] = React.useState<any>({ data: [], total: 0, page_num: 1, page_size: 20 });
     const [visible, setVisible] = React.useState(false);
     const access = useAccess();
     const DEFAULT_QUERY_PARAMS = { page_num: 1, page_size: 20, ws_id }
@@ -33,7 +33,7 @@ export default forwardRef((props: any, ref: any) => {
         try {
             const { code, msg, total, ...rest } = await queryTableData(query) || {}
             if (code === 200) {
-                setData({ ...rest, total })
+                setSource({ ...rest, total })
                 // 将total回传给父级组件
                 props.refreshCallback(total)
             } else {
@@ -49,8 +49,14 @@ export default forwardRef((props: any, ref: any) => {
         queryDelete({ pk: record.id }).then((res) => {
             if (res.code === 200) {
                 message.success(formatMessage({ id: 'request.delete.success' }));
-                const { page_num, page_size } = data
-                getTableData({ page_num, page_size });
+                const { page_num, page_size, total = 0 } = source
+                const remainNum = total % page_size === 1
+                const totalPage: number = Math.floor(total / page_size)
+                if (remainNum && totalPage && totalPage + 1 <= page_num) {
+                    setListParams((p: any) => ({ ...p, page_num: totalPage }))
+                } else {
+                    setListParams(DEFAULT_QUERY_PARAMS)
+                }
             } else {
                 message.error(res.msg || formatMessage({ id: 'request.delete.failed' }));
             }
@@ -76,7 +82,7 @@ export default forwardRef((props: any, ref: any) => {
     const hiddenModalCallback = (info: any) => {
         const { title } = info;
         if (title === 'ok') {
-            getTableData({ page_num: 1, page_size: 20 });
+            setListParams(DEFAULT_QUERY_PARAMS)
         }
         setVisible(false);
     };
@@ -287,10 +293,10 @@ export default forwardRef((props: any, ref: any) => {
                 columns={columns}
                 name="ws-offline-upload"
                 refreshDeps={[access, listParams, projects, baselines]}
-                total={data.total}
-                page={data.page_num}
-                pageSize={data.page_size}
-                dataSource={data.data}
+                total={source?.total || 0}
+                page={source?.page_num || DEFAULT_QUERY_PARAMS.page_num}
+                pageSize={source?.page_size || DEFAULT_QUERY_PARAMS.page_size}
+                dataSource={source?.data || []}
                 handlePage={onChange}
             />
 

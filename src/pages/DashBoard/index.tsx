@@ -1,6 +1,6 @@
 import { useClientSize } from '@/utils/hooks';
-import { Col, Layout, Row, Statistic, Typography, Space, message, Spin, Popover } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Col, Layout, Row, Statistic, Typography, Space, Popover } from 'antd';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components'
 
 import ClassUsers from './components/ClassUsers'
@@ -13,7 +13,6 @@ import { ReactComponent as BaselineQuantity } from '@/assets/svg/dashboard/basel
 import { ReactComponent as BenchmarkQuantity } from '@/assets/svg/dashboard/benchmark_quantity.svg'
 import { ReactComponent as TeamQuantity } from '@/assets/svg/dashboard/team_quantity.svg'
 import { ReactComponent as WorkspaceQuantity } from '@/assets/svg/dashboard/ws_quantity.svg'
-import { requestCodeMessage } from '@/utils/utils';
 
 import { useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
 
@@ -119,12 +118,12 @@ export default () => {
     const { height: layoutHeight } = useClientSize()
 
     const [workspace, setWorkspace] = useState<any>({})
-    const [loading, setLoading] = React.useState(true)
+    // const [loading, setLoading] = React.useState(true)
 
     const { data: realtime } = useRequest(queryLiveData, {
         pollingInterval: 5000,
         onSuccess() {
-            setLoading(false)
+            // setLoading(false)
         }
     })
 
@@ -145,27 +144,27 @@ export default () => {
 
     /**
      * @params { text } 国际化包裹后的内容
-     **/ 
-    const EllipsisDiv = ({ text, placement='top', style={} }: any)=> {
+     **/
+    const EllipsisDiv = ({ text, placement = 'top', style = {} }: any) => {
         return enLocale ?
-        <Popover content={text} placement={placement}>
-            <div style={{ overflow:'hidden',textOverflow:'ellipsis', whiteSpace:'nowrap', cursor: 'pointer', ...style }}>
-                {text}
-            </div>
-        </Popover>
-        :
-        text
+            <Popover content={text} placement={placement}>
+                <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer', ...style }}>
+                    {text}
+                </div>
+            </Popover>
+            :
+            text
     }
 
     return (
         <Container height={layoutHeight - 50}>
             <RealtimeDataRow>
-                <DashBoardTitle span={24}><Typography.Text strong><FormattedMessage id="sys.dashboard.real-time.data"/></Typography.Text></DashBoardTitle>
+                <DashBoardTitle span={24}><Typography.Text strong><FormattedMessage id="sys.dashboard.real-time.data" /></Typography.Text></DashBoardTitle>
                 <RealtimeDataItem>
                     <Row>
                         <Col span={12}>
                             <UnMarginStatistic groupSeparator=""
-                                title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.job.total"})} style={{ paddingRight: 10 }}/>}
+                                title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.job.total" })} style={{ paddingRight: 10 }} />}
                                 value={realtime?.job_total_num || "-"} />
                         </Col>
                         <Col span={12}>
@@ -176,20 +175,20 @@ export default () => {
                 <RealtimeDataItem>
                     <Row>
                         <Col span={12}>
-                            <UnMarginStatistic groupSeparator="" title={<FormattedMessage id="sys.dashboard.test.run"/>} value={realtime?.test_run_total_num || "-"} />
+                            <UnMarginStatistic groupSeparator="" title={<FormattedMessage id="sys.dashboard.test.run" />} value={realtime?.test_run_total_num || "-"} />
                         </Col>
                         <Col span={12}>
-                            <SmailStatistic title={<FormattedMessage id="sys.dashboard.current.run"/>} value={realtime?.test_run_running_num || "-"} valueStyle={{ color: '#2B7EF7' }} />
+                            <SmailStatistic title={<FormattedMessage id="sys.dashboard.current.run" />} value={realtime?.test_run_running_num || "-"} valueStyle={{ color: '#2B7EF7' }} />
                         </Col>
                     </Row>
                 </RealtimeDataItem>
                 <RealtimeDataItem>
                     <Row>
                         <Col span={12}>
-                            <UnMarginStatistic groupSeparator="" title={<FormattedMessage id="sys.dashboard.server.scheduling"/>} value={realtime?.server_alloc_num || "-"} />
+                            <UnMarginStatistic groupSeparator="" title={<FormattedMessage id="sys.dashboard.server.scheduling" />} value={realtime?.server_alloc_num || "-"} />
                         </Col>
                         <Col span={12}>
-                            <SmailStatistic title={<FormattedMessage id="sys.dashboard.current.run"/>} value={realtime?.server_running_num || "-"} valueStyle={{ color: '#2B7EF7' }} />
+                            <SmailStatistic title={<FormattedMessage id="sys.dashboard.current.run" />} value={realtime?.server_running_num || "-"} valueStyle={{ color: '#2B7EF7' }} />
                         </Col>
                     </Row>
                 </RealtimeDataItem>
@@ -197,39 +196,39 @@ export default () => {
                     <Row>
                         <Col span={12}>
                             <UnMarginStatistic groupSeparator=""
-                                title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.total.data"})} style={{ paddingRight: 10 }} />}
+                                title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.total.data" })} style={{ paddingRight: 10 }} />}
                                 value={realtime?.result_total_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} />
                         </Col>
                         <Col span={12}>
                             <Row>
                                 <Col span={14}>
                                     <SmailStatistic
-                                        title={<EllipsisDiv text={formatMessage({ id: "functional"})} />} 
+                                        title={<EllipsisDiv text={formatMessage({ id: "functional" })} />}
                                         value={realtime?.func_result_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} valueStyle={{ color: '#0FB966' }} />
                                 </Col>
                                 <Col span={10}>
                                     <SmailStatistic
-                                        title={<EllipsisDiv text={formatMessage({ id: "performance"})} />}
-                                        value={realtime?.perf_result_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} valueStyle={{ color: '#0FB966' }} /> 
+                                        title={<EllipsisDiv text={formatMessage({ id: "performance" })} />}
+                                        value={realtime?.perf_result_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} valueStyle={{ color: '#0FB966' }} />
                                 </Col>
                             </Row>
                         </Col>
                     </Row>
                 </RealtimeDataItem>
                 <RealtimeDataItem>
-                    <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.accumulative.total"/>} value={realtime?.total_duration || "-"} precision={2} />
+                    <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.accumulative.total" />} value={realtime?.total_duration || "-"} precision={2} />
                 </RealtimeDataItem>
             </RealtimeDataRow>
             <MarginBottomRow gutter={16}>
                 <Col span={6} >
                     <WitheBlock height={166}>
                         <Col span={24}>
-                            <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.workspaces.num"/>} value={workspace?.workspace_num || "-"} />
+                            <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.workspaces.num" />} value={workspace?.workspace_num || "-"} />
                         </Col>
                         <Col span={24}>
                             <Space size={48}>
-                                <SmailStatistic title={<FormattedMessage id="sys.dashboard.product_num"/>} value={workspace?.product_num || "-"} />
-                                <SmailStatistic title={<FormattedMessage id="sys.dashboard.project_num"/>} value={workspace?.project_num || "-"} />
+                                <SmailStatistic title={<FormattedMessage id="sys.dashboard.product_num" />} value={workspace?.product_num || "-"} />
+                                <SmailStatistic title={<FormattedMessage id="sys.dashboard.project_num" />} value={workspace?.project_num || "-"} />
                             </Space>
                         </Col>
                         <ItemIcon background={'rgba(181,39,207,0.10)'} >
@@ -240,9 +239,9 @@ export default () => {
                 <Col span={6} >
                     <WitheBlock height={166}>
                         <Col span={24}>
-                            <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.team_num"/>} value={workspace?.team_num || "-"} />
+                            <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.team_num" />} value={workspace?.team_num || "-"} />
                         </Col>
-                        <SmailStatistic title={<FormattedMessage id="sys.dashboard.user_total_num"/>} value={workspace?.user_total_num || "-"} />
+                        <SmailStatistic title={<FormattedMessage id="sys.dashboard.user_total_num" />} value={workspace?.user_total_num || "-"} />
                         <ItemIcon background={'rgba(243,97,94,0.10)'} >
                             <TeamQuantity />
                         </ItemIcon>
@@ -251,7 +250,7 @@ export default () => {
                 <Col span={6} >
                     <WitheBlock height={166}>
                         <Col span={24}>
-                            <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.benchmark_num"/>} value={workspace?.benchmark_num || "-"} />
+                            <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.benchmark_num" />} value={workspace?.benchmark_num || "-"} />
                         </Col>
                         <Space size={48}>
                             <SmailStatistic title={'TestConf'} value={workspace?.test_conf_num || "-"} />
@@ -266,12 +265,12 @@ export default () => {
                 <Col span={6} >
                     <WitheBlock height={166}>
                         <Col span={24}>
-                            <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.baseline_total_num"/>} value={workspace?.baseline_total_num || "-"} />
+                            <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.baseline_total_num" />} value={workspace?.baseline_total_num || "-"} />
                         </Col>
                         <Space size={48}>
-                            <SmailStatistic title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.func_baseline_res_num"})} style={{ width: 100 }} />}
+                            <SmailStatistic title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.func_baseline_res_num" })} style={{ width: 100 }} />}
                                 value={workspace?.func_baseline_res_num || "-"} />
-                            <SmailStatistic title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.perf_baseline_res_num"})} style={{ width: 100 }} placement="topRight"/>}
+                            <SmailStatistic title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.perf_baseline_res_num" })} style={{ width: 100 }} placement="topRight" />}
                                 value={workspace?.perf_baseline_res_num || "-"} />
                         </Space>
                         <ItemIcon background={'rgba(104,203,158,0.10)'} >

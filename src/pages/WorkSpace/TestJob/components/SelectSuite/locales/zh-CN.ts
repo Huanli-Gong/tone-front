@@ -1,9 +1,10 @@
 const defaultKey = 'select.suite'
 
-const text =  {
+const text = {
   'select.case': '选择用例',
   'selected': '已选Test Suite',
-  'removed': '已被移除!',
+  'removed': '已被移除，请重新配置机器后执行!',
+  'existent': '机器不存在，请重新配置机器!',
   'please.select.case': '请先选择用例',
 
   // 业务测试(选择用例)
@@ -36,7 +37,7 @@ const text =  {
   'variable': '变量',
 
   // Suite Select Drawer
-  'vertical.message': '显示多个数值，输入新值覆盖所有，不输入则保留原值', 
+  'vertical.message': '显示多个数值，输入新值覆盖所有，不输入则保留原值',
   'variable.name': '变量名：',
   'variable.desc': '变量说明：',
   'value': '值',
@@ -48,7 +49,7 @@ const text =  {
   'cleanup_info.placeholder': '已配置多种脚本，请谨慎操作',
   'monitor.console': '监控配置',
   'monitor.item': '请选择监控项',
-  'monitor.data': '数据监控',  
+  'monitor.data': '数据监控',
   'monitor.the.server': '请选择监控机器',
   'the.server.one': '机器一',
   'add.group.monitor': '+ 添加一组监控',
@@ -77,7 +78,7 @@ const text =  {
   'repeat.tootip1': '对选中Suite下所有Conf生效，范围1-10000',
   'repeat.tootip2': '范围1-10000',
 
-  "select.suite.table.is_delete.alart": "所选用例已不存在",
+  "table.is_delete.alart": "所选用例不存在或重跑job中无失败用例",
 };
 
 export default Object.keys(text).reduce((p, key) => {

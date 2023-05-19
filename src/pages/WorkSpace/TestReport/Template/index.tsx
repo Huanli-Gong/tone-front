@@ -1,3 +1,8 @@
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-throw-literal */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { history, Access, useAccess, useIntl, FormattedMessage } from 'umi'
 

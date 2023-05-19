@@ -1,26 +1,32 @@
-import React, { memo, useMemo, useEffect, useState, useContext } from 'react'
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { memo, useMemo, useEffect, useState, useContext } from 'react'
 import { ReactComponent as CatalogCollapsed } from '@/assets/svg/Report/collapsed.svg'
 import { useIntl, FormattedMessage } from 'umi';
 import { Typography, Space, Tree, Row } from 'antd'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import produce from 'immer'
 
-import { 
-    CatalogExpand, 
-    CatalogExpandInnerIcon, 
-    Catalog, 
-    CatalogBody, 
-    CatalogTitle, 
+import {
+    CatalogExpand,
+    CatalogExpandInnerIcon,
+    Catalog,
+    CatalogBody,
+    CatalogTitle,
     CatalogDrageSpace,
-    CatalogRound, 
+    CatalogRound,
     LittleRound
 } from '../ReportUI';
 import { ReportContext } from '../Provider';
 
-const TemplateCatalog = (props: any) => {
+const TemplateCatalog = () => {
     const { formatMessage } = useIntl()
     const { domainResult, collapsed, setDomainResult, setCollapsed } = useContext(ReportContext)
-    const [roundHeight, setRoundHeight] = useState<Number>(3)
+    const [roundHeight, setRoundHeight] = useState<any>(3)
     /* 
             dragOverGapTop 拖拽上
     
@@ -106,7 +112,7 @@ const TemplateCatalog = (props: any) => {
 
         return dataArray.map(
             (i: any) => {
-                const name = i === 'perf_item' ? formatMessage({id: 'performance.test'}): formatMessage({id: 'functional.test'})
+                const name = i === 'perf_item' ? formatMessage({ id: 'performance.test' }) : formatMessage({ id: 'functional.test' })
                 const show = i === 'perf_item' ? 'need_perf_data' : 'need_func_data'
                 if (domainResult[i] && domainResult[show]) {
                     const treeData = domainResult[i].map(
@@ -129,22 +135,22 @@ const TemplateCatalog = (props: any) => {
     }, [domainResult])
 
     const leftArr = useMemo(() => {
-        let leftNav:any = []
+        const leftNav: any = []
         if (domainResult.need_test_background) {
             leftNav.push('need_test_background')
-        } 
+        }
         if (domainResult.need_test_method) {
             leftNav.push('need_test_method')
-        } 
+        }
         if (domainResult.need_test_conclusion) {
             leftNav.push('need_test_conclusion')
-        } 
+        }
         if (domainResult.need_test_summary) {
             leftNav.push('need_test_summary')
-        } 
+        }
         if (domainResult.need_test_env || domainResult.need_env_description) {
             leftNav.push('need_test_env')
-        } 
+        }
         if (domainResult.need_perf_data || domainResult.need_func_data) {
             leftNav.push('test_data')
         }
@@ -192,19 +198,19 @@ const TemplateCatalog = (props: any) => {
             }
         })
     }
-   
-    const dictNav = (name:string) => {
+
+    const dictNav = (name: string) => {
         const list = {
-            'need_test_background': formatMessage({id: 'report.test.background'}),
-            'need_test_method': formatMessage({id: 'report.test.method'}),
-            'need_test_conclusion': formatMessage({id: 'report.test.conclusion'}),
+            'need_test_background': formatMessage({ id: 'report.test.background' }),
+            'need_test_method': formatMessage({ id: 'report.test.method' }),
+            'need_test_conclusion': formatMessage({ id: 'report.test.conclusion' }),
             'need_test_summary': 'Summary',
-            'need_test_env': formatMessage({id: 'report.test.env'}),
-            'test_data': formatMessage({id: 'report.test.data'}),
+            'need_test_env': formatMessage({ id: 'report.test.env' }),
+            'test_data': formatMessage({ id: 'report.test.data' }),
         }
         return list[name]
     }
-    const handleScroll = (e:any) => {
+    const handleScroll = (e: any) => {
         let bst = e.target.scrollTop
         let treeArr = document.querySelectorAll('.tree_mark') as any
         // for (let i = 0; i < treeArr.length; i++) {
@@ -215,44 +221,44 @@ const TemplateCatalog = (props: any) => {
         for (let i = 0; i < leftArr.length; i++) {
             let title = document.querySelector(`#${leftArr[i].id}`) as any
             let leftTitle = document.querySelector(`#left_${leftArr[i].id}`) as any
-            if( title.offsetParent?.offsetTop + title?.offsetTop <= bst){
-                i > 0 && arr[i -1]?.classList.remove('toc-selected');
+            if (title.offsetParent?.offsetTop + title?.offsetTop <= bst) {
+                i > 0 && arr[i - 1]?.classList.remove('toc-selected');
                 leftTitle?.classList.add('toc-selected');
-                setRoundHeight(leftTitle?.offsetTop) 
-            }else{
+                setRoundHeight(leftTitle?.offsetTop)
+            } else {
                 arr[i]?.classList.remove('toc-selected')
             }
         }
-        
+
         for (let b = 0; b < treeArr.length; b++) {
             let treeTitle = document.querySelector(`#${treeArr[b].id}`) as any
             let leftTreeTitle = document.querySelector(`#left_${treeArr[b].id}`) as any
-            if( treeTitle?.offsetParent.offsetTop + treeTitle?.offsetTop <= bst){
+            if (treeTitle?.offsetParent.offsetTop + treeTitle?.offsetTop <= bst) {
                 b > 0 && leftTreeTitle?.classList.remove('toc-selected');
                 leftTreeTitle?.classList.add('toc-selected');
-                let treeName = treeTitle?.id.substring(0,9)
+                let treeName = treeTitle?.id.substring(0, 9)
                 setRoundHeight((document.querySelector(`#left_tree_${treeName}`) as any)?.offsetTop + leftTreeTitle?.offsetParent.offsetTop)
                 for (let i = 0; i < leftArr.length; i++) {
                     arr[i]?.classList.remove('toc-selected')
                 }
-            }else{
+            } else {
                 leftTreeTitle?.classList.remove('toc-selected');
-                
+
             }
         }
     }
-    useEffect( ()=> {
+    useEffect(() => {
         window.addEventListener('scroll', handleScroll, true)
         return () => {
             window.removeEventListener('scroll', handleScroll, true)
         }
-    },[])
+    }, [])
     const handleCatalogItemClick = (name: string) => {
         let arr = document.querySelectorAll(`.spaceWarpper .ant-space-item .markSpace span`) as any
         for (let i = 0; i < arr.length; i++) {
             arr[i].classList.remove('toc-selected');
         }
-        let leftName =  document.querySelector(`#left_${name}`) as any
+        let leftName = document.querySelector(`#left_${name}`) as any
         leftName.classList.add('toc-selected');
         setRoundHeight(leftName?.offsetTop)
         document.querySelector(`#${name}`)?.scrollIntoView()
@@ -271,7 +277,7 @@ const TemplateCatalog = (props: any) => {
         const { rowKey, name } = node
         const id = rowKey ? `${name}-${rowKey}` : `${name}`
         let tree_name = rowKey === 0 ? `${name}-${rowKey}` : id
-        let leftName =  document.querySelector(`#left_${tree_name}`) as any
+        let leftName = document.querySelector(`#left_${tree_name}`) as any
         leftName.classList.add('toc-selected');
         const nativeEvent = evt?.nativeEvent
         const target = nativeEvent.target
@@ -284,26 +290,26 @@ const TemplateCatalog = (props: any) => {
             <CatalogExpand onClick={() => setCollapsed(!collapsed)} >
                 <CatalogCollapsed />
                 <CatalogExpandInnerIcon>
-                    {collapsed ? <RightOutlined title={formatMessage({id: 'operation.expand'})}/> : <LeftOutlined title={formatMessage({id: 'operation.collapse'})}/>}
+                    {collapsed ? <RightOutlined title={formatMessage({ id: 'operation.expand' })} /> : <LeftOutlined title={formatMessage({ id: 'operation.collapse' })} />}
                 </CatalogExpandInnerIcon>
             </CatalogExpand>
             {/* 内容部分 */}
             <CatalogBody>
                 <CatalogTitle>
-                    <Typography.Text strong><FormattedMessage id="report.catalogue"/></Typography.Text>
+                    <Typography.Text strong><FormattedMessage id="report.catalogue" /></Typography.Text>
                 </CatalogTitle>
                 <Row style={{ position: 'relative', paddingLeft: 13, borderLeft: '1px solid #e5e5e5' }} id="left-catalog-wrapper">
-                    { roundHeight > 0 &&  <CatalogRound count={roundHeight}>
+                    {roundHeight > 0 && <CatalogRound count={roundHeight}>
                         <LittleRound />
                     </CatalogRound>
                     }
-                    <Space direction="vertical" style={{ width:'100%' }} className="spaceWarpper">
+                    <Space direction="vertical" style={{ width: '100%' }} className="spaceWarpper">
                         {
-                            leftArr.map((item:any,idx:number) => (
+                            leftArr.map((item: any, idx: number) => (
                                 <div className='markSpace' key={idx + Math.random()}>
-                                    <span 
-                                        onClick={() => handleCatalogItemClick(item)} 
-                                        id={`left_${item}`} 
+                                    <span
+                                        onClick={() => handleCatalogItemClick(item)}
+                                        id={`left_${item}`}
                                         style={{ cursor: 'pointer' }}
                                     >
                                         {dictNav(item)}
@@ -327,9 +333,9 @@ const TemplateCatalog = (props: any) => {
                                                     switcherIcon={<></>}
                                                     blockNode
                                                     titleRender={(node: any) => {
-                                                        return(
+                                                        return (
                                                             <span id={`left_${node.name}-${node.rowKey}`}>{node.title}</span>
-                                                        ) 
+                                                        )
                                                     }}
                                                     expandedKeys={item.expandkeys}
                                                     onSelect={handleSelectTree}

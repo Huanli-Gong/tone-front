@@ -12,24 +12,25 @@ interface EllipsisProps {
     children?: React.ReactNode,
     style?: any,
     width?: number,
-    color?:string,
+    color?: string,
     placement?: any,
 }
 
 const EllipsisPopover: React.FC<EllipsisProps> = (props) => {
-    const { title, children, width, color, placement='topLeft', style, ...rest } = props
+    const { title, children, width, color, placement = 'topLeft', style, ...rest } = props
     const ellipsis = useRef<any>(null)
     const [show, setShow] = useState<boolean>(false)
-
-    useEffect(() => {
-        setEllipsis();
-    }, [title])
 
     const setEllipsis = () => {
         const clientWidth = ellipsis?.current?.clientWidth
         const scrollWidth = ellipsis?.current?.scrollWidth
         setShow(clientWidth < scrollWidth)
     }
+
+    useEffect(() => {
+        setEllipsis();
+    }, [title])
+
     const TypographyDiv = (
         <TextWarp ref={ellipsis} style={{ width, color, ...style }} {...rest}>
             {children || title || '-'}
@@ -39,7 +40,7 @@ const EllipsisPopover: React.FC<EllipsisProps> = (props) => {
     return (
         show ?
             <Popover content={title} placement={placement} overlayStyle={{ wordBreak: 'break-all' }}>
-                 {TypographyDiv}
+                {TypographyDiv}
             </Popover> : TypographyDiv
     )
 }

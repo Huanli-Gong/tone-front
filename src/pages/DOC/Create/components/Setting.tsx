@@ -21,7 +21,7 @@ const notice = [{ id: 'maintain', name: '维护' }, { id: 'notice', name: '通�
 
 const obj = { help_doc, notice }
 
-const Setting: React.ForwardRefRenderFunction<FormInstance | undefined, {}> = (props, ref) => {
+const Setting: React.ForwardRefRenderFunction<FormInstance | undefined, AnyType> = (props, ref) => {
     const [form] = Form.useForm()
     const { doc_type, doc_id } = useParams() as any
 

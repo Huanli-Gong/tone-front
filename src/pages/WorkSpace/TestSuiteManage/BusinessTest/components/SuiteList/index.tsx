@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { useState } from 'react';
 import { Tooltip, Drawer, Table } from 'antd';
 import { CaretRightFilled, CaretDownFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl, FormattedMessage } from 'umi';
 import CodeViewer from '@/components/CodeViewer'
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
-import { suiteChange } from '@/components/Public/TestSuite/index.js';
+import { suiteChange } from '@/components/Public/TestSuite';
 import { test_type_enum, runList } from '@/utils/utils'
 import ConfList from '../ConfList';
 import styles from './index.less';
@@ -14,7 +16,7 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents';
  * @module 业务测试
  * @description suite级列表
  */
-const List = ({ business_id, dataSource }: any) => {
+const List = ({ dataSource }: any) => {
 	const { formatMessage } = useIntl()
 	const [loading, setLoading] = useState<any>(false)
 	// 复选行
@@ -31,7 +33,7 @@ const List = ({ business_id, dataSource }: any) => {
 			fixed: 'left',
 			width: 120,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} width={120} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} width={120} >{text}</ColumnEllipsisText>
 			},
 		},
 		{
@@ -47,7 +49,7 @@ const List = ({ business_id, dataSource }: any) => {
 			dataIndex: 'domain_name_list',
 			width: 100,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text || '-'} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text || '-'}</ColumnEllipsisText>
 			}
 		},
 		{
@@ -93,7 +95,7 @@ const List = ({ business_id, dataSource }: any) => {
 			},
 			render: (_: any, record: any) => {
 				return (
-					<ColumnEllipsisText ellipsis={{ tooltip: true }} children={record.description} />
+					<ColumnEllipsisText ellipsis={{ tooltip: true }} >{record.description}</ColumnEllipsisText>
 				)
 			}
 		},
@@ -107,7 +109,7 @@ const List = ({ business_id, dataSource }: any) => {
 			dataIndex: 'gmt_created',
 			width: 170,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text || '-'} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text || '-'}</ColumnEllipsisText>
 			}
 		},
 	];

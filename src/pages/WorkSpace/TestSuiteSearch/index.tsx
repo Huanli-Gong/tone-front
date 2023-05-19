@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react';
 import { Spin, Input, Tabs, Space, Badge } from 'antd';
 import { SearchOutlined, UpOutlined } from '@ant-design/icons';
@@ -27,7 +28,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   const [showInitialList, setShowInitialList] = useState(true);
   // 搜索栏
   const [loading, setLoading] = useState(false)
-  const [refresh, setRefresh] = useState(false)
+  const [refresh, setRefresh] = useState<any>(new Date().getTime())
   const [tabKey, setTabKey] = useState('all');
   const [itemTotal, setItemTotal] = useState<any>({
     "total_num": 0,
@@ -70,7 +71,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
         setShowInitialList(false);
       }
       getSearchListQuantity({ search_key: value })
-      setRefresh(!refresh)
+      setRefresh(new Date().getTime())
       history.push({
         pathname: `/ws/${ws_id}/suite_search/key`,
         query: {
@@ -91,7 +92,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
     }
   };
 
-  const handleScroll = (e: any) => {
+  const handleScroll = () => {
     const top = testSuiteSearch_wrapper.current.scrollTop
     setListScrollTop(top)
   }
@@ -147,7 +148,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
         ) : (
           <div>
             <Tabs defaultActiveKey="all" onChange={onTabsChange}>
-              {tabList.map((item, i) => (
+              {tabList.map((item) => (
                 <TabPane key={item.key} tab={
                   <span>{item.name} <Badge count={itemTotal[item.fieldName]} overflowCount={999} showZero
                     style={tabKey === item.key ? selectedStyle : othersStyle} />

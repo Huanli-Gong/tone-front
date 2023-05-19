@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react';
 import { history, useIntl, FormattedMessage, useParams } from 'umi'
 import { Input, Space } from 'antd';
@@ -59,7 +60,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
     }
   };
 
-  const handleScroll = (e: any) => {
+  const handleScroll = () => {
     const top = testSuiteSearch_wrapper.current.scrollTop
     setListScrollTop(top)
   }

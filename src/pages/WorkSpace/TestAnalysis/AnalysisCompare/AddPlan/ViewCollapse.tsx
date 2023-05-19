@@ -1,6 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Collapse, Spin, Row, Divider, Space, Button, message } from 'antd'
-import { useIntl, FormattedMessage, useParams } from 'umi'
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-shadow */
+import { useState, useEffect, useRef } from 'react'
+import { Collapse, Spin, Row, Divider, Space, Button } from 'antd'
+import { FormattedMessage, useParams } from 'umi'
 import styled from 'styled-components'
 import CommonPagination from '@/components/CommonPagination';
 import { RenderDataRow } from './'
@@ -31,7 +36,6 @@ const defaultResult = {
 
 const ViewCollapse = (props: any) => {
     const { ws_id } = useParams() as any
-    const { formatMessage } = useIntl()
     const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const { onCancel, onOk, currentGroup } = props
@@ -45,7 +49,7 @@ const ViewCollapse = (props: any) => {
     const allSelectedData: any = useRef(null);
 
     const getViewAllPlanList = async (params: any) => {
-        let data = await queryPlanViewList(params)
+        const data = await queryPlanViewList(params)
         defaultOption(data)
     }
 
@@ -117,6 +121,7 @@ const ViewCollapse = (props: any) => {
                     <CollapseContainer
                         collapsible="header"
                         activeKey={activeKey}
+                        /* @ts-ignore */
                         key={activeKey}
                         onChange={handleChange}
                         expandIcon={(panelProps) => {

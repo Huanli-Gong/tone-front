@@ -25,7 +25,7 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
             setDrawerData(_)
             setVisible(true)
         }
-    }), [])
+    }))
 
     const handleClose = () => {
         setVisible(false)
@@ -95,7 +95,8 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
                         placeholder={formatMessage({ id: `ws.result.details.baseline.placeholder` })}
                         showSearch
                         allowClear
-                        filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                        /* @ts-ignore */
+                        filterOption={(input, option) => (option?.label ?? '')?.toLowerCase().includes(input.toLowerCase())}
                         options={baselineList.map(
                             (item: any) => ({
                                 value: item.id,

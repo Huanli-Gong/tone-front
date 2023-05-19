@@ -1,8 +1,9 @@
-import React , { useState, useEffect, useCallback , useRef } from 'react'
-import { Breadcrumb , Typography, Row , Space, Tag, Button, Dropdown, Menu, Tooltip, Spin, message } from 'antd'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { Breadcrumb, Typography, Row, Tag, Button, Spin } from 'antd'
 import styled from 'styled-components'
-import { FormattedMessage , history } from 'umi'
-import { useClientSize , writeDocumentTitle } from '@/utils/hooks'
+import { FormattedMessage, history } from 'umi'
+import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import BasicInfoDrawer from './components/BasicInfoDrawer'
 import PipLine from './components/PipLine'
 import ConsoleDrawer from './components/ConsoleDrawer'
@@ -10,13 +11,13 @@ import { queryPlanResultDetail } from './services'
 import { requestCodeMessage } from '@/utils/utils'
 import ViewReport from '@/pages/WorkSpace/TestResult/CompareBar/ViewReport'
 interface ContainerProps {
-    width : number;
-    height:number;
+    width: number;
+    height: number;
 }
 
 const SummaryContainer = styled.div<ContainerProps>`
-    width:${ props => props.width }px;
-    height:${ props => props.height }px;
+    width:${props => props.width}px;
+    height:${props => props.height}px;
     /* overflow:auto; */
     background: #f5f5f5;
 `
@@ -45,19 +46,19 @@ const LinkSpan = styled.span`
     }
 `
 
-const ViewDetail = ( props : any ) => {
+const ViewDetail = (props: any) => {
     const { ws_id, plan_id } = props.match.params
     const { route } = props
 
-    writeDocumentTitle( `Workspace.TestPlan.${ route.name }` )
+    writeDocumentTitle(`Workspace.TestPlan.${route.name}`)
 
     const { height: layoutHeight, width: layoutWidth } = useClientSize()
 
     const [loading, setLoading] = useState(false)
     const [dataSet, setDataSet] = useState<any>({})
     //
-    const basicInfoRef : any  = useRef(null)
-    const consoleRef : any  = useRef(null)
+    const basicInfoRef: any = useRef(null)
+    const consoleRef: any = useRef(null)
 
 
     // 1.查询step数据
@@ -69,26 +70,25 @@ const ViewDetail = ( props : any ) => {
             // mock
             // setDataSet(mockData2.data)
 
-            if (res.code === 200 ) {
+            if (res.code === 200) {
                 setDataSet(data)
             } else {
-                requestCodeMessage( res.code , res.msg )
+                requestCodeMessage(res.code, res.msg)
             }
             setLoading(false)
-        } catch(e) {
+        } catch (e) {
             setLoading(false)
         }
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         if (plan_id) {
-            getDetailData({ ws_id,  plan_instance_id: plan_id})
+            getDetailData({ ws_id, plan_instance_id: plan_id })
         }
     }, [plan_id])
 
-    
     const TagInfo = ({ data }: any) => {
-        const {state, start_time, end_time } = data
+        const { state, start_time, end_time } = data
         const rowStyle = { display: 'flex', alignItems: 'center' }
         const normalStyle = { background: '#F2F4F6', border: '1px solid #F2F4F6' }
         return (
@@ -100,16 +100,16 @@ const ViewDetail = ( props : any ) => {
                     <Tag color='#649FF6' style={{ fontWeight: 500, textAlign: 'center' }}>Running</Tag>
                 )}
                 {state === 'fail' && (
-                <Tag color='#C84C5A' style={{ fontWeight: 500, textAlign: 'center' }}>Fail</Tag>
+                    <Tag color='#C84C5A' style={{ fontWeight: 500, textAlign: 'center' }}>Fail</Tag>
                 )}
                 {state === 'success' && (
                     <Tag color='#81BF84' style={{ fontWeight: 500, textAlign: 'center' }}>Complete</Tag>
                 )}
                 {!!start_time && (
-                  <Tag style={normalStyle}><FormattedMessage id="plan.start_time"/>：{start_time}</Tag>
+                    <Tag style={normalStyle}><FormattedMessage id="plan.start_time" />：{start_time}</Tag>
                 )}
                 {!!end_time && (
-                  <Tag style={normalStyle}><FormattedMessage id="plan.end_time"/>：{end_time}</Tag> 
+                    <Tag style={normalStyle}><FormattedMessage id="plan.end_time" />：{end_time}</Tag>
                 )}
             </div>
         )
@@ -119,26 +119,26 @@ const ViewDetail = ( props : any ) => {
     // 基础配置
     const BasicSettingClick = useCallback((data) => {
         basicInfoRef.current?.show('add', data)
-    } , [])
+    }, [])
 
     // 回调函数
-    function prepareCallback (info: any) {
+    function prepareCallback(info: any) {
         const { data } = info
         consoleRef.current?.show('show', data)
     }
-    function basicInfoCallback (info: any) {
+    function basicInfoCallback(info: any) {
         const { data, editFn } = info
-        editFn({ ws_id,  plan_instance_id: plan_id, note: data })
+        editFn({ ws_id, plan_instance_id: plan_id, note: data })
     }
 
     return (
         <Spin spinning={loading} >
-            <SummaryContainer height={ layoutHeight - 50 } width={ layoutWidth }>
+            <SummaryContainer height={layoutHeight - 50} width={layoutWidth}>
                 <SummaryHeader>
-                    <Row style={{ marginBottom : 14 }}>
+                    <Row style={{ marginBottom: 14 }}>
                         <Breadcrumb>
                             <Breadcrumb.Item>
-                                <LinkSpan onClick={() => history.push(`/ws/${ ws_id }/test_plan/view`)}>
+                                <LinkSpan onClick={() => history.push(`/ws/${ws_id}/test_plan/view`)}>
                                     <FormattedMessage id={`Workspace.TestPlan.View`} />
                                 </LinkSpan>
                             </Breadcrumb.Item>
@@ -150,9 +150,9 @@ const ViewDetail = ( props : any ) => {
                     <Typography.Title level={2} style={{ marginBottom: 8 }}>{dataSet.name}</Typography.Title>
                     <Row justify="space-between" align="bottom">
                         <TagInfo data={dataSet} />
-                        <div style={{display: 'flex'}}>
-                            <Button onClick={() => BasicSettingClick(dataSet)} disabled={!Object.keys(dataSet).length}><FormattedMessage id="plan.configuration"/></Button>
-                            <ViewReport dreType="bottomRight" ws_id={ws_id} jobInfo={dataSet} origin={'jobDetail'} buttonStyle={{marginRight: 0,marginLeft: 10}}/>
+                        <div style={{ display: 'flex' }}>
+                            <Button onClick={() => BasicSettingClick(dataSet)} disabled={!Object.keys(dataSet).length}><FormattedMessage id="plan.configuration" /></Button>
+                            <ViewReport dreType="bottomRight" ws_id={ws_id} jobInfo={dataSet} origin={'jobDetail'} buttonStyle={{ marginRight: 0, marginLeft: 10 }} />
                         </div>
                     </Row>
                 </SummaryHeader>

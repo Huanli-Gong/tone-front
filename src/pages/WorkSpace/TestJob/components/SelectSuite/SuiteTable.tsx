@@ -1,19 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Button, Table, Card, Switch, Space, Checkbox, Row, Tag, Tooltip } from 'antd';
 
-import type { TableColumnProps } from "antd"
 import SettingDrawer from '@/pages/WorkSpace/TestJob/components/SuiteSelectDrawer'
 import { CaretDownFilled, CaretRightFilled, MinusCircleOutlined } from '@ant-design/icons'
 import { useIntl, FormattedMessage } from 'umi'
 import styles from './style.less';
 
 import CaseTable from './CaseTable'
-import _ from 'lodash'
+import lodash from 'lodash'
 import { isNull } from 'lodash'
 import { v4 as uuid } from "uuid"
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
-const nameWidth = 200;
 const optionWidth = 100;
 
 const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
@@ -37,6 +37,8 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 	const [suiteAll, setSuiteAll] = useState<boolean>(false)
 
 	const [expandedRowKeys, setExpandedRowKeys] = useState<any>([])
+	const [caseAll, setCaseAll] = useState<boolean>(false)
+
 	const onSelectSuite = (e: any) => {
 		const check = e.target.checked
 		setSuiteAll(check)
@@ -54,7 +56,6 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 	}
 
 	const [indeterminateCase, setIndeterminateCase] = useState<boolean>(false)
-	const [caseAll, setCaseAll] = useState<boolean>(false)
 
 	const onRemoveSuite = (key: string) => {
 		onDataSourceChange(
@@ -72,7 +73,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 					}
 				)
 				if (test_case_list.length > 0) {
-					let obj = item
+					const obj = item
 					obj.test_case_list = test_case_list
 					return obj
 				}
@@ -80,6 +81,10 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 		)
 		onDataSourceChange(list, run_mode)
 	}
+
+	const openSuite = (index: number, row: any) => settingDrawerRef.current?.show('suite', row)
+
+	const openCase = (index: number, row: any) => settingDrawerRef.current?.show('case', row)
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const columnsInner = [
@@ -172,7 +177,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 			width: 150,
 			render: (_: number, row: any) => {
 				if (row.env_info && row.env_info.length > 0) {
-					const str = row.env_info.map((item: any, index: number) => {
+					const str = row.env_info.map((item: any) => {
 						return item.name ? `${item.name || ''}=${item.val || ''};` : '-'
 					})
 					return (
@@ -310,13 +315,13 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 			setIndeterminateSuite(!!selectedRowKeys.length && selectedRowKeys.length < dataSource.length)
 			setSuiteAll(selectedRowKeys.length == dataSource.length)
 		},
-		getCheckboxProps: (record: any) => ({
+		getCheckboxProps: () => ({
 			disabled: selectedCaseKeys.length > 0
 		}),
 	};
 
 	const setSelectedCaseKeysFn = (obj: any) => {
-		let selectedCaseObjCopy = _.cloneDeep(selectedCaseObj) || {}
+		let selectedCaseObjCopy = lodash.cloneDeep(selectedCaseObj) || {}
 		selectedCaseObjCopy = { ...selectedCaseObjCopy, ...obj }
 		setSelectedCaseObj(selectedCaseObjCopy)
 	}
@@ -363,10 +368,6 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 		}
 	}
 
-	const openSuite = (index: number, row: any) => settingDrawerRef.current?.show('suite', row)
-
-	const openCase = (index: number, row: any) => settingDrawerRef.current?.show('case', row)
-
 	const caseBentch = () => {
 		let list: any = []
 		dataSource.map((el: any) => {
@@ -378,8 +379,8 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 	}
 
 	const suiteBentch = () => {
-		let dataList: any = []
-		dataSource.forEach((el: any, i: number) => {
+		const dataList: any = []
+		dataSource.forEach((el: any) => {
 			selectedSuiteKeys.map((item: any) => {
 				if (el.id == item) dataList.push(el)
 			})
@@ -389,7 +390,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 
 	useEffect(() => {
 		let caseKeysList: any = []
-		let caseKeysListObj: any = {}
+		const caseKeysListObj: any = {}
 		dataSource.forEach(
 			(item: any) => {
 				caseKeysList = caseKeysList.concat(item.test_case_list.map((el: any) => el.id + ''))
@@ -400,8 +401,8 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 		setCaseKeyListObj(caseKeysListObj)
 	}, [width, disabled, dataSource])
 
-	const onChange = (checked: boolean) => {
-		setChecked(checked)
+	const onChange = ($checked: boolean) => {
+		setChecked($checked)
 	}
 
 	const handleBatchSetting = () => {
@@ -429,7 +430,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 		setHasCases(true)
 	}
 
-	const innerScrollX = useMemo(() => columnsInner.reduce((pre: any, cur: any) => pre += cur.width, 0), [columnsInner])
+	const innerScrollX = useMemo(() => columnsInner.reduce((xp: any, cur: any) => xp + cur?.width as number, 0), [columnsInner])
 
 	const hanldeSettingOk = () => {
 		setSelectedCaseObj({})
@@ -500,7 +501,6 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 			}
 			<Card bodyStyle={{ width: '100%' }}>
 				<Table
-					rowClassName='outter'
 					style={{ width: width - 2 }}
 					// refreshDeps={[contrl, checked]}
 					rowSelection={checked ? rowSelectionSuite : undefined}
@@ -512,6 +512,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 					size="small"
 					rowKey={record => record.id + ''}
 					dataSource={dataSource}
+					rowClassName={(_, index) => index % 2 === 0 ? "outter outter-odd" : "outter outter-even"}
 					expandable={{
 						expandedRowKeys,
 						columnWidth: 22,

@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useImperativeHandle, useEffect } from 'react'
 import { Form, Input, Select } from 'antd'
 import styles from './index.less'
 
-import { FormProps } from './index'
+import type { FormProps } from './index'
 import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
 import { queryProjectList, queryBaselineList, queryWsJobTest } from '../../services'
 import { debounce } from 'lodash'
@@ -55,7 +56,7 @@ export default (props: FormProps) => {
             reset: () => {
                 form.resetFields()
             },
-            setVal: (data: Object) => {
+            setVal: (data: any) => {
                 form.setFieldsValue(data)
             }
         }),

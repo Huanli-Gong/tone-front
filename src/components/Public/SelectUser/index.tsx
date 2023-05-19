@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Spin } from 'antd';
 import { FormattedMessage, useParams } from 'umi'

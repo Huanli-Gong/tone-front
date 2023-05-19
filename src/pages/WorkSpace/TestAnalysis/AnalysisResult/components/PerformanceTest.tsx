@@ -1,3 +1,14 @@
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable no-param-reassign */
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-shadow */
+
 import React, { useContext, useState, useRef, useEffect, memo, useMemo } from 'react';
 import { Space, Empty, Row, Col, Select, Button, Typography, Tooltip } from 'antd';
 import { ReportContext } from '../Provider';
@@ -220,7 +231,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                     {
                         !getCompareType(item) ?
                             <JumpResult ws_id={wsId} job_id={item.obj_id || item} /> :
-                            <div style={{ height: 38 }}></div>
+                            <div style={{ height: 38 }} />
                     }
                 </PrefDataText>
             )

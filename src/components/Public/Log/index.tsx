@@ -1,4 +1,5 @@
-import React, { useState, useImperativeHandle, forwardRef } from 'react'
+/* eslint-disable react/no-array-index-key */
+import { useState, useImperativeHandle, forwardRef } from 'react'
 import { Table, Drawer, Divider, Row } from 'antd'
 import { queryServerHistory } from './service'
 import { FormattedMessage, useIntl } from 'umi';
@@ -81,13 +82,13 @@ export default forwardRef(
                 /** 数组值 */
             ];
             const listItem = listName.filter((item) => params === item.fieldName);
-            return listItem.length ? formatMessage({ id: `log.listName.${listItem[0].fieldName}`}) : handleCategoryType(params); // listItem[0].text
+            return listItem.length ? formatMessage({ id: `log.listName.${listItem[0].fieldName}` }) : handleCategoryType(params); // listItem[0].text
         }
 
         // 遍历单元格内变更的字段名。
         const renderCell = (vals: any) => vals.map((key: any, index: number) => {
             let val = ''
-            if(isArray(key) && !!key.length){
+            if (isArray(key) && !!key.length) {
                 val = JSON.stringify(key)
             } else {
                 val = String(key)

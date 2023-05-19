@@ -1,4 +1,3 @@
-import React from 'react'
 import { Space, Avatar, Spin, Button, Tag } from 'antd'
 import { history, useIntl, FormattedMessage, getLocale } from 'umi'
 import styles from './index.less'
@@ -15,7 +14,7 @@ export default (props: any) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
 
-    const { approveData, loading, handleTabClick, userId } = props
+    const { approveData, loading, handleTabClick } = props
     const { height: layoutHeight } = useClientSize()
     let approveDataList = _.isArray(approveData) ? approveData : []
     approveDataList = approveDataList.filter(item => _.get(item, 'ws_info'))
@@ -89,7 +88,7 @@ export default (props: any) => {
         let arr = _.isArray(users) ? users : []
         arr = arr.map((item: any) => {
             return (
-                <li>
+                <li key={item.user_name}>
                     <Space>
                         <Avatar size="small" className={styles.avatar} src={item.avatar} alt="avatar" />
                         <span>{item.user_name || ''}</span>
@@ -119,7 +118,7 @@ export default (props: any) => {
         )
     }
 
-    const handleClick = async (id: any, creator: number) => {
+    const handleClick = async (id: any) => {
         history.push(jumpWorkspace(id))
     }
 

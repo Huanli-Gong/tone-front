@@ -1,25 +1,24 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Spin } from 'antd';
-import { useIntl, FormattedMessage } from 'umi';
+import { FormattedMessage } from 'umi';
 import { projectList } from './service';
 import styles from './style.less';
 
-const FilterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, ws_id }) => {
+const FilterRadio: React.FC<any> = ({ confirm, onConfirm, page_size, ws_id }) => {
 	const [project, setProject] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
 	const [val, setVal] = useState<any>()
 	const [fetching, setFetching] = useState<boolean>(true)
 	const [focus, setFous] = useState<boolean>(false)
 	const { Option } = Select;
-	useEffect(() => {
-		handleSearch()
-	}, []);
+
 	const handleSearch = async (word?: string) => {
 		const param = word && word.replace(/\s*/g, "")
 		if (keyword && keyword == param) return
 		setKeyword(param)
 		setFetching(true)
-		let { data } = await projectList({ name: param, page_size: page_size || 10, page_num: 1, ws_id })
+		const { data } = await projectList({ name: param, page_size: page_size || 10, page_num: 1, ws_id })
 		setProject(Array.isArray(data) ? data : [])
 		setFetching(false)
 	}
@@ -27,6 +26,10 @@ const FilterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, 
 	const handleCancleSel = () => {
 		handleSearch()
 	}
+	useEffect(() => {
+		handleSearch()
+	}, []);
+
 	return (
 		<div style={{ padding: 8 }}>
 			<div className={styles.cover}
@@ -35,8 +38,7 @@ const FilterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, 
 						confirm?.()
 					}
 				}}
-			>
-			</div>
+			/>
 			<Select
 				// mode="multiple"
 				allowClear

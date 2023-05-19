@@ -1,6 +1,7 @@
-import React, { useState, useEffect, memo } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect, memo } from 'react'
 import { Row, Select, Space, Button, Divider, Tag } from 'antd'
-import { useIntl, FormattedMessage } from 'umi'
+import { FormattedMessage } from 'umi'
 import { queryMember } from '@/services/Workspace'
 import { queryServerTagList } from '../../services'
 
@@ -10,7 +11,7 @@ export const MembersFilter = memo(
         const [selectValue, setSelectValue] = useState([])
 
         const getMemberList = async (name: string = '') => {
-            let { data } = await queryMember({ keyword: name, scope: 'aligroup' })
+            const { data } = await queryMember({ keyword: name, scope: 'aligroup' })
             setMembers(data)
         }
 
@@ -45,8 +46,8 @@ export const MembersFilter = memo(
                 </div>
                 <Divider style={{ margin: '5px 0' }} />
                 <Space>
-                    <Button size="small" type="link" style={{ width: 75 }} onClick={handleSearch}><FormattedMessage id="operation.search"/></Button>
-                    <Button size="small" type="link" style={{ width: 75 }} onClick={() => setSelectValue([])}><FormattedMessage id="operation.reset"/></Button>
+                    <Button size="small" type="link" style={{ width: 75 }} onClick={handleSearch}><FormattedMessage id="operation.search" /></Button>
+                    <Button size="small" type="link" style={{ width: 75 }} onClick={() => setSelectValue([])}><FormattedMessage id="operation.reset" /></Button>
                 </Space>
             </Row>
         )
@@ -61,7 +62,7 @@ export const ServerTagsFilter = memo(
         const [tagsValue, setTagsValue] = useState([])
 
         const getTagList = async () => {
-            let { data } = await queryServerTagList({ ws_id, page_size: 500 }) //{ run_environment : "aligroup",run_mode : "cluster" }
+            const { data } = await queryServerTagList({ ws_id, page_size: 500 }) //{ run_environment : "aligroup",run_mode : "cluster" }
             setTags(data)
         }
 
@@ -96,8 +97,8 @@ export const ServerTagsFilter = memo(
                 </div>
                 <Divider style={{ margin: '5px 0' }} />
                 <Space>
-                    <Button size="small" type="link" style={{ width: 75 }} onClick={handleSearch}><FormattedMessage id="operation.search"/></Button>
-                    <Button size="small" style={{ width: 75 }} onClick={() => setTagsValue([])}><FormattedMessage id="operation.reset"/></Button>
+                    <Button size="small" type="link" style={{ width: 75 }} onClick={handleSearch}><FormattedMessage id="operation.search" /></Button>
+                    <Button size="small" style={{ width: 75 }} onClick={() => setTagsValue([])}><FormattedMessage id="operation.reset" /></Button>
                 </Space>
             </Row>
         )
