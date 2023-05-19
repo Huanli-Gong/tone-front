@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from 'react'
-import { Button, Select, Space, Tag, Row } from 'antd'
+import { Button, Select, Space, Tag } from 'antd'
 
 import { tagList as queryTagList } from '@/pages/WorkSpace/TagManage/service'
 import { useRequest, Access, useAccess, FormattedMessage } from 'umi'
@@ -24,8 +24,7 @@ export const tagRender = ({ label, closable, onClose, value }: any) => (
     </Tag>
 )
 
-export default ({ tags = [], onOk, ws_id, job_id, creator_id, accessLabel }: any) => {
-
+export default ({ tags = [], onOk, ws_id, job_id, creator_id, accessLabel, width }: any) => {
     const [state, setState] = useState(false)
     const [keys, setKeys] = useState([])
     const access = useAccess();
@@ -73,40 +72,30 @@ export default ({ tags = [], onOk, ws_id, job_id, creator_id, accessLabel }: any
     }
 
     return (
-        <>
-            {/* <Typography.Text className={ styles.test_summary_item }>
-                Job标签
-            </Typography.Text> */}
+        <div style={{ width: `calc(100% - ${width}px)` }}>
             {
                 !state ?
-                    <Row align="middle">
-                        <>
-                            <Access accessible={access.WsTourist()}>
-                                <Access
-                                    accessible={access.WsMemberOperateSelf(creator_id)}
-                                    fallback={<EditOutlined onClick={() => AccessTootip()} style={editBtn} />}
-                                >
-                                    <EditOutlined onClick={handleSetTags} style={editBtn} />
-                                </Access>
-                            </Access>
-                            {
-                                tags.length > 0
-                                    ?
-                                    tags.map(
-                                        (tag: any, index: number) => <Tag color={tag.color} key={index}>{tag.name}</Tag>
-                                    )
-                                    :
-                                    <span style={{ color: 'rgba(0,0,0,0.85)' }}>-</span>
-                            }
-                        </>
-                    </Row> :
-                    <Row >
+                    <Space wrap size={4}>
+                        <Access
+                            accessible={access.WsTourist() && access.WsMemberOperateSelf(creator_id)}
+                            fallback={<EditOutlined onClick={() => AccessTootip()} style={editBtn} />}
+                        >
+                            <EditOutlined onClick={handleSetTags} style={editBtn} />
+                        </Access>
+                        {
+                            tags.length > 0
+                                ? tags.map((tag: any) => <Tag style={{ margin: 0 }} color={tag.color} key={tag.id}>{tag.name}</Tag>)
+                                : <span style={{ color: 'rgba(0,0,0,0.85)' }}>-</span>
+                        }
+                    </Space>
+                    :
+                    <Space size={8}>
                         <Select
                             mode="multiple"
                             value={keys}
                             loading={loading}
                             size="small"
-                            style={{ width: 300, marginRight: 10 }}
+                            style={{ width: 600 }}
                             tagRender={tagRender}
                             onChange={handleSelectChange}
                             allowClear
@@ -123,24 +112,20 @@ export default ({ tags = [], onOk, ws_id, job_id, creator_id, accessLabel }: any
                                     }
                                 </div>
                             )}
-                        >
-                            {
-                                tagList.map(
-                                    (tag: any, index: number) => (
-                                        <Select.Option key={index} value={tag.id}>
-                                            <Tag color={tag.tag_color} >{tag.name}</Tag>
-                                        </Select.Option>
-                                    )
-                                )
+                            options={
+                                tagList.map((tag: any) => ({
+                                    value: tag.id,
+                                    label: <Tag color={tag.tag_color} >{tag.name}</Tag>
+                                }))
                             }
-                        </Select>
+                        />
                         <Space>
                             <Button onClick={handleCancel} size="small"  ><FormattedMessage id="operation.cancel" /></Button>
                             <Button onClick={handleOk} size="small" type="primary"><FormattedMessage id="operation.ok" /></Button>
                         </Space>
-                    </Row>
+                    </Space>
             }
             <JobTagsCreate ref={jobTagsCreateModal} ws_id={ws_id} onOk={refresh} />
-        </>
+        </div>
     )
 }

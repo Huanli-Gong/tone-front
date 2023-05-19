@@ -16,5 +16,5 @@ export default {
    'job.tags.tag_color': '标签颜色',
    'job.tags.msg1': '仅允许包含字母、数字、下划线、中划线、点',
    'job.tags.msg2': '标签名称已存在',
-   'job.tags.msg3': '仅允许包含字母、数字、下划线、中划线、点，最长32个字符',
+   'job.tags.msg3': '仅允许包含字母、数字、下划线、中划线、点，最长64个字符',
 }
