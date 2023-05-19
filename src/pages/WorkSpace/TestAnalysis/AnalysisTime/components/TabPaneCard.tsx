@@ -65,7 +65,7 @@ const SuiteConfMetric = (props: any) => {
     )
 }
 
-const TabPaneCard: React.FC<any> = (props) => {
+const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const { query }: any = useLocation()
@@ -81,6 +81,13 @@ const TabPaneCard: React.FC<any> = (props) => {
     const selectMetricRef: any = useRef()
     const [form] = Form.useForm()
 
+    React.useImperativeHandle(ref, () => ({
+        reset() {
+            form.resetFields()
+            setMetricData(undefined)
+        }
+    }))
+
     const { data: tagList } = useRequest(
         (params = { ws_id, page_size: 999 }) => queryJobTagList(params),
         { initialData: [] } /* , manual: true */
@@ -89,7 +96,6 @@ const TabPaneCard: React.FC<any> = (props) => {
 
     const requestAnalysisData = async (params: any) => {
         setInfo(params)
-        if (loading) return
         setLoading(true)
         const { data, code } = test_type === 'performance' ?
             await queryPerfAnalysisList(params) :
@@ -195,7 +201,6 @@ const TabPaneCard: React.FC<any> = (props) => {
             setChartData(null)
             setTableData([])
             setFetchData([])
-            form.resetFields()
         }
     }, [provider_env, show_type, test_type])
 
@@ -209,11 +214,6 @@ const TabPaneCard: React.FC<any> = (props) => {
             const $metric = Object.prototype.toString.call(metric) === "[object Array]" ? metric : metric.split(",")
 
             if (test_type === $test_type) {
-                form.setFieldsValue({
-                    project_id: project_id ? + project_id : undefined,
-                    tag: tag ? + tag : undefined,
-                })
-
                 const params: any = {
                     metric: $metric,
                     project_id, tag,
@@ -263,6 +263,11 @@ const TabPaneCard: React.FC<any> = (props) => {
                 }
                 else if (start_time)
                     form.setFieldsValue({ time: [moment(start_time), end_time ? moment(end_time) : moment()] })
+
+                form.setFieldsValue({
+                    project_id: + project_id || undefined,
+                    tag: + tag || undefined,
+                })
             }
         }
     }, [query])
@@ -291,8 +296,10 @@ const TabPaneCard: React.FC<any> = (props) => {
                         onFieldsChange={handleFormChange}
                         className={styles.formInlineStyles}
                     >
-                        <Form.Item label={<FormattedMessage id="analysis.project" />}
-                            name="project_id" >
+                        <Form.Item
+                            label={<FormattedMessage id="analysis.project" />}
+                            name="project_id"
+                        >
                             <Select
                                 placeholder={formatMessage({ id: 'analysis.project.placeholder' })}
                                 onChange={handleProductChange}
@@ -471,4 +478,4 @@ const TabPaneCard: React.FC<any> = (props) => {
     )
 }
 
-export default TabPaneCard
+export default React.forwardRef(TabPaneCard)
