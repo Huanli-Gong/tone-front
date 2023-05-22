@@ -42,25 +42,8 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
 
     const [open, setOpen] = React.useState(false)
     const [fetching, setFetching] = React.useState(false)
-    const [fileList, setFileList] = React.useState<UploadFile[]>([]);
-
-    console.log(fileList)
 
     const [form] = Form.useForm()
-
-    /* const fileField = Form.useWatch("file", form)
-    const newName = Form.useWatch("name", form) */
-
-    /* React.useEffect(() => {
-        if (!fileField) return
-        const [f] = fileField
-        const { name } = f
-        if (Object.prototype.toString.call(name) === "[object String]") return
-        console.log(name)
-        if (name) return
-        const $name = name.substr(0, name.lastIndexOf("."))
-        form.setFieldsValue({ name: $name })
-    }, [fileField, form]) */
 
     React.useImperativeHandle(ref, () => ({
         show() {
@@ -71,7 +54,6 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
     const handleClose = () => {
         form.resetFields()
         setOpen(false)
-        setFileList([])
     }
 
     const handleCheckName = async (name: string) => {
@@ -192,25 +174,22 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                             multiple={false}
                             onRemove={
                                 (file) => {
-                                    const index = fileList.indexOf(file);
-                                    const newFileList = fileList.slice();
-                                    newFileList.splice(index, 1);
-                                    setFileList(newFileList);
+                                    form.setFieldsValue({ file: [] })
                                 }
                             }
                             beforeUpload={
                                 (file) => {
-                                    setFileList([file]);
+                                    form.setFieldsValue({ file: [file] })
                                     return false;
                                 }
                             }
-                            fileList={fileList}
                             // beforeUpload={(file) => file}
                             onChange={(info: UploadChangeParam<UploadFile<any>>) => {
                                 const { file } = info
                                 if (file.type && !["application/x-tar", "application/x-gzip"].includes(file.type)) {
                                     form.setFields([{
-                                        name: "file", errors: [
+                                        name: "file",
+                                        errors: [
                                             intl.formatMessage({ id: "baseline.import.form.file.type.error" })
                                         ]
                                     }])
