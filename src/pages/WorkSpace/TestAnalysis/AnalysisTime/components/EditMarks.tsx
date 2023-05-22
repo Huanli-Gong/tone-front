@@ -8,7 +8,7 @@ import { updateAnalysisNote } from '../services'
 export default forwardRef(
     (props: any, ref: any) => {
         const { formatMessage } = useIntl()
-        const { showType, testType, onOk } = props
+        const { show_type, test_type, onOk } = props
         const [form] = Form.useForm()
         const [visible, setVisible] = useState(false)
         const [data, setData] = useState<any>({ suite_name: '', conf_name: '' })
@@ -24,6 +24,7 @@ export default forwardRef(
         useImperativeHandle(
             ref, () => ({
                 show: (_: any = false) => {
+                    console.log(_)
                     setVisible(true)
                     if (_ !== false) {
                         setData(_)
@@ -41,18 +42,27 @@ export default forwardRef(
                 .validateFields()
                 .then(
                     async (values: any) => {
+                        const { note } = values
                         let editor_obj = 'perf_analysis'
-                        if (testType !== 'performance') {
+                        if (test_type !== 'performance') {
                             editor_obj = 'func_case_analysis'
-                            if (showType === 'pass_rate') {
+                            if (show_type === 'pass_rate') {
                                 editor_obj = 'func_conf_analysis'
                             }
                         }
-                        const { code, msg } = await updateAnalysisNote({
+                        const params: any = {
                             editor_obj,
-                            result_obj_id: data.result_obj_id,
-                            note: values.note
-                        })
+                            note
+                        }
+
+                        if (test_type === "performance") {
+                            params.test_job_id = data.job_id
+                        }
+                        else {
+                            params.result_obj_id = data.result_obj_id
+                        }
+
+                        const { code, msg } = await updateAnalysisNote(params)
                         setPadding(false)
                         if (code !== 200) return requestCodeMessage(code, msg)
                         onOk()
