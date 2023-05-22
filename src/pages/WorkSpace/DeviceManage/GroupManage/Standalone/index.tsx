@@ -399,7 +399,7 @@ const Standalone = (props: any, ref: any) => {
                 showTitle: false,
             },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.owner ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SelectUser confirm={confirm} onConfirm={(val: number) => { setUrlParams({ ...urlParmas, page: 1, owner: val }) }} />,
+            filterDropdown: ({ confirm }: any) => <SelectUser confirm={confirm} onConfirm={(val: number) => { setUrlParams({ ...urlParmas, page_num: 1, owner: val }) }} />,
         },
         {
             title: <FormattedMessage id="device.description" />,
@@ -430,7 +430,7 @@ const Standalone = (props: any, ref: any) => {
                     ws_id={ws_id}
                     run_mode={'standalone'}
                     confirm={confirm}
-                    onConfirm={(val: number) => { setUrlParams({ ...urlParmas, page: 1, tags: val }) }}
+                    onConfirm={(val: number) => { setUrlParams({ ...urlParmas, page_num: 1, tags: val }) }}
                 />,
             render: (record: any) => (
                 <OverflowList

@@ -163,11 +163,11 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
             style={{ marginBottom: 10, borderTop: 'none' }}
         >
             <ResizeHooksTable
-                dataSource={data || []}
+                dataSource={data?.map((i: any, idx: number) => ({ ...i, rowkey: `${i.server_id || i.server}-${idx}` }))}
                 columns={columns}
                 name={TABLE_NAME}
                 onColumnsChange={() => setColumnsChange(uuidv4())}
-                rowKey="server_id"
+                rowKey="rowkey"
                 loading={loading}
                 size="small"
                 className={styles.prepTable}
@@ -177,8 +177,8 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                     expandedRowClassName: () => 'expanded-row-padding-no',
                     expandedRowKeys: expandedKeys,
                     onExpand: (expanded: any, record) => {
-                        return expanded ? setExpandedKeys(expandedKeys.concat(record.server_id)) :
-                            setExpandedKeys(expandedKeys.filter((i: any) => i !== record.server_id))
+                        return expanded ? setExpandedKeys(expandedKeys.concat(record.rowkey)) :
+                            setExpandedKeys(expandedKeys.filter((i: any) => i !== record.rowkey))
                     },
                     expandedRowRender: (record: any) => {
                         if (record.server_type === 'cluster') {
@@ -188,11 +188,11 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                                 return (
                                     <div
                                         style={{ width: "100%", display: "flex", flexDirection: "column" }}
-                                        key={uuidv4()}
+                                        key={getServerId}
                                     >
                                         <Table
                                             key={item}
-                                            dataSource={[{ server: item, id: uuidv4(), server_id: getServerId }]}
+                                            dataSource={[{ server: item, id: getServerId, server_id: getServerId }]}
                                             columns={clusterColumns}
                                             size={'small'}
                                             rowKey="id"
@@ -204,7 +204,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                                             columnsChange={columnsChange}
                                             parentTableName={TABLE_NAME}
                                             dataSource={
-                                                source.map((i: any) => ({ id: uuidv4(), ...i }))
+                                                source.map((i: any) => ({ id: getServerId, ...i }))
                                             }
                                         />
                                     </div>
@@ -216,7 +216,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                                 parentTableName={TABLE_NAME}
                                 columnsChange={columnsChange}
                                 {...record}
-                                dataSource={record.server_list.map((i: any) => ({ id: uuidv4(), ...i }))}
+                                dataSource={record.server_list.map((i: any) => ({ id: i.server_id, ...i }))}
                             />
                         )
                     },
