@@ -13,7 +13,7 @@ import { requestCodeMessage } from '@/utils/utils';
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
-    const { selectedChange, wsId, allSelectRowData } = props
+    const { selectedChange, allSelectRowData } = props
     const { ws_id } = useParams() as any
     const access = useAccess()
     const scrollbarsRef: any = useRef(null)
@@ -50,7 +50,7 @@ export default (props: any) => {
     const handleNext = (path: string) => {
         if (path === 'test_report/report') return
         history.push({
-            pathname: `/ws/${wsId}/${path}`,
+            pathname: `/ws/${ws_id}/${path}`,
             state: {
                 [`${ws_id}-compareData`]: JSON.stringify([]),
                 [`${ws_id}-noGroupJobData`]: JSON.stringify(allSelectRowData),
@@ -222,7 +222,7 @@ export default (props: any) => {
             .then((result: any) => {
                 if (_.get(result[0], 'code') === 200 && _.get(result[1], 'code') === 200) {
                     history.push({
-                        pathname: `/ws/${wsId}/test_create_report`,
+                        pathname: `/ws/${ws_id}/test_create_report`,
                         state: {
                             environmentResult: result[0].data,
                             baselineGroupIndex: 0,
@@ -327,7 +327,7 @@ export default (props: any) => {
                         </Button>
                     </Space>
                 </div>
-                <SaveReport ref={saveReportDraw} onOk={creatReportCallback} ws_id={wsId} allGroup={[getBaselineGroup()]} />
+                <SaveReport ref={saveReportDraw} onOk={creatReportCallback} allGroup={[getBaselineGroup()]} />
             </div>
         </div>
     )
