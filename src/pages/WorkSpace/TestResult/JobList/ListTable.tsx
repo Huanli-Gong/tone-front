@@ -265,6 +265,19 @@ const ListTable: React.FC<IProps> = (props) => {
             )
         },
         {
+            title: <FormattedMessage id="ws.result.list.product_version" />,
+            width: 120,
+            dataIndex: 'product_version',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_: any) => (
+                <ColumnEllipsisText ellipsis={{ tooltip: true }}>
+                    {_ || '-'}
+                </ColumnEllipsisText>
+            )
+        },
+        {
             title: <FormattedMessage id="ws.result.list.creators" />,
             width: 80,
             ellipsis: {

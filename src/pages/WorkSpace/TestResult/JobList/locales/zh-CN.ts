@@ -1,6 +1,6 @@
 const defaultKey = 'ws.result.list'
 
-const text = {
+const text: any = {
   // select Options
   'job_id': 'JobID',
   'name': 'Job名称',
@@ -12,6 +12,7 @@ const text = {
   'test_suite': 'TestSuite',
   'job_type_id': 'Job类型',
   'project_id': '所属项目',
+  'product_version': '产品版本',
 
   'id': "ID",
   'test_type': '测试类型',
@@ -72,7 +73,7 @@ const text = {
   'reRun.checked.inheriting_machine': '使用原Job使用的机器',
 };
 
-export default Object.keys(text).reduce((p, key) => {
+export default Object.keys(text).reduce((p: any, key) => {
   p[`${defaultKey}.${key}`] = text[key]
   return p
 }, {})

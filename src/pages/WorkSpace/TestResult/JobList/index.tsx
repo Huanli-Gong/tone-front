@@ -70,10 +70,13 @@ const DEFAULT_COLUMNS_SET_DATA = {
     test_type: { order: 3, disabled: false, },
     test_result: { order: 4, disabled: false, },
     project_name: { order: 5, disabled: false, },
-    creator_name: { order: 6, disabled: false, },
-    start_time: { order: 7, disabled: false, },
-    end_time: { order: 8, disabled: false, },
+    product_version: { order: 6, disabled: true, },
+    creator_name: { order: 7, disabled: false, },
+    start_time: { order: 8, disabled: false, },
+    end_time: { order: 9, disabled: false, },
 }
+
+const REMEBER_COLUMNS_STATE_STRING_KEY = "test-job-list-columns-state-key"
 
 const BaseTab: React.FC<IProps> = () => {
     const { formatMessage } = useIntl()
@@ -90,9 +93,9 @@ const BaseTab: React.FC<IProps> = () => {
     const [initialColumns, setInitialColumns] = React.useState({})
 
     React.useEffect(() => {
-        const columnStates = localStorage.getItem("test-job-list-columns-state")
+        const columnStates = localStorage.getItem(REMEBER_COLUMNS_STATE_STRING_KEY)
         if (!columnStates) {
-            localStorage.setItem("test-job-list-columns-state", JSON.stringify(DEFAULT_COLUMNS_SET_DATA))
+            localStorage.setItem(REMEBER_COLUMNS_STATE_STRING_KEY, JSON.stringify(DEFAULT_COLUMNS_SET_DATA))
             setInitialColumns(DEFAULT_COLUMNS_SET_DATA)
         }
         else {
@@ -102,7 +105,7 @@ const BaseTab: React.FC<IProps> = () => {
 
     React.useEffect(() => {
         if (JSON.stringify(initialColumns) !== "{}")
-            localStorage.setItem("test-job-list-columns-state", JSON.stringify(initialColumns))
+            localStorage.setItem(REMEBER_COLUMNS_STATE_STRING_KEY, JSON.stringify(initialColumns))
     }, [initialColumns])
 
     const [source, setSource] = React.useState()
