@@ -76,7 +76,7 @@ const DEFAULT_COLUMNS_SET_DATA = {
     end_time: { order: 9, disabled: false, },
 }
 
-const REMEBER_COLUMNS_STATE_STRING_KEY = "test-job-list-columns-state-key"
+const REMEBER_COLUMNS_STATE_STRING_KEY = "test-job-list-columns-state"
 
 const BaseTab: React.FC<IProps> = () => {
     const { formatMessage } = useIntl()
@@ -99,7 +99,13 @@ const BaseTab: React.FC<IProps> = () => {
             setInitialColumns(DEFAULT_COLUMNS_SET_DATA)
         }
         else {
-            setInitialColumns(JSON.parse(columnStates))
+            const base = JSON.parse(columnStates)
+
+            setInitialColumns(
+                base.product_version ?
+                    base :
+                    { ...base, product_version: DEFAULT_COLUMNS_SET_DATA.product_version }
+            )
         }
     }, [])
 
