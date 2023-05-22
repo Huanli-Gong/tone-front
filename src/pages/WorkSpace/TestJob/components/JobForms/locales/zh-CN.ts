@@ -32,9 +32,9 @@ const text = {
   'install_un_push': '安装未发布',
   'install_build_kernel': 'Build内核',
 
-  'env_info.placeholder': '格式：key=value，多个用空格或换行进行分割',
+  'env_info.placeholder': '格式：key=value，多个使用换行进行分割。',
 
-  'env_info.1': '支持定义多个全局变量，需使用空格和换行分割。【如：x=1 y=2】',
+  'env_info.1': '支持定义多个全局变量，需使用换行分割。',
   'env_info.2': '支持包含特殊符号。【如：expression="a == b"】',
   'env_info.3': '支持定义一个数组。 【如：fruits=(apple banana lemon)】',
   'env_info.4': `支持使用单引号和双引号嵌套。【如：test='The capital letter of a is "A"' or test="The capital letter of a is 'A'"】`,

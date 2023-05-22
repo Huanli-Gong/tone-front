@@ -32,9 +32,9 @@ const text = {
   'install_un_push': 'Install Not Released',
   'install_build_kernel': 'Build Kernel',
 
-  'env_info.placeholder': 'Format: key = value, multiple spaces or line breaks',
+  'env_info.placeholder': 'Format: key=value, multiple split using line breaks.',
 
-  'env_info.1': 'Supports defining multiple global variables, requiring the use of spaces and line breaks. [e.g.  x=1 y=2]',
+  'env_info.1': 'Supports defining multiple global variables and requires the use of line breaks for segmentation.',
   'env_info.2': 'Support for containing special symbols. [e.g.  expression="a==b"]',
   'env_info.3': 'Supports defining an array. [e.g., fruits=(apple banana lemon)]',
   'env_info.4': `Supports the use of single and double quote nesting. [e.g.  test='The capital letter of a is "A"' or test="The capital letter of a is'A'"]`,

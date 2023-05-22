@@ -292,7 +292,8 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                             () => ({
                                 validator(rule, value) {
                                     if (value) {
-                                        const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
+                                        const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)(\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
+                                        // const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
                                         return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({ id: 'job.form.env_info.placeholder' }));
                                     }
                                     else
