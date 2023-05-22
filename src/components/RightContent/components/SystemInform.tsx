@@ -19,16 +19,16 @@ const SystemInform = (props: any) => {
     const querySysMsg = async () => {
         setLoading(true)
         const data = await queryApplyMsg({ is_read: '0', page_num: 1, page_size: 4 })
+        setLoading(false)
         if (data.code === 200) {
             setSysMsgList(data.data)
-            setLoading(false)
         } else {
             message.error(data.msg)
         }
     }
 
     useEffect(() => {
-        if (tab == '2') {
+        if (tab === '2') {
             querySysMsg()
         }
     }, [tab])
