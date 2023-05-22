@@ -11,16 +11,16 @@ import ReportBasicInfo from './components/ReportBasicInfo';
 import ReportSummary from './components/ReportSummary';
 import ReportTestEnv from './components/ReportTestEnv';
 import ReportTestPref from './components/ReportTestPerf';
-import { useClientSize } from '@/utils/hooks'
+import { useClientSize, useCopyText } from '@/utils/hooks'
 import Catalog from './components/Catalog'
 import { editReport, saveReport } from '../services';
 import { history, useAccess, Access, useParams, useIntl, FormattedMessage } from 'umi';
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { ReportContext } from './Provider';
-import Clipboard from 'clipboard';
 import _ from 'lodash';
 import { ReportTemplate, ReportBodyContainer, ReportWarpper, ReportBread, BreadDetailL, BreadDetailR } from './ReportUI';
 import { CreatePageData, EditPageData } from './hooks';
+import { useScroll } from "ahooks"
 
 const Report = (props: any) => {
     const { formatMessage } = useIntl()
@@ -39,6 +39,7 @@ const Report = (props: any) => {
         }
     })
     const routeName = props.route.name
+    const handleCopyText = useCopyText(formatMessage({ id: 'report.link.copied.successfully' }))
 
     const basicData: any = ['Report', 'EditReport', 'ShareReport'].includes(routeName) ? EditPageData(props) : CreatePageData(props);
 
@@ -122,7 +123,7 @@ const Report = (props: any) => {
                         }
                     </Button> :
                     <Space>
-                        <span style={{ cursor: 'pointer' }} className="test_report_copy_link">
+                        <span style={{ cursor: 'pointer' }} onClick={() => handleCopyText(location.origin + `/share/report/${report_id}`)}>
                             <Space>
                                 <IconLink />
                                 <FormattedMessage id="operation.share" />
@@ -161,19 +162,6 @@ const Report = (props: any) => {
         </Row>
     )
 
-    // 复制功能
-    useEffect(() => {
-        const clipboard = new Clipboard('.test_report_copy_link', { text: () => location.origin + `/share/report/${report_id}` })
-        clipboard.on('success', function (e) {
-            message.success(formatMessage({ id: 'report.link.copied.successfully' }))
-            e.clearSelection();
-        })
-        return () => {
-            clipboard.destroy()
-            window.sessionStorage.clear()
-        }
-    }, [])
-
     //保存报告
     const handleSubmit = async () => {
         setBtnConfirm(true)
@@ -205,6 +193,9 @@ const Report = (props: any) => {
         setBtnConfirm(false)
     }
 
+    const containerRef = React.useRef<HTMLDivElement>(null)
+    const containerScroll = useScroll(containerRef)
+
     return (
         <ReportContext.Provider value={{
             btnState,
@@ -228,14 +219,15 @@ const Report = (props: any) => {
             creator,
             isOldReport: saveReportData?.old_report,
             setCollapsed,
-            setObj
+            setObj,
+            containerScroll
         }}>
             <Spin spinning={loading}>
                 <ReportTemplate height={windowHeight - 50} >
                     {/* 目录部分 */}
                     <Catalog />
                     {/* 报告内容 */}
-                    <ReportBodyContainer id={'report-body-container'} collapsed={collapsed}>
+                    <ReportBodyContainer id={'report-body-container'} ref={containerRef} collapsed={collapsed}>
                         <ReportWarpper ref={bodyRef}>
                             <Col span={24}>
                                 {!!ws_id && <BreadcrumbItem />}

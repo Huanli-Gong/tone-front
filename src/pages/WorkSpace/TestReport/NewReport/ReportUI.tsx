@@ -523,6 +523,7 @@ export const ConfData = styled.div<GroupRowProps>`
 `
 export const TestConfWarpper = styled.div`
     margin: 0px 15px 0px 17px;
+    /* border-top:1px solid rgba(0,0,0,0.10); */
 `
 interface Expand {
     expand: boolean
@@ -534,9 +535,9 @@ export const TestCase = styled.div<Expand>`
     border: 1px solid rgba(0,0,0,0.10);
     border-right:none;
     border-top: none;
-    &:first-child {
+    /* &:first-child {
         border-top:1px solid rgba(0,0,0,0.10);
-    }
+    } */
 `
 const CaseTextPulic = `
     float:left;

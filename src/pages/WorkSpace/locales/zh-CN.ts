@@ -54,6 +54,7 @@ export default {
   'Workspace.TemplateEdit': '模板编辑',
   'Workspace.TemplatePreview': '模板预览',
 
+  'Workspace.TestReport.Report': '测试报告',
   'Workspace.TestReport': '测试报告',
   'Workspace.TestReport.TemplateCreate': '新建报告模版',
   'Workspace.TestReport.Template': '报告模版',

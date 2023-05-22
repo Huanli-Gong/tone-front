@@ -230,6 +230,9 @@ const Report: React.FC = () => {
         }
     }, [environmentResult.compare_groups])
 
+    const containerRef = React.useRef<HTMLDivElement>(null)
+    const containerScroll = useScroll(containerRef)
+
     return (
         <ReportContext.Provider
             value={{
@@ -239,7 +242,8 @@ const Report: React.FC = () => {
                 compareResult,
                 envData,
                 group,
-                wsId: ws_id || shareWsId
+                wsId: ws_id || shareWsId,
+                containerScroll
             }}
         >
             <div
@@ -250,6 +254,7 @@ const Report: React.FC = () => {
                     overflow: 'auto',
                     background: "#f5f5f5"
                 }}
+                ref={containerRef}
             >
                 {
                     compareLen !== suiteLen && <MyLoading>

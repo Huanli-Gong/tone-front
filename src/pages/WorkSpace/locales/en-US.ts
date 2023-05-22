@@ -50,7 +50,8 @@ export default {
   'Workspace.TemplateEdit': 'Edit Template',
   'Workspace.TemplatePreview': 'Preview Template',
 
-  'Workspace.TestReport': 'Report',
+  'Workspace.TestReport.Report': 'Test Report',
+  'Workspace.TestReport': 'Tesst Report',
   'Workspace.TestReport.TemplateCreate': 'Create Report Template',
   'Workspace.TestReport.Template': 'Report Template',
   'Workspace.CreateReport': 'Generate Report',
@@ -69,7 +70,7 @@ export default {
   'Workspace.TestAnalysis.ResultCompareAnalysis': 'Result',
   'Workspace.TestAnalysis.TimeAnalysis': 'Time Analysis',
 
-  'Workspace.TestPlan': 'TestPlan',
+  'Workspace.TestPlan': 'Test Plan',
   'Workspace.TestPlan.Manage': 'Plan Manage',
   'Workspace.TestPlan.Create': 'Create Plan',
   'Workspace.TestPlan.Run': 'Run Plan',
