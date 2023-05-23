@@ -6,6 +6,7 @@ import { TestContext } from '../../Provider';
 import { delBentch } from '../../service';
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
 import styled from 'styled-components'
+import { saveRefenerceData } from '@/utils/utils';
 
 const BatchRow = styled(Row)`
     padding-right : 20px;
@@ -45,10 +46,13 @@ const BatchDelete = () => {
         confDrawerShow('batch.edit', { bentch: true }) // 批量编辑Test Conf
     }
 
-    const handleDetail = () => {
+    const handleDetail = async () => {
         const newData: any = []
         selectedRow.map((item: any) => newData.push(item.name))
-        window.open(`/refenerce/conf/?name=${newData.join(',')}&id=${selectedRowKeys.join(',')}`)
+        const pk = saveRefenerceData({ name: newData.join(','), id: selectedRowKeys.join(',') })
+        if (pk)
+            window.open(`/refenerce/conf/pk=${pk}`)
+        // window.open(`/refenerce/conf/?name=${newData.join(',')}&id=${selectedRowKeys.join(',')}`)
     }
     return (
         <>

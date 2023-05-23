@@ -4,7 +4,7 @@ import { Space, message, Button, Modal } from 'antd';
 import { CaretRightFilled, CaretDownFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
 import CommonTable from '@/components/Public/CommonTable';
-import { test_type_enum, runList } from '@/utils/utils'
+import { test_type_enum, runList, saveRefenerceData } from '@/utils/utils'
 import ConfList from '../ConfList';
 import AddSuiteDrawer from './AddSuiteDrawer';
 import FuncOrPerfConfList from '../../../FuncOrPerfConfList';
@@ -147,14 +147,20 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 		}
 	}
 	// 6.查看引用详情
-	const handleDetail = () => {
+	const handleDetail = async () => {
 		const type = deleteState.action
 		let newData: any = []
 		selectedRow.map((item: any) => newData.push(item.name))
+
 		if (type === 'multiple') {
-			window.open(`/refenerce/conf/?name=${newData.join(',')}&id=${selectedRowKeys.join(',')}`)
+			const pk = await saveRefenerceData({ name: newData.join(','), id: selectedRowKeys.join(',') })
+			// window.open(`/refenerce/conf/?name=${newData.join(',')}&id=${selectedRowKeys.join(',')}`)
+			window.open(`/refenerce/conf/?pk=${pk}`)
 		} else if (type === 'single') {
-			window.open(`/refenerce/suite/?name=${deleteRow.name}&id=${deleteRow.id}`)
+			const { name, id } = deleteRow
+			const pk = await saveRefenerceData({ name, id })
+			// window.open(`/refenerce/suite/?name=${deleteRow.name}&id=${deleteRow.id}`)
+			window.open(`/refenerce/suite/?pk=${pk}`)
 		}
 	}
 

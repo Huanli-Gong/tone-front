@@ -17,8 +17,8 @@ export const queryTestServerList = async (params: {
     return request(`/api/server/test_server/`, { params })
 }
 
-export const queryServerDel = async (params: any) => {
-    return request('/api/server/del_confirm/', { params })
+export const queryServerDel = async (data: any) => {
+    return request('/api/server/del_confirm/', { data, method: "post" })
 }
 
 export const queryTestServerNewList = async (params: {

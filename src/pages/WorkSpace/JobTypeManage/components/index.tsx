@@ -3,6 +3,7 @@ import React, { forwardRef, useState, useImperativeHandle } from 'react'
 import { Input, Modal, Button, Space, Row, } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { FormattedMessage } from 'umi'
+import { saveRefenerceData } from '@/utils/utils'
 export const EditTalbeCell: React.FC<any> = ({ priority, id, onChange, size }) => {
     const handleChange = ({ target }: any) => {
         if (priority === +target.value) return;
@@ -29,8 +30,11 @@ export const JobTypeDeleteModal: React.FC<any> = forwardRef(
         const [padding, setPadding] = useState(false)
 
 
-        const handleDetail = () => {
-            window.open(`/ws/${data.ws_id}/refenerce/2/?name=${data.name}&id=${data.id}`)
+        const handleDetail = async () => {
+            const pk = await saveRefenerceData({ name: data.name, id: data.id })
+            if (pk)
+                window.open(`/ws/${data.ws_id}/refenerce/2/?pk=${pk}`)
+            // window.open(`/ws/${data.ws_id}/refenerce/2/?name=${data.name}&id=${data.id}`)
         }
 
         const handleSecondCancle = () => {

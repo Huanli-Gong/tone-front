@@ -5,7 +5,7 @@ export const queryTestTemplateList = async (params: any) => {
 }
 
 export const queryTemplateDel = async (params: any) => {
-    return request(`/api/job/template/del/`, { params })
+    return request(`/api/job/template/del/`, { params, method: "post" })
 }
 
 export const saveTestTemplate = async (data: any) => {

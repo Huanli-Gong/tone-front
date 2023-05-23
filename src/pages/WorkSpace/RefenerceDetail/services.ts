@@ -1,21 +1,24 @@
 import { request } from "umi"
 
-export const querySuiteList = ( data : any ) => {
-    return request(`/api/case/ws_case/confirm/` , { 
+export const querySuiteList = (data: any) => {
+    return request(`/api/case/ws_case/confirm/`, {
         data,
-        method:'post'
+        method: 'post'
     })
 }
 
-export const queryJobTypeList = ( params : any ) => {
-    return request(`/api/job/type/del/` , { params })
+export const queryJobTypeList = (data: any) => {
+    return request(`/api/job/type/del/`, { method: "post", data })
 }
 
-export const querTempDel = ( params : any ) => {
-    return request(`/api/job/template/del/` , { params })
+export const querTempDel = (data: any) => {
+    return request(`/api/job/template/del/`, { method: "post", data })
 }
 
-export const querServerDel = ( params : any ) => {
-    return request(`/api/server/del_confirm/` , { params })
+export const querServerDel = (data: any) => {
+    return request(`/api/server/del_confirm/`, { method: "post", data })
 }
 
+export const queryFormDate = (params: any) => {
+    return request(`/api/case/ws_case/params/`, { params })
+}

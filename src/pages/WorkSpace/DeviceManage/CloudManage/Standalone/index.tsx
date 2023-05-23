@@ -19,7 +19,7 @@ import CloudDetail from './CloudDetail'
 import styles from './style.less';
 import { useParams, useIntl, FormattedMessage, getLocale, history, useLocation } from 'umi'
 import lodash from 'lodash'
-import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef, saveRefenerceData } from '@/utils/utils';
 import SelectDropSync from '@/components/Public/SelectDropSync';
 import { Access, useAccess } from 'umi'
 import SelectCheck from '@/pages/WorkSpace/TestSuiteManage/components/SelectCheck'
@@ -190,8 +190,11 @@ export default () => {
         }
     }
 
-    const handleDetail = () => {
-        window.open(`/ws/${ws_id}/refenerce/6/?name=${deleteObj.name}&id=${deleteObj.id}`)
+    const handleDetail = async () => {
+        const pk = await saveRefenerceData({ name: deleteObj.name, id: deleteObj.id })
+        if (pk)
+            window.open(`/ws/${ws_id}/refenerce/6/?pk=${pk}`)
+        // window.open(`/ws/${ws_id}/refenerce/6/?name=${deleteObj.name}&id=${deleteObj.id}`)
     }
     useEffect(() => {
         getList()

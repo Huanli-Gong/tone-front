@@ -3,6 +3,7 @@ import React from "react"
 import { Modal, Button, Typography, Space } from "antd"
 import { FormattedMessage, useIntl } from "umi"
 import { ExclamationCircleOutlined } from "@ant-design/icons"
+import { saveRefenerceData } from "@/utils/utils"
 
 type Iprops = AnyType
 type IRefs = AnyType
@@ -28,6 +29,13 @@ const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) =>
 
     const hanldeCancel = () => {
         setVisible(false)
+    }
+
+    const handleOpenRef = async () => {
+        if (!setting) return
+        const { name, id } = setting
+        const pk = await saveRefenerceData({ name, id })
+        if (pk) window.open(`${basePath || "/refenerce/suite/"}?pk=${pk}`)
     }
 
     return (
@@ -58,8 +66,7 @@ const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) =>
                     <FormattedMessage id="TestSuite.suite.delete.range" />
                 </Typography.Text>
                 <Typography.Link
-                    href={`${basePath || "/refenerce/suite/"}?name=${setting?.name}&id=${setting?.id}`}
-                    target="_blank"
+                    onClick={handleOpenRef}
                 >
                     <FormattedMessage id="view.reference.details" />
                 </Typography.Link>

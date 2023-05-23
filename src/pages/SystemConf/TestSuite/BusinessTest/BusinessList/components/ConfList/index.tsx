@@ -9,6 +9,7 @@ import { delCase, queryConf, delBentch } from '../../../../service';
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
 import styles from './index.less';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
+import { saveRefenerceData } from '@/utils/utils';
 
 /**
  * @module 业务测试
@@ -83,15 +84,23 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 		}
 	}
 	// 4.查看引用
-	const handleDetail = () => {
+	const handleDetail = async () => {
 		const type = deleteState.action
 
 		let newData: any = []
 		selectedRow.map((item: any) => newData.push(item.name))
+		let pk
 		if (type == 'multiple') {
-			window.open(`/refenerce/conf/?name=${newData.join(',')}&id=${selectedRowKeys.join(',')}`)
+			pk = await saveRefenerceData({ name: newData.join(','), id: selectedRowKeys.join(',') })
+			// window.open(`/refenerce/conf/?name=${newData.join(',')}&id=${selectedRowKeys.join(',')}`)
 		} else {
-			window.open(`/refenerce/conf/?name=${deleteRow.name}&id=${deleteRow.id}`)
+			const { name, id } = deleteRow
+			pk = await saveRefenerceData({ name, id })
+			// window.open(`/refenerce/conf/?name=${deleteRow.name}&id=${deleteRow.id}`)
+		}
+
+		if (pk) {
+			window.open(`/refenerce/conf/?pk=${pk}`)
 		}
 	}
 

@@ -7,7 +7,7 @@ import { Table, PageHeader, Layout, Button, Row, Space, Select, Input, Typograph
 import { history, useParams, useIntl, FormattedMessage } from 'umi'
 import { PlusCircleFilled, MinusCircleFilled, CaretRightFilled, SearchOutlined, ExclamationCircleOutlined, InfoCircleOutlined } from '@ant-design/icons'
 import { ReactComponent as UnFullExpand } from '@/assets/svg/un_full.svg'
-import { test_type_enum } from '@/utils/utils'
+import { saveRefenerceData, test_type_enum } from '@/utils/utils'
 import { queryTestSuiteList, saveSuiteCaseList, queryWorkspaceSuiteList, queryWsCaseConfirm } from './service'
 import { queryDomains, queryBusinessSuite, queryWorkspaceBusinessSuite } from '@/pages/WorkSpace/TestSuiteManage/service'
 
@@ -390,8 +390,11 @@ const TestSuiteCreate: React.FC = () => {
         setDeleteVisible(false)
     }
 
-    const handleDetail = () => {
-        window.open(`/ws/${ws_id}/refenerce/1/?test_type=${test_type}&name=${delType}&id=${case_id_list}`)
+    const handleDetail = async () => {
+        const pk = await saveRefenerceData({ test_type, name: delType, id: case_id_list })
+        if (pk)
+            window.open(`/ws/${ws_id}/refenerce/1/?pk=${pk}`)
+        // window.open(`/ws/${ws_id}/refenerce/1/?test_type=${test_type}&name=${delType}&id=${case_id_list}`)
     }
 
     const handleSave = async (callback?: any) => {

@@ -9,7 +9,7 @@ import CopyModal from './components/CopyModal'
 import CommonPagination from '@/components/CommonPagination'
 import { getSearchFilter, getRadioFilter, getCheckboxFilter, getUserFilter } from '@/components/TableFilters'
 import { SingleTabCard } from '@/components/UpgradeUI';
-import { requestCodeMessage, AccessTootip, useStateRef } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip, useStateRef, saveRefenerceData } from '@/utils/utils';
 import { cloneDeep, get } from 'lodash'
 import { Access, useAccess } from 'umi'
 import { ResizeHooksTable } from '@/utils/table.hooks'
@@ -88,8 +88,11 @@ export default () => {
         }
     }
 
-    const handleDetail = () => {
-        window.open(`/ws/${ws_id}/refenerce/3/?name=${deleteObj.name}&id=${deleteObj.id}`)
+    const handleDetail = async () => {
+        const pk = await saveRefenerceData({ name: deleteObj.name, id: deleteObj.id })
+        if (pk)
+            window.open(`/ws/${ws_id}/refenerce/3/?pk=${pk}`)
+        // window.open(`/ws/${ws_id}/refenerce/3/?name=${deleteObj.name}&id=${deleteObj.id}`)
     }
 
     const handlePreview = ({ id, job_type, creator }: any): any => {

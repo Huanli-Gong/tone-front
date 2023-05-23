@@ -16,7 +16,7 @@ import AddCluster from './AddGroup'
 import { FilterFilled } from '@ant-design/icons';
 import { useParams, useIntl, FormattedMessage, useLocation, history } from 'umi';
 import { useClientSize } from '@/utils/hooks';
-import { AccessTootip, handlePageNum, requestCodeMessage, useStateRef } from '@/utils/utils';
+import { AccessTootip, handlePageNum, requestCodeMessage, saveRefenerceData, useStateRef } from '@/utils/utils';
 import { Access, useAccess } from 'umi'
 import Log from '@/components/Public/Log';
 import OverflowList from '@/components/TagOverflow/index';
@@ -139,8 +139,11 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     const addMachine = (id: number) => {
         aloneMachine.current && aloneMachine.current.newMachine(id)
     }
-    const handleDetail = () => {
-        window.open(`/ws/${ws_id}/refenerce/7/?name=${deleteObj.name}&id=${deleteObj.id}`)
+    const handleDetail = async () => {
+        const pk = await saveRefenerceData({ name: deleteObj.name, id: deleteObj.id })
+        if (pk)
+            window.open(`/ws/${ws_id}/refenerce/7/?pk=${pk}`)
+        // window.open(`/ws/${ws_id}/refenerce/7/?name=${deleteObj.name}&id=${deleteObj.id}`)
     }
     // 添加成功回调
     const successCallback = (info: any) => {
