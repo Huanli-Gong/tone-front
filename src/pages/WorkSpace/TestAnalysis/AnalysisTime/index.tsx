@@ -28,7 +28,7 @@ const AnalysisTime: React.FC<any> = (props) => {
     const { route } = props
 
     const [metrics, setMetrics] = React.useState<any[]>([])
-
+    const tabPaneRef = React.useRef<AnyType>(null)
     const tabName = BUILD_APP_ENV === 'openanolis' ? 'aliyun' : 'aligroup'
     const routeIntlName = `Workspace.TestAnalysis.${route.name}`
 
@@ -64,6 +64,7 @@ const AnalysisTime: React.FC<any> = (props) => {
     const clearAndSetFields = (val: any) => {
         const { test_type, provider_env, show_type } = info
         setInfo({ test_type, provider_env, show_type, ...val })
+        tabPaneRef.current?.reset()
     }
 
     const handleProviderChange = ({ target }: any) => {
@@ -159,8 +160,11 @@ const AnalysisTime: React.FC<any> = (props) => {
                     </Col>
                     <Col span={24}>
                         <TabPaneCard
+                            ref={tabPaneRef}
                             info={info}
-                            setInfo={(i: any) => setInfo((p: any) => ({ ...p, ...i }))}
+                            setInfo={(i: any) => {
+                                setInfo((p: any) => ({ ...p, ...i }))
+                            }}
                         />
                     </Col>
                 </Row>

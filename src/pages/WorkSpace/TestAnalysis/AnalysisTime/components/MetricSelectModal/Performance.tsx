@@ -14,14 +14,14 @@ const transMetric = (query: any) => {
 }
 
 const Performance: React.FC<AnyType> = (props) => {
-    const { suiteList, projectId, test_type, provider_env, onChange } = props
+    const { suiteList, projectId, test_type, provider_env, onChange, basicValues } = props
     const { query }: any = useLocation()
     const { formatMessage } = useIntl()
 
     const getQueryValue = (queryName: any) => {
-        if (test_type === "performance" && provider_env === query?.provider_env && query[queryName]) {
-            return query[queryName]
-        }
+        if (test_type !== "performance") return undefined
+        if (basicValues) return basicValues[queryName]
+        if (provider_env === query?.provider_env && query[queryName]) return query[queryName]
         return undefined
     }
 
@@ -30,7 +30,7 @@ const Performance: React.FC<AnyType> = (props) => {
     const [activeSuite, setActiveSuite] = React.useState<any>(+ getQueryValue("test_suite_id") || undefined)
     const [activeConf, setActiveConf] = React.useState<any>(+ getQueryValue("test_case_id") || undefined)
     const [metricList, setMetricList] = React.useState<any>([])
-    const [selectMetric, setSelectMetric] = React.useState<any>(transMetric(query))
+    const [selectMetric, setSelectMetric] = React.useState<any>(getQueryValue("metric") || transMetric(query))
     const [fetch, setFetch] = React.useState(false)
 
     React.useEffect(() => {

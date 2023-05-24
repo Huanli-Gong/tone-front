@@ -5,13 +5,13 @@ import styles from '../index.less'
 import { useLocation } from "umi"
 
 const FunctionalPassRate: React.FC<AnyType> = (props) => {
-    const { suiteList, test_type, isFetching, onChange } = props
+    const { suiteList, test_type, isFetching, onChange, basicValues } = props
     const { query }: any = useLocation()
 
     const getQueryValue = (queryName: any) => {
-        if (test_type === "functional" && query[queryName]) {
-            return query[queryName]
-        }
+        if (test_type !== "functional") return undefined
+        if (basicValues) return basicValues[queryName]
+        if (query[queryName]) return query[queryName]
         return undefined
     }
 

@@ -14,6 +14,7 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
 
     const [visible, setVisible] = React.useState(false)
     const [info, setInfo] = React.useState<any>({})
+    const [basicValues, setBasicValues] = React.useState(undefined)
 
     const { data: suiteList, loading } = useRequest(
         () => queryTestSuiteCases({ test_type, ws_id, page_num: 1, page_size: 200 }),
@@ -21,8 +22,9 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
     )
 
     React.useImperativeHandle(ref, () => ({
-        show: async () => {
+        show: async (vals: any) => {
             setVisible(true)
+            setBasicValues(vals)
         },
     }))
 
@@ -86,7 +88,7 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
             params.test_case_id = activeConf
             params.title = `${selectSuiteName}/${selectConfName}`
             if (show_type !== 'pass_rate') {
-                params.sub_case_name = selectSubcase[0]
+                params.sub_case_name = selectSubcase
                 params.test_case_id = activeConf
                 params.title = `${selectSuiteName}/${selectConfName}` ///${ selectSubcase.toString() }
             }
@@ -96,19 +98,23 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
         handleClose()
     }
 
-    const onChange = (data: any) => {
-        setInfo((p: any) => ({ ...p, ...data }))
-    }
+    React.useEffect(() => {
+        return () => {
+            setBasicValues(undefined)
+        }
+    }, [])
 
     const baseProps = {
         test_type,
         show_type,
+        basicValues,
         projectId,
         provider_env,
-        info,
         loading,
         suiteList,
-        onChange
+        onChange: (data: any) => {
+            setInfo((p: any) => ({ ...p, ...data }))
+        }
     }
 
     return (
