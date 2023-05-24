@@ -108,7 +108,7 @@ const SuiteManagement: React.FC<any> = () => {
                 setValidateStatus('error')
                 setMsg(formatMessage({ id: 'please.enter' }))
                 return
-            } else if (!reg.test(val.name) || val.name.length > 32) {
+            } else if (!reg.test(val.name) || val.name.length > 64) {
                 setValidateStatus('error')
                 setMsg(formatMessage({ id: 'job.tags.msg3' }))
                 return

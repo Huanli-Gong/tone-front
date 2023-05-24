@@ -16,5 +16,5 @@ export default {
   'job.tags.tag_color': 'Tag Color',
   'job.tags.msg1': 'Only letters, numbers, underscores, middle dashes and dots are allowed',
   'job.tags.msg2': 'Tag name already exist.',
-  'job.tags.msg3': 'Only letters, numbers, underscores, middle dashes and dots are allowed. The maximum length is 32 characters.',
+  'job.tags.msg3': 'Only letters, numbers, underscores, middle dashes and dots are allowed. The maximum length is 64 characters.',
 }
