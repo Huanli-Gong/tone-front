@@ -292,7 +292,8 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                             () => ({
                                 validator(rule, value) {
                                     if (value) {
-                                        const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
+                                        const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)(\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
+                                        // const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
                                         return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({ id: 'job.form.env_info.placeholder' }));
                                     }
                                     else
@@ -306,7 +307,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                             placeholder={formatMessage({ id: 'job.form.env_info.placeholder' })}
                         />
                     </Form.Item>
-                    <QuestionCircleComponent
+                    {/* <QuestionCircleComponent
                         style={{ transform: "unset", top: 6 }}
                         contextNode={
                             <div style={{ maxWidth: 525 }}>
@@ -316,17 +317,25 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                                             <Typography.Text style={{ whiteSpace: "nowrap" }}>
                                                 {idx + 1}.
                                             </Typography.Text>
+
                                             <div >
                                                 {formatMessage({
                                                     id: `job.form.env_info.${idx + 1}`
                                                 })}
+                                                {
+                                                    idx === 0 &&
+                                                    <>
+                                                        <br />x=1<br />y=1
+                                                    </>
+                                                }
                                             </div>
+
                                         </Space>
                                     ))
                                 }
                             </div>
                         }
-                    />
+                    /> */}
                 </Form.Item>
             }
             {

@@ -240,7 +240,8 @@ const BasicSetting = (props: any, ref: any) => {
                         () => ({
                             validator(rule, value) {
                                 if (value) {
-                                    const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
+                                    const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)(\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
+                                    // const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
                                     return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({ id: 'plan.env_info.reject' }));
                                 }
                                 return Promise.resolve()

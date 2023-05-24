@@ -83,7 +83,7 @@ export default {
   'plan.install_un_push': 'Installation not Published',
   'plan.install_build_kernel': 'Build Kernel',
   'plan.rpm_info.placeholder': 'Please enter the URL of the RPM package. Multiple URL are distinguished by carriage return or line feed.',
-  'plan.env_info.reject': 'Format：key=value，Multiple are distinguished by English commas or newlines',
+  'plan.env_info.reject': 'Format: key=value, multiple split using line breaks.',
   // 'plan.notice_name': '通知主题',
   'plan.notice_name.placeholder': '[T-One] Your test has been completed {date}',
   // 'plan.email_info': '邮件通知',

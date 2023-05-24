@@ -73,6 +73,12 @@ const SettingDropdown: React.FC = () => {
         setColumnsState(list)
     };
 
+    const sources = React.useMemo(() => {
+        if (!initialColumns) return []
+        return Object.entries(initialColumns)
+            .sort((a: any, b: any) => b[1].order - a[1].order)
+    }, [initialColumns])
+
     return (
         <Popover
             placement="bottom"
@@ -108,8 +114,7 @@ const SettingDropdown: React.FC = () => {
                     >
                         <Space direction="vertical" size={4}>
                             {
-
-                                Object.entries(initialColumns).map((i: any) => {
+                                sources.map((i: any) => {
                                     const [name] = i
                                     return (
                                         <Checkbox
