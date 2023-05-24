@@ -4,7 +4,7 @@ import { Breadcrumb, Collapse, Table, Typography } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useClientSize } from '@/utils/hooks'
 import CommonPagination from '@/components/CommonPagination'
-import { history, FormattedMessage, useParams } from 'umi'
+import { history, FormattedMessage, useParams, useLocation } from 'umi'
 import styled from 'styled-components';
 import { JobListStateTag } from '../WorkSpace/TestResult/Details/components/index'
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
@@ -46,12 +46,13 @@ const Wapper = styled.div`
 
 const { Panel } = Collapse;
 const Refenerce = (props: any) => {
-    const { type: $type, pk } = useParams() as any
+    const { type: $type } = useParams() as any
+    const { query: { pk } } = useLocation() as any
     const [JobTotal, setJobTotal] = useState(0)
     const [JobData, setJobData] = useState<any>([])
     const [TempTotal, setTempTotal] = useState(0)
     const [TempData, setTempData] = useState<any>([])
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [params, setParams] = useState<any>({ page_num: 1, page_size: 10 })
     const [tempParams, setTempParams] = useState<any>({ page_num: 1, page_size: 10 })
     const { height: layoutHeight } = useClientSize()
@@ -82,13 +83,13 @@ const Refenerce = (props: any) => {
     }, [JobTotal])
 
     const init = async () => {
-        let resData
-        if (pk) {
-            resData = await queryFormDate({ pk })
-        }
-        if (!resData) return
-        setSource(resData)
-        const { id } = resData?.data
+        const { data } = await queryFormDate({ pk })
+        if (!data) return
+        setSource(data)
+    }
+
+    const queryListData = async () => {
+        const { id } = source
         setLoading(true)
         const JobObj: any = { flag: 'job', ...params }
         const TempObj: any = { flag: 'template', ...tempParams }
@@ -109,9 +110,15 @@ const Refenerce = (props: any) => {
         setTempData(tempData.data)
     }
 
+    React.useEffect(() => {
+        if (!source) return
+        queryListData()
+    }, [source, params, tempParams])
+
     useEffect(() => {
+        if (!pk) return
         init()
-    }, [pk, params, tempParams])
+    }, [pk])
 
     const JobColumns = [
         {

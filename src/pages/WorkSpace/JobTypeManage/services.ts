@@ -14,8 +14,8 @@ export const queryJobTypeDel = (data: any) => {
 export const queryJobTypeList = (params: any) => {
     return request(`/api/job/type/`, { params })
 }
-export const queryConfirm = (params: any) => {
-    return request(`/api/case/sys_case/confirm/`, { params })
+export const queryConfirm = (data: any) => {
+    return request(`/api/case/sys_case/confirm/`, { data, method: "post" })
 }
 //jobType 开关 启用/停用
 export const jobSwitch = async (data: UpdateJobTypeProps) => {

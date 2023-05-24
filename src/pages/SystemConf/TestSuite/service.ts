@@ -237,8 +237,8 @@ export function editConf(params: any) {
 }
 
 // 11.1 批量删除前进行查询
-export async function queryDelSuiteAll(params: any) {
-    return request(`/api/case/sys_case/confirm/`, { method: 'GET', params });
+export async function queryDelSuiteAll(data: any) {
+    return request(`/api/case/sys_case/confirm/`, { method: 'post', data });
 }
 // 11.2 批量删除suite级
 export async function deleteBusinessSuiteAll(data: any) {

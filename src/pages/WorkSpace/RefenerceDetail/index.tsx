@@ -63,21 +63,24 @@ const Refenerce = () => {
     const { type: $type, ws_id } = useParams() as any
     const { query } = useLocation() as any
     const { pk } = query
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [params, setParams] = useState<any>({ page_num: 1, page_size: 10 })
     const [tempParams, setTempParams] = useState<any>({ page_num: 1, page_size: 10 })
     const { height: layoutHeight } = useClientSize()
-    const [source, setSource] = React.useState<any>()
+    const [source, setSource] = React.useState<any>(undefined)
     const [list, setList] = React.useState<any>()
     const [tempList, setTempList] = React.useState<any>()
 
     const init = async () => {
-        const pageType = + $type
-        setLoading(true)
         const { data, code } = await queryFormDate({ pk })
         if (code !== 200) return
-        const { id, test_type } = data
         setSource(data)
+    }
+
+    const queryListData = async () => {
+        const pageType = + $type
+        const { test_type, id } = source
+        setLoading(true)
         const JobObj: any = {
             flag: 'job',
             ws_id,
@@ -127,15 +130,20 @@ const Refenerce = () => {
             res = await querServerDel({ server_id: id, run_mode: 'cluster', server_provider: 'aliyun', ...params })
         }
 
-        const { code: resCode, msg, ...rest } = res
+        const { code, msg, ...rest } = res
         if (code !== 200) {
-            requestCodeMessage(resCode, msg)
+            requestCodeMessage(code, msg)
             setLoading(false)
             return
         }
         setList(rest)
         setLoading(false)
     }
+
+    React.useEffect(() => {
+        if (!source) return
+        queryListData()
+    }, [source, params, tempParams])
 
     React.useEffect(() => {
         if (pk) init()
