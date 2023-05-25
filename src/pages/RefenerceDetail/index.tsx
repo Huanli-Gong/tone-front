@@ -101,13 +101,22 @@ const Refenerce = (props: any) => {
             TempObj.case_id_list = id
         }
         const { total, data, code, msg } = await queryConfirm(JobObj)
-        if (code !== 200) return requestCodeMessage(code, msg)
+        if (code !== 200) {
+            requestCodeMessage(code, msg)
+            setLoading(false)
+            return
+        }
         setJobTotal(total)
         setJobData(data)
         const tempData = await queryConfirm(TempObj)
-        if (tempData.code !== 200) return requestCodeMessage(tempData.code, tempData.msg)
+        if (tempData.code !== 200) {
+            requestCodeMessage(tempData.code, tempData.msg)
+            setLoading(false)
+            return
+        }
         setTempTotal(tempData.total)
         setTempData(tempData.data)
+        setLoading(false)
     }
 
     React.useEffect(() => {
