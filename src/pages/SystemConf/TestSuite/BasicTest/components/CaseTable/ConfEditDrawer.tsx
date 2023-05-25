@@ -10,7 +10,12 @@ export default forwardRef(
     ({ onOk }: any, ref: any) => {
         const { formatMessage } = useIntl()
         const { query }: any = useLocation()
-
+        const basicData = {
+            repeat: query.test_type === 'performance' ? 3 : 1,
+            timeout: 3600,
+            is_default: 1,
+            var: [{ name: '', val: '', des: '' }]
+        }
         const { domainList } = useSuiteProvider()
         const [form] = Form.useForm()
 
@@ -36,16 +41,19 @@ export default forwardRef(
                     t && setTitle(t)
                     setData(_)
                     setVisible(true)
-                    const params: any = {
-                        ..._,
-                        certificated: _.certificated ? 1 : 0,
+                    if (!_.bentch) {
+                        const params: any = {
+                            ...basicData,
+                            ..._,
+                            certificated: _.certificated ? 1 : 0,
+                        }
+                        if (domainList.length && ~t.indexOf('new')) {
+                            domainList.forEach(({ id, name }: any) => {
+                                if (name === '其他') params.domain_list_str = [id]
+                            })
+                        }
+                        form.setFieldsValue(params)
                     }
-                    if (domainList.length && ~t.indexOf('new')) {
-                        domainList.forEach(({ id, name }: any) => {
-                            if (name === '其他') params.domain_list_str = [id]
-                        })
-                    }
-                    form.setFieldsValue(params)
                 },
                 hide: handleCancel
             }),
@@ -164,14 +172,6 @@ export default forwardRef(
                 <Form
                     layout="vertical"
                     form={form}
-                    initialValues={
-                        !data.bentch ? {
-                            repeat: query.test_type === 'performance' ? 3 : 1,
-                            timeout: 3600,
-                            is_default: 1,
-                            var: [{ name: '', val: '', des: '' }],
-                        } : {}
-                    }
                 >
                     <Row gutter={16}>
                         {
@@ -192,7 +192,7 @@ export default forwardRef(
                                 <Form.Item
                                     name="alias"
                                     label={<FormattedMessage id="TestSuite.alias" />}
-                                    // rules={[{ required: true, message: '请输入' }]}
+                                // rules={[{ required: true, message: '请输入' }]}
                                 >
                                     <Input placeholder={formatMessage({ id: 'TestSuite.alias.placeholder' })} />
                                 </Form.Item>
