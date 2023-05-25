@@ -1,4 +1,4 @@
-import React, { forwardRef, useState, useImperativeHandle } from 'react'
+import { forwardRef, useState, useImperativeHandle } from 'react'
 import { Drawer, Space, Button, Form, Input, InputNumber, message, Select, Row, Col } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons';
 import { addConf, editConf, deleteBusinessConfEditAll } from '../../../../../service'
@@ -322,7 +322,7 @@ export default forwardRef((props: any, ref: any) => {
       keyboard={false}
       width="375"
       onClose={handleClose}
-      visible={visible}
+      open={visible}
       footer={
         <div style={{ textAlign: 'right', }} >
           <Space>
