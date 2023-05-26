@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { Drawer, Space, Button, Form, Input, Select, Radio, Spin, message, Divider } from 'antd'
+import { Drawer, Space, Button, Form, Input, Select, Radio, Spin, message, Divider, Typography } from 'antd'
 import React, { useState, forwardRef, useImperativeHandle, useRef } from 'react'
 import { useParams, useIntl, FormattedMessage } from 'umi'
 import { queryBaselineList, perfJoinBaseline, perfJoinBaselineBatch, createFuncsDetail } from '../service'
@@ -169,21 +169,6 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         }
     }
 
-    const renderSelects = (list: any[]) => (
-        list.map(
-            (item: any) => (
-                <Select.Option key={item.key} value={item.value} label={item.label}>
-                    <Highlighter
-                        highlightStyle={{ color: '#1890FF', padding: 0, background: 'unset' }}
-                        searchWords={[funcsSelectVal]}
-                        autoEscape
-                        textToHighlight={item.label}
-                    />
-                </Select.Option>
-            )
-        )
-    )
-
     return (
         <Drawer
             maskClosable={false}
@@ -239,8 +224,9 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                     ref={perBaselineSelect}
                                     defaultActiveFirstOption={false}
                                     filterOption={
-                                        (input, option: any) => option.label.indexOf(input) >= 0
+                                        (input, option: any) => option.name.indexOf(input) >= 0
                                     }
+                                    loading={loading}
                                     placeholder={formatMessage({ id: 'ws.result.details.baseline_id.placeholder' })}
                                     dropdownStyle={{ padding: 0, margin: 0 }}
                                     onSelect={val => form.setFieldsValue({ baseline_id: val })}
@@ -258,12 +244,12 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                                                 style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '0 0 8px 8px' }}
                                                                 onClick={handlePerfBaselineSelectBlur}
                                                             >
-                                                                <span>
-                                                                    <PlusOutlined style={{ marginRight: 6, color: '#1890FF' }} />
+                                                                <Space>
+                                                                    <PlusOutlined style={{ color: '#1890FF' }} />
                                                                     <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
                                                                         <FormattedMessage id="ws.result.details.create.baseline" />
                                                                     </span>
-                                                                </span>
+                                                                </Space>
                                                             </div>
                                                         }
                                                     </>
@@ -271,9 +257,23 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                             </>
                                         )
                                     }
-                                >
-                                    {renderSelects(baselinePerfList)}
-                                </Select>
+                                    options={
+                                        baselinePerfList.map((item: any) => ({
+                                            value: item.value,
+                                            name: item.label,
+                                            label: (
+                                                <Typography.Text ellipsis={{ tooltip: item.label }}>
+                                                    <Highlighter
+                                                        highlightStyle={{ color: '#1890FF', padding: 0, background: 'unset' }}
+                                                        searchWords={[funcsSelectVal]}
+                                                        autoEscape
+                                                        textToHighlight={item.label}
+                                                    />
+                                                </Typography.Text>
+                                            )
+                                        }))
+                                    }
+                                />
                             </Form.Item>
                         </div>
                     }
@@ -292,12 +292,11 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                     optionLabelProp="label"
                                     ref={funcsBaselineSelect}
                                     listHeight={160}
+                                    loading={loading}
                                     getPopupContainer={node => node.parentNode}
                                     onSearch={handleFuncsBaselineSelectSearch}
                                     filterOption={
-                                        (input, option: any) => {
-                                            return option.label.indexOf(input) >= 0
-                                        }
+                                        (input, option: any) => option.name.indexOf(input) >= 0
                                     }
                                     dropdownRender={menu => (
                                         <>
@@ -311,21 +310,35 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                                             style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '0 0 8px 8px' }}
                                                             onClick={handleFuncsBaselineSelectBlur}
                                                         >
-                                                            <span>
-                                                                <PlusOutlined style={{ marginRight: 6, color: '#1890FF' }} />
+                                                            <Space>
+                                                                <PlusOutlined style={{ color: '#1890FF' }} />
                                                                 <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
                                                                     <FormattedMessage id="ws.result.details.create.baseline" />
                                                                 </span>
-                                                            </span>
+                                                            </Space>
                                                         </div>
                                                     }
                                                 </>
                                             }
                                         </>
                                     )}
-                                >
-                                    {renderSelects(baselineFuncList)}
-                                </Select>
+                                    options={
+                                        baselineFuncList.map((item: any) => ({
+                                            value: item.value,
+                                            name: item.label,
+                                            label: (
+                                                <Typography.Text ellipsis={{ tooltip: item.label }}>
+                                                    <Highlighter
+                                                        highlightStyle={{ color: '#1890FF', padding: 0, background: 'unset' }}
+                                                        searchWords={[funcsSelectVal]}
+                                                        autoEscape
+                                                        textToHighlight={item.label}
+                                                    />
+                                                </Typography.Text>
+                                            )
+                                        }))
+                                    }
+                                />
                             </Form.Item>
                         </div>
                     }
