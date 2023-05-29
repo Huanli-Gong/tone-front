@@ -49,7 +49,7 @@ const DOC: React.FC = () => {
     }
 
     return (
-        <Container height={height - 30}>
+        <Container height={height - 70}>
             <Helmet>
                 <title>{title}</title>
             </Helmet>
