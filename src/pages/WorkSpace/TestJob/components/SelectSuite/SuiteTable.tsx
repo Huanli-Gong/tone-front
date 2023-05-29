@@ -38,6 +38,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 
 	const [expandedRowKeys, setExpandedRowKeys] = useState<any>([])
 	const [caseAll, setCaseAll] = useState<boolean>(false)
+	const [indeterminateCase, setIndeterminateCase] = useState<boolean>(false)
 
 	const onSelectSuite = (e: any) => {
 		const check = e.target.checked
@@ -54,8 +55,6 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 			setSelectedSuiteKeys([])
 		}
 	}
-
-	const [indeterminateCase, setIndeterminateCase] = useState<boolean>(false)
 
 	const onRemoveSuite = (key: string) => {
 		onDataSourceChange(
