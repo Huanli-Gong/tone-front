@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import scrollIntoView from 'scroll-into-view-if-needed';
 import { Typography } from 'antd';
 import cls from 'classnames'
+import { history, useLocation } from 'umi';
 
 const Wrapper = styled.div`
     position: absolute;
@@ -32,49 +33,68 @@ type IProps = {
     setPosition: (p: number) => void
 }
 
-const Catalog: React.FC<IProps> = ({ source, position, setPosition }) => {
+const Catalog: React.FC<IProps> = ({ source }) => {
+    const { pathname, hash } = useLocation()
+
     const hanldeClick = (node: any) => {
         scrollIntoView(node.dom, {
             behavior: 'smooth',
             block: 'start',
             inline: 'start',
         });
-        setPosition(node.position)
+        history.replace(`${pathname}#${node.text}`)
     }
 
-    const setActiveClass = (idx: number) => {
-        const current = source[idx]
-        const next = source[idx + 1]
+    const base = React.useMemo(() => {
+        if (!source) return []
+        return source?.filter(({ text }: any) => !!text.trim())
+    }, [source])
 
-        if (idx === 0)
-            return next && next.position ? position < next.position : position
-        if (idx === source.length - 1)
-            return position > current.position
-        return position >= current.position && position < next.position
+    const handleScroll = (evt?: any) => {
+        const currentScroll = evt ? evt.target.scrollTop : 0
+        const $current = base?.reduce((prev, curr) => {
+            const currDistance = Math.abs(curr.dom.offsetTop - currentScroll);
+            const prevDistance = Math.abs(prev.dom.offsetTop - currentScroll);
+            return currDistance < prevDistance ? curr : prev;
+        })
+
+        history.replace(`${pathname}#${$current.text}`)
     }
+
+    React.useEffect(() => {
+        handleScroll()
+    }, [])
+
+    React.useEffect(() => {
+        if (!source) return
+        const dom = document.querySelector(".ProseMirror") as any
+        if (!dom) return
+        dom.addEventListener("scroll", handleScroll)
+        return () => {
+            dom.removeEventListener("scroll", handleScroll)
+        }
+    }, [source])
 
     return (
         <Wrapper>
             {
-                source?.filter(({ text }: any) => !!text.trim())
-                    .map((l: any, idx: number) => (
-                        <CatalogItem
-                            key={l.index}
-                            onClick={() => hanldeClick(l)}
-                            className={
-                                cls(
-                                    setActiveClass(idx) && 'item-active'
-                                )
-                            }
+                base.map((l: any) => (
+                    <CatalogItem
+                        key={l.index}
+                        onClick={() => hanldeClick(l)}
+                        className={
+                            cls(
+                                hash === `#${l.text}` && 'item-active'
+                            )
+                        }
+                    >
+                        <Typography.Text
+                            style={{ textIndent: l.level - 1 + "em" }}
                         >
-                            <Typography.Text
-                                style={{ textIndent: l.level - 1 + "em" }}
-                                ellipsis={{ tooltip: true }}
-                            >
-                                {l.text}
-                            </Typography.Text>
-                        </CatalogItem>
-                    ))
+                            {l.text}
+                        </Typography.Text>
+                    </CatalogItem>
+                ))
             }
         </Wrapper>
     )
