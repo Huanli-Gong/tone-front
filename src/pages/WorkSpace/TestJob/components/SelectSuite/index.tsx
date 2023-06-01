@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useState, useRef, useEffect, useMemo, useImperativeHandle } from 'react';
-import { Button, Card, Empty, Badge, Typography, Space, Alert } from 'antd'
+import { Button, Card, Empty, Badge, Typography, Space, Alert, Spin } from 'antd'
 import _ from 'lodash'
 import BusinessTestSelectDrawer from './BusinessTestSelectDrawer'
 import SelectDrawer from './SelectDrawer'
@@ -149,12 +149,17 @@ const SelectSuite: React.FC<any> = ({
 			custom_ip = customer_server.custom_ip
 		}
 
+		let $ip = ip
+		if (!$ip && custom_ip) {
+			$ip = custom_ip
+		}
+
 		const obj = {
 			...conf,
 			...$data,
 			custom_channel,
 			custom_ip,
-			ip,
+			ip: $ip,
 			server_object_id
 		}
 
@@ -294,111 +299,113 @@ const SelectSuite: React.FC<any> = ({
 			ref={outTable}
 			style={{ position: 'relative', width: '100%' }}
 		>
-			<div>
-				<Button
-					disabled={disabled}
-					type="primary"
-					size="small"
-					onClick={SuiteSelect}
-					style={{ marginBottom: '12px' }}
-				>
-					<FormattedMessage id="select.suite.select.case" />
-				</Button>
-				{
-					test_config.length > 0 &&
-					<span style={{ paddingLeft: 8 }}>
-						<Space>
-							<>
-								<Typography.Text style={{ color: 'rgba(0,0,0,.65)' }}>
-									<FormattedMessage id="select.suite.selected" />
-								</Typography.Text>
-								<Badge
-									style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }}
-									count={test_config.length}
-									overflowCount={999999}
-								/>
-							</>
-							<>
-								<Typography.Text style={{ color: 'rgba(0,0,0,.65)' }}>Test Conf</Typography.Text>
-								<Badge
-									style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }}
-									count={memoizedValue}
-									overflowCount={999999}
-								/>
-							</>
-						</Space>
-					</span>
-				}
-			</div>
+			<Spin spinning={loading}>
+				<div>
+					<Button
+						disabled={disabled}
+						type="primary"
+						size="small"
+						onClick={SuiteSelect}
+						style={{ marginBottom: '12px' }}
+					>
+						<FormattedMessage id="select.suite.select.case" />
+					</Button>
+					{
+						test_config.length > 0 &&
+						<span style={{ paddingLeft: 8 }}>
+							<Space>
+								<>
+									<Typography.Text style={{ color: 'rgba(0,0,0,.65)' }}>
+										<FormattedMessage id="select.suite.selected" />
+									</Typography.Text>
+									<Badge
+										style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }}
+										count={test_config.length}
+										overflowCount={999999}
+									/>
+								</>
+								<>
+									<Typography.Text style={{ color: 'rgba(0,0,0,.65)' }}>Test Conf</Typography.Text>
+									<Badge
+										style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }}
+										count={memoizedValue}
+										overflowCount={999999}
+									/>
+								</>
+							</Space>
+						</span>
+					}
+				</div>
 
-			<Space direction="vertical" size={6} style={{ width: "100%" }}>
-				{
-					showSuiteDeleteAlart &&
-					<Alert
-						message={formatMessage({
-							id: "select.suite.table.is_delete.alart",
-							defaultMessage: "所选用例已不存在"
-						})}
-						type="warning"
-						showIcon
-						closable
-					/>
-				}
-
-				<DeletedAlert
-					sources={template?.server_deleted}
-					isDelete
-				/>
-
-				<DeletedAlert
-					sources={template?.server_no_allocated}
-				/>
-
-				{
-					test_type === 'business' ?
-						<BusinessTestSelectDrawer  // 业务测试(选择用例)
-							testType={test_type}
-							onRef={drawer}
-							handleSelect={handleSelect}
-							control={control}
-							treeData={treeData}
-							loading={loading}
-						/> :
-						<SelectDrawer // 功能、性能(选择用例)
-							testType={test_type}
-							onRef={drawer}
-							handleSelect={handleSelect}
-							control={control}
-							treeData={treeData}
-							loading={loading}
+				<Space direction="vertical" size={6} style={{ width: "100%" }}>
+					{
+						showSuiteDeleteAlart &&
+						<Alert
+							message={formatMessage({
+								id: "select.suite.table.is_delete.alart",
+								defaultMessage: "所选用例已不存在"
+							})}
+							type="warning"
+							showIcon
+							closable
 						/>
-				}
+					}
 
-				{
-					(standalone.length === 0 && cluster.length === 0) &&
-					<Card bodyStyle={{ width: width || '100%' }}>
-						<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="select.suite.please.select.case" />} />
-					</Card>
-				}
-
-				{
-					standalone.length > 0 &&
-					<SuiteTable
-						{...TableProps}
-						dataSource={standalone}
-						run_mode="standalone"
+					<DeletedAlert
+						sources={template?.server_deleted}
+						isDelete
 					/>
-				}
 
-				{
-					cluster.length > 0 &&
-					<SuiteTable
-						{...TableProps}
-						dataSource={cluster}
-						run_mode="cluster"
+					<DeletedAlert
+						sources={template?.server_no_allocated}
 					/>
-				}
-			</Space>
+
+					{
+						test_type === 'business' ?
+							<BusinessTestSelectDrawer  // 业务测试(选择用例)
+								testType={test_type}
+								onRef={drawer}
+								handleSelect={handleSelect}
+								control={control}
+								treeData={treeData}
+								loading={loading}
+							/> :
+							<SelectDrawer // 功能、性能(选择用例)
+								testType={test_type}
+								onRef={drawer}
+								handleSelect={handleSelect}
+								control={control}
+								treeData={treeData}
+								loading={loading}
+							/>
+					}
+
+					{
+						(standalone.length === 0 && cluster.length === 0) &&
+						<Card bodyStyle={{ width: width || '100%' }}>
+							<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="select.suite.please.select.case" />} />
+						</Card>
+					}
+
+					{
+						standalone.length > 0 &&
+						<SuiteTable
+							{...TableProps}
+							dataSource={standalone}
+							run_mode="standalone"
+						/>
+					}
+
+					{
+						cluster.length > 0 &&
+						<SuiteTable
+							{...TableProps}
+							dataSource={cluster}
+							run_mode="cluster"
+						/>
+					}
+				</Space>
+			</Spin>
 		</div>
 	);
 };
