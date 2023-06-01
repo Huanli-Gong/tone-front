@@ -10,7 +10,12 @@ export default forwardRef(
     ({ onOk }: any, ref: any) => {
         const { formatMessage } = useIntl()
         const { query }: any = useLocation()
-
+        const basicData = {
+            repeat: query.test_type === 'performance' ? 3 : 1,
+            timeout: 3600,
+            is_default: 1,
+            var: [{ name: '', val: '', des: '' }]
+        }
         const { domainList } = useSuiteProvider()
         const [form] = Form.useForm()
 
@@ -36,16 +41,19 @@ export default forwardRef(
                     t && setTitle(t)
                     setData(_)
                     setVisible(true)
-                    const params: any = {
-                        ..._,
-                        certificated: _.certificated ? 1 : 0,
+                    if (!_.bentch) {
+                        const params: any = {
+                            ...basicData,
+                            ..._,
+                            certificated: _.certificated ? 1 : 0,
+                        }
+                        if (domainList.length && ~t.indexOf('new')) {
+                            domainList.forEach(({ id, name }: any) => {
+                                if (name === '其他') params.domain_list_str = [id]
+                            })
+                        }
+                        form.setFieldsValue(params)
                     }
-                    if (domainList.length && ~t.indexOf('new')) {
-                        domainList.forEach(({ id, name }: any) => {
-                            if (name === '其他') params.domain_list_str = [id]
-                        })
-                    }
-                    form.setFieldsValue(params)
                 },
                 hide: handleCancel
             }),
@@ -62,7 +70,7 @@ export default forwardRef(
                             ...values,
                             id,
                             test_suite_id,
-                            domain_list_str: values.domain_list_str ? values.domain_list_str.join() : ''
+                            domain_list_str: values.domain_list_str ? values.domain_list_str.join() : undefined
                         }, data.bentch)
                     }
                 )
@@ -147,7 +155,7 @@ export default forwardRef(
                 destroyOnClose={true}
                 width={376}
                 onClose={handleCancel}
-                visible={visible}
+                open={visible}
                 bodyStyle={{ paddingBottom: 80 }}
                 footer={
                     <div style={{ textAlign: 'right' }} >
@@ -164,12 +172,6 @@ export default forwardRef(
                 <Form
                     layout="vertical"
                     form={form}
-                    initialValues={{
-                        repeat: query.test_type === 'performance' ? 3 : 1,
-                        timeout: 3600,
-                        is_default: 1,
-                        var: [{ name: '', val: '', des: '' }],
-                    }}
                 >
                     <Row gutter={16}>
                         {
@@ -200,22 +202,26 @@ export default forwardRef(
                             <Form.Item
                                 name="domain_list_str"
                                 label={<FormattedMessage id="TestSuite.domain" />}
-                                rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
+                                rules={!data.bentch ? [{ required: true, message: formatMessage({ id: 'please.select' }) }] : []}
                             >
-                                <Select placeholder={formatMessage({ id: 'please.select' })} mode="multiple" getPopupContainer={node => node.parentNode} >
-                                    {
-                                        domainList.map((item: any) => (
-                                            <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
-                                        ))
+                                <Select
+                                    placeholder={formatMessage({ id: 'please.select' })}
+                                    mode="multiple"
+                                    getPopupContainer={node => node.parentNode}
+                                    options={
+                                        domainList?.map((item: any) => ({
+                                            value: item.id,
+                                            label: item.name
+                                        }))
                                     }
-                                </Select>
+                                />
                             </Form.Item>
                         </Col>
                         <Col span={24}>
                             <Form.Item
                                 name="timeout"
                                 label={<FormattedMessage id="TestSuite.timeout" />}
-                                rules={[{ required: true, message: formatMessage({ id: 'please.enter' }) }]}
+                                rules={!data.bentch ? [{ required: true, message: formatMessage({ id: 'please.enter' }) }] : []}
                             >
                                 <InputNumber style={{ width: '100%' }} min={0} step={1} placeholder={formatMessage({ id: 'please.enter' })} />
                             </Form.Item>
@@ -224,7 +230,7 @@ export default forwardRef(
                             <Form.Item
                                 name="repeat"
                                 label={<FormattedMessage id="TestSuite.repeat" />}
-                                rules={!data.bentch ? [{ required: true, message: formatMessage({ id: 'please.enter' }) }] : []}
+                            // rules={!data.bentch ? [{ required: true, message: formatMessage({ id: 'please.enter' }) }] : []}
                             >
                                 <InputNumber style={{ width: '100%' }} min={1} step={1} placeholder={formatMessage({ id: 'please.enter' })} />
                             </Form.Item>
