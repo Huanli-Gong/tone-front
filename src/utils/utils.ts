@@ -5,7 +5,7 @@
 import React from 'react';
 import { message } from 'antd';
 import { parse } from 'querystring';
-import { getLocale, history } from 'umi'
+import { getLocale, history, request } from 'umi'
 import { listRender, enumer, textRender } from './hooks';
 import _ from 'lodash';
 
@@ -40,6 +40,12 @@ export const isAntDesignPro = (): boolean => {
   }
   return window.location.hostname === 'preview.pro.ant.design';
 };
+
+export const saveRefenerceData = async (data: any) => {
+  const { data: formId, code } = await request(`/api/case/ws_case/params/`, { method: "post", data })
+  if (code !== 200) return
+  return formId
+}
 
 export const jumpWorkspace = (ws_id: string) => `/ws/${ws_id}/test_result`;
 

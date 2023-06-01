@@ -4,11 +4,12 @@ import { Breadcrumb, Collapse, Table, Typography } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useClientSize } from '@/utils/hooks'
 import CommonPagination from '@/components/CommonPagination'
-import { history, FormattedMessage } from 'umi'
+import { history, FormattedMessage, useParams, useLocation } from 'umi'
 import styled from 'styled-components';
 import { JobListStateTag } from '../WorkSpace/TestResult/Details/components/index'
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
 import { requestCodeMessage } from '@/utils/utils';
+import { queryFormDate } from '../WorkSpace/RefenerceDetail/services';
 const Wapper = styled.div`
     .breadcrumb{
         height:50px;
@@ -43,21 +44,19 @@ const Wapper = styled.div`
     }
 `
 
+const { Panel } = Collapse;
 const Refenerce = (props: any) => {
-    const { Panel } = Collapse;
-    const { type } = props.match.params
+    const { type: $type } = useParams() as any
+    const { query: { pk } } = useLocation() as any
     const [JobTotal, setJobTotal] = useState(0)
     const [JobData, setJobData] = useState<any>([])
     const [TempTotal, setTempTotal] = useState(0)
     const [TempData, setTempData] = useState<any>([])
-    const [loading, setLoading] = useState(false)
-    //const [ JobObj,setJobObj ] = useState<any>({  flag:'job', page_num:1, page_size:10 })
-    //const [ TempObj,setTempObj ] = useState<any>({ flag:'template', page_num:1, page_size:10 })
+    const [loading, setLoading] = useState(true)
     const [params, setParams] = useState<any>({ page_num: 1, page_size: 10 })
     const [tempParams, setTempParams] = useState<any>({ page_num: 1, page_size: 10 })
     const { height: layoutHeight } = useClientSize()
-    const param = new URLSearchParams(location.search);
-    const [id, name] = [param.get('id'), param.get('name')]
+    const [source, setSource] = React.useState<any>()
 
     const BreadcrumbItem: React.FC<any> = () => (
         <Breadcrumb className="breadcrumb">
@@ -67,49 +66,68 @@ const Refenerce = (props: any) => {
                 </span>
             </Breadcrumb.Item>
             <Breadcrumb.Item >
-                <span style={{ cursor: 'pointer', color: 'rgba(0,0,0,0.85)' }}>{type == 1 ? 'Suite' : 'Conf'}<span style={{ color: 'rgba(0,0,0,0.65)' }}>({name})</span> <FormattedMessage id="reference.details" /></span>
+                <span style={{ cursor: 'pointer', color: 'rgba(0,0,0,0.85)' }}>
+                    {+ $type === 1 ? 'Suite' : 'Conf'}
+                    <span style={{ color: 'rgba(0,0,0,0.65)' }}>
+                        ({source?.name})
+                    </span>
+                    <FormattedMessage id="reference.details" />
+                </span>
             </Breadcrumb.Item>
         </Breadcrumb>
     )
-    const JobObj: any = { flag: 'job', ...params }
-    const TempObj: any = { flag: 'template', ...tempParams }
-    if (type == 'suite') {
-        JobObj.suite_id = id
-        TempObj.suite_id = id
-    } else {
-        JobObj.case_id_list = id
-        TempObj.case_id_list = id
-    }
 
-    const QueryJobData = async () => {
-        setLoading(true)
-        const data = await queryConfirm(JobObj)
-        if (data.code == 200) {
-            setJobTotal(data.total)
-            setJobData(data.data)
-            setLoading(false)
-        }
-        else requestCodeMessage(data.code, data.msg)
-    }
-    const QueryTemplateData = async () => {
-        setLoading(true)
-        const data = await queryConfirm(TempObj)
-        if (data.code == 200) {
-            setTempTotal(data.total)
-            setTempData(data.data)
-            setLoading(false)
-        }
-        else requestCodeMessage(data.code, data.msg)
-    }
     const showTemp = useMemo(() => {
         if (JobTotal > 0) return true
         return false
     }, [JobTotal])
 
+    const init = async () => {
+        const { data } = await queryFormDate({ pk })
+        if (!data) return
+        setSource(data)
+    }
+
+    const queryListData = async () => {
+        const { id } = source
+        setLoading(true)
+        const JobObj: any = { flag: 'job', ...params }
+        const TempObj: any = { flag: 'template', ...tempParams }
+        if ($type === 'suite') {
+            JobObj.suite_id = id
+            TempObj.suite_id = id
+        } else {
+            JobObj.case_id_list = id
+            TempObj.case_id_list = id
+        }
+        const { total, data, code, msg } = await queryConfirm(JobObj)
+        if (code !== 200) {
+            requestCodeMessage(code, msg)
+            setLoading(false)
+            return
+        }
+        setJobTotal(total)
+        setJobData(data)
+        const tempData = await queryConfirm(TempObj)
+        if (tempData.code !== 200) {
+            requestCodeMessage(tempData.code, tempData.msg)
+            setLoading(false)
+            return
+        }
+        setTempTotal(tempData.total)
+        setTempData(tempData.data)
+        setLoading(false)
+    }
+
+    React.useEffect(() => {
+        if (!source) return
+        queryListData()
+    }, [source, params, tempParams])
+
     useEffect(() => {
-        QueryJobData();
-        QueryTemplateData();
-    }, [params, tempParams])
+        if (!pk) return
+        init()
+    }, [pk])
 
     const JobColumns = [
         {

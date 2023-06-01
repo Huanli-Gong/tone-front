@@ -10,7 +10,7 @@ import ConfEditDrawer from '@/pages/SystemConf/TestSuite/BasicTest/components/Ca
 import DesFastEditDrawer from '@/pages/SystemConf/TestSuite/BasicTest/components/DesFastEditDrawer'
 
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
-import { requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage, saveRefenerceData } from '@/utils/utils';
 import MetricTable from './components/MetricTable';
 import styles from './index.less';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
@@ -223,15 +223,26 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
         }
     }
 
-    const handleDetail = () => {
+    const handleDetail = async () => {
         let newData: any = []
         selectedRow.foreach((item: any) => newData.push(item.name))
+
+        let pk
         if (!deleteObj.id) {
+            pk = await saveRefenerceData({ name: newData.join(','), id: selectedRowKeys.join(',') })
+        } else {
+            const { name, id } = deleteObj
+            pk = await saveRefenerceData({ name, id })
+        }
+
+        if (pk) {
+            window.open(`/refenerce/conf/?pk=${pk}`)
+        }
+        /* if (!deleteObj.id) {
             window.open(`/refenerce/conf/?name=${newData.join(',')}&id=${selectedRowKeys.join(',')}`)
         } else {
             window.open(`/refenerce/conf/?name=${deleteObj.name}&id=${deleteObj.id}`)
-        }
-
+        } */
     }
     const newCase = () => {
         confDrawer.current.show('new', { bentch: false, test_suite_id: id })

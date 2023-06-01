@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import React, { useEffect, useState, useMemo } from 'react';
-import { Breadcrumb, Collapse, Table, Tooltip } from 'antd';
+import React, { useState, useMemo } from 'react';
+import { Breadcrumb, Collapse, Spin, Table, Tooltip } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useClientSize } from '@/utils/hooks';
 import CommonPagination from '@/components/CommonPagination';
-import { history } from 'umi';
+import { history, useLocation, useParams } from 'umi';
 import styled from 'styled-components';
 import { JobListStateTag } from '../TestResult/Details/components/index'
-import { queryJobTypeList, querTempDel, querServerDel, querySuiteList } from './services';
+import { queryJobTypeList, querTempDel, querServerDel, querySuiteList, queryFormDate } from './services';
 import { aligroupServer, aliyunServer, requestCodeMessage } from '@/utils/utils';
 
 const Wapper = styled.div`
@@ -19,7 +19,7 @@ const Wapper = styled.div`
     }
     .content{
         //background:#fff;
-        width: 97%;
+        /* width: 97%; */
         margin: 0 auto;
         height: auto;
         .site-collapse-custom-collapse{
@@ -57,65 +57,123 @@ const Wapper = styled.div`
     type  == 4  机器管理
 
 */
-const Refenerce = (props: any) => {
-    const { Panel } = Collapse;
-    const { type, ws_id } = props.match.params
-    const { search } = location
-    const [total, setTotal] = useState(0)
-    const [loading, setLoading] = useState(false)
-    const [dataSource, setDataSource] = useState<any>([])
+const { Panel } = Collapse;
+
+const Refenerce = () => {
+    const { type: $type, ws_id } = useParams() as any
+    const { query } = useLocation() as any
+    const { pk } = query
+    const [loading, setLoading] = useState(true)
     const [params, setParams] = useState<any>({ page_num: 1, page_size: 10 })
     const [tempParams, setTempParams] = useState<any>({ page_num: 1, page_size: 10 })
-    const [JobTotal, setJobTotal] = useState(0)
-    const [JobData, setJobData] = useState<any>([])
-    const [TempTotal, setTempTotal] = useState(0)
-    const [TempData, setTempData] = useState<any>([])
-    const param = new URLSearchParams(search);
-    const [id, name, test_type] = [param.get('id'), param.get('name'), param.get('test_type')]
     const { height: layoutHeight } = useClientSize()
+    const [source, setSource] = React.useState<any>(undefined)
+    const [list, setList] = React.useState<any>()
+    const [tempList, setTempList] = React.useState<any>()
+
+    const init = async () => {
+        const { data, code } = await queryFormDate({ pk })
+        if (code !== 200) return
+        setSource(data)
+    }
+
+    const queryListData = async () => {
+        const pageType = + $type
+        const { test_type, id } = source
+        setLoading(true)
+        const JobObj: any = {
+            flag: 'job',
+            ws_id,
+            suite_id_list: '',
+            case_id_list: id,
+            test_type,
+            ...params
+        }
+        const TempObj: any = {
+            flag: 'template',
+            ws_id,
+            suite_id_list: '',
+            case_id_list: id,
+            test_type,
+            ...tempParams
+        }
+
+        let res: any
+        if (pageType === 1) {
+            const { code, msg, ...rest } = await querySuiteList(JobObj)
+            if (code !== 200) {
+                requestCodeMessage(code, msg)
+                setLoading(false)
+                return
+            }
+            setList(rest)
+            const { code: tempCode, msg: tempMsg, ...tempRest } = await querySuiteList(TempObj)
+            if (tempCode !== 200) {
+                requestCodeMessage(tempCode, tempMsg)
+                setLoading(false)
+                return
+            }
+            setTempList(tempRest)
+            setLoading(false)
+            return
+        } else if (pageType === 2) {
+            res = await queryJobTypeList({ jt_id: id, ...params })
+        } else if (pageType === 3) {
+            res = await querTempDel({ template_id: id, ...params })
+        } else if (pageType === 4) {
+            res = await querServerDel({ server_id: id, run_mode: 'standalone', server_provider: 'aligroup', ...params })
+        } else if (pageType === 5) {
+            res = await querServerDel({ server_id: id, run_mode: 'cluster', server_provider: 'aligroup', ...params })
+        } else if (pageType === 6) {
+            res = await querServerDel({ server_id: id, run_mode: 'standalone', server_provider: 'aliyun', ...params })
+        } else {
+            res = await querServerDel({ server_id: id, run_mode: 'cluster', server_provider: 'aliyun', ...params })
+        }
+
+        const { code, msg, ...rest } = res
+        if (code !== 200) {
+            requestCodeMessage(code, msg)
+            setLoading(false)
+            return
+        }
+        setList(rest)
+        setLoading(false)
+    }
+
+    React.useEffect(() => {
+        if (!source) return
+        queryListData()
+    }, [source, params, tempParams])
+
+    React.useEffect(() => {
+        if (pk) init()
+    }, [pk])
 
     const obj: any = {}
-    if (type == 1) obj.path = `/ws/${ws_id}/test_suite`, obj.name = `Test Suite管理`
-    else if (type == 2) obj.path = `/ws/${ws_id}/job/types`, obj.name = `Job类型管理`
-    else if (type == 3) obj.path = `/ws/${ws_id}/job/templates`, obj.name = `模板列表`
-    else if (type == 4) obj.path = `/ws/${ws_id}/device/group`, obj.name = `${aligroupServer}单机`
-    // else if (type == 4) obj.path = `/ws/${ws_id}/device/group`, obj.name = `内网单机`
-    else if (type == 5) obj.path = `/ws/${ws_id}/device/group`, obj.name = `${aligroupServer}集群`
-    // else if (type == 5) obj.path = `/ws/${ws_id}/device/group`, obj.name = `内网集群`
-    // else if (type == 6) obj.path = `/ws/${ws_id}/device/group`, obj.name = `云上单机`
-    else if (type == 6) obj.path = `/ws/${ws_id}/device/group`, obj.name = `${aliyunServer}单机`
-    // else if (type == 7) obj.path = `/ws/${ws_id}/device/group`, obj.name = `云上集群`
-    else if (type == 7) obj.path = `/ws/${ws_id}/device/group`, obj.name = `${aliyunServer}集群`
+    if (+ $type === 1) obj.path = `/ws/${ws_id}/test_suite`, obj.name = `Test Suite管理`
+    else if (+ $type === 2) obj.path = `/ws/${ws_id}/job/types`, obj.name = `Job类型管理`
+    else if (+ $type === 3) obj.path = `/ws/${ws_id}/job/templates`, obj.name = `模板列表`
+    else if (+ $type === 4) obj.path = `/ws/${ws_id}/device/group`, obj.name = `${aligroupServer}单机`
+    // else if (+ $type === 4) obj.path = `/ws/${ws_id}/device/group`, obj.name = `内网单机`
+    else if (+ $type === 5) obj.path = `/ws/${ws_id}/device/group`, obj.name = `${aligroupServer}集群`
+    // else if (+ $type === 5) obj.path = `/ws/${ws_id}/device/group`, obj.name = `内网集群`
+    // else if (+ $type === 6) obj.path = `/ws/${ws_id}/device/group`, obj.name = `云上单机`
+    else if (+ $type === 6) obj.path = `/ws/${ws_id}/device/group`, obj.name = `${aliyunServer}单机`
+    // else if (+ $type === 7) obj.path = `/ws/${ws_id}/device/group`, obj.name = `云上集群`
+    else if (+ $type === 7) obj.path = `/ws/${ws_id}/device/group`, obj.name = `${aliyunServer}集群`
 
     let text = ``
-    if (type == 1) text = `Test Suite`
-    else if (type == 2) text = `Job类型`
-    else if (type == 3) text = `模板`
-    else if (type == 4) text = `${aligroupServer}单机`
-    // else if (type == 4) text = `内网机器`
-    else if (type == 5) text = `${aligroupServer}集群`
-    // else if (type == 5) text = `内网集群`
-    // else if (type == 6) text = `云上单机`
-    else if (type == 6) text = `${aliyunServer}单机`
-    // else if (type == 7) text = `云上集群`
-    else if (type == 7) text = `${aliyunServer}集群`
-
-    const JobObj: any = {
-        flag: 'job',
-        ws_id,
-        suite_id_list: '',
-        case_id_list: id,
-        test_type,
-        ...params
-    }
-    const TempObj: any = {
-        flag: 'template',
-        ws_id,
-        suite_id_list: '',
-        case_id_list: id,
-        test_type,
-        ...tempParams
-    }
+    if (+ $type === 1) text = `Test Suite`
+    else if (+ $type === 2) text = `Job类型`
+    else if (+ $type === 3) text = `模板`
+    else if (+ $type === 4) text = `${aligroupServer}单机`
+    // else if (+ $type === 4) text = `内网机器`
+    else if (+ $type === 5) text = `${aligroupServer}集群`
+    // else if (+ $type === 5) text = `内网集群`
+    // else if (+ $type === 6) text = `云上单机`
+    else if (+ $type === 6) text = `${aliyunServer}单机`
+    // else if (+ $type === 7) text = `云上集群`
+    else if (+ $type === 7) text = `${aliyunServer}集群`
 
     const BreadcrumbItem: React.FC<any> = () => (
         <Breadcrumb className="breadcrumb">
@@ -123,114 +181,15 @@ const Refenerce = (props: any) => {
                 <span style={{ cursor: 'pointer' }} onClick={() => history.push(obj.path)}>{obj.name}</span>
             </Breadcrumb.Item>
             <Breadcrumb.Item >
-                <span style={{ cursor: 'pointer', color: 'rgba(0,0,0,0.85)' }}>{text}<span style={{ color: 'rgba(0,0,0,0.65)' }}>({name})</span>引用详情</span>
+                <span style={{ cursor: 'pointer', color: 'rgba(0,0,0,0.85)' }}>{text}<span style={{ color: 'rgba(0,0,0,0.65)' }}>({source?.name})</span>引用详情</span>
             </Breadcrumb.Item>
         </Breadcrumb>
     )
-    const QueryJobData = async () => {
-        setLoading(true)
-        const data = await querySuiteList(JobObj)
-        if (data.code == 200) {
-            setJobTotal(data.total)
-            setJobData(data.data)
-            setLoading(false)
-        }
-        else requestCodeMessage(data.code, data.msg)
-    }
-    const QuerySuiteTempData = async () => {
-        setLoading(true)
-        const data = await querySuiteList(TempObj)
-        if (data.code == 200) {
-            setTempTotal(data.total)
-            setTempData(data.data)
-            setLoading(false)
-        }
-        else requestCodeMessage(data.code, data.msg)
-    }
 
-    const QueryTemplateData = async () => {
-        setLoading(true)
-        const data = await queryJobTypeList({ jt_id: id, ...params })
-        if (data.code == 200) {
-            setTotal(data.total)
-            setDataSource(data.data)
-            setLoading(false)
-        }
-        else requestCodeMessage(data.code, data.msg)
-    }
-    const QueryPlanData = async () => {
-        setLoading(true)
-        const data = await querTempDel({ template_id: id, ...params })
-        if (data.code == 200) {
-            setTotal(data.total)
-            setDataSource(data.data)
-            setLoading(false)
-        }
-        else requestCodeMessage(data.code, data.msg)
-    }
-    const QueryStandLoneServerData = async () => {
-        setLoading(true)
-        const data = await querServerDel({ server_id: id, run_mode: 'standalone', server_provider: 'aligroup', ...params })
-        if (data.code == 200) {
-            setTotal(data.total)
-            setDataSource(data.data)
-            setLoading(false)
-        }
-        else requestCodeMessage(data.code, data.msg)
-    }
-    const QueryClusterServerData = async () => {
-        setLoading(true)
-        const data = await querServerDel({ server_id: id, run_mode: 'cluster', server_provider: 'aligroup', ...params })
-        if (data.code == 200) {
-            setTotal(data.total)
-            setDataSource(data.data)
-            setLoading(false)
-        }
-        else requestCodeMessage(data.code, data.msg)
-    }
-    const CloudStandLoneServerData = async () => {
-        setLoading(true)
-        const data = await querServerDel({ server_id: id, run_mode: 'standalone', server_provider: 'aliyun', ...params })
-        if (data.code == 200) {
-            setTotal(data.total)
-            setDataSource(data.data)
-            setLoading(false)
-        }
-        else requestCodeMessage(data.code, data.msg)
-    }
-    const CloudClusterServerData = async () => {
-        setLoading(true)
-        const data = await querServerDel({ server_id: id, run_mode: 'cluster', server_provider: 'aliyun', ...params })
-        if (data.code == 200) {
-            setTotal(data.total)
-            setDataSource(data.data)
-            setLoading(false)
-        }
-        else requestCodeMessage(data.code, data.msg)
-    }
     const showTemp = useMemo(() => {
-        if (JobTotal > 0) return true
+        if (list?.total > 0) return true
         return false
-    }, [JobTotal])
-
-    useEffect(() => {
-        if (type == 1) {
-            QueryJobData();
-            QuerySuiteTempData();
-        } else if (type == 2) {
-            QueryTemplateData();
-        } else if (type == 3) {
-            QueryPlanData();
-        } else if (type == 4) {
-            QueryStandLoneServerData();
-        } else if (type == 5) {
-            QueryClusterServerData();
-        } else if (type == 6) {
-            CloudStandLoneServerData()
-        } else {
-            CloudClusterServerData()
-        }
-    }, [params])
+    }, [list?.total])
 
     const JobColumns: any = [
         {
@@ -287,15 +246,15 @@ const Refenerce = (props: any) => {
     ];
     const TempColumns: any = [
         {
-            title: test_type && <>Conf</>,
+            title: source?.test_type && <>Conf</>,
             dataIndex: 'case_name_list',
             key: 'case_name_list',
-            width: test_type ? 400 : 1,
+            width: source?.test_type ? 400 : 1,
             ellipsis: {
                 shwoTitle: false,
             },
             render: (_: any) => (
-                test_type && <Tooltip
+                source?.test_type && <Tooltip
                     overlayStyle={{ maxWidth: 390 }}
                     overlay={<div>{_.replace(/,/g, '/')}</div>}
                     placement="topLeft"
@@ -353,23 +312,24 @@ const Refenerce = (props: any) => {
     ];
 
     const RenderItem: React.FC<any> = () => {
-        if (type == 1) {
+        if (+ $type === 1) {
             return (
                 <>
                     {
-                        JobTotal > 0 && <Collapse
+                        list?.total > 0 &&
+                        <Collapse
                             bordered={false}
                             ghost
                             defaultActiveKey="1"
                             expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
                             className="site-collapse-custom-collapse"
                         >
-                            <Panel header={<div>Job列表<span className="total">{JobTotal}</span></div>} key="1" className="site-collapse-custom-panel">
-                                <Table dataSource={JobData} columns={JobColumns} size='small' loading={loading} rowKey="id" pagination={false} />
+                            <Panel header={<div>Job列表<span className="total">{list?.total || 0}</span></div>} key="1" className="site-collapse-custom-panel">
+                                <Table dataSource={list?.data} columns={JobColumns} size='small' rowKey="id" pagination={false} />
                                 <CommonPagination
                                     pageSize={params.page_size}
                                     currentPage={params.page_num}
-                                    total={JobTotal}
+                                    total={list?.total}
                                     onPageChange={
                                         (page_num, page_size) => setParams({
                                             ...params,
@@ -382,19 +342,20 @@ const Refenerce = (props: any) => {
                         </Collapse>
                     }
                     {
-                        TempTotal > 0 && <Collapse
+                        tempList?.total > 0 &&
+                        <Collapse
                             bordered={false}
                             ghost
                             defaultActiveKey={showTemp ? '0' : '1'}
                             expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
                             className="site-collapse-custom-collapse"
                         >
-                            <Panel header={<div>模版列表<span className="total">{TempTotal}</span></div>} key="1" className="site-collapse-custom-panel">
-                                <Table dataSource={TempData} columns={TempColumns} size='small' loading={loading} rowKey="id" pagination={false} />
+                            <Panel header={<div>模版列表<span className="total">{tempList?.total || 0}</span></div>} key="1" className="site-collapse-custom-panel">
+                                <Table dataSource={tempList?.data || []} columns={TempColumns} size='small' loading={loading} rowKey="id" pagination={false} />
                                 <CommonPagination
                                     pageSize={tempParams.page_size}
                                     currentPage={tempParams.page_num}
-                                    total={TempTotal}
+                                    total={tempList?.total}
                                     onPageChange={
                                         (page_num, page_size) => setTempParams({
                                             ...tempParams,
@@ -408,7 +369,7 @@ const Refenerce = (props: any) => {
                     }
                 </>
             )
-        } else if (type == 3) {
+        } else if (+ $type === 3) {
             return (
                 <Collapse
                     bordered={false}
@@ -417,12 +378,12 @@ const Refenerce = (props: any) => {
                     expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
                     className="site-collapse-custom-collapse"
                 >
-                    <Panel header={<div>计划列表<span className="total">{total}</span></div>} key="1" className="site-collapse-custom-panel">
-                        <Table dataSource={dataSource} columns={PlanColumns} size='small' loading={loading} rowKey="id" pagination={false} />
+                    <Panel header={<div>计划列表<span className="total">{list?.total || 0}</span></div>} key="1" className="site-collapse-custom-panel">
+                        <Table dataSource={list?.data} columns={PlanColumns} size='small' rowKey="id" pagination={false} />
                         <CommonPagination
                             pageSize={params.page_size}
                             currentPage={params.page_num}
-                            total={total}
+                            total={list?.total}
                             onPageChange={
                                 (page_num, page_size) => setParams({
                                     ...params,
@@ -443,18 +404,17 @@ const Refenerce = (props: any) => {
                     expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
                     className="site-collapse-custom-collapse"
                 >
-                    <Panel header={<div>模版列表<span className="total">{total}</span></div>} key="1" className="site-collapse-custom-panel">
+                    <Panel header={<div>模版列表<span className="total">{list?.total || 0}</span></div>} key="1" className="site-collapse-custom-panel">
                         <Table
-                            dataSource={dataSource}
+                            dataSource={list?.data}
                             columns={TempColumns}
                             size='small'
-                            loading={loading}
                             rowKey="id"
                             pagination={false} />
                         <CommonPagination
                             pageSize={params.page_size}
                             currentPage={params.page_num}
-                            total={total}
+                            total={list?.total}
                             onPageChange={
                                 (page_num, page_size) => setParams({
                                     ...params,
@@ -473,9 +433,12 @@ const Refenerce = (props: any) => {
         <Wapper>
             <BreadcrumbItem />
             <div className="content" style={{ height: layoutHeight - 88, overflowY: 'auto' }}>
-                <RenderItem />
+                <Spin spinning={loading}>
+                    <RenderItem />
+                </Spin>
             </div>
         </Wapper>
     )
 }
+
 export default Refenerce;

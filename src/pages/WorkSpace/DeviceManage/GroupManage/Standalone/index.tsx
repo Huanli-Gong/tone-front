@@ -17,7 +17,7 @@ import { queryTestServerList, updateTestServer, deleteTestServer, batchUpdateTes
 import { ReactComponent as TreeSvg } from '@/assets/svg/tree.svg'
 import styles from './index.less'
 import { useClientSize } from '@/utils/hooks'
-import { requestCodeMessage, AccessTootip } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip, saveRefenerceData } from '@/utils/utils';
 import ServerLink from '@/components/MachineWebLink/index';
 import SelectVmServer from './Components/SelectVmServer';
 import { Access, useAccess } from 'umi';
@@ -132,8 +132,11 @@ const Standalone = (props: any, ref: any) => {
         getTestServerList()
     }, [urlParmas])
 
-    const handleDetail = () => {
-        window.open(`/ws/${ws_id}/refenerce/4/?name=${deleteObj.ip}&id=${deleteObj.id}`)
+    const handleDetail = async () => {
+        const pk = await saveRefenerceData({ name: deleteObj.name, id: deleteObj.id })
+        if (pk)
+            window.open(`/ws/${ws_id}/refenerce/4/?pk=${pk}`)
+        // window.open(`/ws/${ws_id}/refenerce/4/?name=${deleteObj.ip}&id=${deleteObj.id}`)
     }
     // 编辑
     const handleEdit = useCallback((scope: any) => {

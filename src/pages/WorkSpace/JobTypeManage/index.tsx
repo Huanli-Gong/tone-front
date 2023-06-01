@@ -1,38 +1,96 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useCallback, useRef, useEffect, useState } from 'react'
+import React, { useCallback, useRef } from 'react'
 import { Table, Space, Button, Badge, message, Modal } from 'antd'
 import { useRequest, history, useModel, useIntl, FormattedMessage, getLocale, useParams } from 'umi'
 import { queryJobTypeList, jobSwitch, deleteJob, queryJobTypeDel } from './services'
 import { requestCodeMessage, switchServerType, switchTestType } from '@/utils/utils'
 import { CheckCircleOutlined, CheckCircleFilled, ExclamationCircleOutlined } from '@ant-design/icons'
 
-import { JobTypeDeleteModal, EditTalbeCell } from './components'
+import { DelTypeModal, EditTalbeCell } from './components'
 import { SingleTabCard } from '@/components/UpgradeUI'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
+
+const DeleteTipsModal: React.ForwardRefRenderFunction<AnyType, AnyType> = ({ onOk }, ref) => {
+    const [visible, setVisible] = React.useState(false)
+    const [source, setSource] = React.useState(undefined)
+
+    React.useImperativeHandle(ref, () => ({
+        show(_: any) {
+            setVisible(true)
+            setSource(_)
+        }
+    }))
+    const handleCancel = () => {
+        setVisible(false)
+        setSource(undefined)
+    }
+
+    const handleOk = () => {
+        onOk(source)
+        handleCancel()
+    }
+
+    React.useEffect(() => {
+        return () => {
+            handleCancel()
+        }
+    }, [])
+
+    return (
+        <Modal
+            title={<FormattedMessage id="delete.prompt" />}
+            centered={true}
+            open={visible}
+            onCancel={() => setVisible(false)}
+            footer={[
+                <Button key="submit" onClick={handleOk}>
+                    <FormattedMessage id="operation.ok" />
+                </Button>,
+                <Button key="back" type="primary" onClick={() => setVisible(false)}>
+                    <FormattedMessage id="operation.cancel" />
+                </Button>
+            ]}
+            width={300}
+        >
+            <div style={{ color: 'red', marginBottom: 5 }}>
+                <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                <FormattedMessage id="delete.prompt" />
+            </div>
+        </Modal>
+    )
+}
+
+const TipsModalComp = React.forwardRef(DeleteTipsModal)
 
 export default () => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
     const { ws_id } = useParams() as any
-    const [deleteDefault, setDeleteDefault] = useState(false);
-    const [DefaultJob, setDefaultJob] = useState({});
+    const tipModalRef = React.useRef<any>(null)
     const deleteModal: any = useRef(null)
     const { initialState, setInitialState } = useModel('@@initialState')
+
     const { data, loading, run } = useRequest(
-        queryJobTypeList,
+        () => queryJobTypeList({ ws_id }),
         {
-            formatResult: (res: any) => {
-                return res
-            },
-            initialData: { total: 0, data: [] },
-            defaultParams: [{ ws_id }]
+            manual: true
         }
     )
+
+    const runInterface = () => {
+        run()
+            .then(() => {
+                setInitialState({
+                    ...initialState,
+                    refreshMenu: !initialState?.refreshMenu
+                })
+            })
+        message.success(formatMessage({ id: 'operation.success' }))
+    }
+
     const defaultOption = (ret: any) => {
         if (ret.code === 200) {
-            run({ ws_id })
-            message.success(formatMessage({ id: 'operation.success' }))
-
+            runInterface()
         }
         else
             requestCodeMessage(ret.code, ret.msg)
@@ -49,30 +107,24 @@ export default () => {
         else message.error(formatMessage({ id: 'job.types.sort.ps2' }))
     }
 
-    useEffect(() => {
-        setInitialState({
-            ...initialState,
-            refreshMenu: !initialState?.refreshMenu
-        })
-    }, [data])
+    React.useEffect(() => {
+        run()
+    }, [ws_id])
 
     const handleDeleteJobType = async (job: any) => {
         const res = await queryJobTypeDel({ jt_id: job.id })
         if (res.data.length > 0) {
             deleteModal.current.show(job)
-        } else {
-            setDeleteDefault(true)
-            setDefaultJob(job)
+        }
+        else {
+            tipModalRef.current.show(job)
         }
     }
 
     const handleDelete = async (job: any) => {
         const result = await deleteJob({ jt_id: job.id, ws_id })
         if (result.code === 200) {
-            run({ ws_id })
-            message.success(formatMessage({ id: 'operation.success' }))
-            deleteModal.current.hide()
-            setDeleteDefault(false)
+            runInterface()
         }
         else
             requestCodeMessage(result.code, result.msg)
@@ -177,9 +229,10 @@ export default () => {
                     <Button onClick={() => handlePreviewJobType(_.id)} style={{ padding: 0 }} size="small" type="link">
                         <FormattedMessage id="operation.preview" />
                     </Button>
-                    {(_.creator_name === '系统预设') || (_.creator_name !== '系统预设' && _.is_first) ? <></> : <Button type='link' size="small" style={{ padding: 0 }} onClick={() => handleDeleteJobType(_)}>
-                        <FormattedMessage id="operation.delete" />
-                    </Button>}
+                    {(_.creator_name === '系统预设') || (_.creator_name !== '系统预设' && _.is_first) ? <></> :
+                        <Button type='link' size="small" style={{ padding: 0 }} onClick={() => handleDeleteJobType(_)}>
+                            <FormattedMessage id="operation.delete" />
+                        </Button>}
                 </Space>
             )
         }
@@ -189,6 +242,7 @@ export default () => {
         () => history.push(`/ws/${ws_id}/job/types/create`), []
     )
 
+    if (!data) return <></>
     return (
         <SingleTabCard
             title={<FormattedMessage id="job.types.manage" />}
@@ -201,31 +255,12 @@ export default () => {
                 rowKey="id"
                 loading={loading}
                 columns={columns}
-                dataSource={data.data}
+                dataSource={data || []}
                 pagination={false}
                 scroll={{ x: 1500 }}
             />
-            <JobTypeDeleteModal ref={deleteModal} onOk={handleDelete} />
-            <Modal
-                title={<FormattedMessage id="delete.prompt" />}
-                centered={true}
-                visible={deleteDefault}
-                onCancel={() => setDeleteDefault(false)}
-                footer={[
-                    <Button key="submit" onClick={() => handleDelete(DefaultJob)}>
-                        <FormattedMessage id="operation.ok" />
-                    </Button>,
-                    <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        <FormattedMessage id="operation.cancel" />
-                    </Button>
-                ]}
-                width={300}
-            >
-                <div style={{ color: 'red', marginBottom: 5 }}>
-                    <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    <FormattedMessage id="delete.prompt" />
-                </div>
-            </Modal>
+            <DelTypeModal ref={deleteModal} onOk={handleDelete} />
+            <TipsModalComp ref={tipModalRef} onOk={handleDelete} />
         </SingleTabCard>
     )
 }
