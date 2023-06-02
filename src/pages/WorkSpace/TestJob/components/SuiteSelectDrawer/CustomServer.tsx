@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useContext, useRef } from 'react'
-import { Form, Input, Space } from 'antd'
+import { Form, Input } from 'antd'
 import { useIntl, FormattedMessage } from 'umi';
 import { DrawerProvider } from './Provider'
 import styles from '../SelectSuite/style.less'
@@ -44,7 +44,7 @@ const CustomServer: React.FC<IProps> = (props: any) => {
 
     // toneAgent校验失败的内容提示
     const ValidateIps: React.FC<any> = ({ data, channelType }) => (
-        <Space>
+        <span>
             <span>{data.msg?.join('')}</span>
             {
                 !BUILD_APP_ENV && channelType == 'toneagent' &&
@@ -55,7 +55,7 @@ const CustomServer: React.FC<IProps> = (props: any) => {
                     <FormattedMessage id="select.suite.deploy.toneagent" />
                 </span>
             }
-        </Space>
+        </span>
     )
 
     return (
