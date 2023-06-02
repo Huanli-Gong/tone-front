@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useContext, useRef } from 'react'
-import { Form, Input } from 'antd'
+import { Form, Input, Space } from 'antd'
 import { useIntl, FormattedMessage } from 'umi';
 import { DrawerProvider } from './Provider'
 import styles from '../SelectSuite/style.less'
@@ -44,10 +44,10 @@ const CustomServer: React.FC<IProps> = (props: any) => {
 
     // toneAgent校验失败的内容提示
     const ValidateIps: React.FC<any> = ({ data, channelType }) => (
-        <span>
-            <span>{data.msg?.join(' ')}</span>
+        <Space>
+            <span>{data.msg?.join('')}</span>
             {
-                channelType == 'toneagent' &&
+                !BUILD_APP_ENV && channelType == 'toneagent' &&
                 <span
                     className={styles.btn_style}
                     onClick={() => deployClick(data)}
@@ -55,7 +55,7 @@ const CustomServer: React.FC<IProps> = (props: any) => {
                     <FormattedMessage id="select.suite.deploy.toneagent" />
                 </span>
             }
-        </span>
+        </Space>
     )
 
     return (
@@ -113,10 +113,10 @@ const CustomServer: React.FC<IProps> = (props: any) => {
                     placeholder={multipInfo.selfServer ? formatMessage({ id: 'select.suite.multiple.values' }) : `${formatMessage({ id: 'select.suite.enter.ip' })}${!BUILD_APP_ENV ? "/SN" : ""}`}
                     autoComplete="off"
                 />
-            </Form.Item>
+            </Form.Item >
 
             {/**失败时部署Agent对话框 */}
-            <DeployModal ref={deployModal} callback={deployCallback} />
+            < DeployModal ref={deployModal} callback={deployCallback} />
         </>
     )
 }
