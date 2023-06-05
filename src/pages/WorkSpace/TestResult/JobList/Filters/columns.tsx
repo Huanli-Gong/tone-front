@@ -1,5 +1,5 @@
 import React from "react"
-import { Select, Spin, Tag, Empty, Input } from "antd"
+import { Select, Spin, Tag, Empty } from "antd"
 import type { SelectProps } from "antd"
 import { useRequest, useParams, request, FormattedMessage } from "umi"
 import {
@@ -53,8 +53,8 @@ const BasicSelect: React.FC<SelectProps & any> = (props) => {
         { debounceInterval: 300 }
     )
 
-    const { placeholder } = rest
-    if (!data) return <Input placeholder={placeholder} />
+    const { placeholder, value, ...iProps } = rest
+    if (!data) return <Select loading={loading} placeholder={placeholder} {...iProps} />
 
     const handleSearch = (keyword: any) => {
         if (!searchKey) return
@@ -123,10 +123,10 @@ const StateSelect: React.FC<any> = (props) => {
 
 const TagSelect: React.FC<any> = (props) => {
     const { ws_id } = useParams() as any
-    const { data } = useRequest(() => queryTag({ ws_id }), { debounceInterval: 300 })
+    const { data, loading } = useRequest(() => queryTag({ ws_id }), { debounceInterval: 300 })
 
-    const { placeholder } = props
-    if (!data) return <Input placeholder={placeholder} />
+    const { placeholder, value, ...rest } = props
+    if (!data) return <Select loading={loading} placeholder={placeholder} {...rest} />
 
     return (
         <TagSelectStyled
@@ -154,16 +154,17 @@ const TagSelect: React.FC<any> = (props) => {
 }
 
 const ServerSelect: React.FC<any> = (props) => {
-    const { onChange } = props
+    const { onChange, value, ...iProps } = props
     const { ws_id } = useParams() as any
 
-    const { data } = useRequest(() => request(`/api/server/server_snapshot/`, { params: { ws_id } }))
+    const { data, loading } = useRequest(() => request(`/api/server/server_snapshot/`, { params: { ws_id } }))
 
     if (!data)
         return (
             <Select
                 mode="multiple"
-                {...props}
+                loading={loading}
+                {...iProps}
             />
         )
 

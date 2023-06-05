@@ -86,7 +86,7 @@ export default {
   'plan.install_un_push': '安装未发布',
   'plan.install_build_kernel': 'Build内核',
   'plan.rpm_info.placeholder': '请输入RPM包URL,多个回车换行',
-  'plan.env_info.reject': '格式：key=value，多个用英文逗号或换行分割',
+  'plan.env_info.reject': '格式：key=value，多个使用换行分割。',
   // 'plan.notice_name': '通知主题',
   'plan.notice_name.placeholder': '[T-One] 你的测试已完成{date}',
   // 'plan.email_info': '邮件通知',

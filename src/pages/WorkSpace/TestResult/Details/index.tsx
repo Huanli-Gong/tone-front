@@ -341,8 +341,11 @@ const TestResultDetails: React.FC = () => {
                                             </Row>
                                         }
                                         <Row className={styles.test_summary_row}>
-                                            <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}><FormattedMessage id="ws.result.details.job.tag" /></Typography.Text>
+                                            <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}>
+                                                <FormattedMessage id="ws.result.details.job.tag" />
+                                            </Typography.Text>
                                             <TagsEditer
+                                                width={widthStyle + 16}
                                                 onOk={handleEditTagsOk}
                                                 ws_id={ws_id}
                                                 job_id={job_id}

@@ -1,6 +1,6 @@
 const defaultKey = 'ws.result.list'
 
-const text = {
+const text: any = {
   // select Options
   'job_id': 'Job ID',
   'name': 'Job Name',
@@ -29,6 +29,8 @@ const text = {
 
   'id': "ID",
   'project_name': 'Project',
+  'product_version': 'Product Version',
+
   'test_result': 'All/Success/Fail',
   'creator_name': 'Creator',
   'end_time': 'End Time',
@@ -72,7 +74,7 @@ const text = {
   'reRun.checked.inheriting_machine': 'Use the machine used by the original Job',
 };
 
-export default Object.keys(text).reduce((p, key) => {
+export default Object.keys(text).reduce((p: any, key) => {
   p[`${defaultKey}.${key}`] = text[key]
   return p
 }, {})
