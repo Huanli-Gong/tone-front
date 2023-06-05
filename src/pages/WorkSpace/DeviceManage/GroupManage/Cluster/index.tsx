@@ -14,7 +14,7 @@ import SelectTags from '@/components/Public/SelectTags';
 import CommonPagination from '@/components/CommonPagination'
 import { usePageInit } from './hooks'
 import { useClientSize } from '@/utils/hooks'
-import { requestCodeMessage, AccessTootip } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip, saveRefenerceData } from '@/utils/utils';
 import { Access, useAccess } from 'umi';
 import OverflowList from '@/components/TagOverflow/index'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
@@ -82,8 +82,11 @@ const Cluster = (props: any, ref: any) => {
         const data = await deleteServerGroup(id)
         defaultOption(data)
     }
-    const handleDetail = () => {
-        window.open(`/ws/${ws_id}/refenerce/5/?name=${deleteObj.name}&id=${deleteObj.id}`)
+    const handleDetail = async () => {
+        const pk = await saveRefenerceData({ name: deleteObj.name, id: deleteObj.id })
+        if (pk)
+            window.open(`/ws/${ws_id}/refenerce/5/?pk=${pk}`)
+        // window.open(`/ws/${ws_id}/refenerce/5/?name=${deleteObj.name}&id=${deleteObj.id}`)
     }
     const handleAddClusterServerFinish = (id: any) => {
         setRefreshChild(id)

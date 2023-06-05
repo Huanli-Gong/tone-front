@@ -9,7 +9,6 @@ import { queryDocList } from '../services'
 import Loading from './Loading';
 import Empty from './Empty'
 import Catalog from './Catalog'
-import lodash from 'lodash'
 import { tarnsformEmoji } from '@/components/RichEditor/components/Emoji/emojiReplacer';
 
 const Wrapper = styled(Row)`
@@ -32,7 +31,7 @@ const EditorContainer = styled.div<{ hasCatalog: number }>`
     height: 100%;
     display: flex;
     overflow-y: auto;
-    padding-top: 20px;
+    /* padding-top: 20px; */
     flex-direction: column;
     gap: 8px;
 `
@@ -45,7 +44,7 @@ const EditorTitle = styled.div`
     justify-content: space-between;
     /* padding-right: 20px; */
     h2 {
-        margin-bottom: 0;
+        margin: 0 !important;
     }
 `
 
@@ -68,7 +67,6 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
 
     const [loading, setLoading] = useState(true)
     const [editor, setEditor] = useState<any>()
-    const [position, setPosition] = useState<number>(0)
     const [isEmpty, setIsEmpty] = useState(false)
     const [text, setText] = React.useState("")
 
@@ -124,18 +122,6 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
             }, [])
     }, [editor])
 
-    const hanldeEditorContainerScroll = (evt: any) => setPosition(evt.target.scrollTop)
-
-    useEffect(() => {
-        if (!editor) return
-        const _dom: any = document.querySelector(".ProseMirror")
-        if (!_dom) return
-        _dom.addEventListener('scroll', lodash.debounce(hanldeEditorContainerScroll, 100))
-        return () => {
-            _dom.removeEventListener('scroll', lodash.debounce(hanldeEditorContainerScroll, 100))
-        }
-    }, [editor])
-
     return (
         <Wrapper>
             <EditorContent >
@@ -179,8 +165,6 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
                     !!catalogSource.length &&
                     <Catalog
                         source={catalogSource}
-                        position={position}
-                        setPosition={setPosition}
                     />
                 }
             </EditorContent>

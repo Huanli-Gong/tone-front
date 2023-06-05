@@ -1,6 +1,6 @@
 import { queryBaselineList } from '@/pages/WorkSpace/TestJob/services'
 import { requestCodeMessage } from '@/utils/utils'
-import { Drawer, Form, Select, Space, Button, Row } from 'antd'
+import { Drawer, Form, Select, Space, Button, Row, Typography } from 'antd'
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
 import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
 import { contrastBaseline } from '../service'
@@ -14,7 +14,7 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
     const [form] = Form.useForm()
     const [drawerData, setDrawerData] = useState<any>()
 
-    const { data: baselineList, run } = useRequest(
+    const { data: baselineList, loading, run } = useRequest(
         () => queryBaselineList({ ws_id, test_type, page_size: 999 }),
         { initialData: [], manual: true }
     )
@@ -96,13 +96,17 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
                         showSearch
                         allowClear
                         /* @ts-ignore */
-                        filterOption={(input, option) => (option?.label ?? '')?.toLowerCase().includes(input.toLowerCase())}
-                        options={baselineList.map(
-                            (item: any) => ({
-                                value: item.id,
-                                label: item.name
-                            })
-                        )}
+                        loading={loading}
+                        filterOption={(input, option) => (option?.name ?? '')?.toLowerCase().includes(input.toLowerCase())}
+                        options={baselineList?.map((item: any) => ({
+                            value: item.id,
+                            name: item.name,
+                            label: (
+                                <Typography.Text ellipsis={{ tooltip: true }}>
+                                    {item.name}
+                                </Typography.Text>
+                            )
+                        }))}
                     />
                 </Form.Item>
             </Form>

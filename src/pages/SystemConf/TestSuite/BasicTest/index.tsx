@@ -473,7 +473,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             }}
         >
             <Spin spinning={loading}>
-                <Alert type="success"
+                {/* <Alert type="success"
                     showIcon
                     style={{ marginBottom: 16, height: 32 }}
                     message={
@@ -489,7 +489,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                             <FormattedMessage id="operation.synchronize" />
                         </span>
                     }
-                />
+                /> */}
 
                 <Table
                     className={styles.suiteTable}

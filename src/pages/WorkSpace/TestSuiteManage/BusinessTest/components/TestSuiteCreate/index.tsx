@@ -15,6 +15,7 @@ import { saveSuiteCaseList, queryWsCaseConfirm } from '@/pages/WorkSpace/TestSui
 import { queryDomains, queryBusinessSuite, queryWorkspaceBusinessSuite } from '../../../service'
 import styles from './index.less'
 import { useClientSize } from '@/utils/hooks';
+import { saveRefenerceData } from '@/utils/utils';
 
 /**
  * 组件废弃：因为数据结构由三级改为了二级。
@@ -99,7 +100,7 @@ export default (props: any) => {
     setDeleteVisible(false)
     history.go(-1)
   }
-  const handleDetail = () => {
+  const handleDetail = async () => {
     let suiteIdList: number[] = []
     let caseIdList: number[] = []
     leftDataSource.forEach(
@@ -111,7 +112,10 @@ export default (props: any) => {
             suiteIdList.push(suite.id)
       }
     )
-    window.open(`/ws/${ws}/refenerce/1/?test_type=${test_type}&name=${delType}&id=${caseIdList.toString()}/`)
+    const pk = await saveRefenerceData({ test_type, name: delType, id: caseIdList.toString() })
+    if (pk)
+      window.open(`/ws/${ws}/refenerce/1/?pk=${pk}`)
+    // window.open(`/ws/${ws}/refenerce/1/?test_type=${test_type}&name=${delType}&id=${caseIdList.toString()}/`)
   }
   // ---------------------------
 
