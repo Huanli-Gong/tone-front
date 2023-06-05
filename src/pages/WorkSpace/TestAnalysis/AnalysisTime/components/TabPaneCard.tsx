@@ -17,6 +17,7 @@ import ClusterChart from './PerformanceCharts/Cluster'
 import StandaloneChart from './PerformanceCharts/Standalone'
 import EmptyComp from "./EmptyComp"
 import LoadingComp from './Loading'
+import { v4 as uuid } from 'uuid'
 
 const TootipTipRow = styled(Row)`
     position:relative;
@@ -120,7 +121,7 @@ const TabPaneCard: React.FC<any> = (props) => {
     const getAnalysisFormData = () => {
         const params: any = test_type === 'functional' ? { show_type } : { provider_env }
         const values = form.getFieldsValue()
-        const { project_id, tag, time } = values
+        const { time, ...rest } = values
 
         if (time && time.length > 0) {
             const [start_time, end_time] = time
@@ -128,10 +129,10 @@ const TabPaneCard: React.FC<any> = (props) => {
             params.end_time = moment(end_time).format('YYYY-MM-DD')
         }
 
-        if (tag)
-            params.tag = tag
-        params.project_id = project_id
-        return params
+        return {
+            ...params,
+            ...rest
+        }
     }
 
     const fetchAnalysis = (data: any) => {
@@ -164,7 +165,7 @@ const TabPaneCard: React.FC<any> = (props) => {
         else {
             const { metric } = data
             const params = getAnalysisFormData()
-            const metrics = metric.map((i: any) => ({ ...params, ...data, metric: [i], key: i }))
+            const metrics = metric.map((i: any) => ({ ...params, ...data, metric: [i], key: uuid() }))
             setTableData([])
             setFetchData(metrics)
         }
@@ -177,7 +178,7 @@ const TabPaneCard: React.FC<any> = (props) => {
             const { project_id } = params
             if (test_suite_id && test_case_id && project_id) {
                 if (test_type === "performance") {
-                    const metrics = metric.map((i: any) => ({ ...params, ...metricData, metric: [i], key: i }))
+                    const metrics = metric.map((i: any) => ({ ...params, ...metricData, metric: [i], key: uuid() }))
                     setTableData([])
                     setFetchData(metrics)
                     return
@@ -242,7 +243,7 @@ const TabPaneCard: React.FC<any> = (props) => {
                         const metrics = $metric?.map((i: any) => ({
                             ...params,
                             metric: query[i] ? query[i]?.split(",") : [i],
-                            key: i
+                            key: uuid()
                         }))
                         setTableData([])
                         setFetchData(metrics)
@@ -271,7 +272,10 @@ const TabPaneCard: React.FC<any> = (props) => {
     }
 
     const handleListChange = (list: any[]) => {
-        setTableData((p: any) => p.concat(list.filter((i: any) => !p.map((x: any) => x.id).includes(i.id))).sort((a: any, b: any) => b.id - a.id))
+        setTableData((p: any) => {
+            const ids = list.map(((i: any) => i.id))
+            return p.filter((i: any) => !ids.includes(i.id)).concat(list).sort((a: any, b: any) => b.id - a.id)
+        })
     }
 
     return (
@@ -448,7 +452,13 @@ const TabPaneCard: React.FC<any> = (props) => {
                     {
                         tableData?.length > 0 &&
                         <AnalysisTable
-                            refresh={() => fetchAnalysis(metricData)}
+                            refresh={() => {
+                                if (test_type === "performance") {
+                                    setFetchData((p: any) => p.map((i: any) => ({ ...i, key: uuid() })))
+                                    return
+                                }
+                                fetchAnalysis(metricData)
+                            }}
                             dataSource={tableData}
                             test_type={test_type}
                             show_type={show_type}

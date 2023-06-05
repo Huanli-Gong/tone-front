@@ -94,6 +94,7 @@ const RenderConfChart: React.FC<any> = (props) => {
                     </div>
                     {
                         <ConfChart
+                            key={conf?.conf_name}
                             callBackColor={handleChartColor}
                             legend={legend}
                             envData={envData}

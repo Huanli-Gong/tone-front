@@ -26,15 +26,17 @@ export const PerfTextArea = ({
         whiteSpace: 'pre-wrap',
     },
     defaultHolder,
+    creator
 }:
     {
-        name: string,
-        field: string,
-        suite: any,
-        style?: any,
-        space?: string,
-        fontStyle?: any,
-        defaultHolder?: string,
+        name: string;
+        field: string;
+        suite: any;
+        style?: any;
+        space?: string;
+        fontStyle?: any;
+        defaultHolder?: string;
+        creator?: any;
     }) => {
     const access = useAccess();
     const { pathname } = useLocation()
@@ -109,7 +111,7 @@ export const PerfTextArea = ({
             <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
             <Access accessible={access.WsTourist()}>
                 <Access
-                    accessible={access.WsMemberOperateSelf(Number(window.location.search.substring(5, window.location.search.length)))}
+                    accessible={access.WsMemberOperateSelf(creator)}
                     fallback={
                         <EditOutlined onClick={() => AccessTootip()} style={{ paddingLeft: 10 }} />
                     }

@@ -75,7 +75,7 @@ export const ResultTitle = styled.div`
     line-height:74px;
     .btn{
         display:inline-block;
-        float:right;
+        float: right;
     }
 `
 // 右侧功能
@@ -127,7 +127,7 @@ interface EnvGroupLProps {
     enLocale?: boolean,
 }
 
-const setEnvGroupWdith = (l: number) => {
+const setEnvGroupWdith = (l: number, locales: any) => {
     if (l == 1) return (`calc( 100% - ${110}px )`)
     return (`calc((100% - ${110}px) / ${l})`)
 }
@@ -240,6 +240,7 @@ export const SuiteName = styled.div`
 `
 export const TestConfWarpper = styled.div`
     margin: 0px 15px 0px 17px;
+    border-top:1px solid rgba(0,0,0,0.10);
 `
 export const TestConf = styled.div`
     margin: 10px 0px 3px 0px;
@@ -340,9 +341,9 @@ export const TestCase = styled.div<Expand>`
     border: 1px solid rgba(0,0,0,0.10);
     border-right:none;
     border-top: none;
-    &:first-child {
+    /* &:first-child {
         border-top:1px solid rgba(0,0,0,0.10);
-    }
+    } */
 `
 const CaseTextPulic = `
     float:left;

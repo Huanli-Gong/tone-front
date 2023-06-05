@@ -148,52 +148,53 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                 </Access>
             }
             {/* <Input prefix={ <SearchOutlined /> } size="large" style={{ width : 192 , marginRight : 34 , borderRadius : 2 }} placeholder="搜索" />  */}
-            <Access accessible={access.loginBtn()}>
+
+            <Access accessible={access.loginBtn()} fallback={<></>}>
                 <Dropdown
                     arrow={true}
                     overlayClassName={styles.messageDropdownArrowHide}
                     overlay={
-                        <Menu>
-                            <div className={styles.msg_warp}>
-                                <Tabs
-                                    defaultActiveKey={tab}
-                                    onTabClick={handleTabClick}
-                                    style={{ width: 384, height: 'auto' }}
-                                    tabBarExtraContent={
-                                        <Button type="link"
-                                            onClick={handleAllRead}
-                                            disabled={tab == '1' ? msgNum.task_msg_unread_num === 0 : msgNum.apply_msg_unread_num === 0}
-                                        >
-                                            <FormattedMessage id="right.content.all.read" />
-                                        </Button>
+                        <div className={styles.msg_warp}>
+                            <Tabs
+                                activeKey={tab}
+                                onTabClick={handleTabClick}
+                                style={{ width: 384, height: 'auto' }}
+                                tabBarExtraContent={
+                                    <Button type="link"
+                                        onClick={handleAllRead}
+                                        disabled={tab == '1' ? msgNum.task_msg_unread_num === 0 : msgNum.apply_msg_unread_num === 0}
+                                    >
+                                        <FormattedMessage id="right.content.all.read" />
+                                    </Button>
+                                }
+                            >
+                                <Tabs.TabPane
+                                    key="1"
+                                    tab={
+                                        <Badge dot={msgNum.task_msg_state}>
+                                            <FormattedMessage id="right.content.task.notification" />
+                                        </Badge>
                                     }
                                 >
-                                    <Tabs.TabPane key="1"
-                                        tab={
-                                            <Badge dot={msgNum.task_msg_state}>
-                                                <FormattedMessage id="right.content.task.notification" />
-                                            </Badge>
-                                        }
-                                    >
-                                        <TaskInform tab={tab} />
-                                    </Tabs.TabPane>
-                                    <Tabs.TabPane key="2"
-                                        tab={
-                                            <Badge
-                                                count={msgNum.apply_msg_unread_num}
-                                                size="small"
-                                                offset={[msgNum.apply_msg_unread_num < 10 ? 6 : 12, 0]}
-                                            >
-                                                {/* 系统通知 */}
-                                                <FormattedMessage id="right.content.system.notification" />
-                                            </Badge>
-                                        }
-                                    >
-                                        <SystemInform tab={tab} />
-                                    </Tabs.TabPane>
-                                </Tabs>
-                            </div>
-                        </Menu>
+                                    <TaskInform tab={tab} />
+                                </Tabs.TabPane>
+                                <Tabs.TabPane
+                                    key="2"
+                                    tab={
+                                        <Badge
+                                            count={msgNum.apply_msg_unread_num}
+                                            size="small"
+                                            offset={[msgNum.apply_msg_unread_num < 10 ? 6 : 12, 0]}
+                                        >
+                                            {/* 系统通知 */}
+                                            <FormattedMessage id="right.content.system.notification" />
+                                        </Badge>
+                                    }
+                                >
+                                    <SystemInform tab={tab} />
+                                </Tabs.TabPane>
+                            </Tabs>
+                        </div>
                     }
                     open={dropVisible}
                     onOpenChange={handleVisibleChange}

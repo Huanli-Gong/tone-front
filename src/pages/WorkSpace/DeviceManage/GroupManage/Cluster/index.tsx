@@ -108,7 +108,7 @@ const Cluster = (props: any, ref: any) => {
             render: (record: any) => (<Typography.Text ellipsis={{ tooltip: true }}>{record}</Typography.Text>),
             filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(name: string) => setParams({ ...params, name })} />
+                <SearchInput confirm={confirm} onConfirm={(name: string) => setParams({ ...params, page_num: 1, name })} />
             )
         },
         {
@@ -117,7 +117,7 @@ const Cluster = (props: any, ref: any) => {
             dataIndex: 'owner_name',
             filterIcon: () => <FilterFilled style={{ color: params.owner ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <MembersFilter confirm={confirm} onOk={(owner: any) => setParams({ ...params, owner })} />
+                <MembersFilter confirm={confirm} onOk={(owner: any) => setParams({ ...params, page_num: 1, owner })} />
             )
         },
         {
@@ -138,7 +138,7 @@ const Cluster = (props: any, ref: any) => {
                 <SelectTags
                     ws_id={ws_id}
                     confirm={confirm}
-                    onConfirm={(tags: any) => { setParams({ ...params, page: 1, tags }) }}
+                    onConfirm={(tags: any) => { setParams({ ...params, page_num: 1, tags }) }}
                 />
             )
         },
@@ -148,7 +148,7 @@ const Cluster = (props: any, ref: any) => {
             dataIndex: 'description',
             filterIcon: () => <FilterFilled style={{ color: params.description ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(description: string) => setParams({ ...params, description })} />
+                <SearchInput confirm={confirm} onConfirm={(description: string) => setParams({ ...params, page_num: 1, description })} />
             ),
             render(_: any) {
                 return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>

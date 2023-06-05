@@ -96,12 +96,19 @@ const GroupBarWrapper: React.FC<any> = (props) => {
     }
 }
 
+const compareTerms = ['decline', 'increase', 'normal', 'invalid', 'na']
+
+const compare = (prop: any) => {
+    return function (a: any, b: any) {
+        return a[prop] - b[prop]
+    }
+}
+
 const ReportTestPref: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
-    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group, wsId } = useContext(ReportContext)
+    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group, wsId, containerScroll } = useContext(ReportContext)
     const { parentDom, scrollLeft } = props
-    const [arrowStyle, setArrowStyle] = useState('')
-    const [num, setNum] = useState(0)
+    const [sortKeys, setSortKeys] = useState<any>([])
     const [dataSource, setDataSource] = useState<any>([])
     const [btn, setBtn] = useState<boolean>(true)
     const [btnName, setBtnName] = useState<string>('')
@@ -158,36 +165,42 @@ const ReportTestPref: React.FC<any> = (props) => {
             </TestItemFunc>
         )
     }
-    const compare = (prop: any) => {
-        return function (a: any, b: any) {
-            return a[prop] - b[prop]
-        }
-    }
-    //差异化排序
-    const handleArrow = (suite: any, i: any) => {
-        setNum(i)
-        setArrowStyle(suite.suite_id)
 
-        const compareTerms = ['decline', 'increase', 'normal', 'invalid', 'na']
+    //差异化排序
+    const handleArrow = (suite: any, i: any, conf: any) => {
+        if (sortKeys.includes(conf.conf_id)) {
+            const { perf_data_result } = compareResult
+            setSortKeys((p: any) => p.filter((iy: any) => iy !== conf.conf_id))
+            setDataSource((p: any) => p.map((item: any) => {
+                if (item.suite_id === suite.suite_id) {
+                    return {
+                        ...item,
+                        conf_list: perf_data_result.filter((ix: any) => ix.suite_id === suite.suite_id)[0]?.conf_list
+                    }
+                }
+                return item
+            }))
+            return
+        }
+        setSortKeys((p: any) => p.concat(conf.conf_id))
+
         const endList = suite.conf_list
             .reduce((pre: any[], cur: any) => {
-                return pre.concat({
-                    ...cur,
-                    metric_list: cur.metric_list.reduce((p: any[], c: any) => {
-                        const { compare_result } = c.compare_data[i]
-                        let sortNum = 4
-                        if (compare_result) {
-                            const idx = compareTerms.indexOf(compare_result)
-                            sortNum = idx
-                        }
-                        return p.concat({ ...c, sortNum })
-                    }, [])
-                })
+                if (cur.conf_id === conf.conf_id)
+                    return pre.concat({
+                        ...cur,
+                        metric_list: cur.metric_list.reduce((p: any[], c: any) => {
+                            const { compare_result } = c.compare_data[i]
+                            let sortNum = 4
+                            if (compare_result) {
+                                const idx = compareTerms.indexOf(compare_result)
+                                sortNum = idx
+                            }
+                            return p.concat({ ...c, sortNum })
+                        }, []).sort(compare('sortNum'))
+                    })
+                return pre.concat(cur)
             }, [])
-            .map((item: any) => ({
-                ...item,
-                metric_list: item.metric_list.sort(compare('sortNum'))
-            }))
 
         setDataSource(
             dataSource.map((item: any) => {
@@ -266,15 +279,16 @@ const ReportTestPref: React.FC<any> = (props) => {
                         dataSource.map((item: any, idx: number) => {
                             return (
                                 <TestSuite key={idx}>
-                                    <SuiteName>
+                                    <SuiteName style={{ textIndent: containerScroll?.left }}>
                                         {item.suite_name}
-                                        <ChartTypeChild btn={btn} isReport={false} obj={dataSource} suiteId={item.suite_id} setPerData={setDataSource} />
+                                        <ChartTypeChild containerScroll={containerScroll} btn={btn} isReport={false} obj={dataSource} suiteId={item.suite_id} setPerData={setDataSource} />
                                     </SuiteName>
                                     <TestConfWarpper>
                                         {
                                             btn ?
                                                 (item.conf_list && item.conf_list.length) ? item.conf_list.map((conf: any, cid: number) => (
-                                                    !!conf.metric_list.length && <div key={cid}>
+                                                    !!conf.metric_list.length &&
+                                                    <div key={cid}>
                                                         <TestConf>
                                                             <ConfTitle gLen={group}><FormattedMessage id="analysis.TestConf/metric" /></ConfTitle>
                                                             {
@@ -289,8 +303,8 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                                     <Col span={12}>
                                                                                         <RightResult>
                                                                                             <FormattedMessage id="analysis.comparison/tracking.results" />
-                                                                                            <span onClick={() => handleArrow(item, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
-                                                                                                {arrowStyle == item.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
+                                                                                            <span onClick={() => handleArrow(item, i, conf)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
+                                                                                                {sortKeys.includes(conf.conf_id) ? <IconArrowBlue /> : <IconArrow />}
                                                                                             </span>
                                                                                             <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
                                                                                                 title={
@@ -340,7 +354,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                             </MetricTitle>
                                                                             {
                                                                                 Array.isArray(metric.compare_data) && !!metric.compare_data.length &&
-                                                                                metric.compare_data.map((item: any, i: number) => (
+                                                                                metric.compare_data?.slice(0, group)?.map((item: any, i: number) => (
                                                                                     <MetricText gLen={group} key={i}>
                                                                                         <Row justify="space-between">
                                                                                             <Col span={item && item.compare_result ? 12 : 20}>

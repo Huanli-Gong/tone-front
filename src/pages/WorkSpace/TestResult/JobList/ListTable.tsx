@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from "react"
-import { Row, Col, Space, Typography, Popconfirm, message, Button } from "antd"
+import { Row, Col, Space, Typography, Popconfirm, message } from "antd"
 import { useAccess, Access, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import { requestCodeMessage, targetJump, AccessTootip, matchTestType } from '@/utils/utils'
 import { StarOutlined, StarFilled } from '@ant-design/icons'
@@ -8,6 +8,7 @@ import { JobListStateTag } from '../Details/components'
 import { QusetionIconTootip } from '@/components/Product';
 import lodash from 'lodash'
 import CommonPagination from '@/components/CommonPagination';
+import DelBar from "./DelBar"
 import {
     queryTestResultList,
     deleteJobTest,
@@ -70,15 +71,32 @@ const ListTable: React.FC<IProps> = (props) => {
         setLoading(true)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { code, msg, ...rest } = await queryTestResultList(pageQuery)
-        setLoading(false)
         if (code !== 200) return
-        setSource(rest)
+        const { total } = rest
+
+        const { page_num, page_size } = pageQuery
+        const totalPage = Math.ceil((total - 1) / page_size)
+        if (totalPage > 0 && page_num > totalPage) {
+            setPageQuery((p: any) => ({ ...p, page_num: totalPage >= 1 ? totalPage : 1 }))
+        }
+        else {
+            setLoading(false)
+            setSource(rest)
+        }
     }
 
     React.useEffect(() => {
         queryTestList()
         setSortOrder({})
     }, [pageQuery])
+
+    React.useEffect(() => {
+        return () => {
+            setSelectRowData([])
+            setSelectedRowKeys([])
+            setRadioValue(1)
+        }
+    }, [pageQuery.tab])
 
     /* 重置 */
     React.useEffect(() => {
@@ -404,8 +422,9 @@ const ListTable: React.FC<IProps> = (props) => {
 
     let basePadding = { padding: "0 16px" }
     if (selectedRowKeys.length) {
-        if (radioValue === 2) basePadding = { padding: "0 16px 56px" }
-        if (radioValue === 1) basePadding = { padding: "0 16px 106px" }
+        // if (radioValue === 2) basePadding = { padding: "0 16px 56px" }
+        /* if (radioValue === 1)  */
+        basePadding = { padding: "0 16px 106px" }
     }
 
     const sortStartTime = (sorter: any) => {
@@ -472,37 +491,28 @@ const ListTable: React.FC<IProps> = (props) => {
                     }
                 />
             }
+
             {
-                (radioValue === 2) &&
-                <SelectionRow >
-                    <Row justify="space-between" style={{ height: 56, paddingLeft: 24, paddingRight: 24 }} align="middle">
-                        <Space>
-                            <span>{formatMessage({ id: 'selected.item' }, { data: selectRowData.length })}</span>
-                        </Space>
-                        <Space>
-                            <Button onClick={handleResetSelectedKeys}><FormattedMessage id="operation.cancel" /></Button>
-                            <Button
-                                type="primary"
-                                onClick={handleMoreDeleOk}
-                                disabled={!selectedRowKeys.length}
-                            >
-                                <FormattedMessage id="ws.result.list.batch.delete" />
-                            </Button>
-                        </Space>
-                    </Row>
-                </SelectionRow>
+                (radioValue === 2 && !!selectedRowKeys.length) &&
+                <DelBar
+                    selectedRowKeys={selectedRowKeys}
+                    setSelectedRowKeys={setSelectedRowKeys}
+                    onOk={handleMoreDeleOk}
+                />
             }
+
             {
                 (radioValue === 1 && !!selectedRowKeys.length) &&
                 <SelectionRow >
                     <CompareBar
+                        radioType={radioValue}
                         selectedChange={selectedChange}
                         allSelectedRowKeys={selectedRowKeys}
                         allSelectRowData={selectRowData}
-                        wsId={ws_id}
                     />
                 </SelectionRow>
             }
+
             <ReRunModal ref={rerunRef} />
         </Row>
     )

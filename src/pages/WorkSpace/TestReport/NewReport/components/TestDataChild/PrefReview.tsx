@@ -61,6 +61,12 @@ const getSortNum = (compare_result: string) => new Map([
     ["na", 4],
 ]).get(compare_result) || 5
 
+const compare = ($props: any) => {
+    return function (a: any, b: any) {
+        return a[$props] - b[$props]
+    }
+}
+
 const Performance = (props: any) => {
     const { formatMessage } = useIntl()
 
@@ -69,8 +75,7 @@ const Performance = (props: any) => {
 
     const [filterName, setFilterName] = useState('all')
     const [perData, setPerData] = useState<any>({})
-    const [arrowStyle, setArrowStyle] = useState('')
-    const [num, setNum] = useState(0)
+    const [sortKeys, setSortKeys] = React.useState<any>([])
     const baseIndex = useMemo(() => {
         if (baselineGroupIndex === -1) return 0
         return baselineGroupIndex
@@ -145,7 +150,8 @@ const Performance = (props: any) => {
             <TestItemFunc>
                 <Space>
                     {
-                        btn && <Space>
+                        btn &&
+                        <Space>
                             <Typography.Text><FormattedMessage id="report.filter" />: </Typography.Text>
                             <Select defaultValue="all" style={{ width: enLocale ? 336 : 200 }} value={filterName} onSelect={handleConditions}
                                 getPopupContainer={node => node.parentNode}
@@ -164,58 +170,60 @@ const Performance = (props: any) => {
         )
     }
     // 差异化排序
-    const handleArrow = (suite: any, i: any) => {
-        setNum(i)
-        setArrowStyle(suite.suite_id)
-        let dataSource = child
-        let newArr: any = []
-        let newData: any = []
-        suite.conf_list.map((conf: any) => {
-            let metric_list: any = []
-            conf.metric_list.map((metric: any) => {
-                let result = metric.compare_data[i]
-                metric.sortNum = getSortNum(result?.compare_result)
-
-                metric_list.push({
-                    ...metric
+    const handleArrow = (suite: any, conf: any, i: number) => {
+        if (sortKeys.includes(conf.conf_id)) {
+            setSortKeys((p: any) => p.filter((iy: any) => iy !== conf.conf_id))
+            setPerData((p: any) => ({
+                ...p,
+                list: p.list.map((ix: any) => {
+                    if (ix.suite_id === suite.suite_id) {
+                        return {
+                            ...ix,
+                            conf_list: ix.conf_list.map((confs: any) => {
+                                if (confs.conf_id === conf.conf_id) {
+                                    const currentSuite = child.list?.filter((xy: any) => xy.suite_id === suite.suite_id).at(0)
+                                    const useConfList = currentSuite.conf_list?.filter((confs: any) => confs.conf_id === conf.conf_id)
+                                    return useConfList.at(0) || confs
+                                }
+                                return confs
+                            })
+                        }
+                    }
+                    return ix
                 })
-            })
-            newArr.push({
-                ...conf,
-                metric_list
-            })
-        })
-        const compare = (prop: any) => {
-            return function (a: any, b: any) {
-                return a[prop] - b[prop]
-            }
+            }))
+            return
+        }
+        const newConf = {
+            ...conf,
+            metric_list: conf.metric_list?.reduce((pre: any, metric: any) => {
+                return pre.concat({
+                    ...metric,
+                    sortNum: getSortNum(metric.compare_data[i]?.compare_result)
+                })
+            }, []).sort(compare('sortNum'))
         }
 
-        const endList = newArr.map((item: any) => {
-            let result = item.metric_list.sort(compare('sortNum'))
-            return {
-                ...item,
-                metric_list: result
-            }
+        setSortKeys((p: any) => {
+            if (p.includes(conf.conf_id)) return p
+            return p.concat(conf.conf_id)
         })
-        dataSource.list.map((item: any) => {
-            if (item.suite_id == suite.suite_id) {
-                newData.push({
-                    ...item,
-                    conf_list: endList
-                })
-            } else {
-                newData.push({
-                    ...item
-                })
-            }
 
-        })
-        let obj = {
-            ...dataSource,
-            list: newData
-        }
-        setPerData(obj)
+        setPerData((p: any) => ({
+            ...p,
+            list: p.list.map((y: any) => {
+                if (y.suite_id === suite.suite_id) {
+                    return {
+                        ...suite,
+                        conf_list: suite.conf_list.map((x: any) => {
+                            if (x.conf_id === conf.conf_id) return newConf
+                            return x
+                        })
+                    }
+                }
+                return y
+            })
+        }))
     }
 
     const renderShare = (conf: any) => {
@@ -246,19 +254,25 @@ const Performance = (props: any) => {
 
     // suite遍历
     const RenderSuite = () => {
+        const { containerScroll } = useContext(ReportContext)
         return (
             Array.isArray(perData.list) && !!perData.list.length ? perData.list.map((suite: any, id: number) => (
                 <TestSuite key={id}>
                     <SuiteName>
-                        {suite.suite_name}
-                        <Popconfirm
-                            title={<FormattedMessage id="delete.prompt" />}
-                            onConfirm={() => handleDelete('suite', suite, id)}
-                            cancelText={<FormattedMessage id="operation.cancel" />}
-                            okText={<FormattedMessage id="operation.delete" />}
-                        >
-                            {btnState && <CloseBtn />}
-                        </Popconfirm>
+                        <Typography.Text style={{ display: "inline-block", textIndent: containerScroll?.left > 50 ? containerScroll?.left - 50 : 0 }}>
+                            {suite.suite_name}
+                        </Typography.Text>
+                        {
+                            btnState &&
+                            <Popconfirm
+                                title={<FormattedMessage id="delete.prompt" />}
+                                onConfirm={() => handleDelete('suite', suite, id)}
+                                cancelText={<FormattedMessage id="operation.cancel" />}
+                                okText={<FormattedMessage id="operation.delete" />}
+                            >
+                                <CloseBtn />
+                            </Popconfirm>
+                        }
                         <ChartTypeChild btn={btn} isReport={true} obj={perData} suiteId={suite.suite_id} setPerData={setPerData} />
                     </SuiteName>
                     <TestConfWarpper>
@@ -286,6 +300,7 @@ const Performance = (props: any) => {
                                                         name={suite[name]}
                                                         field={name}
                                                         suite={suite}
+                                                        creator={domainResult?.creator}
                                                     />
                                                 </TestContent>
                                             </SigleWrapper>
@@ -298,7 +313,7 @@ const Performance = (props: any) => {
                             btn ?
                                 (suite.conf_list && !!suite.conf_list.length) ?
                                     suite.conf_list.map((conf: any, cid: number) => (
-                                        <div key={cid}>
+                                        <div key={conf.conf_id}>
                                             <TestConf>
                                                 <ConfTitle gLen={groupLen} style={{ marginLeft: btnState ? 39 : 0 }}><FormattedMessage id="report.conf/metric" /></ConfTitle>
                                                 {
@@ -316,8 +331,8 @@ const Performance = (props: any) => {
                                                                         </EllipsisPulic>
                                                                         <RightResult>
                                                                             <FormattedMessage id="report.comparison/tracking.results" />
-                                                                            <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
-                                                                                {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
+                                                                            <span onClick={() => handleArrow(suite, conf, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: "pointer" }}>
+                                                                                {sortKeys.includes(conf.conf_id) ? <IconArrowBlue /> : <IconArrow />}
                                                                             </span>
                                                                             <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
                                                                                 title={
@@ -377,7 +392,7 @@ const Performance = (props: any) => {
                                                             </MetricTitle>
                                                             {
                                                                 Array.isArray(metric.compare_data) && !!metric.compare_data.length &&
-                                                                metric.compare_data.map((item: any, i: number) => (
+                                                                metric.compare_data?.slice(0, groupLen).map((item: any, i: number) => (
                                                                     <MetricText gLen={groupLen} btnState={btnState} key={i}>
                                                                         <Row justify="space-between">
                                                                             <Col span={item && item.compare_result ? 12 : 20}>

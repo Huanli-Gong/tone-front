@@ -22,10 +22,10 @@ const TaskInformIndex: React.FC<TaskListItem> = ({ height: layoutHeight }) => {
     const getTaskMsg = async () => {
         setTaskLoading(true)
         const data = await queryTaskMsg(params)
+        setTaskLoading(false)
         if (data.code === 200) {
             setTaskMsg(data.data)
             setTotal(data)
-            setTaskLoading(false)
         }
     }
 

@@ -99,6 +99,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
         setBtn(!btn)
     }
     const handleArrow = (conf: any, i: any) => {
+        console.log("func review handleArrow")
         setNum(i)
         setArrowStyle(conf.suite_id)
         const conf_list = conf.conf_list.map((item: any) => {
@@ -341,7 +342,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                             }
                             let dataList = isOldReport ? metricList : (conf.conf_compare_data || conf.compare_conf_list)
                             return (
-                                <div key={cid}>
+                                <React.Fragment key={cid}>
                                     <TestCase expand={expand}>
                                         <DelBtn conf={conf} cid={cid} />
                                         <CaseTitle gLen={groupLen}>
@@ -375,7 +376,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                         {...conf}
                                         btn={btnState}
                                     />
-                                </div>
+                                </React.Fragment>
                             )
                         })
                     }

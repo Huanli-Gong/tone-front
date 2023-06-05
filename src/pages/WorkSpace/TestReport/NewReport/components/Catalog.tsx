@@ -208,6 +208,7 @@ const TemplateCatalog = () => {
             'need_test_env': formatMessage({ id: 'report.test.env' }),
             'test_data': formatMessage({ id: 'report.test.data' }),
         }
+        /* @ts-ignore */
         return list[name]
     }
     const handleScroll = (e: any) => {
@@ -261,7 +262,9 @@ const TemplateCatalog = () => {
         let leftName = document.querySelector(`#left_${name}`) as any
         leftName.classList.add('toc-selected');
         setRoundHeight(leftName?.offsetTop)
+        console.log(name)
         document.querySelector(`#${name}`)?.scrollIntoView()
+        document.querySelector("#report-body-container")?.scrollBy({ top: -104 })
     }
 
     const handleSelectTree = (_: any, evt: any) => {
@@ -282,7 +285,9 @@ const TemplateCatalog = () => {
         const nativeEvent = evt?.nativeEvent
         const target = nativeEvent.target
         setRoundHeight((document.querySelector(`#left_tree_${node.name}`) as any).offsetTop + target.offsetParent.offsetTop)
+
         document.querySelector(`#${tree_name}`)?.scrollIntoView()
+        document.querySelector("#report-body-container")?.scrollBy({ top: -52 })
     }
     return (
         <Catalog collapsed={collapsed}>

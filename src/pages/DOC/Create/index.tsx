@@ -85,7 +85,7 @@ const CreateDoc: React.FC = () => {
     }
 
     const initEditor = (data: any) => {
-        const { $title, content } = data
+        const { title: $title, content } = data
         $title && setTtitle($title)
         content && setText(tarnsformEmoji(content))
     }

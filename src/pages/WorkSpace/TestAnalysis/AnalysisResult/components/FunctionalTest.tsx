@@ -42,7 +42,7 @@ import _ from 'lodash';
 
 const ReportTestFunc: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
-    const { allGroupData, compareResult, baselineGroupIndex, group, wsId } = useContext(ReportContext)
+    const { allGroupData, compareResult, baselineGroupIndex, group, wsId, containerScroll } = useContext(ReportContext)
     const { scrollLeft } = props
     const { func_data_result } = compareResult
     const [arrowStyle, setArrowStyle] = useState('')
@@ -107,6 +107,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
 
     // 差异化排序
     const handleArrow = (conf: any, i: any) => {
+        console.log("func test handleArrow")
         setNum(i)
         setArrowStyle(conf.suite_id)
         let pre: any = []
@@ -206,6 +207,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
             </TestItemFunc>
         )
     }
+
     return (
         <>
             <Row style={{ maxWidth: document.body.clientWidth - 40 + scrollLeft }}>
@@ -221,9 +223,9 @@ const ReportTestFunc: React.FC<any> = (props) => {
                     !!dataSource.length ?
                         dataSource.map((item: any, idx: number) => {
                             return (
-                                <div key={idx}>
+                                <React.Fragment key={idx}>
                                     <TestSuite>
-                                        <SuiteName>{item.suite_name}</SuiteName>
+                                        <SuiteName style={{ textIndent: containerScroll?.left }}>{item.suite_name}</SuiteName>
                                         <TestConf>
                                             {(item.conf_list && item.conf_list.length) ?
                                                 <>
@@ -257,7 +259,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                     const expand = expandKeys.includes(conf.conf_id)
                                                     let conf_data = conf.conf_compare_data || conf.compare_conf_list
                                                     return (
-                                                        <div key={cid}>
+                                                        <React.Fragment key={cid}>
                                                             <TestCase expand={expand}>
                                                                 <CaseTitle gLen={group}>
                                                                     <EllipsisPulic title={conf.conf_name}>
@@ -288,7 +290,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                             <ExpandSubcases
                                                                 {...conf}
                                                             />
-                                                        </div>
+                                                        </React.Fragment>
                                                     )
                                                 })
                                                 :
@@ -296,7 +298,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                             }
                                         </TestConfWarpper>
                                     </TestSuite>
-                                </div>
+                                </React.Fragment>
                             )
                         }) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 }
