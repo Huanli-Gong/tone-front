@@ -19,7 +19,7 @@ const Performance: React.FC<AnyType> = (props) => {
     const { formatMessage } = useIntl()
 
     const getQueryValue = (queryName: any) => {
-        if (test_type !== "performance") return undefined
+        if (query[test_type] !== "performance") return undefined
         if (basicValues) return basicValues[queryName]
         if (provider_env === query?.provider_env && query[queryName]) return query[queryName]
         return undefined
