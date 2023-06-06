@@ -9,6 +9,7 @@ export default (props: any) => {
     const locationHistory = useLocation()
     const { ws_id } = useParams() as any
     const { initialState, setInitialState } = useModel('@@initialState')
+
     const { authList, fetchHistory } = initialState
 
     const getHistoryFetcher = () => enterWorkspaceHistroy({ ws_id })
@@ -34,7 +35,7 @@ export default (props: any) => {
             /* 切换ws请求记录历史接口 */
             getHistoryFetcher()
 
-            if (data.first_entry && data.ws_role_title === "ws_owner") {
+            if (data?.first_entry && data?.ws_role_title === "ws_owner") {
                 history.push(`/ws/${ws_id}/workspace/initSuccess`)
                 return
             }

@@ -110,7 +110,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     }, [isWs, access, ws_is_public, ws_role_title, ws_is_common])
 
     React.useEffect(() => {
-        if (!initialState.shakeBtn) return
+        if (!initialState?.shakeBtn) return
         const timer = setTimeout(() => {
             setTimeout(() => setInitialState(
                 (p: any) => ({ ...p, shakeBtn: undefined })
@@ -119,7 +119,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
         return () => {
             clearTimeout(timer)
         }
-    }, [initialState.shakeBtn])
+    }, [initialState?.shakeBtn])
 
     if (!initialState || !initialState.settings) {
         return null;
@@ -130,7 +130,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
             {/* {isWs && <ApplyJoinWorkspace ws_id={ wsId }/> } */}
             {
                 (Object.prototype.toString.call(needJoinWorkspace) === "[object Boolean]" && needJoinWorkspace) &&
-                <span className={cls("animate__animated", initialState.shakeBtn && "animate__shakeX animate__fast")}>
+                <span className={cls("animate__animated", initialState?.shakeBtn && "animate__shakeX animate__fast")}>
                     {
                         ws_need_need_approval ?
                             <ApplyJoinWorkspace ws_id={wsId} style={{ margin: 0 }} /> :

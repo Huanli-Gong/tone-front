@@ -78,7 +78,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
     const [isOver, setIsOver] = useState(false)
 
     const queryWorkspaceList = async (params: any = DEFAULT_PAGE_PARAMS) => {
-        if (!initialState.fetchHistory) return
+        if (!initialState?.fetchHistory) return
         const { data = [], code, page_num } = await queryWorkspaceHistory(params)
         setIsOver(page_num === pageParams?.page_num)
         if (code !== 200) {
@@ -110,7 +110,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
         return () => {
             setIsOver(false)
         }
-    }, [pageParams, initialState.fetchHistory])
+    }, [pageParams, initialState?.fetchHistory])
 
     /* React.useEffect(() => {
         return () => {

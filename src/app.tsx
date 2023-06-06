@@ -1,4 +1,3 @@
-import React from 'react';
 import type { BasicLayoutProps, Settings as ProSettings } from '@ant-design/pro-layout';
 
 import { notification, ConfigProvider, version } from 'antd';
@@ -11,6 +10,7 @@ import { marked } from "marked"
 import { getPageWsid, redirectErrorPage, OPENANOLIS_LOGIN_URL } from "@/utils/utils"
 
 import 'animate.css';
+import { enterWorkspaceHistroy } from './services/Workspace';
 
 const jumpLoginPage = () => {
     if (["opensource", "openanolis"].includes(BUILD_APP_ENV || "") && ~window.location.pathname.indexOf(`/login`))
@@ -92,11 +92,14 @@ export async function getInitialState(): Promise<any> {
                 redirectErrorPage(401)
                 return baseAppState
             }
-
+            const { data: wsEnterInfo } = await enterWorkspaceHistroy({ ws_id })
+            if (wsEnterInfo?.first_entry) {
+                history.push(`/ws/${ws_id}/workspace/initSuccess`)
+            }
             return {
                 ...initialState,
                 authList: { ...data, ws_id },
-                fetchHistory: false
+                fetchHistory: true
             }
         }
 
@@ -137,7 +140,7 @@ export const layout = ({
     };
 };
 
-const codeMessage = {
+const codeMessage: any = {
     200: '服务器成功返回请求的数据。',
     201: '新建或修改数据成功。',
     202: '一个请求已经进入后台排队（异步任务）。',
