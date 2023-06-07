@@ -64,7 +64,7 @@ const Outline: React.FC<IProps> = ({ json }) => {
                 <Typography.Title level={4} style={{ fontWeight: 'normal', margin: 0 }}>大纲</Typography.Title>
                 <Divider style={{ margin: 0 }} />
                 {
-                    result?.filter(({ text }: OutlineItem) => !!text.trim())
+                    result?.filter(({ text }: OutlineItem) => text && !!text.trim())
                         .map(({ level, text, index, node }: OutlineItem) => (
                             <TitleWrap
                                 key={index}
