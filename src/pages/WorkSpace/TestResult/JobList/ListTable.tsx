@@ -88,6 +88,9 @@ const ListTable: React.FC<IProps> = (props) => {
     React.useEffect(() => {
         queryTestList()
         setSortOrder({})
+        return () => {
+            setSource({})
+        }
     }, [pageQuery])
 
     React.useEffect(() => {
