@@ -46,9 +46,9 @@ const Outline: React.FC<IProps> = ({ json }) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const hanldeClick = React.useCallback((node: any) => {
         const { content: $content, attrs } = node
-        const { text } = $content[0]
         const { level } = attrs
         document.querySelectorAll(`.ProseMirror h${level}`).forEach((ele: any) => {
+            const text = $content.reduce((p: string, c: any) => p += c.text, "")
             if (ele.innerText === text)
                 scrollIntoView(ele, {
                     behavior: 'smooth',
@@ -60,12 +60,30 @@ const Outline: React.FC<IProps> = ({ json }) => {
 
     const min = React.useMemo(() => result?.map(({ level }: any) => level).sort((a: number, b: number) => a - b).at(0) || 0, [result])
 
+    const [catalogHeight, setCatalogHeight] = React.useState(0)
+    const ref = React.useRef<HTMLDivElement>(null)
+
+    const handleResize = () => {
+        if (!ref.current) return
+        setCatalogHeight(
+            document.body?.getBoundingClientRect()?.height - ref.current.getBoundingClientRect()?.y - 20
+        )
+    }
+
+    React.useEffect(() => {
+        handleResize()
+        window.addEventListener("resize", handleResize)
+        return () => {
+            window.removeEventListener("resize", handleResize)
+        }
+    }, [])
+
     return (
         <Wrapper>
             <Space direction="vertical" style={{ width: '100%' }}>
                 <Typography.Title level={4} style={{ fontWeight: 'normal', margin: 0 }}>大纲</Typography.Title>
                 <Divider style={{ margin: 0 }} />
-                <div style={{ overflowY: "scroll", overflowX: "hidden", height: 360, width: 250 }}>
+                <div ref={ref} style={{ overflowY: "scroll", overflowX: "hidden", height: catalogHeight, width: 250 }}>
                     {
                         result?.filter(({ text }: OutlineItem) => text && !!text.trim())
                             .map(({ level, text, index, node }: OutlineItem) => (
