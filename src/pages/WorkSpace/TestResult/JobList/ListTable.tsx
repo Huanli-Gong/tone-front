@@ -481,7 +481,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 rowKey="id"
                 columns={filterColumns}
                 refreshDeps={[
-                    access, ws_id, locale, sortOrder, initialColumns
+                    access, ws_id, locale, sortOrder, initialColumns, source
                 ]}
                 name="test-job-list"
                 loading={loading}
