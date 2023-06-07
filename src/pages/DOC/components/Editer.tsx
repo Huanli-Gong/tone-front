@@ -97,28 +97,17 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
         const { content } = editor.getJSON()
         return content?.filter(({ type, content: textContent }: any) => type === "heading" && textContent)
             .reduce((p: any, l: any, index: any) => {
-                const { attrs } = l
-                if (!l.content) return p
-                const { text: $text }: any = l.content && l.content.length > 0 ? l.content[0] : {}
+                const { attrs, content: $content } = l
+                if (!$content) return p
+                const $text = $content.reduce((p: string, c: any) => p += c.text, "")
                 const { level } = attrs
-                let dom = undefined
-                document.querySelectorAll(`.ProseMirror h${level}`).forEach((ele: any) => {
-                    if (ele.innerText === $text)
-                        dom = ele
-                })
-                if (dom) {
-                    const { offsetTop }: any = dom
 
-                    return p.concat({
-                        level,
-                        text: $text,
-                        node: l,
-                        index,
-                        dom,
-                        position: offsetTop
-                    })
-                }
-                return p
+                return p.concat({
+                    level,
+                    text: $text,
+                    node: l,
+                    index,
+                })
             }, [])
     }, [editor])
 
