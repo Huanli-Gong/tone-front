@@ -124,7 +124,7 @@ const BaseTab: React.FC<IProps> = () => {
 
     React.useEffect(() => {
         fetchTestJobCount()
-    }, [fetchTestJobCount, tab, ws_id])
+    }, [tab, ws_id])
 
     React.useEffect(() => {
         if (ws_id !== pageQuery.ws_id)

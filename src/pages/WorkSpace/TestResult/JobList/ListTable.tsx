@@ -67,7 +67,7 @@ const ListTable: React.FC<IProps> = (props) => {
     const [source, setSource] = React.useState<Record<string, any>>({})
     const [sortOrder, setSortOrder] = React.useState<any>({})
 
-    const queryTestList = async () => {
+    const queryTestList = lodash.debounce(async () => {
         setLoading(true)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { code, msg, ...rest } = await queryTestResultList(pageQuery)
@@ -83,7 +83,7 @@ const ListTable: React.FC<IProps> = (props) => {
             setLoading(false)
             setSource(rest)
         }
-    }
+    }, 360)
 
     React.useEffect(() => {
         queryTestList()
