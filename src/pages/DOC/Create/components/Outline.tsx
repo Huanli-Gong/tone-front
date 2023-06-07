@@ -65,7 +65,7 @@ const Outline: React.FC<IProps> = ({ json }) => {
             <Space direction="vertical" style={{ width: '100%' }}>
                 <Typography.Title level={4} style={{ fontWeight: 'normal', margin: 0 }}>大纲</Typography.Title>
                 <Divider style={{ margin: 0 }} />
-                <div style={{ overflowY: "scroll", height: 360, width: 250 }}>
+                <div style={{ overflowY: "scroll", overflowX: "hidden", height: 360, width: 250 }}>
                     {
                         result?.filter(({ text }: OutlineItem) => text && !!text.trim())
                             .map(({ level, text, index, node }: OutlineItem) => (
