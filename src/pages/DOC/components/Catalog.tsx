@@ -84,7 +84,7 @@ const Catalog: React.FC<IProps> = ({ source }) => {
 
     const base = React.useMemo(() => {
         if (!source) return []
-        return source?.filter(({ text }: any) => !!text.trim())
+        return source?.filter(({ text }: any) => text && !!text.trim())
     }, [source])
 
     const handleScroll = () => {
