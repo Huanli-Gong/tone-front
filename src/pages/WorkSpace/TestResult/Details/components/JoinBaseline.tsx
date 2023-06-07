@@ -105,7 +105,8 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             .validateFields()
             .then(
                 async (values: any) => {
-                    const baseParams = { ...values, ws_id, test_type }
+                    const { bug } = values
+                    const baseParams = { ...values, ws_id, test_type, bug: bug?.trim() }
                     if (source?.suite_list || source?.suite_data) {
                         if (source?.suite_list.length || source?.suite_data.length) {
                             const { suite_list, suite_data, job_id } = source
