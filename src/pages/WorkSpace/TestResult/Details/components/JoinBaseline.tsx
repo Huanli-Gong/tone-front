@@ -204,6 +204,10 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                             name="bug"
                             rules={[{
                                 required: true,
+                                message: formatMessage({ id: 'ws.result.details.bug.empty' }),
+                                validator(rule, value, callback) {
+                                    return value.trim() ? Promise.resolve() : Promise.reject(formatMessage({ id: 'ws.result.details.bug.empty' }))
+                                },
                             }]}
                         >
                             <Input placeholder={formatMessage({ id: 'ws.result.details.bug.placeholder' })}
@@ -216,6 +220,10 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                             <Form.Item
                                 label={<FormattedMessage id="ws.result.details.baseline_id" />}
                                 name="baseline_id"
+                                rules={[{
+                                    required: true,
+                                    message: formatMessage({ id: 'ws.result.details.baseline_id.empty' })
+                                }]}
                             >
                                 <Select
                                     listHeight={160}
@@ -284,6 +292,10 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                             <Form.Item
                                 label={<FormattedMessage id="ws.result.details.baseline_id" />}
                                 name="baseline_id"
+                                rules={[{
+                                    required: true,
+                                    message: formatMessage({ id: 'ws.result.details.baseline_id.empty' })
+                                }]}
                             >
                                 <Select
                                     placeholder={formatMessage({ id: 'ws.result.details.baseline_id.placeholder' })}
