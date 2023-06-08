@@ -9,12 +9,7 @@ import { QusetionIconTootip } from '@/components/Product';
 import lodash from 'lodash'
 import CommonPagination from '@/components/CommonPagination';
 import DelBar from "./DelBar"
-import {
-    queryTestResultList,
-    deleteJobTest,
-    addMyCollection,
-    deleteMyCollection,
-} from '../services'
+import { deleteJobTest, addMyCollection, deleteMyCollection } from '../services'
 import styled from "styled-components"
 import CompareBar from '../CompareBar'
 import ReRunModal from '@/pages/WorkSpace/TestResult/Details/components/ReRunModal'
@@ -56,41 +51,17 @@ const ListTable: React.FC<IProps> = (props) => {
     const { initialColumns } = useProvider()
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
-    const { pageQuery, setPageQuery, radioValue = 1, setRadioValue, countRefresh } = props
+    const { pageQuery, setPageQuery, radioValue = 1, setRadioValue, countRefresh, dataSource, setDataSource, listRefresh, loading } = props
     const { ws_id } = useParams() as any
     const access = useAccess()
     const [selectedRowKeys, setSelectedRowKeys] = React.useState<any[]>([])
     const [selectRowData, setSelectRowData] = React.useState<any[]>([])
     const rerunRef = React.useRef(null) as any
 
-    const [loading, setLoading] = React.useState(true)
-    const [source, setSource] = React.useState<Record<string, any>>({})
     const [sortOrder, setSortOrder] = React.useState<any>({})
 
-    const queryTestList = lodash.debounce(async () => {
-        setLoading(true)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { code, msg, ...rest } = await queryTestResultList(pageQuery)
-        if (code !== 200) return
-        const { total } = rest
-
-        const { page_num, page_size } = pageQuery
-        const totalPage = Math.ceil((total - 1) / page_size)
-        if (totalPage > 0 && page_num > totalPage) {
-            setPageQuery((p: any) => ({ ...p, page_num: totalPage >= 1 ? totalPage : 1 }))
-        }
-        else {
-            setLoading(false)
-            setSource(rest)
-        }
-    }, 360)
-
     React.useEffect(() => {
-        queryTestList()
         setSortOrder({})
-        return () => {
-            setSource({})
-        }
     }, [pageQuery])
 
     React.useEffect(() => {
@@ -116,7 +87,7 @@ const ListTable: React.FC<IProps> = (props) => {
 
         if (code !== 200) return requestCodeMessage(code, msg)
 
-        setSource((p: any) => ({
+        setDataSource((p: any) => ({
             ...p,
             data: p.data.map((i: any) => {
                 if (id !== i.id) return i
@@ -137,7 +108,7 @@ const ListTable: React.FC<IProps> = (props) => {
         setSelectedRowKeys(selectedKeys);
         setSelectRowData(selectRows);
         message.success(formatMessage({ id: 'operation.success' }))
-        queryTestList()
+        listRefresh()
         countRefresh()
     }
 
@@ -433,7 +404,7 @@ const ListTable: React.FC<IProps> = (props) => {
         handleResetSelectedKeys()
         message.success(formatMessage({ id: 'operation.success' }))
         countRefresh()
-        queryTestList()
+        listRefresh()
     }
 
     let basePadding = { padding: "0 16px" }
@@ -446,7 +417,7 @@ const ListTable: React.FC<IProps> = (props) => {
     const sortStartTime = (sorter: any) => {
         switch (sorter.order) {
             case 'descend':
-                setSource((res: any) => ({
+                setDataSource((res: any) => ({
                     ...res,
                     data: res?.data.sort(function (a: any, b: any) {
                         return a.start_time < b.start_time ? 1 : -1
@@ -454,7 +425,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 }))
                 break;
             case 'ascend':
-                setSource((res: any) => ({
+                setDataSource((res: any) => ({
                     ...res,
                     data: res?.data.sort(function (a: any, b: any) {
                         return a.start_time > b.start_time ? 1 : -1
@@ -481,11 +452,11 @@ const ListTable: React.FC<IProps> = (props) => {
                 rowKey="id"
                 columns={filterColumns}
                 refreshDeps={[
-                    access, ws_id, locale, sortOrder, initialColumns, source
+                    access, ws_id, locale, sortOrder, initialColumns, dataSource
                 ]}
                 name="test-job-list"
                 loading={loading}
-                dataSource={source?.data}
+                dataSource={dataSource?.data}
                 pagination={false}
                 rowClassName={styles.result_table_row}
                 rowSelection={rowSelection}
@@ -498,7 +469,7 @@ const ListTable: React.FC<IProps> = (props) => {
             {
                 !loading &&
                 <CommonPagination
-                    total={source?.total}
+                    total={dataSource?.total}
                     largePage={true}
                     currentPage={pageQuery?.page_num}
                     pageSize={pageQuery?.page_size}
