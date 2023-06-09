@@ -10,7 +10,7 @@ import { marked } from "marked"
 import { getPageWsid, redirectErrorPage, OPENANOLIS_LOGIN_URL } from "@/utils/utils"
 
 import 'animate.css';
-import { enterWorkspaceHistroy } from './services/Workspace';
+import { enterWsAndGetList } from './utils/hooks';
 
 const jumpLoginPage = () => {
     if (["opensource", "openanolis"].includes(BUILD_APP_ENV || "") && ~window.location.pathname.indexOf(`/login`))
@@ -63,6 +63,7 @@ export async function getInitialState(): Promise<any> {
 
     const baseAppState = {
         ...initialState,
+        listFetchLoading: true,
         authList: data,
     }
 
@@ -92,14 +93,15 @@ export async function getInitialState(): Promise<any> {
                 redirectErrorPage(401)
                 return baseAppState
             }
-            const { data: wsEnterInfo } = await enterWorkspaceHistroy({ ws_id })
-            if (wsEnterInfo?.first_entry) {
+            const ws: any = await enterWsAndGetList(ws_id)
+            if (ws?.first_entry) {
                 history.push(`/ws/${ws_id}/workspace/initSuccess`)
             }
             return {
                 ...initialState,
                 authList: { ...data, ws_id },
-                fetchHistory: true
+                ...ws,
+                listFetchLoading: false,
             }
         }
 

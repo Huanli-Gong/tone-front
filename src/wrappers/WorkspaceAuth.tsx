@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { history, useModel, useParams, useLocation } from 'umi'
 import { person_auth } from '@/services/user';
-import { enterWorkspaceHistroy } from '@/services/Workspace';
 import { redirectErrorPage } from '@/utils/utils';
+import { enterWsAndGetList } from '@/utils/hooks';
 
 export default (props: any) => {
     const { children } = props
@@ -10,32 +10,32 @@ export default (props: any) => {
     const { ws_id } = useParams() as any
     const { initialState, setInitialState } = useModel('@@initialState')
 
-    const { authList, fetchHistory } = initialState
-
-    const getHistoryFetcher = () => enterWorkspaceHistroy({ ws_id })
-        .then(async (res) => {
-            const { code } = res
-            if (code === 200)
-                setInitialState((p: any) => ({
-                    ...p,
-                    authList: { ...p.authList, first_entry: false },
-                    fetchHistory: true
-                }))
-        })
+    const { authList } = initialState
 
     const checkAccess = async () => {
         let flag = authList
         const { ws_id: old_ws_id } = authList
 
         if (!old_ws_id || old_ws_id !== ws_id) {
+            setInitialState((p: any) => ({
+                ...p,
+                listFetchLoading: true,
+                wsList: undefined,
+            }))
             const { data } = await person_auth({ ws_id })
-            setInitialState({ ...initialState, authList: { ...data, ws_id } })
+            setInitialState({ ...initialState, authList: { ...data, ws_id }, listFetchLoading: true })
             flag = data
 
             /* 切换ws请求记录历史接口 */
-            getHistoryFetcher()
+            /* getHistoryFetcher() */
+            const ws = await enterWsAndGetList(ws_id)
+            setInitialState((p: any) => ({
+                ...p,
+                ...ws,
+                listFetchLoading: false
+            }))
 
-            if (data?.first_entry && data?.ws_role_title === "ws_owner") {
+            if (ws?.first_entry && data?.ws_role_title === "ws_owner") {
                 history.push(`/ws/${ws_id}/workspace/initSuccess`)
                 return
             }
@@ -44,11 +44,6 @@ export default (props: any) => {
                 redirectErrorPage(500)
                 return
             }
-        }
-
-        /* 刷新直接进入ws，有ws_id但无记录，没有请求过history，请求记录历史接口 */
-        if (!fetchHistory) {
-            getHistoryFetcher()
         }
 
         const { ws_role_title, ws_is_exist, sys_role_title } = flag

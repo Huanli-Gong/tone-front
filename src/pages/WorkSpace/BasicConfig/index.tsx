@@ -1,15 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {
-    Layout,
-    Form,
-    Button,
-    Typography,
-    Row,
-    Space,
-    Avatar,
-    Col,
-    message,
-} from 'antd'
+import { Layout, Form, Button, Typography, Row, Space, Avatar, Col, message } from 'antd'
 import { SettingEdit, IsPublicComponent } from './Components'
 import { Access, useAccess } from 'umi'
 import { queryWorkspaceDetail, saveWorkspaceConfig } from '@/services/Workspace'
@@ -28,7 +18,7 @@ const { Text } = Typography
 const WorkspaceBasicConfig: React.FC = () => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
-    const { setHistoryList } = useModel('workspaceHistoryList');
+    const { setInitialState } = useModel("@@initialState")
 
     const { ws_id } = useParams() as any
 
@@ -57,10 +47,16 @@ const WorkspaceBasicConfig: React.FC = () => {
             setDetail(_.cloneDeep(data))
             setInitFormStatus(data)
             setFirstDetail(data)
-            setHistoryList((p: any) => (p.reduce((pre: any, cur: any) => {
-                if (cur.id === ws_id) return pre.concat(data)
-                return pre.concat(cur)
-            }, [])))
+            setInitialState((p: any) => ({
+                ...p,
+                wsList: {
+                    ...p.wsList,
+                    data: (data.reduce((pre: any, cur: any) => {
+                        if (cur.id === ws_id) return pre.concat(data)
+                        return pre.concat(cur)
+                    }, []))
+                }
+            }))
         }
         else requestCodeMessage(code, msg)
     }
@@ -107,7 +103,7 @@ const WorkspaceBasicConfig: React.FC = () => {
         && _.get(detail, 'is_public') === _.get(firstDetail, 'is_public'))
 
     const widthLocale = enLocale ? 120 : 70
-    const wsInfoStyles = { width: widthLocale, textAlign: 'right' }
+    const wsInfoStyles: any = { width: widthLocale, textAlign: 'right' }
 
     return (
         <Layout.Content style={{ background: '#f5f5f5', overflowY: 'auto' }}>
