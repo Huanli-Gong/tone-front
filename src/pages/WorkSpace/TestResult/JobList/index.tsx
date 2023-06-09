@@ -89,8 +89,8 @@ const BaseTab: React.FC<IProps> = () => {
     const [tab, setTab] = React.useState(query.tab ?? "all")
     const [pageQuery, setPageQuery] = React.useState({ ...DEFAULT_PAGE_QUERY, tab, ws_id, ...query })
     const [selectionType, setSelectionType] = React.useState(1)
-    const [filter, setFilter] = React.useState(false)
     const [initialColumns, setInitialColumns] = React.useState({})
+    const [filter, setFilter] = React.useState(JSON.stringify(query) !== "{}")
 
     const { data: source, refresh: countRefresh } = useRequest(
         () => queryTestResultList({ query_count: 1, tab, ws_id }),
@@ -150,6 +150,7 @@ const BaseTab: React.FC<IProps> = () => {
     const hanldeTabClick = (tabKey: string) => {
         setTab(tabKey)
         setPageQuery({ tab: tabKey, ...DEFAULT_PAGE_QUERY, ws_id })
+        setFilter(false)
     }
 
     return (
@@ -185,6 +186,7 @@ const BaseTab: React.FC<IProps> = () => {
                                             setPageQuery={setPageQuery}
                                             selectionType={selectionType}
                                             onSelectionChange={setSelectionType}
+                                            filter={filter}
                                             onFilterChange={setFilter}
                                         />
                                         {

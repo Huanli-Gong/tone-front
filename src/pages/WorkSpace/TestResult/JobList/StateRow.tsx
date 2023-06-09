@@ -3,7 +3,7 @@ import { Row, Space, Typography, Radio, Input, Popover, Checkbox } from "antd"
 import type { RadioChangeEvent } from "antd"
 import React from "react"
 import styled from "styled-components"
-import { useAccess, useLocation, useIntl, FormattedMessage } from "umi"
+import { useAccess, useIntl, FormattedMessage } from "umi"
 import { DownOutlined, UpOutlined, SettingOutlined } from '@ant-design/icons'
 import { useProvider } from "./provider"
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
@@ -142,15 +142,12 @@ const SettingDropdown: React.FC = () => {
 const StateRow: React.FC<IProps> = (props) => {
     const { formatMessage } = useIntl()
 
-    const { pageQuery, setPageQuery, stateCount, selectionType, onSelectionChange, onFilterChange } = props
-
-    const { query } = useLocation() as any
+    const { pageQuery, setPageQuery, stateCount, selectionType, onSelectionChange, onFilterChange, filter } = props
     const access = useAccess()
 
     const { state } = pageQuery
 
     const [inp, setInp] = React.useState("")
-    const [filter, setFilter] = React.useState(JSON.stringify(query) !== "{}")
 
     /* filter change */
     React.useEffect(() => {
@@ -207,7 +204,7 @@ const StateRow: React.FC<IProps> = (props) => {
                     onPressEnter={() => setPageQuery((p: any) => ({ ...p, search: inp.replaceAll(" ", "") }))}
                     onSearch={(val) => setPageQuery((p: any) => ({ ...p, search: val.replaceAll(" ", "") }))}
                 />
-                <div onClick={() => setFilter(!filter)} style={{ cursor: 'pointer' }}>
+                <div onClick={() => onFilterChange(!filter)} style={{ cursor: 'pointer' }}>
                     {
                         filter ?
                             <Space><FormattedMessage id="ws.result.list.collapse.filter" /><UpOutlined /></Space> :
