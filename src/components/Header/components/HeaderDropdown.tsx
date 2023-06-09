@@ -76,16 +76,15 @@ export const HearderDropdown: React.FC<any> = (props) => {
     const [isOver, setIsOver] = useState(false)
 
     const queryWorkspaceList = async () => {
-        setIsOver(false)
         setInitialState((p: any) => ({ ...p, listFetchLoading: true }))
-        const { code, data, page_num } = await queryWorkspaceHistory({
+        const { code, data, page_num, total_page } = await queryWorkspaceHistory({
             page_num: (wsList?.page_num || 0) + 1, page_size: 20, call_page: 'menu', ws_id
         })
         if (code !== 200) {
             redirectErrorPage(500)
             return
         }
-        setIsOver(true)
+        setIsOver(total_page === page_num)
         setInitialState((p: any) => {
             const obj = p.wsList.data.concat(data).reduce((pre: any, cur: any) => {
                 pre[cur.id] = cur
