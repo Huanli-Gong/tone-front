@@ -51,7 +51,7 @@ const WorkspaceBasicConfig: React.FC = () => {
                 ...p,
                 wsList: {
                     ...p.wsList,
-                    data: (data.reduce((pre: any, cur: any) => {
+                    data: (p.wsList?.data?.reduce((pre: any, cur: any) => {
                         if (cur.id === ws_id) return pre.concat(data)
                         return pre.concat(cur)
                     }, []))
