@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 
 import { Dropdown, Menu, Space, Avatar, Typography, Row, Spin } from 'antd'
 import { CaretDownOutlined, CheckOutlined, LoadingOutlined } from '@ant-design/icons'
@@ -23,7 +23,7 @@ const WorkspaceTitle = styled(Row)`
 const ShowName = styled(Typography.Text)`
     width: 138px;
     font-size: 14px;
-    color: #F5F5F5;
+    color: #F5F5F5 !important;
 `
 interface CoverProps {
     size: number
@@ -70,63 +70,55 @@ const WorkspaceDropdownMenu = styled(Menu)`
 
 export const HearderDropdown: React.FC<any> = (props) => {
     const { ws_id } = props
-    const { historyList, setHistoryList } = useModel('workspaceHistoryList');
-    const { initialState } = useModel("@@initialState")
 
-    const DEFAULT_PAGE_PARAMS = { page_num: 1, page_size: 20, call_page: 'menu', ws_id }
-    const [pageParams, setPageParams] = useState(DEFAULT_PAGE_PARAMS)
+    const { initialState: { wsList, listFetchLoading }, setInitialState } = useModel("@@initialState")
+
     const [isOver, setIsOver] = useState(false)
 
-    const queryWorkspaceList = async (params: any = DEFAULT_PAGE_PARAMS) => {
-        if (!initialState.fetchHistory) return
-        const { data = [], code, page_num } = await queryWorkspaceHistory(params)
-        setIsOver(page_num === pageParams?.page_num)
+    const queryWorkspaceList = async () => {
+        setInitialState((p: any) => ({ ...p, listFetchLoading: true }))
+        const { code, data, page_num, total_page } = await queryWorkspaceHistory({
+            page_num: (wsList?.page_num || 0) + 1, page_size: 20, call_page: 'menu', ws_id
+        })
         if (code !== 200) {
             redirectErrorPage(500)
             return
         }
-        setHistoryList((p: any) => {
-            if (!p) return data
-            const obj = p.concat(data).reduce((pre: any, cur: any) => {
+        setIsOver(total_page === page_num)
+        setInitialState((p: any) => {
+            const obj = p.wsList.data.concat(data).reduce((pre: any, cur: any) => {
                 pre[cur.id] = cur
                 return pre
             }, {})
-            return Object.entries(obj).map((item: any) => {
-                const [, val] = item
-                return val
-            })
+            return {
+                ...p,
+                listFetchLoading: false,
+                wsList: {
+                    page_num,
+                    data: Object.entries(obj).map((item: any) => {
+                        const [, val] = item
+                        return val
+                    })
+                }
+            }
         })
     }
 
     const current = React.useMemo(() => {
-        if (!historyList) return {}
-        const [workspace] = historyList?.filter(({ id }: any) => id === ws_id)
+        if (!wsList) return {}
+        const [workspace] = wsList?.data?.filter(({ id }: any) => id === ws_id)
         if (workspace) return workspace
         return {}
-    }, [historyList, ws_id])
-
-    useEffect(() => {
-        queryWorkspaceList(pageParams)
-        return () => {
-            setIsOver(false)
-        }
-    }, [pageParams, initialState.fetchHistory])
-
-    /* React.useEffect(() => {
-        return () => {
-            setInitialState((p: any) => ({ ...p, workspaceHistoryList: [] }))
-        }
-    }, [ws_id]) */
+    }, [wsList, ws_id])
 
     const hanldeScroll = ({ target }: any) => {
         const { clientHeight, scrollTop, scrollHeight } = target
         if (clientHeight + scrollTop === scrollHeight && !isOver) {
-            const params = { ...pageParams, page_num: pageParams.page_num + 1 }
-            setPageParams(params)
+            queryWorkspaceList()
         }
     }
 
-    if (historyList?.length === 0)
+    if (listFetchLoading || wsList?.data?.length === 0)
         return (
             <WorkspaceTitle align="middle" justify="space-between">
                 <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
@@ -143,7 +135,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
                         onScroll={hanldeScroll}
                     >
                         {
-                            historyList?.map(
+                            wsList?.data?.map(
                                 (workspace: any) => {
                                     const isActive = ws_id === workspace.id
                                     return (
