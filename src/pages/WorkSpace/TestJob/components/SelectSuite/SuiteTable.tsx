@@ -133,6 +133,11 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 			},
 		},
 		{
+			title: <FormattedMessage id="select.suite.timeout" />,
+			dataIndex: 'timeout',
+			width: 130,
+		},
+		{
 			title: 'Repeat',
 			dataIndex: 'repeat',
 			width: 80,
@@ -337,7 +342,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 	}, [selectedCaseObj])
 
 	useEffect(() => {
-		const newSelectCaseObj = {}
+		const newSelectCaseObj: any = {}
 		Object.keys(selectedCaseObj).forEach((key: any) => {
 			if (caseKeyListObj[key]) {
 				const list = selectedCaseObj[key].filter(

@@ -35,6 +35,7 @@ const text = {
   'priority': 'Priority',
   'config': 'Config',
   'variable': 'Variable',
+  'timeout': "Timeout (s)",
 
   // Suite Select Drawer
   'vertical.message': 'If multiple values are displayed, enter a new value to cover all values. If no value is entered, the original value is retained',
