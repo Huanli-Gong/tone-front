@@ -19,8 +19,9 @@ type IProps = {
     isPlan?: boolean;
 }
 
+const is_openanolis = BUILD_APP_ENV === "opensource"
+
 const BuildKernelForm: React.FC<IProps> = (props) => {
-    console.log(props)
     const { disabled, project_id, form, needScriptList, isPlan = false } = props
     const { formatMessage } = useIntl()
     const [codeBranch, setCodeBranch] = useState<any>(form?.getFieldValue('code_repo'))
@@ -37,7 +38,7 @@ const BuildKernelForm: React.FC<IProps> = (props) => {
     }, [codeBranch, data])
 
     useEffect(() => {
-        if (BUILD_APP_ENV) {
+        if (!is_openanolis) {
             run()
             // form?.resetFields()
         }
@@ -64,7 +65,7 @@ const BuildKernelForm: React.FC<IProps> = (props) => {
         <Form.Item label=" ">
             <Form.Item className={styles.kernal_wrapper_styles}>
                 {
-                    !!BUILD_APP_ENV ?
+                    is_openanolis ?
                         <>
                             <Form.Item {...itemLayout}
                                 label={<FormattedMessage id="kernel.form.code_repo" />}
