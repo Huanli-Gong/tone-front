@@ -1,8 +1,8 @@
 import React, { useState, useImperativeHandle, useEffect } from 'react';
-import type { UserTable, UserList, RoleChangeParams, TableListParams } from '../../data';
-import { Avatar, Space, message, Popconfirm, Typography, Table } from 'antd';
+import type { UserTable, UserList, RoleChangeParams, TableListParams } from '../../data.d';
+import { Avatar, Space, message, Popconfirm, Typography } from 'antd';
 import { userManagementList, roleChange, requestResetPassword } from '../../service';
-import CommonPagination from '@/components/CommonPagination'
+import CommonTable from '@/components/Public/CommonTable';
 import RoleSelect from '../RoleSelect';
 import SelectRadio from '@/components/Public/SelectRadio';
 import Highlighter from 'react-highlight-words';
@@ -14,56 +14,54 @@ import AvatarCover from '@/components/AvatarCover';
 import { useIntl, FormattedMessage } from 'umi';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
-const validatorParams = (params: any) => {
-    const row: any = {};
-    if (params) {
-        Object.keys(params).forEach((item) => {
-         if (params[item] || [0, false].includes(params[item]))  {
-          row[item] = params[item];
-         }
-        });
-    }
-    return row;
-}
-
-const UserManagementTable: React.FC<UserList> = ({ onRef, select, rolelist, callbackTotal }: any) => {
+const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, onSearch, rolelist }: any) => {
     const { formatMessage } = useIntl()
+    const [data, setData] = useState<any>({});
     const [loading, setLoading] = useState<boolean>(true);
-    const [listPage, setListPage] = useState<any>({ data: [], total: 0, total_page: 0, page_num: 1, page_size: 10 });
-    const [filterQuery, setFilterQuery] = useState<any>({ last_name: '',  role_id: '' })
+    const [page, setPage] = useState<number>(1);
+    const [size, setSize] = useState<number>(10);
+    const [keyword, setKeyword] = useState<string>()
     const [autoFocus, setFocus] = useState<boolean>(true)
-    //
+    const [role_id, setRole] = useState<number>();
+    const [lastName, setLastName] = useState<string>()    
+    const initParams = { page_num: 1, page_size: 10, role_id: role_id }
     const resetRef = useRef<{ show: (p: { password: string, username: string }) => void }>(null)
 
-    // 1.请求数据
-    const getManagementList = async (params: TableListParams) => {
-       const q = { ...filterQuery, ...params }
-       const query = validatorParams(q);
-       //
-        setLoading(true)
-        try {
-            const res = await userManagementList(query)
-            if (res.code === 200) {
-                setListPage(res)
-                callbackTotal(res.total)
-            } else {
-                setListPage({ data: [], total: 0, total_page: 0, page_num: 1, page_size: 10 })
-                callbackTotal(0)
-            }
-            setLoading(false)
-        } catch (err) { setLoading(false) }
+    const getManagementList = async ($initParams: TableListParams) => {
+        // setLoading(true)
+        // setData({ data: [] })
+        // const dataSource = await userManagementList($initParams)
+        // setData(dataSource)
+        // setLoading(false)
     };
 
-    // 条件筛选
-    useEffect(() => {
-      getManagementList({ page_num: 1, page_size: listPage.page_size })
-    }, [filterQuery.last_name, filterQuery.role_id]);
-
-    const onChange = (page_num: any, page_size: any) => {
-      getManagementList({ page_num, page_size })
+    const refresh = () => {
+        const params = { role_id: role_id, page_num: page, page_size: size, keyword: keyword }
+        getManagementList(params)
     }
 
-    // 修改角色
+    console.log('role_id:', role_id)
+    useEffect(() => {
+        refresh()
+    }, [page, size]);
+
+    const onChange = (page_num: any, page_size: any) => {
+        setPage(page_num)
+        setSize(page_size)
+    }
+
+    useImperativeHandle(onRef, () => ({
+        search: ($keyword: string) => {
+            getManagementList({ ...initParams, ...{ page_size: size, keyword: $keyword, role_id: role_id } })
+            setKeyword(keyword)
+        },
+        select: ($role_id: number) => {
+            getManagementList({ ...initParams, ...{ page_size: size, keyword: keyword, role_id: $role_id } })
+            setRole(role_id)
+        },
+        handleTab: refresh
+    }));
+
     const handleChange = async (val: number[], row: UserTable) => {
         const params: RoleChangeParams = {
             user_id: row.id,
@@ -72,7 +70,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, rolelist, call
         const result = await roleChange(params)
         if (result.code === 200) {
             message.success(formatMessage({ id: 'operation.success' }));
-            getManagementList({ page_num: listPage.page_num, page_size: listPage.page_size })
+            refresh()
         } else {
             message.error(result.msg);
         }
@@ -95,6 +93,19 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, rolelist, call
             ellipsis: {
                 showTitle: false
             },
+            filterDropdown: ({ confirm }: any) => <SearchInput
+                confirm={confirm}
+                autoFocus={autoFocus}
+                onConfirm={(val: string) => {
+                    setLastName(val)
+                    onSearch(val)
+                }} />,
+            onFilterDropdownVisibleChange: (visible: any) => {
+                if (visible) {
+                    setFocus(!autoFocus)
+                }
+            },
+            filterIcon: () => <FilterFilled style={{ color: lastName ? '#1890ff' : undefined }} />,
             render: (_: number, row: any) => (
                 <Space>
                     {
@@ -104,19 +115,12 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, rolelist, call
                     }
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                        searchWords={[filterQuery.last_name || '']}
+                        searchWords={[lastName || '']}
                         autoEscape
                         textToHighlight={row.last_name.toString()}
                     />
                 </Space>
             ),
-            filterIcon: () => <FilterFilled style={{ color: filterQuery.last_name ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => setFilterQuery({ ...filterQuery, last_name: val }) } />,
-            onFilterDropdownVisibleChange: (visible: any) => {
-                if (visible) {
-                  setFocus(!autoFocus)
-                }
-            },
         },
         {
             title: <FormattedMessage id="user.email" />,
@@ -138,13 +142,14 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, rolelist, call
                 <RoleSelect row={row} select={select} handleChange={handleChange} />
             ),
             width: 170,
-            filterIcon: () => <FilterFilled style={{ color: filterQuery.role_id ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SelectRadio list={rolelist} confirm={confirm} onConfirm={(val: any) => setFilterQuery({ ...filterQuery, role_id: val })} roleType="role" />,
-            onFilterDropdownVisibleChange: (visible: any) => {
-                if (visible) {
-                  setFocus(!autoFocus)
-                }
-            },
+            filterIcon: () => <FilterFilled style={{ color: role_id ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => 
+              <SelectRadio list={rolelist} confirm={confirm} 
+                onConfirm={(val: any) => {
+                    setRole(val)
+                    RoleChange(val)
+                }} 
+                roleType="role" />,
         },
         {
             title: 'Workspace',
@@ -181,26 +186,25 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, rolelist, call
                 </Popconfirm>
             )
         }
-    ].filter((item)=> item);
+    ];
+
+    const list: UserTable[] = data.data
 
     return (
         <div>
-            <Table
-                loading={loading}
-                rowKey="id"
+            <CommonTable
+                key={rolelist}
                 size="small"
+                name="sys-user-manage-list"
                 columns={columns as any}
-                dataSource={listPage.data}
-                pagination={false}
+                dataSource={list}
+                loading={loading}
+                page={data.page_num}
+                pageSize={data.page_size}
+                totalPage={data.total_page}
+                total={data.total}
+                handlePage={onChange}
             />
-            <CommonPagination
-                size="default"
-                pageSize={listPage.page_size}
-                currentPage={listPage.page_num}
-                total={listPage?.total || 0}
-                onPageChange={onChange}
-            />
-
             {
                 BUILD_APP_ENV === 'opensource' &&
                 <ResetModal ref={resetRef} />

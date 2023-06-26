@@ -55,7 +55,8 @@ export default forwardRef((props: any, ref: any) => {
                 if (remainNum && totalPage && totalPage + 1 <= page_num) {
                     setListParams((p: any) => ({ ...p, page_num: totalPage }))
                 } else {
-                    setListParams(DEFAULT_QUERY_PARAMS)
+                    // setListParams(DEFAULT_QUERY_PARAMS)
+                    getTableData()
                 }
             } else {
                 message.error(res.msg || formatMessage({ id: 'request.delete.failed' }));

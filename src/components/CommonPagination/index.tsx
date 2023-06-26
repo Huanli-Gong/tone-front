@@ -9,6 +9,7 @@ const CommonPagination = styled(Row)`
 `
 
 interface PaginationProps {
+    size?: string,
     total: number,
     pageSize: number,
     currentPage: number,
@@ -19,7 +20,7 @@ interface PaginationProps {
 
 export default (props: PaginationProps) => {
     const { formatMessage } = useIntl()
-    const { total = 0, largePage = false, pageSize = 10, currentPage = 1, onPageChange, ...rest } = props
+    const { size = "small", total = 0, largePage = false, pageSize = 10, currentPage = 1, onPageChange, ...rest } = props
     let sizeNumber = ['10', '20', '50', '100']
     if (total === 0) return <CommonPagination className="commom_pagination" justify="space-around" {...rest} />
     if (largePage) {
@@ -35,7 +36,7 @@ export default (props: PaginationProps) => {
                     total={total}
                     pageSize={pageSize}
                     current={currentPage}
-                    size="small"
+                    size={size}
                     showSizeChanger
                     pageSizeOptions={sizeNumber}
                     onChange={onPageChange}

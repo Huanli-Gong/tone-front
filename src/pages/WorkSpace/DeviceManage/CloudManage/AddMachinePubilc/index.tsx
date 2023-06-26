@@ -591,26 +591,22 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                     label={<FormattedMessage id="device.name" />}
                                     validateTrigger='onBlur'
                                     rules={[
-                                        {
-                                            required: true,
+                                        {required: true, message: formatMessage({ id: 'device.name.message' }) },
+                                        () => ({
                                             validator: async (rule, value) => {
-                                                if (!value)
-                                                    return Promise.reject(formatMessage({ id: 'device.name.message' }))
-
-                                                if (!/^[A-Za-z][A-Za-z0-9\._-]{1,32}$/.test(value))
-                                                    return Promise.reject(formatMessage({ id: 'device.name.message' }))
-
-                                                const q = { is_instance: 0, name: value, ws_id }
-                                                const query = editData.id ? { ...q, cloud_server_id: editData.id } : { ...q }
-                                                queryName(query).then(res => {
-                                                    if (res.code !== 200) {
-                                                        return Promise.reject(formatMessage({ id: 'validator.failed' }))
+                                                if (value) {
+                                                    // 校验name
+                                                    const q = { is_instance: 0, name: value, ws_id }
+                                                    const query = editData.id ? { ...q, cloud_server_id: editData.id } : { ...q }
+                                                    const res = await queryName(query) || {}
+                                                    if (res.code === 200) {
+                                                        return Promise.resolve()
                                                     }
-                                                    return
-                                                })
-                                                return Promise.resolve()
+                                                    return Promise.reject(res.msg || formatMessage({ id: 'validator.failed' }))
+                                                }
                                             }
-                                        },
+                                        }),
+                                        {pattern: /^[A-Za-z][A-Za-z0-9\._-]{1,32}$/, message: formatMessage({ id: 'device.name.message' }) },
                                     ]}
                                 >
                                     <Input autoComplete="off" placeholder={formatMessage({ id: 'please.enter' })} />
