@@ -14,7 +14,6 @@ const transMetric = (query: any) => {
 }
 
 const Performance: React.FC<AnyType> = (props) => {
-    console.log(props)
     const { suiteList, projectId, test_type, provider_env, onChange, basicValues } = props
     const { query }: any = useLocation()
     const { formatMessage } = useIntl()
@@ -38,9 +37,7 @@ const Performance: React.FC<AnyType> = (props) => {
         if (suiteList.length > 0) {
             setActiveSuite(+ getQueryValue("test_suite_id") || suiteList?.[0].id)
         }
-    }, [props, query])
-
-    console.log(activeSuite)
+    }, [suiteList, query])
 
     const requestMetricList = lodash.debounce(
         async (params: any) => {
