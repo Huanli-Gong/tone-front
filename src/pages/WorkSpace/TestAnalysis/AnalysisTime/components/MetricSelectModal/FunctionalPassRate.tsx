@@ -9,7 +9,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
     const { query }: any = useLocation()
 
     const getQueryValue = (queryName: any) => {
-        if (query[test_type] !== "functional") return undefined
+        if (query?.test_type !== "functional") return undefined
         if (basicValues) return basicValues[queryName]
         if (query[queryName]) return query[queryName]
         return undefined
@@ -22,7 +22,6 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
         if (suiteList.length > 0)
             setActiveSuite(+ getQueryValue("test_suite_id") || suiteList?.[0].id)
     }, [suiteList, query])
-    console.log("props", props, activeSuite)
 
     React.useEffect(() => {
         onChange?.({ activeSuite, activeConf })
