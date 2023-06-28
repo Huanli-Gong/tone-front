@@ -248,13 +248,16 @@ export default forwardRef((props: any, ref: any) => {
                                 <span style={{ opacity: 0.25 }}><FormattedMessage id="operation.download" /></span>
                             </> :
                             <>
-                                <a
-                                    href={record.job_link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <FormattedMessage id="operation.view" />
-                                </a>
+                                {
+                                    'fail' !== record.state &&
+                                    <a
+                                        href={record.job_link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <FormattedMessage id="operation.view" />
+                                    </a>
+                                }
                                 <Access accessible={access.WsTourist()}>
                                     <Access
                                         accessible={access.WsMemberOperateSelf(record.creator)}
@@ -266,13 +269,16 @@ export default forwardRef((props: any, ref: any) => {
                                         }
                                     >
                                         <Space>
-                                            <a
-                                                href={record.file_link}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                            >
-                                                <FormattedMessage id="operation.download" />
-                                            </a>
+                                            {
+                                                'fail' !== record.state &&
+                                                <a
+                                                    href={record.file_link}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                >
+                                                    <FormattedMessage id="operation.download" />
+                                                </a>
+                                            }
                                             <Popconfirm
                                                 placement="topRight"
                                                 title={<FormattedMessage id="delete.prompt" />}
