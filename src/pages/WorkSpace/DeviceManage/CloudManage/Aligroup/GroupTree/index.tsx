@@ -23,7 +23,6 @@ const GroupTree: React.FC<any> = (props) => {
     const { cluster_id, width, onRef, size, top, is_instance } = props
     const [loading, setLoading] = useState<boolean>(false)
     const [source, setSource] = useState<any>([]);
-    const [refresh, setRefresh] = useState<any>()
     const aloneMachine = useRef<any>(null)
     const access = useAccess();
     const logDrawer: any = useRef();
@@ -31,7 +30,7 @@ const GroupTree: React.FC<any> = (props) => {
     // step1.请求列表数据
     const getList = async () => {
         setLoading(true)
-        const data: any = await queryClusterMachine({ cluster_id: cluster_id }) || {};
+        const data: any = await queryClusterMachine({ cluster_id: cluster_id }).catch(()=> setLoading(false)) || {};
         data.data = data.data?.map((item: any) => {
             item.machineId = item.id
             return { ...item, ...item.test_server }
@@ -95,14 +94,10 @@ const GroupTree: React.FC<any> = (props) => {
         }
     }
 
-    useEffect(() => {
-        // 1.请求列表;
-        getList()
-    }, [refresh]);
-
     useImperativeHandle(onRef, () => ({
         reload: () => {
-            setRefresh(new Date().getTime())
+            // 刷新列表数据
+            getList()
         }
     }));
 
@@ -387,8 +382,13 @@ const GroupTree: React.FC<any> = (props) => {
         }
     ]
 
+    useEffect(()=> {
+        getList()
+    }, [])
+
+    // 刷新列表数据
     const onSuccess = () => {
-        setRefresh(new Date().getTime())
+        getList()
     }
 
     return (

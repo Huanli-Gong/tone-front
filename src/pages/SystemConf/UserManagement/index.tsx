@@ -17,10 +17,7 @@ const UserManagement: React.FC<{}> = () => {
 	const [select, setSelect] = useState<any[]>([]);
 	const [rolelist, setRolelist] = useState<any[]>([]);
 	const [num, setNum] = useState<number>(0);
-	const [roleTotal, setRoleTotal] = useState<number>(0);
-	const [role, setRole] = useState<number>()
-	const [keyword, setKeyword] = useState<string>()
-
+	const [roleTotal, setRoleTotal] = useState<number>(0);	
 	const getRoleSysList = async () => {
 		const { data } = await roleList({ role_type: 'system', is_filter: '1' }) // is_filter: '1':根据用户角色过滤
 		data && setSelect(data.list)
@@ -51,60 +48,59 @@ const UserManagement: React.FC<{}> = () => {
 
 	const handleTab = (key: string) => {
 		setIndex(key)
-		switch (key) {
-			case '1':
-				all.current && all.current.handleTab()
-				break;
+		// switch (key) {
+		// 	case '1':
+		// 		all.current && all.current.handleTab()
+		// 		break;
 
-			default:
-				break;
-		}
+		// 	default:
+		// 		break;
+		// }
 	}
 
-	const onSearch = (val: string) => {
-		setKeyword(val)
-		switch (index) {
-			case '1':
-				all.current && all.current.search(val)
-				break;
-			default:
-				break;
-		}
-	}
+	// const onSearch = (val: string) => {
+	// 	setKeyword(val)
+	// 	switch (index) {
+	// 		case '1':
+	// 			all.current && all.current.search(val)
+	// 			break;
+	// 		default:
+	// 			break;
+	// 	}
+	// }
+	// const handleChange = (val: number) => {
+	// 	setRole(val)
+	// 	switch (index) {
+	// 		case '1':
+	// 			all.current && all.current.select(val)
+	// 			break;
+	// 		default:
+	// 			break;
+	// 	}
+	// }
 
-	const handleChange = (val: number) => {
-		setRole(val)
-		switch (index) {
-			case '1':
-				all.current && all.current.select(val)
-				break;
-			default:
-				break;
-		}
-	}
-
-	<Space>
-		<Select
-			style={{ width: 180 }}
-			placeholder={<FormattedMessage id="user.please.select.role" />}
-			allowClear
-			defaultValue={role}
-			onChange={(val: number) => {
-				handleChange(val)
-			}}
-		>
-			{select.map((item: any) => {
-				return <Option key={item.id} value={item.id} >{item.name}</Option>
-			})}
-		</Select>
-		<Search
-			placeholder={formatMessage({ id: 'user.please.search.user' })}
-			allowClear
-			defaultValue={keyword}
-			onSearch={onSearch}
-			style={{ width: 200 }}
-		/>
-	</Space>
+	// <Space>
+	// 	<Select
+	// 		style={{ width: 180 }}
+	// 		placeholder={<FormattedMessage id="user.please.select.role" />}
+	// 		allowClear
+	// 		defaultValue={role}
+	// 		onChange={(val: number) => {
+	// 			handleChange(val)
+	// 		}}
+	// 	>
+	// 		{select.map((item: any) => {
+	// 			return <Option key={item.id} value={item.id} >{item.name}</Option>
+	// 		})}
+	// 	</Select>
+	// 	<Search
+	// 		placeholder={formatMessage({ id: 'user.please.search.user' })}
+	// 		allowClear
+	// 		defaultValue={keyword}
+	// 		onSearch={onSearch}
+	// 		style={{ width: 200 }}
+	// 	/>
+	// </Space>
 
 	return (
 		<TabCard
@@ -125,8 +121,7 @@ const UserManagement: React.FC<{}> = () => {
 						onRef={all}
 						select={select}
 						rolelist={rolelist}
-						onSearch={onSearch}
-						RoleChange={handleChange}
+						callbackTotal={setNum}
 					/> :
 					<RoleManagementTable />
 			}
