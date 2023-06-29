@@ -222,7 +222,6 @@ export default forwardRef((props: any, ref: any) => {
             ...getRangeDatePickerFilter(
                 [listParams?.start_time, listParams?.end_time],
                 (date: any) => {
-                    console.log(date)
                     setListParams((p: any) => ({
                         ...p,
                         page_num: 1,
@@ -242,46 +241,61 @@ export default forwardRef((props: any, ref: any) => {
             key: "operation",
             render: (text: any, record: any) => (
                 <Space>
-                    {['file', 'running', 'fail'].includes(record.state) ? (
-                        <>
-                            <span style={{ opacity: 0.25 }}><FormattedMessage id="operation.view" /></span>
-                            <span style={{ opacity: 0.25 }}><FormattedMessage id="operation.download" /></span>
-                        </>
-                    ) : (
-                        <>
-                            <a href={record.job_link} target="_blank" rel="noopener noreferrer"><FormattedMessage id="operation.view" /></a>
-                            <Access accessible={access.WsTourist()}>
-                                <Access
-                                    accessible={access.WsMemberOperateSelf(record.creator)}
-                                    fallback={
-                                        <Space>
-                                            <a onClick={() => AccessTootip()}><FormattedMessage id="operation.download" /></a>
-                                            <a onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></a>
-                                        </Space>
-                                    }
-                                >
-                                    <Space>
+                    {
+                        /* , 'fail' */
+                        ['file', 'running'].includes(record.state) ?
+                            <>
+                                <span style={{ opacity: 0.25 }}><FormattedMessage id="operation.view" /></span>
+                                <span style={{ opacity: 0.25 }}><FormattedMessage id="operation.download" /></span>
+                            </> :
+                            <>
+                                {
+                                    'fail' !== record.state ?
                                         <a
-                                            href={record.file_link}
+                                            href={record.job_link}
                                             target="_blank"
-                                            rel="noreferrer"
+                                            rel="noopener noreferrer"
                                         >
-                                            <FormattedMessage id="operation.download" />
-                                        </a>
-                                        <Popconfirm
-                                            placement="topRight"
-                                            title={<FormattedMessage id="delete.prompt" />}
-                                            onConfirm={() => deleteClick(record)}
-                                            okText={<FormattedMessage id="operation.confirm" />}
-                                            cancelText={<FormattedMessage id="operation.cancel" />}
-                                        >
-                                            <a><FormattedMessage id="operation.delete" /></a>
-                                        </Popconfirm>
-                                    </Space>
+                                            <FormattedMessage id="operation.view" />
+                                        </a> :
+                                        <span style={{ opacity: 0.25 }}><FormattedMessage id="operation.view" /></span>
+                                }
+                                <Access accessible={access.WsTourist()}>
+                                    <Access
+                                        accessible={access.WsMemberOperateSelf(record.creator)}
+                                        fallback={
+                                            <Space>
+                                                <a onClick={() => AccessTootip()}><FormattedMessage id="operation.download" /></a>
+                                                <a onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></a>
+                                            </Space>
+                                        }
+                                    >
+                                        <Space>
+                                            {
+                                                'fail' !== record.state ?
+                                                    <a
+                                                        href={record.file_link}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                    >
+                                                        <FormattedMessage id="operation.download" />
+                                                    </a> :
+                                                    <span style={{ opacity: 0.25 }}><FormattedMessage id="operation.download" /></span>
+                                            }
+                                            <Popconfirm
+                                                placement="topRight"
+                                                title={<FormattedMessage id="delete.prompt" />}
+                                                onConfirm={() => deleteClick(record)}
+                                                okText={<FormattedMessage id="operation.confirm" />}
+                                                cancelText={<FormattedMessage id="operation.cancel" />}
+                                            >
+                                                <a><FormattedMessage id="operation.delete" /></a>
+                                            </Popconfirm>
+                                        </Space>
+                                    </Access>
                                 </Access>
-                            </Access>
-                        </>
-                    )}
+                            </>
+                    }
                 </Space>
             ),
         },
