@@ -53,13 +53,11 @@ const SuiteManagement: React.FC<any> = ({ record: dataSource, id, type, ws_id })
                         })
                     }}
                 >
-                    <Space direction="vertical" style={{ width: "100%" }}>
-                        {
-                            row.var && row.var != '[]' ? JSON.parse(row.var).map((item: any, index: number) => {
-                                return <p key={index}>{`${item.name}=${item.val},${item.des || '-'}`};</p>
-                            }) : '-'
-                        }
-                    </Space>
+                    {
+                        row.var && row.var != '[]' ? JSON.parse(row.var).map((item: any) => {
+                            return `${item.name}=${item.val},${item.des || '-'};`
+                        }) : '-'
+                    }
                 </ColumnEllipsisText>
             ),
         },
@@ -124,7 +122,7 @@ const SuiteManagement: React.FC<any> = ({ record: dataSource, id, type, ws_id })
                 width={376}
                 title={<FormattedMessage id="suite.description.details" />}
                 onClose={() => setShow(false)}
-                visible={show}
+                open={show}
             >
                 <CodeViewer code={des} />
             </Drawer>
