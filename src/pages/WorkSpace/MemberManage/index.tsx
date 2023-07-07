@@ -8,6 +8,7 @@ import { roleList } from '@/pages/SystemConf/UserManagement/service'
 import { Access, useAccess } from 'umi'
 import { SingleTabCard } from '@/components/UpgradeUI';
 import { requestCodeMessage, switchUserRole2 } from '@/utils/utils';
+import lodash from "lodash"
 
 let timeout: any
 let timer: any
@@ -27,7 +28,7 @@ export default (props: any) => {
     const [memberList, setMemberList] = useState<any[]>([])
     const [options, setOptions] = useState<any>([])
     const [visible, setVisible] = useState(false)
-	const [refresh, setRefresh] = useState<any>(new Date().getTime())
+    const [refresh, setRefresh] = useState<any>(new Date().getTime())
     const [padding, setPadding] = useState(false)
     const [select, setSelect] = useState<any[]>([]);
     const [roleData, setRoleData] = useState<any[]>([]);
@@ -35,14 +36,7 @@ export default (props: any) => {
 
     const getMemberList = async (name: string = '') => {
         const { data } = await queryMember({ keyword: name, scope: 'aligroup' })
-        if (timeout) {
-            clearTimeout(timeout)
-            timeout = null
-        }
-
-        timeout = setTimeout(() => {
-            setMemberList(data)
-        }, 300)
+        setMemberList(data)
     }
 
     const getRoleWsList = async () => {
@@ -85,12 +79,15 @@ export default (props: any) => {
         )
     )
 
-    const handleSearchWorkspaceMember = async (name: string) => {
-        if (name) {
-            let { data } = await queryWorkspaceMember({ keyword: name, ws_id })
-            setOptions(data ? searchResult(data, name) : [])
-        }
-    }
+    const handleSearchWorkspaceMember = lodash.debounce(
+        async (name: string) => {
+            if (name) {
+                let { data } = await queryWorkspaceMember({ keyword: name, ws_id })
+                setOptions(data ? searchResult(data, name) : [])
+            }
+        },
+        200
+    )
 
     const onSelect = (value: string) => {
         setKeyword(value)
@@ -231,7 +228,7 @@ export default (props: any) => {
                             >
                                 {
                                     memberList?.map((item) => (
-                                        <Select.Option key={item.emp_id} value={item.emp_id} label={item.last_name} >
+                                        <Select.Option key={item.id} value={item.emp_id} label={item.last_name} >
                                             <Row>
                                                 <Col span={2}>
                                                     <Avatar size={25} src={item.avatar} />
