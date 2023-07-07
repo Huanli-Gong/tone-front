@@ -17,12 +17,12 @@ export default (props: any) => {
 
     const { approveData, loading, handleTabClick } = props
     const { height: layoutHeight } = useClientSize()
-    const approveDataList = _.isArray(approveData) ? approveData : []
-   
+    
     const dataSource = useMemo(()=> {
+        const approveDataList = _.isArray(approveData) ? approveData : []
         const arr = approveDataList.filter(item => _.get(item, 'ws_info'))
         return arr;
-    },[approveDataList])
+    },[approveData])
 
     const statusColorFn = (status: any) => {
         switch (status) {
@@ -159,7 +159,7 @@ export default (props: any) => {
     return (
         <Spin spinning={loading}>
             <div className={styles.approve_content} id="content" style={{ minHeight: layoutHeight - 270 - 40 }}>
-                {dataSource.length ? dataSource.map((item: any) => approveList(item)) : <EmptyData layoutHeight={layoutHeight} />}
+                {!!dataSource.length ? dataSource.map((item: any) => approveList(item)) : <EmptyData layoutHeight={layoutHeight} />}
             </div>
         </Spin>
     )
