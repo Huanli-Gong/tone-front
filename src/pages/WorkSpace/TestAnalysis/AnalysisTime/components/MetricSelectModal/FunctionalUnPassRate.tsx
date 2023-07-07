@@ -5,7 +5,6 @@ import { Table, Row, Col, Select } from "antd"
 import { queryFunctionalSubcases } from '../../services'
 import styles from '../index.less'
 
-
 const FunctionalPassRate: React.FC<AnyType> = (props) => {
     const { suiteList, test_type, isFetching, show_type, onChange, basicValues } = props
     const { query }: any = useLocation()
@@ -28,7 +27,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
 
     React.useEffect(() => {
         if (suiteList.length > 0)
-            setActiveSuite(+ getQueryValue("test_suite_id") || suiteList?.[0].id)
+            setActiveSuite(+ getQueryValue("test_suite_id") || suiteList?.[0].test_suite_id)
     }, [suiteList, query])
 
     React.useEffect(() => {
@@ -37,10 +36,9 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
 
     const confList = React.useMemo(() => {
         for (let len = suiteList.length, i = 0; i < len; i++)
-            if (suiteList[i].id === activeSuite) {
+            if (suiteList[i].test_suite_id === activeSuite) {
                 if (suiteList[i].test_case_list.length > 0) {
-                    const test_case_id = activeConf || suiteList[i].test_case_list[0].id
-                    requestSubcaseList({ test_case_id, test_suite_id: activeSuite })
+                    const test_case_id = activeConf || suiteList[i].test_case_list[0].test_case_id
                     if (!activeConf)
                         setActiveConf(test_case_id)
                     return suiteList[i].test_case_list
@@ -72,8 +70,8 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                                 showSearch
                                 options={
                                     suiteList.map((i: any) => ({
-                                        value: i.id,
-                                        label: i.name
+                                        value: i.test_suite_id,
+                                        label: i.test_suite_name
                                     }))
                                 }
                             />
@@ -99,8 +97,8 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                                 options={
                                     confList.map((i: any) => (
                                         {
-                                            value: i.id,
-                                            label: i.name
+                                            value: i.test_case_id,
+                                            label: i.test_case_name
                                         }
                                     ))
                                 }
