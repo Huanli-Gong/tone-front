@@ -9,6 +9,7 @@ import _ from 'lodash'
 import EmptyData from './EmptyData'
 import EllipsisRect from './EllipsisRect'
 import { jumpWorkspace } from '@/utils/utils'
+import { useMemo } from 'react'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
@@ -16,8 +17,13 @@ export default (props: any) => {
 
     const { approveData, loading, handleTabClick } = props
     const { height: layoutHeight } = useClientSize()
-    let approveDataList = _.isArray(approveData) ? approveData : []
-    approveDataList = approveDataList.filter(item => _.get(item, 'ws_info'))
+    const approveDataList = _.isArray(approveData) ? approveData : []
+   
+    const dataSource = useMemo(()=> {
+        const arr = approveDataList.filter(item => _.get(item, 'ws_info'))
+        return arr;
+    },[approveDataList])
+
     const statusColorFn = (status: any) => {
         switch (status) {
             case 'waiting': return <Tag className={styles.stateColorFn} color='#FF9D4E'><FormattedMessage id="person.center.in_review" /></Tag>
@@ -41,6 +47,7 @@ export default (props: any) => {
             </Space>
         )
     }
+
     const ellipsisText = (name: string) => {
         if (!name) return ''
         return name.slice(0, 1)
@@ -152,7 +159,7 @@ export default (props: any) => {
     return (
         <Spin spinning={loading}>
             <div className={styles.approve_content} id="content" style={{ minHeight: layoutHeight - 270 - 40 }}>
-                {approveDataList.length ? approveDataList.map((item: any) => approveList(item)) : <EmptyData layoutHeight={layoutHeight} />}
+                {dataSource.length ? dataSource.map((item: any) => approveList(item)) : <EmptyData layoutHeight={layoutHeight} />}
             </div>
         </Spin>
     )
