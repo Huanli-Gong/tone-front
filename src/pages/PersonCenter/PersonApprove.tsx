@@ -17,12 +17,11 @@ export default (props: any) => {
 
     const { approveData, loading, handleTabClick } = props
     const { height: layoutHeight } = useClientSize()
-    
-    const dataSource = useMemo(()=> {
-        const approveDataList = _.isArray(approveData) ? approveData : []
-        const arr = approveDataList.filter(item => _.get(item, 'ws_info'))
-        return arr;
-    },[approveData])
+
+    const dataSource = useMemo(() => {
+        if(_.isArray(approveData) && !!approveData.length) return approveData.filter(item => _.get(item, 'ws_info'))
+        else return []
+    }, [approveData, loading])
 
     const statusColorFn = (status: any) => {
         switch (status) {

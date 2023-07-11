@@ -21,6 +21,7 @@ export default (props: any) => {
         if (!name) return ''
         return name.slice(0, 1)
     }
+
     const wsInfoFn = (wsInfo: any) => {
         const logo = wsInfo.logo
         // if (logo) logo = `window.location.origin${logo}`
@@ -52,7 +53,7 @@ export default (props: any) => {
     }
 
     const handleWs_Role = (title_type: any) => {
-        const dict = {
+        const dict:any = {
             ws_member: formatMessage({ id: 'member.type.ws_member' }), //'workspace成员',
             ws_test_admin: formatMessage({ id: 'member.type.ws_test_admin' }), //'测试管理员',
             ws_admin: formatMessage({ id: 'member.type.ws_admin' }), //'管理员',
@@ -95,7 +96,7 @@ export default (props: any) => {
     return (
         <Spin spinning={loading}>
             <div className={styles.ws_content} id="content" style={{ minHeight: layoutHeight - 270 - 40 }}>
-                {workspaceDataList.length ? workspaceDataList.map((item: any) => wsList(item)) : <EmptyData layoutHeight={layoutHeight} />}
+                {!!workspaceDataList.length ? workspaceDataList.map((item: any) => wsList(item)) : <EmptyData layoutHeight={layoutHeight} />}
             </div>
         </Spin>
     )
