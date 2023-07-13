@@ -6,7 +6,7 @@ import Performance from "./Performance";
 import FunctionalPassRate from "./FunctionalPassRate";
 import FunctionalUnPassRate from "./FunctionalUnPassRate"
 
-import { getSelectSuiteConfs } from '../../services'
+import { getSelectSuiteConfs, getSelectMetricOrSubcase } from '../../services'
 
 const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
     const { test_type, project_id, provider_env, onOk, show_type, tag, start_time, end_time } = props
@@ -16,9 +16,16 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
     const [info, setInfo] = React.useState<any>({})
     const [basicValues, setBasicValues] = React.useState(undefined)
 
-    const { data: suiteList, run, loading } = useRequest(() => getSelectSuiteConfs({ ws_id, project_id, start_time, end_time, tag, test_type, provider_env }), {
+    const defaultParams = { ws_id, project_id, start_time, end_time, tag, test_type, provider_env }
+
+    const { data: suiteList, run, loading } = useRequest(() => getSelectSuiteConfs(defaultParams), {
         manual: true
     })
+
+    const { data: metrics, run: runGetMetrics } = useRequest((params: any) => getSelectMetricOrSubcase({
+        ...defaultParams,
+        ...params,
+    }), { manual: true })
 
     React.useImperativeHandle(ref, () => ({
         show: async (vals: any) => {
@@ -115,6 +122,8 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
         provider_env,
         loading,
         suiteList,
+        runGetMetrics,
+        metrics,
         onChange: (data: any) => {
             setInfo((p: any) => ({ ...p, ...data }))
         }

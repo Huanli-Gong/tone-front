@@ -12,7 +12,7 @@ const transMetric = (query: any) => {
 }
 
 const Performance: React.FC<AnyType> = (props) => {
-    const { suiteList, provider_env, onChange, basicValues } = props
+    const { suiteList, provider_env, onChange, basicValues, metrics, runGetMetrics } = props
     const { query }: any = useLocation()
     const { formatMessage } = useIntl()
 
@@ -25,11 +25,13 @@ const Performance: React.FC<AnyType> = (props) => {
 
     const { setMetrics } = useAnalysisProvider()
 
+    React.useEffect(() => {
+        setMetrics(metrics)
+    }, [metrics])
+
     const [activeSuite, setActiveSuite] = React.useState<any>(+ getQueryValue("test_suite_id") || undefined)
     const [activeConf, setActiveConf] = React.useState<any>(+ getQueryValue("test_case_id") || undefined)
-    const [metricList, setMetricList] = React.useState<any>([])
     const [selectMetric, setSelectMetric] = React.useState<any>(getQueryValue("metric") || transMetric(query))
-    // const [fetch, setFetch] = React.useState(false)
 
     React.useEffect(() => {
         if (suiteList?.length > 0) {
@@ -40,16 +42,18 @@ const Performance: React.FC<AnyType> = (props) => {
         }
     }, [suiteList, query])
 
-    React.useEffect(() => {
-        setMetrics(metricList)
-    }, [metricList])
-
     const currentSuite = React.useMemo(() => {
         if (!suiteList) return
         return suiteList.filter((i: any) => (i.test_suite_id === activeSuite))[0]
     }, [suiteList, activeSuite])
 
-    const currentCases = React.useMemo(() => {
+    React.useEffect(() => {
+        if (activeConf && activeSuite) {
+            runGetMetrics({ test_suite_id: activeSuite, test_case_id: activeConf })
+        }
+    }, [activeConf, activeSuite])
+
+    React.useMemo(() => {
         if (!currentSuite) return
         const { test_case_list } = currentSuite
 
@@ -60,8 +64,8 @@ const Performance: React.FC<AnyType> = (props) => {
     }, [currentSuite, activeConf])
 
     React.useEffect(() => {
-        onChange?.({ activeSuite, activeConf, metricList, selectMetric })
-    }, [activeSuite, activeConf, metricList, selectMetric])
+        onChange?.({ activeSuite, activeConf, selectMetric })
+    }, [activeSuite, activeConf, selectMetric])
 
     return (
         <Row style={{ height: 400 }}>
@@ -73,7 +77,6 @@ const Performance: React.FC<AnyType> = (props) => {
                             <Select
                                 style={{ width: 'calc(100% - 91px - 8px)' }}
                                 onChange={(v) => {
-                                    setMetricList([])
                                     setActiveSuite(v)
                                     setActiveConf(null)
                                     setSelectMetric([])
@@ -122,7 +125,7 @@ const Performance: React.FC<AnyType> = (props) => {
             </Col>
             <Col span={24} style={{ height: 350 }}>
                 <Table
-                    dataSource={currentCases?.metric_list}
+                    dataSource={metrics}
                     columns={[{ dataIndex: '', title: formatMessage({ id: 'analysis.metric' }) }]}
                     rowKey={record => record}
                     size="small"

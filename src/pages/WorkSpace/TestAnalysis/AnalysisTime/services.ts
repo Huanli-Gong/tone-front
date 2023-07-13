@@ -53,3 +53,7 @@ type SuiteConfsServiceProps = {
 export const getSelectSuiteConfs = function (data: SuiteConfsServiceProps) {
     return request(`/api/job/result/perf/suite/list/`, { method: "post", data })
 }
+
+export const getSelectMetricOrSubcase = function (data: any) {
+    return request(`/api/job/result/analysis/metric/list/`, { method: "post", data })
+}

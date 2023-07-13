@@ -62,7 +62,7 @@ const AnalysisTime: React.FC<any> = (props) => {
     })
 
     const clearAndSetFields = (val: any) => {
-        const { test_type, provider_env, show_type } = info
+        const { test_type, provider_env = 'aliyun', show_type = 'pass_rate' } = info
         setInfo({ test_type, provider_env, show_type, ...val })
         tabPaneRef.current?.reset()
     }

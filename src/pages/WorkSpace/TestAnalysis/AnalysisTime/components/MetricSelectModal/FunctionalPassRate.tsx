@@ -5,7 +5,7 @@ import styles from '../index.less'
 import { useLocation } from "umi"
 
 const FunctionalPassRate: React.FC<AnyType> = (props) => {
-    const { suiteList, test_type, isFetching, onChange, basicValues } = props
+    const { suiteList = [], test_type, isFetching, onChange, basicValues } = props
     const { query }: any = useLocation()
 
     const getQueryValue = (queryName: any) => {
@@ -28,6 +28,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
     }, [activeSuite, activeConf])
 
     const confList = React.useMemo(() => {
+        if (!suiteList) return []
         for (let len = suiteList.length, i = 0; i < len; i++)
             if (suiteList[i].test_suite_id === activeSuite) {
                 if (suiteList[i].test_case_list.length > 0) {
@@ -59,7 +60,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                         placeholder="请选择Test Suite"
                         value={activeSuite}
                         options={
-                            suiteList.map((i: any) => ({
+                            suiteList?.map((i: any) => ({
                                 value: i.test_suite_id,
                                 label: i.test_suite_name
                             }))
@@ -70,7 +71,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
             <Col span={24} style={{ height: 350 }}>
                 <Table
                     dataSource={confList}
-                    columns={[{ dataIndex: 'name', title: 'Test Conf' }]}
+                    columns={[{ dataIndex: 'test_case_name', title: 'Test Conf' }]}
                     rowKey={'test_case_id'}
                     size="small"
                     loading={isFetching}
