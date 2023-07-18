@@ -28,6 +28,8 @@ export default forwardRef(
         const [disable, setDisable] = useState(false)
         const [dataSource, setDataSource] = useState<any>({})
 
+        const visibleRange = Form.useWatch('visible_range', form)
+
         const handleCancel = () => {
             setVisible(false)
             setDisable(false)
@@ -161,23 +163,32 @@ export default forwardRef(
                                 label={
                                     <FormattedMessage id={`TestSuite.workspace_visible_range`} />
                                 }
-                                required
+                                rules={[{
+                                    required: true,
+                                    validator(rule, value, callback) {
+                                        if (!value)
+                                            return Promise.reject(formatMessage({ id: `TestSuite.workspace_visible_range.required` }))
+                                        return Promise.resolve()
+                                    },
+                                }]}
                             >
                                 <Select
                                     allowClear
                                     mode="multiple"
                                     placeholder={formatMessage({ id: 'TestSuite.workspace_visible_range.placeholder' })}
                                     filterOption={(input, option: any) => {
-                                        console.log(option)
-                                        return option.show_name.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                        return option?.show_name?.toLowerCase().indexOf(input?.toLowerCase()) >= 0
+                                    }}
+                                    onChange={(vals) => {
+                                        if (vals.includes("*")) form.setFieldsValue({ visible_range: ['*'] })
                                     }}
                                     options={
                                         [{
                                             label: (
                                                 <Space>
-                                                    <Typography.Text style={{ display: 'inline-block', width: 12, textAlign: 'center' }}>
+                                                    <span style={{ display: 'inline-block', width: 12, textAlign: 'center' }}>
                                                         *
-                                                    </Typography.Text>
+                                                    </span>
                                                     <FormattedMessage id={`TestSuite.workspace_visible_range_all`} />
                                                 </Space>
                                             ),
@@ -186,12 +197,13 @@ export default forwardRef(
                                         },
                                         ...(wsList || []).map((item: any) => ({
                                             show_name: item.show_name,
+                                            disabled: visibleRange?.includes("*"),
                                             label: (
                                                 <Space>
                                                     <WsPublicIcon {...item} />
-                                                    <Typography.Text>
+                                                    <span>
                                                         {item.show_name}
-                                                    </Typography.Text>
+                                                    </span>
                                                 </Space>
                                             ),
                                             value: item.id

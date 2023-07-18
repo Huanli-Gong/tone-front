@@ -1,5 +1,6 @@
 export default {
   'TestSuite.workspace_visible_range': '可见范围',
+  'TestSuite.workspace_visible_range.required': '可见范围不能为空',
   'TestSuite.workspace_visible_range.placeholder': '请选择可见范围',
   'TestSuite.workspace_visible_range_all': '所有',
 

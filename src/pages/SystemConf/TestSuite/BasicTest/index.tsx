@@ -252,8 +252,6 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         }, {})
     }, [wsList])
 
-    console.log(wsMap)
-
     const columns: TableColumnProps<AnyType>[] = [
         {
             title: 'Test Suite',
