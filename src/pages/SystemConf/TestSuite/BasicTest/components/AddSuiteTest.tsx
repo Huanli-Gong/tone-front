@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, forwardRef, useImperativeHandle, useMemo } from 'react'
-import { Drawer, Button, Form, Col, Row, Select, Input, Radio, Space, Typography } from 'antd'
+import { Drawer, Button, Form, Col, Row, Select, Input, Radio, Space, Typography, Divider, Tag } from 'antd'
 import styles from '../style.less'
 import Owner from '@/components/Owner/index';
 import { useLocation, useIntl, FormattedMessage } from 'umi'
@@ -192,11 +192,29 @@ export default forwardRef(
                                     onSelect={(val) => {
                                         if (val === "*")
                                             form.setFieldsValue({ visible_range: ['*'] })
-                                        if (val === 'all_public')
-                                            form.setFieldsValue({ visible_range: wsAttr.public })
-                                        if (val === 'all_un_public')
-                                            form.setFieldsValue({ visible_range: wsAttr.unPublic })
                                     }}
+                                    dropdownRender={(menu) => (
+                                        <>
+                                            {menu}
+                                            <Divider style={{ margin: '8px 0' }} />
+                                            <Row style={{ paddingLeft: 12 }}>
+                                                <Tag
+                                                    style={{ cursor: 'pointer' }}
+                                                    onClick={() => form.setFieldsValue({ visible_range: wsAttr.public })}
+                                                    color="processing"
+                                                >
+                                                    <FormattedMessage id={`TestSuite.workspace_visible_range_all.public`} />
+                                                </Tag>
+                                                <Tag
+                                                    style={{ cursor: 'pointer' }}
+                                                    onClick={() => form.setFieldsValue({ visible_range: wsAttr.unPublic })}
+                                                    color="processing"
+                                                >
+                                                    <FormattedMessage id={`TestSuite.workspace_visible_range_all.un_public`} />
+                                                </Tag>
+                                            </Row>
+                                        </>
+                                    )}
                                     options={
                                         [{
                                             label: (
@@ -209,24 +227,6 @@ export default forwardRef(
                                             ),
                                             value: "*",
                                             show_name: "*"
-                                        },
-                                        {
-                                            label: (
-                                                <Space>
-                                                    <WsPublicIcon is_public />
-                                                    <FormattedMessage id={`TestSuite.workspace_visible_range_all.public`} />
-                                                </Space>
-                                            ),
-                                            value: 'all_public',
-                                        },
-                                        {
-                                            label: (
-                                                <Space>
-                                                    <WsPublicIcon is_public={false} />
-                                                    <FormattedMessage id={`TestSuite.workspace_visible_range_all.un_public`} />
-                                                </Space>
-                                            ),
-                                            value: 'all_un_public',
                                         },
                                         ...(wsList || []).map((item: any) => ({
                                             show_name: item.show_name,
