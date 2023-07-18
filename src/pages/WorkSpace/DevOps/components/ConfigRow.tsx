@@ -17,7 +17,7 @@ const ColTitle = styled(Col)`
 `
 
 type IProps = {
-    title: string;
+    title: any;
     children: React.ReactNode | string
 }
 
