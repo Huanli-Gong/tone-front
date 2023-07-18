@@ -27,7 +27,7 @@ const OverflowList: React.FC<Iprops> = (props) => {
                 const ww = rootBounds?.width
                 if (ww) {
                     const rw = reduceCoutWidth(entries, index)
-                    const pr = parseInt(getComputedStyle(target)["padding-right"]) || 0
+                    const pr = parseInt(getComputedStyle(target)["padding-right" as any]) || 0
                     const rsw = rw + pr
                     if ((ww - rsw) > 0 && index === entries.length) return pre += 1
                     if (rsw < (ww - 32))
@@ -86,7 +86,7 @@ const OverflowList: React.FC<Iprops> = (props) => {
     if (!list || list.length === 0) return <>-</>
     return (
         <div ref={$dom} style={{ position: "relative", userSelect: "none", ...style }} {...rest}>
-            <div style={{ width: "100%", overflow: "hidden", opacity: 0 }} ref={ref} >
+            <div style={{ width: "100%", height: 22, overflow: "hidden", opacity: 0 }} ref={ref} >
                 {
                     listRender(list)
                 }

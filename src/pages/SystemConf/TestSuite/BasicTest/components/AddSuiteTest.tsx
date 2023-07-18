@@ -1,19 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { useState, forwardRef, useImperativeHandle, useMemo } from 'react'
-import { Drawer, Button, Form, Col, Row, Select, Input, Radio } from 'antd'
+import { Drawer, Button, Form, Col, Row, Select, Input, Radio, Space, Typography } from 'antd'
 import styles from '../style.less'
 import Owner from '@/components/Owner/index';
 import { useLocation, useIntl, FormattedMessage } from 'umi'
 import { useSuiteProvider } from '../../hooks'
-import { QusetionIconTootip } from '@/components/Product/index'
+import { QusetionIconTootip } from '@/components/Product'
+import WsPublicIcon from '@/components/WsAttrIcon';
 
 /**
  * @module 系统级
  * @description 新增、编辑suite级
  */
 export default forwardRef(
-    ({ onOk }: any, ref: any) => {
+    ({ onOk, wsList }: any, ref: any) => {
         const { formatMessage } = useIntl()
         const { query }: any = useLocation()
         const testType = query.test_type || 'functional'
@@ -41,11 +42,13 @@ export default forwardRef(
                 setVisible(true)
                 setDisable(false)
                 d && setDataSource(d)
+                const { visible_range } = d
                 form.setFieldsValue({
                     ...d,
                     test_type: testType,
                     owner: d.owner_name,
-                    certificated: d.certificated ? 1 : 0
+                    certificated: d.certificated ? 1 : 0,
+                    visible_range: visible_range?.split(',')
                 })
             },
             hide: handleCancel
@@ -62,6 +65,8 @@ export default forwardRef(
                 setDisable(true)
                 if (val.owner === dataSource.owner_name) val.owner = dataSource.owner
                 val.domain_list_str = val.domain_list_str.join()
+                const { visible_range } = val
+                val.visible_range = visible_range?.toString()
                 onOk(val, dataSource.id ? dataSource.id : '')
                 setDisable(false)
             }).catch(err => {
@@ -98,12 +103,12 @@ export default forwardRef(
                 maskClosable={false}
                 keyboard={false}
                 className={styles.warp}
-                forceRender={true}
-                destroyOnClose={true}
+                forceRender
+                destroyOnClose
                 title={title}
                 width={376}
                 onClose={handleCancel}
-                visible={visible}
+                open={visible}
                 bodyStyle={{ paddingBottom: 80 }}
                 footer={
                     <div style={{ textAlign: 'right' }}>
@@ -118,7 +123,7 @@ export default forwardRef(
                     layout="vertical"
                     form={form}
                     /*hideRequiredMark*/
-                    initialValues={{ is_default: 1, view_type: 'Type1' }}
+                    initialValues={{ is_default: 1, view_type: 'Type1', visible_range: '*' }}
                 >
                     <Row gutter={16}>
                         <Col span={24}>
@@ -148,6 +153,51 @@ export default forwardRef(
                                     <Select.Option value="functional"><FormattedMessage id="functional.test" /></Select.Option>
                                     <Select.Option value="performance"><FormattedMessage id="performance.test" /></Select.Option>
                                 </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col span={24}>
+                            <Form.Item
+                                name="visible_range"
+                                label={
+                                    <FormattedMessage id={`TestSuite.workspace_visible_range`} />
+                                }
+                                required
+                            >
+                                <Select
+                                    allowClear
+                                    mode="multiple"
+                                    placeholder={formatMessage({ id: 'TestSuite.workspace_visible_range.placeholder' })}
+                                    filterOption={(input, option: any) => {
+                                        console.log(option)
+                                        return option.show_name.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    }}
+                                    options={
+                                        [{
+                                            label: (
+                                                <Space>
+                                                    <Typography.Text style={{ display: 'inline-block', width: 12, textAlign: 'center' }}>
+                                                        *
+                                                    </Typography.Text>
+                                                    <FormattedMessage id={`TestSuite.workspace_visible_range_all`} />
+                                                </Space>
+                                            ),
+                                            value: "*",
+                                            show_name: "*"
+                                        },
+                                        ...(wsList || []).map((item: any) => ({
+                                            show_name: item.show_name,
+                                            label: (
+                                                <Space>
+                                                    <WsPublicIcon {...item} />
+                                                    <Typography.Text>
+                                                        {item.show_name}
+                                                    </Typography.Text>
+                                                </Space>
+                                            ),
+                                            value: item.id
+                                        }))]
+                                    }
+                                />
                             </Form.Item>
                         </Col>
                         <Col span={24}>

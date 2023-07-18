@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
-import { Space, Drawer, message, Pagination, Tooltip, Row, Alert, Table, Spin, Typography } from 'antd';
+import { Space, Drawer, message, Pagination, Tooltip, Row, Table, Spin, Typography, Tag } from 'antd';
 import type { TableColumnProps } from "antd"
 import { CaretRightFilled, CaretDownFilled, FilterFilled, EditOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { suiteList, addSuite, editSuite, delSuite, syncSuite, manual, lastSync, batchDeleteMetric } from '../service';
@@ -13,7 +13,7 @@ import SelectCheck from '@/components/Public//SelectCheck';
 import SearchInput from '@/components/Public/SearchInput';
 import SelectDrop from '@/components/Public//SelectDrop';
 import SelectRadio from '@/components/Public/SelectRadio';
-import { useLocation, useIntl, FormattedMessage, getLocale } from 'umi'
+import { useLocation, useIntl, FormattedMessage, getLocale, useRequest, Link } from 'umi'
 import SuiteEditer from './components/AddSuiteTest'
 import DesFastEditDrawer from './components/DesFastEditDrawer'
 import BatchDelete from './components/BatchDelete';
@@ -31,6 +31,11 @@ import DeleteDefault from "./components/DeleteDefault"
 import MetricBatchDelete from './components/MetricTable/MetricBatchDelete';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
+import { workspaceList } from '@/pages/SystemConf/WorkspaceManagement/service';
+import OverflowList from '@/components/TagOverflow';
+
+import WsPublicIcon from '@/components/WsAttrIcon';
+
 const timeout: any = null;
 let timer: any = null;
 
@@ -43,6 +48,8 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
 
     const testType = query.test_type || 'functional'
     const DEFAULT_PAGE_PARAMS = { page_size: 10, page_num: 1, test_type: testType }
+
+    const { data: wsList } = useRequest(() => workspaceList({ page_size: 999 }))
 
     const [pageParams, setPageParams] = useState<any>(DEFAULT_PAGE_PARAMS)
     const [loading, setLoading] = useState<boolean>(true)
@@ -238,6 +245,15 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         setAsyncTime(new Date().getTime())
     }
 
+    const wsMap = React.useMemo(() => {
+        return (wsList || []).reduce((pre: any, cur: any) => {
+            pre[cur.id] = cur
+            return pre
+        }, {})
+    }, [wsList])
+
+    console.log(wsMap)
+
     const columns: TableColumnProps<AnyType>[] = [
         {
             title: 'Test Suite',
@@ -294,6 +310,38 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                     onConfirm={(val: any) => { setPageParams({ ...pageParams, domain: val }) }}
                 />
             ),
+        },
+        {
+            title: <FormattedMessage id={'TestSuite.workspace_visible_range'} />,
+            width: 200,
+            dataIndex: 'visible_range',
+            render(row) {
+                return (
+                    <OverflowList
+                        list={
+                            row?.split(',')?.map((item: any) => {
+                                if (item === '*') return <span key={item}>{item}</span>
+                                return (
+                                    <Link to={`/ws/${item}/test_result`} target="_blank" key={item}>
+                                        <Tag >
+                                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                                {
+                                                    <WsPublicIcon
+                                                        is_public={wsMap[item]?.is_public}
+                                                    />
+                                                }
+                                                <Typography.Text>
+                                                    {wsMap[item]?.show_name}
+                                                </Typography.Text>
+                                            </div>
+                                        </Tag>
+                                    </Link>
+                                )
+                            })
+                        }
+                    />
+                )
+            },
         },
         // @ts-ignore
         testType !== 'functional' &&
@@ -564,6 +612,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 test_type={testType}
                 ref={suiteEditDrawer}
                 onOk={submitSuite}
+                wsList={wsList || []}
             />
 
             <DesFastEditDrawer
