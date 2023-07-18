@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { useState, forwardRef, useImperativeHandle, useMemo } from 'react'
+import React, { useState, forwardRef, useImperativeHandle, useMemo } from 'react'
 import { Drawer, Button, Form, Col, Row, Select, Input, Radio, Space, Typography } from 'antd'
 import styles from '../style.less'
 import Owner from '@/components/Owner/index';
@@ -100,6 +100,15 @@ export default forwardRef(
             return JSON.stringify(dataSource) !== '{}' ? <FormattedMessage id="operation.update" /> : <FormattedMessage id="operation.ok" />
         }, [])
 
+        const wsAttr = React.useMemo(() => {
+            return wsList.reduce((pre: any, cur: any) => {
+                const { is_public, id } = cur
+                if (is_public) pre.public.push(id)
+                else pre.unPublic.push(id)
+                return pre
+            }, { public: [], unPublic: [] })
+        }, [wsList])
+
         return (
             <Drawer
                 maskClosable={false}
@@ -179,8 +188,14 @@ export default forwardRef(
                                     filterOption={(input, option: any) => {
                                         return option?.show_name?.toLowerCase().indexOf(input?.toLowerCase()) >= 0
                                     }}
-                                    onChange={(vals) => {
-                                        if (vals.includes("*")) form.setFieldsValue({ visible_range: ['*'] })
+                                    maxTagCount={'responsive'}
+                                    onSelect={(val) => {
+                                        if (val === "*")
+                                            form.setFieldsValue({ visible_range: ['*'] })
+                                        if (val === 'all_public')
+                                            form.setFieldsValue({ visible_range: wsAttr.public })
+                                        if (val === 'all_un_public')
+                                            form.setFieldsValue({ visible_range: wsAttr.unPublic })
                                     }}
                                     options={
                                         [{
@@ -194,6 +209,24 @@ export default forwardRef(
                                             ),
                                             value: "*",
                                             show_name: "*"
+                                        },
+                                        {
+                                            label: (
+                                                <Space>
+                                                    <WsPublicIcon is_public />
+                                                    <FormattedMessage id={`TestSuite.workspace_visible_range_all.public`} />
+                                                </Space>
+                                            ),
+                                            value: 'all_public',
+                                        },
+                                        {
+                                            label: (
+                                                <Space>
+                                                    <WsPublicIcon is_public={false} />
+                                                    <FormattedMessage id={`TestSuite.workspace_visible_range_all.un_public`} />
+                                                </Space>
+                                            ),
+                                            value: 'all_un_public',
                                         },
                                         ...(wsList || []).map((item: any) => ({
                                             show_name: item.show_name,

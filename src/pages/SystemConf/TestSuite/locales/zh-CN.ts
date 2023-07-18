@@ -3,6 +3,8 @@ export default {
   'TestSuite.workspace_visible_range.required': '可见范围不能为空',
   'TestSuite.workspace_visible_range.placeholder': '请选择可见范围',
   'TestSuite.workspace_visible_range_all': '所有',
+  'TestSuite.workspace_visible_range_all.public': '所有公开',
+  'TestSuite.workspace_visible_range_all.un_public': '所有私密',
 
   'TestSuite.domain.conf': '领域配置',
   'TestSuite.domain.name': '领域名称',

@@ -3,6 +3,8 @@ export default {
   'TestSuite.workspace_visible_range.required': 'Visible range can not be empty',
   'TestSuite.workspace_visible_range.placeholder': 'Place select visible range',
   'TestSuite.workspace_visible_range_all': 'All',
+  'TestSuite.workspace_visible_range_all.public': 'All public',
+  'TestSuite.workspace_visible_range_all.un_public': 'All Privacy',
 
   'TestSuite.domain.conf': 'Domain Config',
   'TestSuite.domain.name': 'Domain Name',
