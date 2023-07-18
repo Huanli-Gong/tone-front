@@ -82,8 +82,10 @@ const text = {
   // Drawer
   'bug': '缺陷记录',
   'bug.placeholder': '请输入缺陷记录',
+  'bug.empty': '缺陷记录不能为空',
   'baseline_id': '基线名称',
   'baseline_id.placeholder': '搜索或创建基线',
+  'baseline_id.empty': '基线名称不能为空',
   'create.baseline': '新建基线',
   'impact_result': '影响结果',
   'description': '问题描述',

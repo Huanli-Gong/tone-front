@@ -105,7 +105,8 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             .validateFields()
             .then(
                 async (values: any) => {
-                    const baseParams = { ...values, ws_id, test_type }
+                    const { bug } = values
+                    const baseParams = { ...values, ws_id, test_type, bug: bug?.trim() }
                     if (source?.suite_list || source?.suite_data) {
                         if (source?.suite_list.length || source?.suite_data.length) {
                             const { suite_list, suite_data, job_id } = source
@@ -203,6 +204,10 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                             name="bug"
                             rules={[{
                                 required: true,
+                                message: formatMessage({ id: 'ws.result.details.bug.empty' }),
+                                validator(rule, value, callback) {
+                                    return value.trim() ? Promise.resolve() : Promise.reject(formatMessage({ id: 'ws.result.details.bug.empty' }))
+                                },
                             }]}
                         >
                             <Input placeholder={formatMessage({ id: 'ws.result.details.bug.placeholder' })}
@@ -215,6 +220,10 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                             <Form.Item
                                 label={<FormattedMessage id="ws.result.details.baseline_id" />}
                                 name="baseline_id"
+                                rules={[{
+                                    required: true,
+                                    message: formatMessage({ id: 'ws.result.details.baseline_id.empty' })
+                                }]}
                             >
                                 <Select
                                     listHeight={160}
@@ -283,6 +292,10 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                             <Form.Item
                                 label={<FormattedMessage id="ws.result.details.baseline_id" />}
                                 name="baseline_id"
+                                rules={[{
+                                    required: true,
+                                    message: formatMessage({ id: 'ws.result.details.baseline_id.empty' })
+                                }]}
                             >
                                 <Select
                                     placeholder={formatMessage({ id: 'ws.result.details.baseline_id.placeholder' })}

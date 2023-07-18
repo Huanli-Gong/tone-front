@@ -19,9 +19,9 @@ interface OptionBtnProp {
 }
 
 const OptButton = styled.span<OptionBtnProp>`
-    color : #1890FF;
-    margin-right : 10 ;
-    cursor : pointer ;
+    color: #1890FF;
+    margin-right: 10 ;
+    cursor: pointer ;
     ${props => props.disabled && 'opacity: 0.25;'} 
 `
 
@@ -87,6 +87,7 @@ const TestPlanManage = (props: any) => {
             dataIndex: 'name',
             title: <FormattedMessage id="plan.table.name" />,
             fixed: "left",
+            width: 400,
             ...getSearchFilter(pageParams, setPageParams, 'name'),
             ...tooltipTd("-"),
         },

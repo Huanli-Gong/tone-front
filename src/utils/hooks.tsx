@@ -3,8 +3,31 @@ import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { useIntl, useParams } from 'umi'
 import { Tooltip, message } from 'antd'
 import Clipboard from 'clipboard'
+import { enterWorkspaceHistroy } from '@/services/Workspace';
+import { queryWorkspaceHistory } from '@/services/Workspace'
 
 const { document, location }: any = window
+
+export const enterWsAndGetList = async (ws_id: any) => {
+    try {
+        const { data } = await enterWorkspaceHistroy({ ws_id })
+        const { code, ...historyWorkspaces } = await queryWorkspaceHistory({
+            page_num: 1,
+            page_size: 20,
+            call_page: 'menu',
+            ws_id
+        })
+        if (code !== 200) return
+        return {
+            wsList: { ...historyWorkspaces },
+            first_entry: data?.first_entry
+        }
+    }
+    catch (err) {
+        console.log(err)
+    }
+    return
+}
 
 export const useDetectZoom = () => {
     const [ratio, setRatio] = useState<any>(1)
@@ -95,7 +118,7 @@ export const textRender = (name: any) => {
 }
 
 export const enumer = (name: any) => {
-    const list = {
+    const list: any = {
         system: '公共镜像',
         self: '自定义镜像',
         others: '共享镜像'

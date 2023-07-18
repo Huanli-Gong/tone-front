@@ -37,6 +37,16 @@ type IProps = {
     source: any[],
 }
 
+const getNodeDom: any = (data: any) => {
+    const { level, text } = data
+    let dom;
+    document.querySelectorAll(`.ProseMirror h${level}`).forEach((ele: any) => {
+        if (ele.innerText === text)
+            dom = ele
+    })
+    return dom
+}
+
 const Catalog: React.FC<IProps> = ({ source }) => {
     const { pathname, hash } = useLocation()
 
@@ -48,7 +58,7 @@ const Catalog: React.FC<IProps> = ({ source }) => {
         setStart(node)
         setTime(new Date().getTime())
         setIsOver(false)
-        scrollIntoView(node.dom, {
+        scrollIntoView(getNodeDom(node), {
             behavior: "smooth",
             block: 'start',
             inline: "start"
@@ -58,15 +68,14 @@ const Catalog: React.FC<IProps> = ({ source }) => {
     React.useEffect(() => {
         if (!isOver) return
         if (start) {
-            console.log("start")
             history.replace(`${pathname}#${start.text}`)
             setStart(undefined)
             return
         }
         const dom = document.querySelector(".ProseMirror") as any
         const $current = base?.reduce((prev, curr) => {
-            const currDistance = Math.abs(curr.dom.offsetTop - dom.scrollTop);
-            const prevDistance = Math.abs(prev.dom.offsetTop - dom.scrollTop);
+            const currDistance = Math.abs(getNodeDom(curr)?.offsetTop - dom.scrollTop);
+            const prevDistance = Math.abs(getNodeDom(prev)?.offsetTop - dom.scrollTop);
             return currDistance < prevDistance ? curr : prev;
         })
         history.replace(`${pathname}#${$current.text}`)
@@ -84,7 +93,7 @@ const Catalog: React.FC<IProps> = ({ source }) => {
 
     const base = React.useMemo(() => {
         if (!source) return []
-        return source?.filter(({ text }: any) => !!text.trim())
+        return source?.filter(({ text }: any) => text && !!text.trim())
     }, [source])
 
     const handleScroll = () => {

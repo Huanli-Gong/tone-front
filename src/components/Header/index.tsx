@@ -208,9 +208,9 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                                                     onOk={() => setVisible(false)}
                                                                 />
                                                             }
-                                                            visible={visible}
+                                                            open={visible}
                                                             // visible
-                                                            onVisibleChange={setVisible}
+                                                            onOpenChange={setVisible}
                                                         >
                                                             <Row>
                                                                 <Space>

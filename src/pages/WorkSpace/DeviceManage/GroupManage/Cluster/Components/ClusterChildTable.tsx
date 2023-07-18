@@ -288,7 +288,6 @@ export default (props: any) => {
                                 okText={<FormattedMessage id="operation.ok" />}
                                 cancelText={<FormattedMessage id="operation.cancel" />}
                                 onConfirm={() => handleDeleteServer(_.id)}
-                                overlayInnerStyle={{ minWidth: 245 }}
                             >
                                 <Typography.Link >
                                     <FormattedMessage id="operation.delete" />

@@ -8,6 +8,7 @@ import ListTable from "./ListTable"
 import FilterRow from "./Filters"
 import { filterColumns } from "./Filters/columns"
 import { JobListProvider } from "./provider"
+import { useRequest } from "ahooks"
 
 const activeCss = `
     color: #1890FF;
@@ -88,9 +89,30 @@ const BaseTab: React.FC<IProps> = () => {
     const [tab, setTab] = React.useState(query.tab ?? "all")
     const [pageQuery, setPageQuery] = React.useState({ ...DEFAULT_PAGE_QUERY, tab, ws_id, ...query })
     const [selectionType, setSelectionType] = React.useState(1)
-    const [filter, setFilter] = React.useState(false)
-
     const [initialColumns, setInitialColumns] = React.useState({})
+    const [filter, setFilter] = React.useState(JSON.stringify(query) !== "{}")
+
+    const { data: source, refresh: countRefresh } = useRequest(
+        () => queryTestResultList({ query_count: 1, tab, ws_id }),
+        {
+            debounceInterval: 300,
+            ready: !!ws_id,
+            refreshDeps: [
+                tab, ws_id
+            ]
+        }
+    )
+
+    const { data: listSource, loading, refresh: listRefresh, mutate } = useRequest(
+        () => queryTestResultList(pageQuery),
+        {
+            debounceInterval: 300,
+            ready: !!ws_id,
+            refreshDeps: [
+                pageQuery
+            ],
+        }
+    )
 
     React.useEffect(() => {
         const columnStates = localStorage.getItem(REMEBER_COLUMNS_STATE_STRING_KEY)
@@ -114,18 +136,6 @@ const BaseTab: React.FC<IProps> = () => {
             localStorage.setItem(REMEBER_COLUMNS_STATE_STRING_KEY, JSON.stringify(initialColumns))
     }, [initialColumns])
 
-    const [source, setSource] = React.useState()
-
-    const fetchTestJobCount = React.useCallback(async () => {
-        const { code, ...rest } = await queryTestResultList({ query_count: 1, tab, ws_id })
-        if (code !== 200) return
-        setSource(rest)
-    }, [tab, ws_id])
-
-    React.useEffect(() => {
-        fetchTestJobCount()
-    }, [fetchTestJobCount, tab, ws_id])
-
     React.useEffect(() => {
         if (ws_id !== pageQuery.ws_id)
             setPageQuery(({ ...DEFAULT_PAGE_QUERY, tab: "all", ws_id }))
@@ -140,6 +150,7 @@ const BaseTab: React.FC<IProps> = () => {
     const hanldeTabClick = (tabKey: string) => {
         setTab(tabKey)
         setPageQuery({ tab: tabKey, ...DEFAULT_PAGE_QUERY, ws_id })
+        setFilter(false)
     }
 
     return (
@@ -175,6 +186,7 @@ const BaseTab: React.FC<IProps> = () => {
                                             setPageQuery={setPageQuery}
                                             selectionType={selectionType}
                                             onSelectionChange={setSelectionType}
+                                            filter={filter}
                                             onFilterChange={setFilter}
                                         />
                                         {
@@ -198,10 +210,14 @@ const BaseTab: React.FC<IProps> = () => {
                 </TabsStyled>
                 <ListTable
                     pageQuery={pageQuery}
-                    countRefresh={fetchTestJobCount}
                     setPageQuery={setPageQuery}
                     radioValue={selectionType}
                     setRadioValue={setSelectionType}
+                    loading={loading}
+                    dataSource={listSource}
+                    countRefresh={countRefresh}
+                    listRefresh={listRefresh}
+                    setDataSource={mutate}
                 />
             </React.Fragment>
         </JobListProvider.Provider>
