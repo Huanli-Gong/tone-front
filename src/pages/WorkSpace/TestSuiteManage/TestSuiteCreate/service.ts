@@ -4,7 +4,8 @@ export const queryTestSuiteList = async function (params: {
     scope?: string,
     suite_id?: number,
     test_type?: string,
-    run_mode?: string
+    run_mode?: string;
+    ws_id?: string;
 }) {
     return request('/api/case/test_suite/', {
         params
