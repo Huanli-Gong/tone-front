@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle, memo } from 'react'
 import { Space, Button, Tag, message, Typography, Row, Checkbox, Modal, Spin, Tooltip, Menu, Dropdown } from 'antd'
-import { useIntl, FormattedMessage, getLocale, useParams } from 'umi'
+import { useIntl, FormattedMessage, getLocale, useParams, history, useLocation } from 'umi'
 import { FilterFilled, QuestionCircleOutlined, ExclamationCircleOutlined, DownOutlined } from '@ant-design/icons'
 import DeviceDetail from '../Components/DeviceDetail'
 import AddDevice from './Components/AddDevice'
@@ -26,6 +26,7 @@ import OverflowList from '@/components/TagOverflow/index'
 import { ResizeHooksTable } from '@/utils/table.hooks'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 import DelConfirmModal from "@/pages/WorkSpace/DeviceManage/components/DelConfirmModal"
+import { stringify } from 'querystring';
 
 /**
  * 内网单机
@@ -35,6 +36,7 @@ const Standalone = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
     const { ws_id } = useParams() as any
+    const { pathname, query, search } = useLocation() as any
     const access = useAccess();
     const [dataSource, setDataSource] = useState<any>([])
     const [loading, setLoading] = useState(true)
@@ -58,7 +60,8 @@ const Standalone = (props: any, ref: any) => {
     const [urlParmas, setUrlParams] = useState<any>({
         ws_id,
         page_size: 10,
-        page_num: 1
+        page_num: 1,
+        ...query
     })
 
     const selectVmServerList: any = useRef()
@@ -73,6 +76,7 @@ const Standalone = (props: any, ref: any) => {
         setLoading(true)
         const res = await queryTestServerList(urlParmas) || {}
         setLoading(false)
+        history.replace(`${pathname}?${stringify(urlParmas)}`)
         const { data = [] } = res
         setDataSource(data)
         setTotal(res.total)
@@ -131,6 +135,16 @@ const Standalone = (props: any, ref: any) => {
     useEffect(() => {
         getTestServerList()
     }, [urlParmas])
+
+    React.useEffect(() => {
+        if (!search) {
+            setUrlParams({
+                ws_id,
+                page_size: 10,
+                page_num: 1,
+            })
+        }
+    }, [search])
 
     const handleDetail = async () => {
         const pk = await saveRefenerceData({ name: deleteObj.name, id: deleteObj.id })

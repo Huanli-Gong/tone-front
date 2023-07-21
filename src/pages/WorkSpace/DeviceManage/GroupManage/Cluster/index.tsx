@@ -29,7 +29,7 @@ const Cluster = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const access = useAccess();
-    const { loading, dataSource, params, total, setParams, setRefresh } = usePageInit(ws_id)
+    const { loading, dataSource, params, total, setParams, setRefresh } = usePageInit()
     // 刷新子表格的标记
     const [syncServerLoading, setSyncServerLoading] = useState(false)
 

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button, Space, Tag, message, Tooltip, Tabs, Modal, Row, Typography } from 'antd';
 import { FilterFilled, QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import DataSetPulic from '../DataSetPulic';
@@ -28,7 +28,7 @@ import OverflowList from '@/components/TagOverflow/index';
 import CommonPagination from '@/components/CommonPagination'
 import { ResizeHooksTable } from '@/utils/table.hooks';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
-import { stringify } from 'querystring';
+import { stringify, parse } from 'querystring';
 import { v4 as uuid } from 'uuid';
 /**
  * 云上单机
@@ -50,22 +50,17 @@ interface MachineParams {
 
 const channelTypeList = agent_list.map((i: any) => ({ id: i.value, name: i.label }))
 
-const DEFAULT_PARAM = {
-    page_num: 1,
-    page_size: 10,
-}
 export default () => {
-    const { pathname, query } = useLocation() as any
+    const { pathname, query, search } = useLocation() as any
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
     const { ws_id }: any = useParams()
     const access = useAccess();
     const aloneMachine = useRef<any>(null)
-    const [isInstance, setIsInstance] = useState<number>(Object.prototype.toString.call(query?.isInstance) === "[object String]" ? + query?.isInstance : 0)
+    const [isInstance, setIsInstance] = useState<number>(Object.prototype.toString.call(query?.is_instance) === "[object String]" ? + query?.is_instance : 0)
     const [loading, setLoading] = useState<boolean>(false)
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
     const [source, setSource] = useState<any>({});
-    const [params, setParams] = useState<MachineParams>(DEFAULT_PARAM)
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
@@ -73,6 +68,14 @@ export default () => {
     const logDrawer: any = useRef()
     const deployModal: any = useRef(null);
     const viewDetailRef: any = useRef(null)
+
+    const DEFAULT_PARAM = {
+        page_num: 1,
+        page_size: 10,
+        ws_id,
+    }
+
+    const [params, setParams] = useState<MachineParams>(DEFAULT_PARAM)
     const pageCurrent = useStateRef(params)
 
     const inputFilterCommonFields = (dataIndex: string) => ({
@@ -120,9 +123,10 @@ export default () => {
             server_conf: name,
         }
         setLoading(true)
-        const data: any = await cloudList({ ...obj, ws_id })
-        data && setSource(data)
+        const data: any = await cloudList(obj)
         setLoading(false)
+        history.replace(`${pathname}?${stringify({ ...obj, is_instance: obj.is_instance ? 1 : 0 })}`)
+        data && setSource(data)
     };
 
     const handleRefresh = async (row: any) => {
@@ -142,7 +146,7 @@ export default () => {
             1: formatMessage({ id: 'operation.release' }),
             2: formatMessage({ id: 'device.failed.save' })
         }
-        return dict[val] || ''
+        return (dict as any)[val] || ''
     }
 
     const $instance = + isInstance
@@ -200,10 +204,18 @@ export default () => {
         getList()
     }, [params, isInstance]);
 
+    React.useEffect(() => {
+        if (!search || Object.keys(parse(search?.split('?').at(1))).length <= 1) {
+            setParams({
+                ...DEFAULT_PARAM, ...query
+            })
+        }
+    }, [search, isInstance, query])
+
     const tabRadioChange = (val: any) => {
         setIsInstance(val)
         setParams(DEFAULT_PARAM)
-        history.replace(`${pathname}?${stringify({ ...query, isInstance: val })}`)
+        history.replace(`${pathname}?${stringify({ ...query, is_instance: val })}`)
     }
 
     const addMachine = () => {
