@@ -1,13 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import React, { useState, forwardRef, useImperativeHandle, useMemo } from 'react'
-import { Drawer, Button, Form, Col, Row, Select, Input, Radio, Space, Typography, Divider, Tag } from 'antd'
+import { useState, forwardRef, useImperativeHandle, useMemo } from 'react'
+import { Drawer, Button, Form, Col, Row, Select, Input, Radio } from 'antd'
 import styles from '../style.less'
 import Owner from '@/components/Owner/index';
 import { useLocation, useIntl, FormattedMessage } from 'umi'
 import { useSuiteProvider } from '../../hooks'
 import { QusetionIconTootip } from '@/components/Product'
-import WsPublicIcon from '@/components/WsAttrIcon';
 
 /**
  * @module 系统级
@@ -100,14 +99,14 @@ export default forwardRef(
             return JSON.stringify(dataSource) !== '{}' ? <FormattedMessage id="operation.update" /> : <FormattedMessage id="operation.ok" />
         }, [])
 
-        const wsAttr = React.useMemo(() => {
+        /* const wsAttr = React.useMemo(() => {
             return wsList.reduce((pre: any, cur: any) => {
                 const { is_public, id } = cur
                 if (is_public) pre.public.push(id)
                 else pre.unPublic.push(id)
                 return pre
             }, { public: [], unPublic: [] })
-        }, [wsList])
+        }, [wsList]) */
 
         return (
             <Drawer
@@ -193,7 +192,7 @@ export default forwardRef(
                                         if (val === "*")
                                             form.setFieldsValue({ visible_range: ['*'] })
                                     }}
-                                    dropdownRender={(menu) => (
+                                    /* dropdownRender={(menu) => (
                                         <>
                                             {menu}
                                             <Divider style={{ margin: '8px 0' }} />
@@ -214,16 +213,17 @@ export default forwardRef(
                                                 </Tag>
                                             </Row>
                                         </>
-                                    )}
+                                    )} */
                                     options={
                                         [{
                                             label: (
-                                                <Space>
-                                                    <span style={{ display: 'inline-block', width: 12, textAlign: 'center' }}>
+                                                <span>
+                                                    {/* <span style={{ display: 'inline-block', width: 12, textAlign: 'center' }}>
                                                         *
-                                                    </span>
+                                                    </span> */}
+                                                    *
                                                     <FormattedMessage id={`TestSuite.workspace_visible_range_all`} />
-                                                </Space>
+                                                </span>
                                             ),
                                             value: "*",
                                             show_name: "*"
@@ -231,14 +231,7 @@ export default forwardRef(
                                         ...(wsList || []).map((item: any) => ({
                                             show_name: item.show_name,
                                             disabled: visibleRange?.includes("*"),
-                                            label: (
-                                                <Space>
-                                                    <WsPublicIcon {...item} />
-                                                    <span>
-                                                        {item.show_name}
-                                                    </span>
-                                                </Space>
-                                            ),
+                                            label: (item.show_name),
                                             value: item.id
                                         }))]
                                     }

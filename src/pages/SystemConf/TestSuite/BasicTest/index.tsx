@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
-import { Space, Drawer, message, Pagination, Tooltip, Row, Table, Spin, Typography, Tag } from 'antd';
+import { Space, Drawer, message, Pagination, Tooltip, Row, Table, Spin, Typography, Tag, Alert } from 'antd';
 import type { TableColumnProps } from "antd"
 import { CaretRightFilled, CaretDownFilled, FilterFilled, EditOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { suiteList, addSuite, editSuite, delSuite, syncSuite, manual, lastSync, batchDeleteMetric } from '../service';
@@ -33,8 +33,6 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 import { workspaceList } from '@/pages/SystemConf/WorkspaceManagement/service';
 import OverflowList from '@/components/TagOverflow';
-
-import WsPublicIcon from '@/components/WsAttrIcon';
 
 const timeout: any = null;
 let timer: any = null;
@@ -322,16 +320,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                                 return (
                                     <Link to={`/ws/${item}/test_result`} target="_blank" key={item}>
                                         <Tag >
-                                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                                {
-                                                    <WsPublicIcon
-                                                        is_public={wsMap[item]?.is_public}
-                                                    />
-                                                }
-                                                <Typography.Text>
-                                                    {wsMap[item]?.show_name}
-                                                </Typography.Text>
-                                            </div>
+                                            {wsMap[item]?.show_name}
                                         </Tag>
                                     </Link>
                                 )
@@ -519,23 +508,26 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             }}
         >
             <Spin spinning={loading}>
-                {/* <Alert type="success"
-                    showIcon
-                    style={{ marginBottom: 16, height: 32 }}
-                    message={
-                        <span className={styles.synchronousTime}>
-                            <FormattedMessage id="TestSuite.synchronize.time" />{time}
-                        </span>
-                    }
-                    action={
-                        <span
-                            className={styles.synchronous}
-                            onClick={handleSynchronous}
-                        >
-                            <FormattedMessage id="operation.synchronize" />
-                        </span>
-                    }
-                /> */}
+                {
+                    BUILD_APP_ENV !== "opensource" &&
+                    <Alert type="success"
+                        showIcon
+                        style={{ marginBottom: 16, height: 32 }}
+                        message={
+                            <span className={styles.synchronousTime}>
+                                <FormattedMessage id="TestSuite.synchronize.time" />{time}
+                            </span>
+                        }
+                        action={
+                            <span
+                                className={styles.synchronous}
+                                onClick={handleSynchronous}
+                            >
+                                <FormattedMessage id="operation.synchronize" />
+                            </span>
+                        }
+                    />
+                }
 
                 <Table
                     className={styles.suiteTable}
