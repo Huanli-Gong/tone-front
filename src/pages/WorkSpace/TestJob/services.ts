@@ -50,3 +50,8 @@ export const formatYamlToJson = async (data: any) => {
 export const queryCbpProduct = async () => {
     return request(`/api/job/test/product`)
 }
+
+// 检查job模板是否在测试计划中运行
+export const queryCheckJobTemplate = async (params:any) => {
+    return request(`/api/job/template/check/`, { params })
+}

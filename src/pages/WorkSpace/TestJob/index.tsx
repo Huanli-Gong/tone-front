@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm } from 'antd'
+import { Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm, notification } from 'antd'
 
 import { history, useRequest, useModel, useAccess, Access, useIntl, FormattedMessage, useParams, useLocation } from 'umi'
 import { requestCodeMessage, AccessTootip, redirectErrorPage } from '@/utils/utils'
@@ -23,7 +23,7 @@ import SelectSuite from './components/SelectSuite'
 import SaveTemplate from './components/SaveTemplate'
 import TemplateForm from './components/JobForms/TemplateForm'
 
-import { createWsJobTest, queryTestTemplateData, queryTestExportValues, formatYamlToJson, testYaml } from './services'
+import { createWsJobTest, queryTestTemplateData, queryTestExportValues, formatYamlToJson, testYaml, queryCheckJobTemplate } from './services'
 import { saveTestTemplate, queryTestTemplateList, updateTestTemplate } from '@/pages/WorkSpace/TestTemplateManage/service'
 
 import _ from 'lodash'
@@ -706,10 +706,8 @@ const TestJob: React.FC<any> = (props) => {
     const handleChangeTemplateName = ({ target }: any) => {
         requestTemplateRun({ job_type_id: detail.id, name: target.value })
     }
-
-    const handleSaveTemplateModify = async () => {
-        if (fetching) return
-        setFetching(true)
+    
+    const handleTemplateEditFunction = async() => {
         const data = await transformDate()
         if (isMonitorEmpty(data)) {
             setFetching(false)
@@ -723,6 +721,7 @@ const TestJob: React.FC<any> = (props) => {
         if (!data.baseline) {
             data.baseline = null
         }
+        
         if (!data.baseline_job_id) {
             data.baseline_job_id = null
         }
@@ -737,7 +736,7 @@ const TestJob: React.FC<any> = (props) => {
             ...data,
             test_config: $test_config
         })
-
+        notification.destroy()
         if (code === 200) {
             const { data: [datas] } = await queryTestTemplateData({ template_id: templateDatas.id })
             setTemplateDatas(datas)
@@ -753,6 +752,37 @@ const TestJob: React.FC<any> = (props) => {
         setFetching(false)
     }
 
+    const handleCancelTemplate = (key:any) =>  {
+        notification.close(key)
+        setFetching(false)
+    }
+
+    const handleSaveTemplateModify = async () => {
+        if (fetching) return
+        setFetching(true)
+        const key = `open${Date.now()}`;
+        const btn = (
+            <Space>
+              <Button type="primary" size="small" onClick={()=> handleTemplateEditFunction()}>
+                确认
+              </Button>
+              <Button type="primary" size="small" onClick={()=> handleCancelTemplate(key)}>
+                取消
+              </Button>
+            </Space>
+        );
+        const res = await queryCheckJobTemplate({ template_id: jt_id })
+        if(res.code === 200 && res.data.length > 0){
+            notification.warning({
+                duration: null,
+                message: '提示',
+                description:`当前有测试计划（${res.data[0].plan_name}）引用了该模版，编辑该模版将同时影响到测试计划中的此模版配置，请谨慎操作！`,
+                btn,
+                key,
+              });
+        }
+        setFetching(false)
+    }
 
     const handleSaveCreateSubmit = async () => {
         if (fetching) return
