@@ -74,7 +74,7 @@ export default forwardRef(
                 keyboard={false}
                 width={376}
                 title={title}
-                visible={visible}
+                open={visible}
                 onClose={handleClose}
                 forceRender={true}
                 destroyOnClose={true}

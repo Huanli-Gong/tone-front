@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle, memo } from 'react'
+import React, { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle } from 'react'
 import { Space, Button, Tag, message, Typography, Row, Checkbox, Modal, Spin, Tooltip, Menu, Dropdown } from 'antd'
 import { useIntl, FormattedMessage, getLocale, useParams, history, useLocation } from 'umi'
 import { FilterFilled, QuestionCircleOutlined, ExclamationCircleOutlined, DownOutlined } from '@ant-design/icons'
@@ -35,7 +35,7 @@ const Standalone = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
     const { ws_id } = useParams() as any
-    const { pathname, query, search } = useLocation() as any
+    const { query } = useLocation() as any
     const access = useAccess();
     const [dataSource, setDataSource] = useState<any>([])
     const [loading, setLoading] = useState(true)
@@ -118,8 +118,8 @@ const Standalone = (props: any, ref: any) => {
     const handleDeleteTestServer = async (id: number) => {
         const param = { ws_id }
         const data = await deleteTestServer(id, param)
-        //let totalPage = Math.ceil(Number(total) / urlParmas.page_size )
-        const pageNo = calcPageNo(total, urlParmas.page_num, urlParmas.page_size)
+        //let totalPage = Math.ceil(Number(total) / urlParmas?.page_size )
+        const pageNo = calcPageNo(total, urlParmas?.page_num, urlParmas?.page_size)
         if (data.code === 200) {
             message.success(formatMessage({ id: 'operation.success' }))
             setSelectRowKeys(selectRowKeys.filter((i: any) => i !== id))
@@ -132,17 +132,6 @@ const Standalone = (props: any, ref: any) => {
     useEffect(() => {
         getTestServerList()
     }, [urlParmas])
-
-    React.useEffect(() => {
-        if (!search) {
-            setUrlParams({
-                ws_id,
-                page_size: 10,
-                page_num: 1,
-                ...query
-            })
-        }
-    }, [search])
 
     const handleDetail = async () => {
         const pk = await saveRefenerceData({ name: deleteObj.name, id: deleteObj.id })
@@ -225,9 +214,13 @@ const Standalone = (props: any, ref: any) => {
                     </Row>
                 )
             },
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.ip ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas?.ip ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(ip: string) => setUrlParams({ ...urlParmas, ip, page_num: 1 })} />
+                <SearchInput
+                    value={urlParmas?.ip}
+                    confirm={confirm}
+                    onConfirm={(ip: string) => setUrlParams({ ...urlParmas, ip, page_num: 1 })}
+                />
             )
         },
         {
@@ -243,9 +236,13 @@ const Standalone = (props: any, ref: any) => {
                     provider={"aligroup"}
                 />
             ),
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.sn ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas?.sn ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(sn: string) => setUrlParams({ ...urlParmas, sn, page_num: 1 })} />
+                <SearchInput
+                    value={urlParmas.sn}
+                    confirm={confirm}
+                    onConfirm={(sn: string) => setUrlParams({ ...urlParmas, sn, page_num: 1 })}
+                />
             )
         },
         BUILD_APP_ENV &&
@@ -267,9 +264,13 @@ const Standalone = (props: any, ref: any) => {
                 shwoTitle: false,
             },
             render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.name ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas?.name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(name: any) => setUrlParams({ ...urlParmas, name, page_num: 1 })} />
+                <SearchInput
+                    value={urlParmas?.name}
+                    confirm={confirm}
+                    onConfirm={(name: any) => setUrlParams({ ...urlParmas, name, page_num: 1 })}
+                />
             )
         },
         !BUILD_APP_ENV &&
@@ -280,9 +281,10 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.device_type ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas?.device_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectCheck
+                    value={urlParmas?.device_type}
                     list={deviceTypeList}
                     confirm={confirm}
                     onConfirm={(device_type: any) => setUrlParams({ ...urlParmas, device_type, page_num: 1 })}
@@ -297,9 +299,13 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.sm_name ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas?.sm_name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(sm_name: string) => setUrlParams({ ...urlParmas, sm_name, page_num: 1 })} />
+                <SearchInput
+                    value={urlParmas?.sm_name}
+                    confirm={confirm}
+                    onConfirm={(sm_name: string) => setUrlParams({ ...urlParmas, sm_name, page_num: 1 })}
+                />
             ),
             render(_: any) {
                 return <EllipsisPulic title={_} />
@@ -313,9 +319,13 @@ const Standalone = (props: any, ref: any) => {
                 showTitle: false,
             },
             dataIndex: 'idc',
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.idc ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas?.idc ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(idc: string) => setUrlParams({ ...urlParmas, idc, page_num: 1 })} />
+                <SearchInput
+                    value={urlParmas?.idc}
+                    confirm={confirm}
+                    onConfirm={(idc: string) => setUrlParams({ ...urlParmas, idc, page_num: 1 })}
+                />
             )
         },
         !BUILD_APP_ENV &&
@@ -335,9 +345,10 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.channel_type ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas?.channel_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectCheck
+                    value={urlParmas?.channel_type}
                     list={channelTypeList}
                     confirm={confirm}
                     onConfirm={(channel_type: any) => setUrlParams({ ...urlParmas, channel_type, page_num: 1 })}
@@ -351,9 +362,13 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.app_group ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas?.app_group ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(app_group: string) => setUrlParams({ ...urlParmas, app_group, page_num: 1 })} />
+                <SearchInput
+                    value={urlParmas?.app_group}
+                    confirm={confirm}
+                    onConfirm={(app_group: string) => setUrlParams({ ...urlParmas, app_group, page_num: 1 })}
+                />
             )
         },
         {
@@ -371,12 +386,12 @@ const Standalone = (props: any, ref: any) => {
                 showTitle: false,
             },
             render: (_: any, row: any) => StateBadge(_, row, ws_id),
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.state ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas?.state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync
+                    value={urlParmas?.state}
                     confirm={confirm}
                     onConfirm={(val: string) => setUrlParams({ ...urlParmas, state: val, page_num: 1 })}
-                    stateVal={urlParmas.state}
                     dataArr={['Available', 'Occupied', 'Broken', 'Reserved', "Unusable"]}
                 />
             )
@@ -396,12 +411,12 @@ const Standalone = (props: any, ref: any) => {
                 showTitle: false,
             },
             render: (_: any, row: any) => StateBadge(_, row, ws_id),
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.real_state ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas?.real_state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync
+                    value={urlParmas?.real_state}
                     confirm={confirm}
                     onConfirm={(val: string) => setUrlParams({ ...urlParmas, real_state: val, page_num: 1 })}
-                    stateVal={urlParmas.real_state}
                     dataArr={['Online', 'Offline']}
                 />
             )
@@ -413,15 +428,25 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.owner ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SelectUser confirm={confirm} onConfirm={(val: number) => { setUrlParams({ ...urlParmas, page_num: 1, owner: val }) }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas?.owner ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => (
+                <SelectUser
+                    value={urlParmas?.owner}
+                    confirm={confirm}
+                    onConfirm={(val: number) => setUrlParams({ ...urlParmas, page_num: 1, owner: val })}
+                />
+            ),
         },
         {
             title: <FormattedMessage id="device.description" />,
             dataIndex: 'description',
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.description ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas?.description ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(description: string) => setUrlParams({ ...urlParmas, description, page_num: 1 })} />
+                <SearchInput
+                    value={urlParmas?.description}
+                    confirm={confirm}
+                    onConfirm={(description: string) => setUrlParams({ ...urlParmas, description, page_num: 1 })}
+                />
             ),
             width: 160,
             ellipsis: {
@@ -439,14 +464,16 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.tags && urlParmas.tags.length > 0 ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) =>
+            filterIcon: () => <FilterFilled style={{ color: urlParmas?.tags && urlParmas?.tags.length > 0 ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => (
                 <SelectTags
+                    value={urlParmas?.tags}
                     ws_id={ws_id}
                     run_mode={'standalone'}
                     confirm={confirm}
                     onConfirm={(val: number) => { setUrlParams({ ...urlParmas, page_num: 1, tags: val }) }}
-                />,
+                />
+            ),
             render: (record: any) => (
                 <OverflowList
                     list={
@@ -570,8 +597,8 @@ const Standalone = (props: any, ref: any) => {
                 scroll={{ x: '100%', y: innerHeight - 50 - 66 - 30 - 20 }}
             />
             <CommonPagination
-                pageSize={urlParmas.page_size}
-                currentPage={urlParmas.page_num}
+                pageSize={urlParmas?.page_size}
+                currentPage={urlParmas?.page_num}
                 total={total}
                 onPageChange={handleTablePageChange}
             />
@@ -648,4 +675,4 @@ const Standalone = (props: any, ref: any) => {
 }
 
 
-export default memo(forwardRef(Standalone))
+export default forwardRef(Standalone)

@@ -51,7 +51,7 @@ interface MachineParams {
 const channelTypeList = agent_list.map((i: any) => ({ id: i.value, name: i.label }))
 
 export default () => {
-    const { pathname, query, search } = useLocation() as any
+    const { pathname, query } = useLocation() as any
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
     const { ws_id }: any = useParams()
@@ -204,18 +204,10 @@ export default () => {
         getList()
     }, [params, isInstance]);
 
-    React.useEffect(() => {
-        if (!search || Object.keys(parse(search?.split('?').at(1))).length <= 1) {
-            setParams({
-                ...DEFAULT_PARAM, ...query
-            })
-        }
-    }, [search, isInstance, query])
-
     const tabRadioChange = (val: any) => {
         setIsInstance(val)
         setParams(DEFAULT_PARAM)
-        history.replace(`/ws/${ws_id}/device/cloud?${stringify({ ...query, is_instance: val })}`)
+        history.push(`/ws/${ws_id}/device/cloud?${stringify({ ...query, is_instance: val })}`)
     }
 
     const addMachine = () => {
@@ -250,7 +242,7 @@ export default () => {
                 <ColumnEllipsisText ellipsis={{ tooltip: row.name }} >
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                        searchWords={[params.name || '']}
+                        searchWords={[params?.name || '']}
                         autoEscape
                         textToHighlight={row.name.toString()}
                     />
@@ -406,7 +398,7 @@ export default () => {
                 showTitle: false
             },
             dataIndex: 'channel_type',
-            filterIcon: () => <FilterFilled style={{ color: params.channel_type ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.channel_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectCheck
                     list={channelTypeList}
@@ -431,12 +423,12 @@ export default () => {
                 showTitle: false
             },
             render: (_: any, row: any) => StateBadge(_, row, ws_id),
-            filterIcon: () => <FilterFilled style={{ color: params.state ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync
                     confirm={confirm}
                     onConfirm={(val: string) => setParams({ ...params, state: val, page_num: 1 })}
-                    stateVal={params.state}
+                    value={params?.state}
                     tabType={$instance}
                     dataArr={['Available', 'Occupied', 'Broken', 'Reserved', "Unusable"]}
                 />
@@ -458,13 +450,12 @@ export default () => {
             },
             dataIndex: 'real_state',
             render: (_: any, row: any) => StateBadge(_, row, ws_id),
-            filterIcon: () => <FilterFilled style={{ color: params.real_state ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.real_state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync
                     confirm={confirm}
-                    onConfirm={(val: string) =>
-                        setParams({ ...params, real_state: val, page_num: 1 })}
-                    stateVal={params.real_state}
+                    onConfirm={(val: string) => setParams({ ...params, real_state: val, page_num: 1 })}
+                    value={params?.real_state}
                     tabType={$instance}
                     dataArr={['Online', 'Offline']}
                 />
@@ -477,9 +468,10 @@ export default () => {
             ellipsis: {
                 showTitle: false
             },
-            filterIcon: () => <FilterFilled style={{ color: params.owner ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.owner ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectUser
+                    value={params?.owner}
                     confirm={confirm}
                     onConfirm={(val: number) => { setParams({ ...params, owner: val, page_num: 1 }) }}
                 />
@@ -492,9 +484,10 @@ export default () => {
             ellipsis: {
                 showTitle: false
             },
-            filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags?.length > 0 ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.tags && params?.tags?.length > 0 ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectTags
+                    value={params?.tags}
                     ws_id={ws_id}
                     run_mode={'standalone'}
                     autoFocus={autoFocus}
@@ -522,7 +515,7 @@ export default () => {
                 <ColumnEllipsisText ellipsis={{ tooltip: row.description }} >
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                        searchWords={[params.description || '']}
+                        searchWords={[params?.description || '']}
                         autoEscape
                         textToHighlight={row.description ? row.description.toString() : '-'}
                     />
@@ -650,8 +643,8 @@ export default () => {
             {
                 <CommonPagination
                     total={source.total}
-                    pageSize={params.page_size}
-                    currentPage={params.page_num}
+                    pageSize={params?.page_size}
+                    currentPage={params?.page_num}
                     onPageChange={
                         (page_num: any, page_size: any) => {
                             setParams({ ...params, page_num, page_size })

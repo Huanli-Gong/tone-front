@@ -5,8 +5,8 @@ import { Checkbox, Button, Divider, Space } from 'antd';
 import { FormattedMessage } from 'umi'
 import styles from './index.less';
 
-const FilterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
-	const [val, setVal] = useState<number[]>([])
+const FilterRadio: React.FC<any> = ({ list, confirm, onConfirm, value }) => {
+	const [val, setVal] = useState<number[]>(value || [])
 	const [all, setAll] = useState<boolean>(false)
 	const [init, setInit] = useState<boolean>(false)
 	const handleDomainRadio = (val: any) => {

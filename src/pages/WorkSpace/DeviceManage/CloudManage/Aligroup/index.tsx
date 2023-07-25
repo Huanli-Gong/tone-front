@@ -100,14 +100,6 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
 
     const { width: windowWidth } = useClientSize()
 
-    React.useEffect(() => {
-        if (!search || Object.keys(parse(search?.split('?').at(1))).length <= 1) {
-            setParams({
-                ...DEFAULT_PARAM, ...query
-            })
-        }
-    }, [search, isInstance, query])
-
     const modifyGroup = (row: any) => {
         const list = row.tag_list.map((item: any) => item.id)
         setTagFlag({ ...tagFlag, isQuery: 'edit', list })

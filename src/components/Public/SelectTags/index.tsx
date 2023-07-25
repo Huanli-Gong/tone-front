@@ -6,13 +6,13 @@ import { member } from './service';
 import styles from './style.less';
 import { useIntl, FormattedMessage } from 'umi'
 
-const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm }) => {
+const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, value }) => {
 	const { formatMessage } = useIntl()
 	const [tagsPagination, setTagsPagination] = useState({ total: 0, page_num: 1, page_size: 10 });
 	const [isEnd, setIsEnd] = useState(false)
 	const [tags, setTags] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
-	const [val, setVal] = useState<any>([])
+	const [val, setVal] = useState<any>(value || [])
 	const [fetching, setFetching] = useState<boolean>(true)
 	const { Option } = Select;
 	const [focus, setFous] = useState<boolean>(false)

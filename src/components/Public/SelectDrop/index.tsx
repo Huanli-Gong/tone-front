@@ -4,11 +4,11 @@ import { Space, Button, Select, Divider, Spin } from 'antd';
 import { FormattedMessage } from 'umi'
 import { member } from './service';
 
-const FilterRadio: React.FC<any> = ({ confirm, onConfirm, pageSize = 999, initVal }) => {
+const FilterRadio: React.FC<any> = ({ confirm, onConfirm, pageSize = 999, value }) => {
 	const [user, setUser] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
-	const [val, setVal] = useState<number | undefined>(initVal?.name)
-	const [userName, setUserName] = useState<string | undefined>(initVal?.name)
+	const [val, setVal] = useState<number | undefined>(value?.name)
+	const [userName, setUserName] = useState<string | undefined>(value?.name)
 	const [fetching, setFetching] = useState<boolean>(true)
 	const { Option } = Select;
 
@@ -19,7 +19,6 @@ const FilterRadio: React.FC<any> = ({ confirm, onConfirm, pageSize = 999, initVa
 		setFetching(true)
 		const { data } = await member({ keyword: param, page_size: pageSize })
 		setUser(data || [])
-		// if(initVal && val !== initVal?.id) setVal(initVal)
 		setFetching(false)
 	}
 	useEffect(() => {
@@ -57,7 +56,7 @@ const FilterRadio: React.FC<any> = ({ confirm, onConfirm, pageSize = 999, initVa
 				<Button
 					onClick={() => {
 						let userId = val
-						if (val && isNaN(Number(val))) userId = initVal?.id
+						if (val && isNaN(Number(val))) userId = value?.id
 						confirm?.()
 						onConfirm(userId, userName)
 					}}
