@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { Tabs } from 'antd';
-import { FormattedMessage, useLocation, history } from 'umi'
+import { FormattedMessage, useLocation, history, useParams } from 'umi'
 import Standalone from './Standalone'
 // import Aligroup from './AligroupOld'
 import Aligroup from './Aligroup'
@@ -9,15 +9,16 @@ import { TabCard } from '@/components/UpgradeUI';
  * 机器管理 - 云上机器
  */
 export default () => {
-    const { pathname, query: { t } } = useLocation() as any
+    const { ws_id } = useParams() as any
+    const { query: { t } } = useLocation() as any
 
     const { TabPane } = Tabs;
     const [tab, setTab] = useState(t ?? 'standalone')
 
-    const handleTabClick = useCallback(($t) => {
+    const handleTabClick = ($t: string) => {
         setTab($t)
-        history.replace(`${pathname}?t=${$t}`)
-    }, [pathname])
+        history.replace(`/ws/${ws_id}/device/cloud?t=${$t}`)
+    }
 
     return (
         <TabCard

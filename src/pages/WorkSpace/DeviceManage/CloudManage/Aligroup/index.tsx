@@ -64,7 +64,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
         cluster_type: 'aliyun',
         ws_id
     }
-    const [params, setParams] = useState<AligroupParams>(DEFAULT_PARAM)
+    const [params, setParams] = useState<AligroupParams>({ ...DEFAULT_PARAM, ...query })
     const [tagFlag, setTagFlag] = useState({ list: [], isQuery: '' })
     const [outParam, setOutParam] = useState<any>({})
     const [expandKey, setExpandKey] = useState<string[]>([])
@@ -83,7 +83,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     const getList = async ($params: any = {}) => {
         setLoading(true)
         const data: any = await querysCluster({ ...$params })
-        history.replace(`${pathname}?${stringify({ ...$params, is_instance: $params.is_instance ? 1 : 0 })}`)
+        history.replace(`/ws/${ws_id}/device/cloud?${stringify({ ...$params, is_instance: $params.is_instance ? 1 : 0 })}`)
         data && setSource(data)
         setLoading(false)
     };
@@ -279,7 +279,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     const tabRadioChange = (val: any) => {
         setIsInstance(val)
         setParams(DEFAULT_PARAM)
-        history.replace(`${pathname}?${stringify({ ...query, isInstance: val })}`)
+        history.replace(`/ws/${ws_id}/device/cloud?${stringify({ ...query, isInstance: val })}`)
     }
 
     const $insdance = + isInstance

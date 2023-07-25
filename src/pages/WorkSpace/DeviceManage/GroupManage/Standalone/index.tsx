@@ -16,7 +16,6 @@ import SelectDropSync from '@/components/Public/SelectDropSync';
 import { queryTestServerList, updateTestServer, deleteTestServer, batchUpdateTestServer, queryServerDel, stateRefresh } from '../services'
 import { ReactComponent as TreeSvg } from '@/assets/svg/tree.svg'
 import styles from './index.less'
-import { useClientSize } from '@/utils/hooks'
 import { requestCodeMessage, AccessTootip, saveRefenerceData } from '@/utils/utils';
 import ServerLink from '@/components/MachineWebLink/index';
 import SelectVmServer from './Components/SelectVmServer';
@@ -55,8 +54,6 @@ const Standalone = (props: any, ref: any) => {
         open: addDeviceRef.current.show
     }))
 
-    const { height: layoutHeight } = useClientSize()
-
     const [urlParmas, setUrlParams] = useState<any>({
         ws_id,
         page_size: 10,
@@ -76,7 +73,7 @@ const Standalone = (props: any, ref: any) => {
         setLoading(true)
         const res = await queryTestServerList(urlParmas) || {}
         setLoading(false)
-        history.replace(`${pathname}?${stringify(urlParmas)}`)
+        history.replace(`/ws/${ws_id}/device/group?${stringify(urlParmas)}`)
         const { data = [] } = res
         setDataSource(data)
         setTotal(res.total)
@@ -142,6 +139,7 @@ const Standalone = (props: any, ref: any) => {
                 ws_id,
                 page_size: 10,
                 page_num: 1,
+                ...query
             })
         }
     }, [search])
@@ -569,7 +567,7 @@ const Standalone = (props: any, ref: any) => {
                     expandedRowKeys: defaultExpandRowKeys,
                     expandIcon: () => false,
                 }}
-                scroll={{ x: '100%', y: layoutHeight - 50 - 66 - 30 - 20 }}
+                scroll={{ x: '100%', y: innerHeight - 50 - 66 - 30 - 20 }}
             />
             <CommonPagination
                 pageSize={urlParmas.page_size}

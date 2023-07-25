@@ -75,7 +75,7 @@ export default () => {
         ws_id,
     }
 
-    const [params, setParams] = useState<MachineParams>(DEFAULT_PARAM)
+    const [params, setParams] = useState<MachineParams>({ ...DEFAULT_PARAM, ...query })
     const pageCurrent = useStateRef(params)
 
     const inputFilterCommonFields = (dataIndex: string) => ({
@@ -215,7 +215,7 @@ export default () => {
     const tabRadioChange = (val: any) => {
         setIsInstance(val)
         setParams(DEFAULT_PARAM)
-        history.replace(`${pathname}?${stringify({ ...query, is_instance: val })}`)
+        history.replace(`/ws/${ws_id}/device/cloud?${stringify({ ...query, is_instance: val })}`)
     }
 
     const addMachine = () => {
