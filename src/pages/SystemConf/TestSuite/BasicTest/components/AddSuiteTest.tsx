@@ -43,13 +43,21 @@ export default forwardRef(
                 setVisible(true)
                 setDisable(false)
                 d && setDataSource(d)
-                const { visible_range } = d
-                form.setFieldsValue({
+                if (!BUILD_APP_ENV) {
+                    const { visible_range } = d
+                    form.setFieldsValue({
+                        ...d,
+                        test_type: testType,
+                        owner: d.owner_name,
+                        certificated: d.certificated ? 1 : 0,
+                        visible_range: visible_range?.split(',')
+                    })
+                }
+                else form.setFieldsValue({
                     ...d,
                     test_type: testType,
                     owner: d.owner_name,
                     certificated: d.certificated ? 1 : 0,
-                    visible_range: visible_range?.split(',')
                 })
             },
             hide: handleCancel
@@ -66,8 +74,12 @@ export default forwardRef(
                 setDisable(true)
                 if (val.owner === dataSource.owner_name) val.owner = dataSource.owner
                 val.domain_list_str = val.domain_list_str.join()
-                const { visible_range } = val
-                val.visible_range = visible_range?.toString()
+
+                if (!BUILD_APP_ENV) {
+                    const { visible_range } = val
+                    val.visible_range = visible_range?.toString()
+                }
+
                 onOk(val, dataSource.id ? dataSource.id : '')
                 setDisable(false)
             }).catch(err => {
@@ -165,79 +177,83 @@ export default forwardRef(
                                 </Select>
                             </Form.Item>
                         </Col>
-                        <Col span={24}>
-                            <Form.Item
-                                name="visible_range"
-                                label={
-                                    <FormattedMessage id={`TestSuite.workspace_visible_range`} />
-                                }
-                                rules={[{
-                                    required: true,
-                                    validator(rule, value, callback) {
-                                        if (!value)
-                                            return Promise.reject(formatMessage({ id: `TestSuite.workspace_visible_range.required` }))
-                                        return Promise.resolve()
-                                    },
-                                }]}
-                            >
-                                <Select
-                                    allowClear
-                                    mode="multiple"
-                                    placeholder={formatMessage({ id: 'TestSuite.workspace_visible_range.placeholder' })}
-                                    filterOption={(input, option: any) => {
-                                        return option?.show_name?.toLowerCase().indexOf(input?.toLowerCase()) >= 0
-                                    }}
-                                    maxTagCount={'responsive'}
-                                    onSelect={(val) => {
-                                        if (val === "*")
-                                            form.setFieldsValue({ visible_range: ['*'] })
-                                    }}
-                                    /* dropdownRender={(menu) => (
-                                        <>
-                                            {menu}
-                                            <Divider style={{ margin: '8px 0' }} />
-                                            <Row style={{ paddingLeft: 12 }}>
-                                                <Tag
-                                                    style={{ cursor: 'pointer' }}
-                                                    onClick={() => form.setFieldsValue({ visible_range: wsAttr.public })}
-                                                    color="processing"
-                                                >
-                                                    <FormattedMessage id={`TestSuite.workspace_visible_range_all.public`} />
-                                                </Tag>
-                                                <Tag
-                                                    style={{ cursor: 'pointer' }}
-                                                    onClick={() => form.setFieldsValue({ visible_range: wsAttr.unPublic })}
-                                                    color="processing"
-                                                >
-                                                    <FormattedMessage id={`TestSuite.workspace_visible_range_all.un_public`} />
-                                                </Tag>
-                                            </Row>
-                                        </>
-                                    )} */
-                                    options={
-                                        [{
-                                            label: (
-                                                <span>
-                                                    {/* <span style={{ display: 'inline-block', width: 12, textAlign: 'center' }}>
+                        {
+                            !BUILD_APP_ENV &&
+                            <Col span={24}>
+                                <Form.Item
+                                    name="visible_range"
+                                    label={
+                                        <FormattedMessage id={`TestSuite.workspace_visible_range`} />
+                                    }
+                                    rules={[{
+                                        required: true,
+                                        validator(rule, value, callback) {
+                                            if (!value)
+                                                return Promise.reject(formatMessage({ id: `TestSuite.workspace_visible_range.required` }))
+                                            return Promise.resolve()
+                                        },
+                                    }]}
+                                >
+                                    <Select
+                                        allowClear
+                                        mode="multiple"
+                                        placeholder={formatMessage({ id: 'TestSuite.workspace_visible_range.placeholder' })}
+                                        filterOption={(input, option: any) => {
+                                            return option?.show_name?.toLowerCase().indexOf(input?.toLowerCase()) >= 0
+                                        }}
+                                        maxTagCount={'responsive'}
+                                        onSelect={(val) => {
+                                            if (val === "*")
+                                                form.setFieldsValue({ visible_range: ['*'] })
+                                        }}
+                                        /* dropdownRender={(menu) => (
+                                            <>
+                                                {menu}
+                                                <Divider style={{ margin: '8px 0' }} />
+                                                <Row style={{ paddingLeft: 12 }}>
+                                                    <Tag
+                                                        style={{ cursor: 'pointer' }}
+                                                        onClick={() => form.setFieldsValue({ visible_range: wsAttr.public })}
+                                                        color="processing"
+                                                    >
+                                                        <FormattedMessage id={`TestSuite.workspace_visible_range_all.public`} />
+                                                    </Tag>
+                                                    <Tag
+                                                        style={{ cursor: 'pointer' }}
+                                                        onClick={() => form.setFieldsValue({ visible_range: wsAttr.unPublic })}
+                                                        color="processing"
+                                                    >
+                                                        <FormattedMessage id={`TestSuite.workspace_visible_range_all.un_public`} />
+                                                    </Tag>
+                                                </Row>
+                                            </>
+                                        )} */
+                                        options={
+                                            [{
+                                                label: (
+                                                    <span>
+                                                        {/* <span style={{ display: 'inline-block', width: 12, textAlign: 'center' }}>
                                                         *
                                                     </span> */}
-                                                    *
-                                                    <FormattedMessage id={`TestSuite.workspace_visible_range_all`} />
-                                                </span>
-                                            ),
-                                            value: "*",
-                                            show_name: "*"
-                                        },
-                                        ...(wsList || []).map((item: any) => ({
-                                            show_name: item.show_name,
-                                            disabled: visibleRange?.includes("*"),
-                                            label: (item.show_name),
-                                            value: item.id
-                                        }))]
-                                    }
-                                />
-                            </Form.Item>
-                        </Col>
+                                                        *
+                                                        <FormattedMessage id={`TestSuite.workspace_visible_range_all`} />
+                                                    </span>
+                                                ),
+                                                value: "*",
+                                                show_name: "*"
+                                            },
+                                            ...(wsList || []).map((item: any) => ({
+                                                show_name: item.show_name,
+                                                disabled: visibleRange?.includes("*"),
+                                                label: (item.show_name),
+                                                value: item.id
+                                            }))]
+                                        }
+                                    />
+                                </Form.Item>
+                            </Col>
+                        }
+
                         <Col span={24}>
                             <Form.Item
                                 name="run_mode"

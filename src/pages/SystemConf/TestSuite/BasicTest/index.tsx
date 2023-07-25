@@ -307,6 +307,8 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 />
             ),
         },
+        /* @ts-ignore */
+        !BUILD_APP_ENV &&
         {
             title: <FormattedMessage id={'TestSuite.workspace_visible_range'} />,
             width: 200,
