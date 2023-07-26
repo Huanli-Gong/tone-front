@@ -126,9 +126,7 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
             })
         }
         obj.test_item.perf_data = new_pref_data
-        setObj({
-            ...obj,
-        })
+        setObj(obj)
     }, [dataSource])
 
     return (
@@ -167,7 +165,7 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
                         {
                             Array.isArray(dataSource) && !!dataSource.length ?
                                 dataSource?.map((item: any, idx: number) => (
-                                    <div key={idx}>
+                                    <div key={item?.rowkey}>
                                         {
                                             item.is_group ?
                                                 <>
@@ -194,7 +192,7 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
                                                     {
                                                         item.list.map((child: any, id: number) => {
                                                             return (
-                                                                <div key={id}>
+                                                                <div key={child?.rowkey}>
                                                                     <Performance
                                                                         child={child}
                                                                         name="group"

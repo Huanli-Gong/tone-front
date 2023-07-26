@@ -522,6 +522,7 @@ export const ConfData = styled.div<GroupRowProps>`
     }
 `
 export const TestConfWarpper = styled.div`
+    border-top: 1px solid rgba(0,0,0,0.10);
     margin: 0px 15px 0px 17px;
     /* border-top:1px solid rgba(0,0,0,0.10); */
 `
@@ -565,6 +566,7 @@ export const CaseText = styled.div<GroupRowProps>`
 export const ExpandIcon = styled(CaretRightOutlined)`
     cursor:pointer;
     padding:13px 0px 13px 8px;
+    margin-right: 12px;
 
 `
 export const TestSubCase = styled.div`

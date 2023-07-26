@@ -63,10 +63,10 @@ const ReportTestFunc: React.FC<any> = () => {
             })
         }
         obj.test_item.func_data = new_func_data
-        setObj({
-            ...obj,
-        })
+        setObj(obj)
     }, [dataSource, routeName])
+
+    console.log(dataSource)
 
     return (
         <>
@@ -75,9 +75,9 @@ const ReportTestFunc: React.FC<any> = () => {
                 {/* 有组有项 */}
                 {
                     (Array.isArray(dataSource) && !!dataSource.length) ?
-                        dataSource.map((item: any, idx: number) => {
+                        dataSource.map((item: any) => {
                             return (
-                                <div key={idx}>
+                                <div key={item?.rowkey}>
                                     {
                                         item.is_group ?
                                             <>
@@ -107,7 +107,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                                 {
                                                     item.list.map((child: any, id: number) => {
                                                         return (
-                                                            <div key={id}>
+                                                            <div key={child?.rowkey}>
                                                                 <FuncIndex
                                                                     child={child}
                                                                     name="group"

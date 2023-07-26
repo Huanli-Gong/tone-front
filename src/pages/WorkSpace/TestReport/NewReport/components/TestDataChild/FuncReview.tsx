@@ -14,7 +14,7 @@ import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
 import { ReactComponent as TestItemIcon } from '@/assets/svg/Report/TestItem.svg';
 import { toShowNum, handleCaseColor } from '@/components/AnalysisMethods/index';
-import { GroupItemText } from '../EditPerfText';
+import { GroupItemText, PerfTextArea } from '../EditPerfText';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/DiffTootip';
 import { reportDelete } from '../ReportFunction';
@@ -38,6 +38,11 @@ import {
     ExpandIcon,
     CloseBtn,
     PrefDataDel,
+
+    Configuration,
+    SigleWrapper,
+    TestTitle,
+    TestContent,
 } from '../../ReportUI';
 import _ from 'lodash';
 import { getCompareType } from '@/utils/utils';
@@ -46,7 +51,7 @@ const { Option } = Select;
 const FuncDataIndex: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const { child, name, id, onDelete, dataSource, setDataSource } = props
-    const { btnState, allGroupData, baselineGroupIndex, groupLen, wsId, isOldReport } = useContext(ReportContext)
+    const { btnState, allGroupData, baselineGroupIndex, groupLen, wsId, isOldReport, domainResult } = useContext(ReportContext)
     const [expandKeys, setExpandKeys] = useState<any>([])
     const [filterName, setFilterName] = useState('All')
     const [arrowStyle, setArrowStyle] = useState('')
@@ -228,12 +233,12 @@ const FuncDataIndex: React.FC<any> = (props) => {
         return (
             <>
                 {
-                    expand && subCaseList?.map((item: any, idx: number) => {
+                    expand && subCaseList?.map((item: any) => {
                         if (isOldReport) {
                             item.compare_data.splice(baseIndex, 0, item.result)
                         }
                         return (
-                            <TestSubCase key={idx}>
+                            <TestSubCase key={item?.sub_case_name}>
                                 <DelBtnEmpty />
                                 <SubCaseTitle gLen={groupLen}>
                                     <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
@@ -263,7 +268,40 @@ const FuncDataIndex: React.FC<any> = (props) => {
 
     let functionTable = Array.isArray(funcData.list) && !!funcData.list.length ?
         funcData.list.map((suite: any, idx: number) => (
-            <TestSuite key={idx}>
+            <TestSuite key={suite?.suite_id}>
+                {!domainResult.is_default &&
+                    <Configuration style={{ marginBottom: 16, backgroundColor: 'rgba(0,0,0,0.03)' }}>
+                        {
+                            [
+                                ["need_test_env", "test_env", "env"],
+                                ["need_test_description", "test_description", "description"],
+                                ["need_test_conclusion", "test_conclusion", "conclusion"],
+                            ].map(($item: any) => {
+                                const [$var, name, $locale] = $item
+                                if (!domainResult.func_conf) return
+                                if (!domainResult.func_conf[$var]) return
+                                return (
+                                    <SigleWrapper
+                                        key={$var}
+                                    >
+                                        <TestTitle>
+                                            <FormattedMessage id={`report.test.${$locale}`} />
+                                        </TestTitle>
+                                        <TestContent>
+                                            {/* need_test_description  need_test_conclusion edit button*/}
+                                            <PerfTextArea
+                                                name={suite[name]}
+                                                field={name}
+                                                suite={suite}
+                                                creator={domainResult?.creator}
+                                            />
+                                        </TestContent>
+                                    </SigleWrapper>
+                                )
+                            })
+                        }
+                    </Configuration>
+                }
                 <SuiteName>
                     {suite.suite_name}
                     <Popconfirm
@@ -342,7 +380,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                             }
                             let dataList = isOldReport ? metricList : (conf.conf_compare_data || conf.compare_conf_list)
                             return (
-                                <React.Fragment key={cid}>
+                                <React.Fragment key={conf.conf_id}>
                                     <TestCase expand={expand}>
                                         <DelBtn conf={conf} cid={cid} />
                                         <CaseTitle gLen={groupLen}>

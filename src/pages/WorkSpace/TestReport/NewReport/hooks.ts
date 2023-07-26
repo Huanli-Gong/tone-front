@@ -642,7 +642,7 @@ export const EditPageData = (props: any) => {
         if (code == 200) {
             setDataSource(data[0])
             window.document.title = data[0]?.name || 'T-one'
-            console.log(data)
+            // console.log(data)
             if (data?.length === 0)
                 return redirectErrorPage(404)
             const { tmpl_id, ws_id, creator } = data[0]

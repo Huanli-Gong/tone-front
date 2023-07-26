@@ -257,7 +257,7 @@ const Performance = (props: any) => {
         const { containerScroll } = useContext(ReportContext)
         return (
             Array.isArray(perData.list) && !!perData.list.length ? perData.list.map((suite: any, id: number) => (
-                <TestSuite key={id}>
+                <TestSuite key={suite.suite_id}>
                     <SuiteName>
                         <Typography.Text style={{ display: "inline-block", textIndent: containerScroll?.left > 50 ? containerScroll?.left - 50 : 0 }}>
                             {suite.suite_name}
@@ -364,7 +364,7 @@ const Performance = (props: any) => {
                                                 </PrefData>
                                                 {
                                                     conf.metric_list.map((metric: any, idx: number) => (
-                                                        <PrefMetric key={idx}>
+                                                        <PrefMetric key={metric.metric}>
                                                             <DelBtn conf={conf} cid={cid} />
                                                             {/* <DelBtnEmpty conf={conf} cid={cid} /> */}
                                                             <MetricTitle gLen={groupLen}>
@@ -446,7 +446,7 @@ const Performance = (props: any) => {
     }
 
     return (
-        <div key={id}>
+        <div >
             <TestGroupItem id={`perf_item-${id}`} className="tree_mark" isGroup={name === 'group'} >
                 <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                 <TestItemText>

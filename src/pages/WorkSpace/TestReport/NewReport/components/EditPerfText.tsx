@@ -42,11 +42,11 @@ export const PerfTextArea = ({
     const { pathname } = useLocation()
     const { formatMessage } = useIntl()
     const [btn, setBtn] = useState(false)
-    const [title, setTitle] = useState('')
+    const [title, setTitle] = useState(name || '')
 
-    useEffect(() => {
+    /* useEffect(() => {
         setTitle(name)
-    }, [name])
+    }, [name]) */
 
     const openNotification = (name: string, field: string) => {
         notification['success']({
@@ -61,7 +61,7 @@ export const PerfTextArea = ({
             test_description: formatMessage({ id: 'report.test_description.save' }),
             test_conclusion: formatMessage({ id: 'report.test_conclusion.save' }),
         }
-        return list[name];
+        return (list as any)[name];
     }
 
     const handleBlur = async () => {
