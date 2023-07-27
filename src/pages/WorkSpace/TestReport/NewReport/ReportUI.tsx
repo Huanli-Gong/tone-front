@@ -464,7 +464,7 @@ export const TestSuite = styled.div`
     height:auto;
     background:rgba(0,0,0,0.03);
     margin:0 16px 18px 16px;
-    padding-bottom: 18px;
+    padding-bottom: 16px;
 `
 // suite title
 export const SuiteName = styled.div`

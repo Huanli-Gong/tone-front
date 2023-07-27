@@ -66,8 +66,6 @@ const ReportTestFunc: React.FC<any> = () => {
         setObj(obj)
     }, [dataSource, routeName])
 
-    console.log(dataSource)
-
     return (
         <>
             <TestDataTitle><FormattedMessage id="functional.test" /></TestDataTitle>
