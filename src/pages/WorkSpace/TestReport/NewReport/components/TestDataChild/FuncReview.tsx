@@ -46,8 +46,8 @@ import {
 } from '../../ReportUI';
 import _ from 'lodash';
 import { getCompareType } from '@/utils/utils';
-const { Option } = Select;
 
+const { Option } = Select;
 
 const DelBtnEmpty: React.FC<any> = ({ btnState }) => {
     return btnState && <PrefDataDel empty={true} />
@@ -157,7 +157,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
             data.list.map((item: any) => {
                 let conf_list: any = []
                 item.conf_list.map((conf: any) => {
-                    let sub_case_list = isOldReport
+                    const sub_case_list = isOldReport
                         ? conf.sub_case_list.filter((i: any) => i.result == value)
                         : conf.sub_case_list.filter((i: any) => i.compare_data.includes(value))
                     conf_list.push({
@@ -170,11 +170,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
                     conf_list
                 })
             })
-            let obj = {
+            setFuncData({
                 ...data,
                 list: newData
-            }
-            setFuncData(obj)
+            })
         }
     }
     const OpenSubCase = () => {
@@ -206,7 +205,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
             }
         })
 
-        let list = child.list.map((item: any) => {
+        const list = child.list.map((item: any) => {
             if (item.suite_id === conf.suite_id)
                 return {
                     ...item,
@@ -214,11 +213,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 }
             return item
         })
-        let obj = {
+        setFuncData({
             ...child,
             list,
-        }
-        setFuncData(obj)
+        })
     }
 
     useEffect(() => {
@@ -301,7 +299,6 @@ const FuncDataIndex: React.FC<any> = (props) => {
     const functionTable = Array.isArray(funcData.list) && !!funcData.list.length ?
         funcData?.list?.map((suite: any, idx: number) => {
             const hasDesc = ['test_env', 'test_description', 'test_conclusion'].map((i: string) => suite[i]).filter(Boolean).length > 0
-            console.log(hasDesc)
             return (
                 <TestSuite key={suite?.suite_id}>
                     {(hasDesc && !domainResult.is_default) &&
@@ -317,9 +314,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                     if (!domainResult.func_conf[$var]) return
                                     if (!suite[name]) return
                                     return (
-                                        <SigleWrapper
-                                            key={$var}
-                                        >
+                                        <SigleWrapper key={$var} >
                                             <TestTitle>
                                                 <FormattedMessage id={`report.test.${$locale}`} />
                                             </TestTitle>
@@ -379,7 +374,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                 let metricList: any = []
                                 if (isOldReport) {
                                     const { all_case, success_case, fail_case, obj_id } = conf.conf_source || conf
-                                    let conf_data = conf.conf_compare_data || conf.compare_conf_list
+                                    const conf_data = conf.conf_compare_data || conf.compare_conf_list
                                     for (let i = 0; i < allGroupData.length; i++) {
                                         if (i === baseIndex)
                                             metricList.push({
@@ -414,7 +409,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                             })
                                     }
                                 }
-                                let dataList = isOldReport ? metricList : (conf.conf_compare_data || conf.compare_conf_list)
+                                const dataList = isOldReport ? metricList : (conf.conf_compare_data || conf.compare_conf_list)
                                 return (
                                     <React.Fragment key={conf.conf_id}>
                                         <TestCase expand={expand}>
@@ -491,6 +486,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 }
                 {!btnState && <ItemFunc />}
             </TestGroupItem>
+
             {functionTable}
         </>
     )

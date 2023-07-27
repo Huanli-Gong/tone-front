@@ -3,7 +3,7 @@
 /* eslint-disable prefer-const */
 import React, { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { Empty, Popconfirm } from 'antd';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage, useParams, useIntl } from 'umi';
 import { ReportContext } from '../Provider';
 import { ReactComponent as TestGroupIcon } from '@/assets/svg/Report/TestGroup.svg';
 import FuncIndex from './TestDataChild/FuncReview';
@@ -17,10 +17,13 @@ import {
     CloseBtn,
 } from '../ReportUI';
 import _ from 'lodash';
+import { TextAreaEditBlock } from './EditPublic';
 
 const ReportTestFunc: React.FC<any> = () => {
-    const { obj, setObj, domainResult, btnState, routeName, isOldReport } = useContext(ReportContext)
+    const { obj, setObj, domainResult, btnState, isOldReport, saveReportData, routeName } = useContext(ReportContext)
+    const { report_id } = useParams() as any;
 
+    const intl = useIntl()
     const data = useMemo(() => {
         if (Array.isArray(domainResult.func_item)) {
             return _.cloneDeep(domainResult.func_item)
@@ -47,14 +50,14 @@ const ReportTestFunc: React.FC<any> = () => {
             dataSource.map((item: any, idx: number) => {
                 if (item.is_group) {
                     item.list.map((child: any, index: number) => {
-                        let suite_list = simplify(child, idx, index, 'group', isOldReport)
+                        const suite_list = simplify(child, idx, index, 'group', isOldReport)
                         new_func_data.push({
                             name: `${item.name}:${child.name}`,
                             suite_list
                         })
                     })
                 } else {
-                    let suite_list = simplify(item, idx, 0, 'item', isOldReport)
+                    const suite_list = simplify(item, idx, 0, 'item', isOldReport)
                     new_func_data.push({
                         name: item.name,
                         suite_list
@@ -64,7 +67,13 @@ const ReportTestFunc: React.FC<any> = () => {
         }
         obj.test_item.func_data = new_func_data
         setObj(obj)
-    }, [dataSource, routeName])
+    }, [dataSource])
+
+    const getGroupDesc = (group_name: string) => {
+        const list = saveReportData.func_desc || []
+        const ret = list.filter((i: { name: string; value: string; }) => i.name === group_name).filter(Boolean).at(0)
+        return ret
+    }
 
     return (
         <>
@@ -72,8 +81,10 @@ const ReportTestFunc: React.FC<any> = () => {
             <TestWrapper id="func_item" className="position_mark">
                 {/* 有组有项 */}
                 {
-                    (Array.isArray(dataSource) && !!dataSource.length) ?
+                    Object.prototype.toString.call(dataSource) === '[object Array]' ?
                         dataSource.map((item: any) => {
+
+                            const groupDesc = getGroupDesc(item.name)
                             return (
                                 <div key={item?.rowkey}>
                                     {
@@ -102,8 +113,16 @@ const ReportTestFunc: React.FC<any> = () => {
                                                         </Popconfirm>
                                                     }
                                                 </TestGroup>
+                                                <TextAreaEditBlock
+                                                    default_state={'EditReport' === routeName}
+                                                    title={item.name}
+                                                    value={groupDesc?.desc}
+                                                    report_id={report_id}
+                                                    item_id={groupDesc?.item_id}
+                                                    item_name={item.name}
+                                                />
                                                 {
-                                                    item.list.map((child: any, id: number) => {
+                                                    item.list?.map((child: any, id: number) => {
                                                         return (
                                                             <div key={child?.rowkey}>
                                                                 <FuncIndex
@@ -133,8 +152,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                     }
                                 </div>
                             )
-                        })
-                        :
+                        }) :
                         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 }
             </TestWrapper>

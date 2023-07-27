@@ -40,7 +40,6 @@ const Report = (props: any) => {
         }
     })
     const routeName = props.route.name
-    console.log(routeName)
     const handleCopyText = useCopyText(formatMessage({ id: 'report.link.copied.successfully' }))
 
     const basicData: any = ['Report', 'EditReport', 'ShareReport'].includes(routeName) ? EditPageData(props) : CreatePageData(props);

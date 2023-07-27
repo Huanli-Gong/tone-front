@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
-import { Typography, Input, notification, message } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Typography, Input, notification, message, Row } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { useIntl, FormattedMessage, Access, useAccess } from 'umi';
 import { AccessTootip } from '@/utils/utils';
 import styled from 'styled-components';
 import _ from 'lodash';
-import { editReportInfo } from '../../services';
+import { editReportGroupDesc, editReportInfo } from '../../services';
 const { TextArea } = Input;
 
 const TextAreaWarrper = styled(TextArea)`
@@ -133,7 +133,7 @@ export const SettingRegUpdate = ({
         } else {
             setTitle(saveData[field])
         }
-    }, [saveData, field])
+    }, [])
 
     const openNotification = (name: string) => {
         notification['success']({
@@ -150,7 +150,7 @@ export const SettingRegUpdate = ({
             custom: formatMessage({ id: 'report.test_conclusion.save' }),
             text: formatMessage({ id: 'report.text.save' }),
         }
-        return list[name];
+        return (list as any)[name];
     }
 
     const handleBlur = async () => {
@@ -169,7 +169,7 @@ export const SettingRegUpdate = ({
         } else {
             obj[field] = title
         }
-        const { code, msg } = await editReportInfo({ ...obj })
+        const { code, msg } = await editReportInfo(obj)
         if (code === 200) {
             openNotification(changeName(field))
             setBtn(false)
@@ -199,18 +199,91 @@ export const SettingRegUpdate = ({
                     :
                     <div style={{ width: '100%', ...style }}>
                         <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
-                        <Access accessible={access.WsTourist()}>
-                            <Access
-                                accessible={access.WsMemberOperateSelf(creator)}
-                                fallback={
-                                    <EditOutlined onClick={() => AccessTootip()} style={{ paddingLeft: 10 }} />
-                                }
-                            >
-                                <EditOutlined style={{ paddingLeft: 10 }} onClick={() => setBtn(true)} />
-                            </Access>
+                        <Access
+                            accessible={access.WsTourist() && access.WsMemberOperateSelf(creator)}
+                            fallback={
+                                <EditOutlined onClick={() => AccessTootip()} style={{ paddingLeft: 10 }} />
+                            }
+                        >
+                            <EditOutlined style={{ paddingLeft: 10 }} onClick={() => setBtn(true)} />
                         </Access>
                     </div>
             }
         </>
+    )
+}
+
+type TextAreaEditBlockProps = {
+    placeholder?: string;
+    creator?: number;
+    value?: any;
+    item_name: string;
+    report_id: string;
+    item_id: string | number;
+    default_state?: boolean;
+    title?: string;
+}
+
+export const TextAreaEditBlock: React.FC<TextAreaEditBlockProps> = (props) => {
+    const { placeholder, creator, value, report_id, item_name, item_id, default_state = false, title } = props
+    const access = useAccess()
+    const intl = useIntl()
+
+    const [state, setState] = React.useState(default_state)
+    const [val, setVal] = React.useState<string | undefined>(value)
+
+    const handleBlue = async () => {
+        const { code, msg } = await editReportGroupDesc({
+            report_id,
+            item_name,
+            item_id,
+            desc: val,
+        })
+        if (code !== 200) return message.error(msg)
+        notification.success({
+            message: `${title}${intl.formatMessage({ id: `report.group.desc.save.ok` })}`,
+            placement: 'bottomRight'
+        })
+
+        /* 非编辑模式下，改完恢复样式 */
+        if (!default_state) {
+            setState(false)
+        }
+    }
+
+    if (state) {
+        return (
+            <Row style={{ paddingLeft: 36, paddingRight: 36, margin: '10px 0' }}>
+                <Input.TextArea
+                    allowClear
+                    autoComplete="off"
+                    size="small"
+                    autoSize={{ minRows: 3, maxRows: 6 }}
+                    value={val}
+                    onChange={({ target }) => setVal(target?.value)}
+                    placeholder={placeholder}
+                    onBlur={handleBlue}
+                />
+            </Row>
+        )
+    }
+
+    return (
+        <Row style={{ paddingLeft: 16, paddingRight: 16, margin: '10px 0' }} align={'middle'}>
+            <span style={{ display: 'inline-block', marginRight: 10 }}>{val || '-'}</span>
+            <Access
+                accessible={
+                    access.WsTourist() && access.WsMemberOperateSelf(creator)
+                }
+                fallback={
+                    <EditOutlined
+                        onClick={AccessTootip}
+                    />
+                }
+            />
+            <EditOutlined
+                onClick={() => setState(true)}
+            />
+        </Row>
     )
 }

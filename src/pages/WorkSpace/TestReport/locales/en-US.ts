@@ -153,4 +153,5 @@ export default {
   'report.test_method.save': 'Test Method saved successfully',
   'report.text.save': 'Environment Description saved successfully',
   'report.not.filled': 'Not filled',
+  'report.group.desc.save.ok': 'Description saved successfully'
 }

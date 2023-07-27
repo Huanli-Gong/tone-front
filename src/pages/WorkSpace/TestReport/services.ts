@@ -71,3 +71,14 @@ export async function editReportInfo(data: any) {
         method: 'post'
     })
 }
+
+type editGroupDescProps = {
+    item_name: string;
+    report_id: string;
+    desc: string | undefined;
+    item_id: number | string;
+}
+
+export async function editReportGroupDesc(data: editGroupDescProps) {
+    return request(`/api/report/test/report/item/update_desc/`, { method: 'post', data })
+}
