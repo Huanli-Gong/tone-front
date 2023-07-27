@@ -159,7 +159,7 @@ const TestJob: React.FC<any> = (props) => {
     }
 
     const filterItems = (t: any) => {
-        const basic = {}, env = {}, suite = {}, more = {}
+        const basic:any = {}, env:any = {}, suite:any = {}, more:any = {}
         t?.forEach((i: any) => {
             if (i.config_index === 1) basic[i.name] = i
             if (i.config_index === 2) env[i.name] = i
@@ -189,7 +189,7 @@ const TestJob: React.FC<any> = (props) => {
     }, [pathname, query])
 
     const compact = (obj: any) => {
-        const result = {}
+        const result:any = {}
         Object.keys(obj).forEach(
             key => {
                 const z = obj[key]
