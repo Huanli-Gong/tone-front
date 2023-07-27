@@ -32,13 +32,13 @@ export default ({ title = '', need_reboot, setup_info, cleanup_info, step }: any
             render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText> : <TidDetail tid={_} /> : '-'
         },
         {
-            dataIndex: 'start_time',
-            title: <FormattedMessage id="ws.result.details.start_time" />,
+            title: <FormattedMessage id="ws.result.details.gmt_created" />,
+            dataIndex: 'gmt_created',
             ...tooltipTd(),
         },
         {
-            dataIndex: 'end_time',
-            title: <FormattedMessage id="ws.result.details.end_time" />,
+            title: <FormattedMessage id="ws.result.details.gmt_modified" />,
+            dataIndex: 'gmt_modified',
             ...tooltipTd(),
         }
     ]
