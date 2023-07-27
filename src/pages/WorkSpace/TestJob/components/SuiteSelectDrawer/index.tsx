@@ -229,6 +229,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                 cleanup_info: '',
                 console: true,
                 priority: 10,
+                timeout: 3600,
             }
             if (batch) {
                 if (settingType === 'suite') {
@@ -237,8 +238,8 @@ const SuiteDrawer = (props: any, ref: any) => {
                     setSuiteForm(suiteMultip)
                     const caseParams = getRealParams(caseMultip)
                     const suiteParams = getRealParams(suiteMultip)
-                    const { custom_channel, custom_ip, ip, server_object_id, server_tag_id, repeat } = caseParams
-                    const params = { custom_channel, custom_ip, ip, server_object_id, server_tag_id, repeat }
+                    const { custom_channel, custom_ip, ip, server_object_id, server_tag_id, repeat, timeout } = caseParams
+                    const params = { custom_channel, custom_ip, ip, server_object_id, server_tag_id, repeat, timeout }
                     changeServerSelect(params)
                     form.setFieldsValue({ ...suiteParams, ...params })
                 }
@@ -426,9 +427,9 @@ const SuiteDrawer = (props: any, ref: any) => {
         form.validateFields()
             .then((values: any) => {
                 let params: any = { ...values }
-                const { custom_channel, custom_ip, server_object_id, server_tag_id, repeat, ...rest } = params
+                const { custom_channel, custom_ip, server_object_id, server_tag_id, repeat, timeout, ...rest } = params
 
-                const caseParam = { custom_channel, custom_ip, server_object_id, server_tag_id, repeat }
+                const caseParam = { custom_channel, custom_ip, server_object_id, server_tag_id, repeat, timeout }
 
                 const selectIds = batch ? dataSource.map((item: any) => item.id) : [dataSource.id]
                 let resultSuiteList = []
@@ -472,7 +473,6 @@ const SuiteDrawer = (props: any, ref: any) => {
                         )
                     }), [])
                 }
-
                 onDataSourceChange(resultSuiteList, run_mode)
                 handleClose()
                 onOk()
@@ -482,7 +482,7 @@ const SuiteDrawer = (props: any, ref: any) => {
 
     const multipInfo = useMemo(() => {
         if (batch && caseFrom) {
-            const { ip, custom_ip, repeat, server_tag_id, server_object_id, is_instance } = caseFrom
+            const { ip, custom_ip, repeat, server_tag_id, server_object_id, is_instance, timeout } = caseFrom
             const objectLen = server_object_id ? server_object_id.length : 0
             const tagLen = server_tag_id ? server_tag_id.length : 0
             const customLen = custom_ip ? custom_ip.length : 0
@@ -529,11 +529,12 @@ const SuiteDrawer = (props: any, ref: any) => {
                 server_tag_id: tagLen > 1,
                 server_object_id: objectLen > 1,
                 random: random.length > 1,
+                timeout: timeout.length > 1,
                 setup_info: settingType === 'suite' ? suiteForm.setup_info.length > 1 : caseFrom.setup_info.length > 1,
                 cleanup_info: settingType === 'suite' ? suiteForm.cleanup_info.length > 1 : caseFrom.cleanup_info.length > 1
             }
         }
-        return { serverPool: false, selfServer: false, repeat: false, cleanup_info: false, setup_info: false }
+        return { serverPool: false, selfServer: false, repeat: false, cleanup_info: false, setup_info: false, timeout: false }
     }, [caseFrom, batch, server_type, settingType, suiteForm, run_mode])
 
 
@@ -556,7 +557,7 @@ const SuiteDrawer = (props: any, ref: any) => {
             forceRender={true}
             destroyOnClose={true}
             onClose={handleClose}
-            visible={visible}
+            open={visible}
             bodyStyle={{ paddingBottom: 80, overflowX: "hidden" }}
             footer={
                 <div style={{ textAlign: 'right', padding: '0 8px' }} >
@@ -723,7 +724,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                             (contrl.includes('monitor') && checked) &&
                             <MonitorItem />
                         }
- */}
+                        */}
                         <Form.Item
                             name="priority"
                             label={<QusetionIconTootip title={formatMessage({ id: 'select.suite.priority' })} desc={formatMessage({ id: 'select.suite.priority.desc' })} />}

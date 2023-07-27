@@ -146,6 +146,22 @@ export default memo(
                 </Row>
 
                 <Form.Item
+                    name="timeout"
+                    label={formatMessage({ id: 'select.suite.timeout' })}
+                    className={'drawer_padding'}
+                >
+                    <InputNumber
+                        formatter={formatter}
+                        style={{ width: '100%' }} min={0} step={1}
+                        placeholder={
+                            multipInfo?.timeout ?
+                                formatMessage({ id: 'select.suite.multiple.values' }) :
+                                formatMessage({ id: 'select.suite.please.enter' })
+                        }
+                    />
+                </Form.Item>
+
+                <Form.Item
                     name="repeat"
                     label={
                         <QusetionIconTootip
