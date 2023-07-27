@@ -39,7 +39,7 @@ const TestSuiteSearch: React.FC<any> = () => {
   }
 
   useEffect(() => {
-    window.document.title = '搜索结果'
+    window.document.title = '搜索结果 - T-One'
     return () => {
       window.document.title = 'T-One'
     }
@@ -50,9 +50,9 @@ const TestSuiteSearch: React.FC<any> = () => {
 
   useEffect(() => {
     if (keyword) {
-      getSearchListQuantity({ search_key: keyword })
+      getSearchListQuantity({ search_key: keyword, ws_id })
     }
-  }, [keyword]);
+  }, [keyword, ws_id]);
 
   // 搜索
   const onSearch = (value: string) => {
@@ -60,7 +60,7 @@ const TestSuiteSearch: React.FC<any> = () => {
       // case1.仅修改url地址，但不刷新页面
       // keyword && window.history.pushState({}, 0, window.location.origin + window.location.pathname);
       // case2.搜索
-      getSearchListQuantity({ search_key: value })
+      getSearchListQuantity({ search_key: value, ws_id })
       history.push({
         pathname: `/ws/${ws_id}/suite_search/key`,
         query: {

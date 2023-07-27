@@ -28,8 +28,8 @@ export const SearchColumnFilterTitle: React.FC<InputFilterProps> = ({ title, con
             <Space>
                 <span>{title}</span>
                 <Dropdown
-                    visible={visible}
-                    onVisibleChange={handleVisible}
+                    open={visible}
+                    onOpenChange={handleVisible}
                     trigger={['click']}
                     overlayStyle={{ background: "#fff", boxShadow: `0 9px 28px 8px rgb(0 0 0 / 5%), 0 6px 16px 0 rgb(0 0 0 / 8%), 0 3px 6px -4px rgb(0 0 0 / 12%)` }}
                     overlay={
@@ -77,8 +77,8 @@ export const CheckboxColumnFilterTitle: React.FC<InputFilterProps> = ({ title, c
             <Space>
                 <span>{title}</span>
                 <Dropdown
-                    visible={visible}
-                    onVisibleChange={handleVisible}
+                    open={visible}
+                    onOpenChange={handleVisible}
                     trigger={['click']}
                     overlay={
                         <SelectCheck
@@ -126,8 +126,8 @@ export const UserSearchColumnFilterTitle: React.FC<InputFilterProps> = ({ title,
             <Space>
                 <span>{title}</span>
                 <Dropdown
-                    visible={visible}
-                    onVisibleChange={handleVisible}
+                    open={visible}
+                    onOpenChange={handleVisible}
                     trigger={['click']}
                     overlay={
                         <SelectDrop

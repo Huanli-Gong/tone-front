@@ -72,9 +72,9 @@ const SearchPageList: React.FC<any> = (props: any) => {
 
   useEffect(() => {
     if (keyword) {
-      getListData({ page_num: pagination.pageNum, page_size: pagination.pageSize })
+      getListData({ page_num: pagination.pageNum, page_size: pagination.pageSize, ws_id })
     }
-  }, [keyword, tabKey])
+  }, [keyword, tabKey, ws_id])
 
   const handleClick = (item: any) => {
     if (item.id && item.test_suite_id) {
