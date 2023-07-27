@@ -9,6 +9,7 @@ import { OperationTabCard } from '@/components/UpgradeUI'
 import styled from 'styled-components'
 
 import ResultStatusType from './components/ResultStatusType'
+import MatrixBranch from './components/Matrix'
 
 const RowWrapper = styled(Row)`
     margin-top:16px;
@@ -196,11 +197,31 @@ const DevOps = (props: any) => {
                         </RowWrapper>
                     </>
                 }
+
                 <ResultStatusType
                     field="func_result_view_type"
                     dataSource={dataSource}
                     update={update}
                 />
+
+                {
+                    !BUILD_APP_ENV &&
+                    <>
+                        <MatrixBranch
+                            iType="aligroup"
+                            field="matrix_repo_aligroup"
+                            data={dataSource['matrix_repo_aligroup']}
+                            update={update}
+                        />
+
+                        <MatrixBranch
+                            iType="aliyun"
+                            field="matrix_repo_aliyun"
+                            data={dataSource['matrix_repo_aliyun']}
+                            update={update}
+                        />
+                    </>
+                }
             </OperationTabCard>
         </Spin>
     )
