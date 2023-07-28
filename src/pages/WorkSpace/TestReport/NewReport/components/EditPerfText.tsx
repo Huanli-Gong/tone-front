@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Typography, Input, notification, message } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-import { useIntl, Access, useAccess, useLocation } from 'umi';
+import { useIntl, Access, useAccess, useLocation, useParams } from 'umi';
 import { AccessTootip } from '@/utils/utils';
 import styled from 'styled-components';
 import _ from 'lodash';
@@ -38,6 +38,7 @@ export const PerfTextArea = ({
         defaultHolder?: string;
         creator?: any;
     }) => {
+    const { report_id } = useParams() as any
     const access = useAccess();
     const { pathname } = useLocation()
     const { formatMessage } = useIntl()
@@ -68,9 +69,10 @@ export const PerfTextArea = ({
         const { item_suite_id, suite_name } = suite
         const obj: any = {
             item_suite_id,
+            report_id,
         }
         obj[field] = title
-        const { code, msg } = await saveReportDesc({ ...obj })
+        const { code, msg } = await saveReportDesc(obj)
         if (code === 200) {
             openNotification(suite_name, changeName(field))
             setBtn(false)

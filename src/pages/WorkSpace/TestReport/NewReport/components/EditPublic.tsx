@@ -58,42 +58,39 @@ export const SettingTextArea = ({
         if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not.filled.in' })
         return title
     }
+
+    if (btn) {
+        if (isInput)
+            return (
+                <Input
+                    autoComplete="off"
+                    size="small"
+                    placeholder={defaultHolder}
+                    style={{ padding: '6px 8px 6px 8px', width: '93%', ...fontStyle }}
+                    value={title}
+                    onChange={evt => setTitle(evt.target.value)}
+                />
+            )
+        return (
+            <div style={{ marginBottom: space }}>
+                <TextAreaWarrper
+                    autoComplete="off"
+                    size="small"
+                    placeholder={defaultHolder}
+                    style={{ padding: '10px', ...fontStyle }}
+                    value={title}
+                    onChange={evt => setTitle(evt.target.value)}
+                />
+            </div>
+        )
+    }
+
+    if (isInput)
+        return <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
     return (
-        <>
-            {
-                btn ?
-                    <>
-                        {
-                            isInput ?
-                                <Input
-                                    autoComplete="off"
-                                    size="small"
-                                    placeholder={defaultHolder}
-                                    style={{ padding: '6px 8px 6px 8px', width: '93%', ...fontStyle }}
-                                    value={title}
-                                    onChange={evt => setTitle(evt.target.value)}
-                                />
-                                :
-                                <div style={{ marginBottom: space }}>
-                                    <TextAreaWarrper
-                                        autoComplete="off"
-                                        size="small"
-                                        placeholder={defaultHolder}
-                                        style={{ padding: '10px', ...fontStyle }}
-                                        value={title}
-                                        onChange={evt => setTitle(evt.target.value)}
-                                    />
-                                </div>
-                        }
-                    </>
-                    :
-                    isInput ? <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
-                        :
-                        <div style={{ width: '100%', ...style }}>
-                            <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
-                        </div>
-            }
-        </>
+        <div style={{ width: '100%', ...style }}>
+            <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
+        </div>
     )
 }
 
@@ -181,35 +178,33 @@ export const SettingRegUpdate = ({
         if (_.isNull(title) || _.isUndefined(title)) return <FormattedMessage id="report.not.filled" />
         return title
     }
+
+    if (btn)
+        return (
+            <div style={{ marginBottom: space }}>
+                <TextAreaWarrper
+                    autoComplete="off"
+                    size="small"
+                    placeholder={defaultHolder}
+                    style={{ padding: '10px', ...fontStyle }}
+                    value={title}
+                    onChange={evt => setTitle(evt.target.value)}
+                    onBlur={handleBlur}
+                />
+            </div>
+        )
     return (
-        <>
-            {
-                btn ?
-                    <div style={{ marginBottom: space }}>
-                        <TextAreaWarrper
-                            autoComplete="off"
-                            size="small"
-                            placeholder={defaultHolder}
-                            style={{ padding: '10px', ...fontStyle }}
-                            value={title}
-                            onChange={evt => setTitle(evt.target.value)}
-                            onBlur={handleBlur}
-                        />
-                    </div>
-                    :
-                    <div style={{ width: '100%', ...style }}>
-                        <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
-                        <Access
-                            accessible={access.WsTourist() && access.WsMemberOperateSelf(creator)}
-                            fallback={
-                                <EditOutlined onClick={() => AccessTootip()} style={{ paddingLeft: 10 }} />
-                            }
-                        >
-                            <EditOutlined style={{ paddingLeft: 10 }} onClick={() => setBtn(true)} />
-                        </Access>
-                    </div>
-            }
-        </>
+        <div style={{ width: '100%', ...style }}>
+            <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
+            <Access
+                accessible={access.WsTourist() && access.WsMemberOperateSelf(creator)}
+                fallback={
+                    <EditOutlined onClick={() => AccessTootip()} style={{ paddingLeft: 10 }} />
+                }
+            >
+                <EditOutlined style={{ paddingLeft: 10 }} onClick={() => setBtn(true)} />
+            </Access>
+        </div>
     )
 }
 
@@ -218,7 +213,7 @@ type TextAreaEditBlockProps = {
     creator?: number;
     value?: any;
     item_name: string;
-    report_id: string;
+    report_id: string | number;
     item_id: string | number;
     default_state?: boolean;
     title?: string;
@@ -251,9 +246,9 @@ export const TextAreaEditBlock: React.FC<TextAreaEditBlockProps> = (props) => {
         }
     }
 
-    if (state) {
+    if (state)
         return (
-            <Row style={{ paddingLeft: 36, paddingRight: 36, margin: '10px 0' }}>
+            <Row style={{ paddingLeft: 36, paddingRight: 36, marginTop: 10 }}>
                 <Input.TextArea
                     allowClear
                     autoComplete="off"
@@ -266,19 +261,16 @@ export const TextAreaEditBlock: React.FC<TextAreaEditBlockProps> = (props) => {
                 />
             </Row>
         )
-    }
 
     return (
-        <Row style={{ paddingLeft: 16, paddingRight: 16, margin: '10px 0' }} align={'middle'}>
+        <Row style={{ paddingLeft: 16, paddingRight: 16, marginTop: 10 }} align={'middle'}>
             <span style={{ display: 'inline-block', marginRight: 10 }}>{val || '-'}</span>
             <Access
                 accessible={
                     access.WsTourist() && access.WsMemberOperateSelf(creator)
                 }
                 fallback={
-                    <EditOutlined
-                        onClick={AccessTootip}
-                    />
+                    <></>
                 }
             />
             <EditOutlined

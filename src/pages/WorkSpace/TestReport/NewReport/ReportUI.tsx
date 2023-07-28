@@ -336,7 +336,7 @@ export const FuncItem = styled.div`
 export const Configuration = styled.div`
     //border:1px solid rgba(0,0,0,0.1);
     background-color: #FDFEFF;
-    margin-top: 11px;
+    /* margin-top: 11px; */
     border-bottom:none;
 `
 export const SigleWrapper = styled(Row)`

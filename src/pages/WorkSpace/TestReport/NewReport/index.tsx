@@ -109,9 +109,12 @@ const Report = (props: any) => {
                 </Breadcrumb.Item>
             </ReportBread>
             {
-                routeName !== "EditReport" &&
+                !['EditReport', 'CreateReport'].includes(routeName) &&
                 <Space>
-                    <span style={{ cursor: 'pointer' }} onClick={() => handleCopyText(location.origin + `/share/report/${report_id}`)}>
+                    <span
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => handleCopyText(location.origin + `/share/report/${report_id}`)}
+                    >
                         <Space>
                             <IconLink />
                             <FormattedMessage id="operation.share" />
@@ -119,30 +122,28 @@ const Report = (props: any) => {
                     </span>
                     {
                         routeName !== 'ShareReport' &&
-                        <Access accessible={access.WsTourist()}>
-                            <Access
-                                accessible={access.WsMemberOperateSelf(creator)}
-                                fallback={
-                                    <span
-                                        onClick={() => AccessTootip()}
-                                    >
-                                        <Space align="center">
-                                            <IconWarp />
-                                            <FormattedMessage id="operation.edit" />
-                                        </Space>
-                                    </span>
-                                }
-                            >
+                        <Access
+                            accessible={access.WsTourist() && access.WsMemberOperateSelf(creator)}
+                            fallback={
                                 <span
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={() => history.push(`${pathname}edit`)}
+                                    onClick={() => AccessTootip()}
                                 >
                                     <Space align="center">
-                                        <IconEdit />
+                                        <IconWarp />
                                         <FormattedMessage id="operation.edit" />
                                     </Space>
                                 </span>
-                            </Access>
+                            }
+                        >
+                            <span
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => history.push(`${pathname}${pathname === 'EditReport' ? 'edit' : ''}`)}
+                            >
+                                <Space align="center">
+                                    <IconEdit />
+                                    <FormattedMessage id="operation.edit" />
+                                </Space>
+                            </span>
                         </Access>
                     }
                 </Space>
@@ -211,11 +212,18 @@ const Report = (props: any) => {
             containerScroll
         }}>
             <Spin spinning={loading}>
-                <ReportTemplate height={windowHeight - 50} >
+                <ReportTemplate
+                    height={windowHeight - 50}
+                    style={{ paddingBottom: ['EditReport', 'CreateReport'].includes(routeName) ? 50 : 0 }}
+                >
                     {/* 目录部分 */}
                     <Catalog />
                     {/* 报告内容 */}
-                    <ReportBodyContainer id={'report-body-container'} ref={containerRef} collapsed={collapsed}>
+                    <ReportBodyContainer
+                        id={'report-body-container'}
+                        ref={containerRef}
+                        collapsed={collapsed}
+                    >
                         <ReportWarpper ref={bodyRef}>
                             <Col span={24}>
                                 {!!ws_id && <BreadcrumbItem />}
@@ -231,7 +239,7 @@ const Report = (props: any) => {
                             </Col>
 
                             {
-                                routeName === 'EditReport' &&
+                                ['EditReport', 'CreateReport'].includes(routeName) &&
                                 <Row
                                     align={'middle'}
                                     justify={'end'}

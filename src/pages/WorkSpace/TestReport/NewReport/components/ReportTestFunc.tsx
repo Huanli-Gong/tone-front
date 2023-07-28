@@ -113,14 +113,20 @@ const ReportTestFunc: React.FC<any> = () => {
                                                         </Popconfirm>
                                                     }
                                                 </TestGroup>
-                                                <TextAreaEditBlock
-                                                    default_state={'EditReport' === routeName}
-                                                    title={item.name}
-                                                    value={groupDesc?.desc}
-                                                    report_id={report_id}
-                                                    item_id={groupDesc?.item_id}
-                                                    item_name={item.name}
-                                                />
+
+                                                {
+                                                    (groupDesc.desc || 'EditReport' === routeName) &&
+                                                    <TextAreaEditBlock
+                                                        default_state={'EditReport' === routeName}
+                                                        title={item.name}
+                                                        value={groupDesc?.desc}
+                                                        report_id={report_id}
+                                                        item_id={groupDesc?.item_id}
+                                                        item_name={item.name}
+                                                        placeholder={intl.formatMessage({ id: 'report.group.desc.placeholder' })}
+                                                    />
+                                                }
+
                                                 {
                                                     item.list?.map((child: any, id: number) => {
                                                         return (

@@ -74,7 +74,7 @@ export async function editReportInfo(data: any) {
 
 type editGroupDescProps = {
     item_name: string;
-    report_id: string;
+    report_id: string | number;
     desc: string | undefined;
     item_id: number | string;
 }
