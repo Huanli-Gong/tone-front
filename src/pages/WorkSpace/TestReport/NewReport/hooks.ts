@@ -89,7 +89,7 @@ export const CreatePageData = (props: any) => {
                         compareResult.perf_data_result = compareResult.perf_data_result.concat(res.data)
                     }
                 }
-                setCompareResult(compareResult)
+                setCompareResult({ ...compareResult })
                 if (res.code !== 200) {
                     message.error(res.msg)
                     return
@@ -590,6 +590,8 @@ export const CreatePageData = (props: any) => {
         return allGroupData.filter((item: any) => item.members.length > 0)
     }, [allGroupData])
 
+    const isFlag = useMemo(() => compareLen !== suiteLen, [compareLen, suiteLen])
+
     return {
         environmentResult,
         allGroupData: allGroupList,
@@ -604,7 +606,7 @@ export const CreatePageData = (props: any) => {
         setDomainResult,
         loading,
         saveReportData,
-        isFlag: compareLen !== suiteLen
+        isFlag
     }
 }
 
