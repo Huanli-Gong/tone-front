@@ -20,6 +20,11 @@ export default defineConfig({
     dva: {
         hmr: true,
     },
+    polyfill: {
+        imports: [
+            'core-js/stable',
+        ]
+    },
     devtool: isDev ? "eval-source-map" : undefined,
     layout: {
         name: 'T-One',
@@ -61,6 +66,7 @@ export default defineConfig({
         type: 'none',
     },
     ignoreMomentLocale: true,
+    /* @ts-ignore */
     proxy: proxy[REACT_APP_ENV || 'dev'],
     manifest: {
         basePath: '/',

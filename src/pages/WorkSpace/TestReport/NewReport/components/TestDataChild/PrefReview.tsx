@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
-import { useIntl, FormattedMessage, getLocale } from 'umi';
+import { useIntl, FormattedMessage, getLocale, useLocation } from 'umi';
 import { ReportContext } from '../../Provider';
 import { Typography, Space, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
 import { PerfTextArea, GroupItemText } from '../EditPerfText';
@@ -51,6 +51,7 @@ import {
 } from '../../ReportUI';
 import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMethods/index';
 import { getCompareType } from '@/utils/utils';
+import { useScroll } from 'ahooks';
 const { Option } = Select;
 
 const getSortNum = (compare_result: string) => new Map([
@@ -69,9 +70,10 @@ const compare = ($props: any) => {
 
 const Performance = (props: any) => {
     const { formatMessage } = useIntl()
-
+    const { pathname } = useLocation()
     const { child, name, btn, id, onDelete, dataSource, setDataSource } = props
     const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
+    const isEditPage = !!~pathname?.indexOf('/edit')
 
     const [filterName, setFilterName] = useState('all')
     const [perData, setPerData] = useState<any>({})
@@ -252,9 +254,11 @@ const Performance = (props: any) => {
         )
     }
 
+    const { containerRef } = useContext(ReportContext)
+    const containerScroll = useScroll(containerRef)
+
     // suite遍历
     const RenderSuite = () => {
-        const { containerScroll } = useContext(ReportContext)
         return (
             Array.isArray(perData.list) && !!perData.list.length ? perData.list.map((suite: any, id: number) => (
                 <TestSuite key={suite.suite_id}>
@@ -287,6 +291,7 @@ const Performance = (props: any) => {
                                         const [$var, name, $locale] = $item
                                         if (!domainResult.perf_conf) return
                                         if (!domainResult.perf_conf[$var]) return
+                                        if (!isEditPage && !suite[name]) return
                                         return (
                                             <SigleWrapper
                                                 key={$var}

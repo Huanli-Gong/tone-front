@@ -114,6 +114,7 @@ const ExpandSubcases: React.FC<any> = (props) => {
                     pageSize={size}
                     showQuickJumper
                     showSizeChanger
+                    pageSizeOptions={[100, 200, 500, 1000, 2000]}
                     onChange={(num, size) => setPage({ num, size })}
                     showTotal={(total) => `共（${total}）条`}
                 />
@@ -312,7 +313,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                     const [$var, name, $locale] = $item
                                     if (!domainResult.func_conf) return
                                     if (!domainResult.func_conf[$var]) return
-                                    if (!suite[name]) return
+                                    if (!isEditPage && !suite[name]) return
                                     return (
                                         <SigleWrapper key={$var} >
                                             <TestTitle>

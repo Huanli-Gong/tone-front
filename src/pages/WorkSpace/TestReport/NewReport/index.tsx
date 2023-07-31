@@ -20,15 +20,15 @@ import { ReportContext } from './Provider';
 import _ from 'lodash';
 import { ReportTemplate, ReportBodyContainer, ReportWarpper, ReportBread, BreadDetailL, BreadDetailR } from './ReportUI';
 import { CreatePageData, EditPageData } from './hooks';
-import { useScroll } from "ahooks"
 
 const Report = (props: any) => {
     const { pathname } = useLocation()
     const { formatMessage } = useIntl()
     const access = useAccess();
+    const routeName = props.route.name
     const { ws_id } = props.match.params
     const { report_id } = useParams() as any;
-    const [btnState, setBtnState] = useState<boolean>(false)
+    const [btnState, setBtnState] = useState<boolean>(routeName === 'EditReport')
     const [btnConfirm, setBtnConfirm] = useState<boolean>(false)
     const [collapsed, setCollapsed] = useState(false)
     const { height: windowHeight } = useClientSize()
@@ -39,7 +39,6 @@ const Report = (props: any) => {
             perf_data: []
         }
     })
-    const routeName = props.route.name
     const handleCopyText = useCopyText(formatMessage({ id: 'report.link.copied.successfully' }))
 
     const basicData: any = ['Report', 'EditReport', 'ShareReport'].includes(routeName) ? EditPageData(props) : CreatePageData(props);
@@ -137,7 +136,7 @@ const Report = (props: any) => {
                         >
                             <span
                                 style={{ cursor: 'pointer' }}
-                                onClick={() => history.push(`${pathname}${pathname === 'EditReport' ? 'edit' : ''}`)}
+                                onClick={() => history.push(`${pathname}${pathname !== 'EditReport' ? 'edit' : ''}`)}
                             >
                                 <Space align="center">
                                     <IconEdit />
@@ -183,7 +182,6 @@ const Report = (props: any) => {
     }
 
     const containerRef = React.useRef<HTMLDivElement>(null)
-    const containerScroll = useScroll(containerRef)
 
     return (
         <ReportContext.Provider value={{
@@ -209,7 +207,7 @@ const Report = (props: any) => {
             isOldReport: saveReportData?.old_report,
             setCollapsed,
             setObj,
-            containerScroll
+            containerRef
         }}>
             <Spin spinning={loading}>
                 <ReportTemplate

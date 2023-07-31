@@ -231,7 +231,6 @@ const Report: React.FC = () => {
     }, [environmentResult.compare_groups])
 
     const containerRef = React.useRef<HTMLDivElement>(null)
-    const containerScroll = useScroll(containerRef)
 
     return (
         <ReportContext.Provider
@@ -243,7 +242,7 @@ const Report: React.FC = () => {
                 envData,
                 group,
                 wsId: ws_id || shareWsId,
-                containerScroll
+                containerRef
             }}
         >
             <div

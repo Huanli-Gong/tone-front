@@ -86,7 +86,7 @@ const ReportTestFunc: React.FC<any> = () => {
 
                             const groupDesc = getGroupDesc(item.name)
                             return (
-                                <div key={item?.rowkey}>
+                                <div key={item?.rowKey}>
                                     {
                                         item.is_group ?
                                             <>
@@ -115,7 +115,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                                 </TestGroup>
 
                                                 {
-                                                    (groupDesc.desc || 'EditReport' === routeName) &&
+                                                    (groupDesc?.desc || 'EditReport' === routeName) &&
                                                     <TextAreaEditBlock
                                                         default_state={'EditReport' === routeName}
                                                         title={item.name}
@@ -130,7 +130,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                                 {
                                                     item.list?.map((child: any, id: number) => {
                                                         return (
-                                                            <div key={child?.rowkey}>
+                                                            <div key={child?.rowKey}>
                                                                 <FuncIndex
                                                                     child={child}
                                                                     name="group"
