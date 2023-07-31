@@ -17,7 +17,7 @@ import { editReport, saveReport } from '../services';
 import { history, useAccess, Access, useParams, useIntl, FormattedMessage, useLocation } from 'umi';
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { ReportContext } from './Provider';
-import _ from 'lodash';
+import _, { lastIndexOf } from 'lodash';
 import { ReportTemplate, ReportBodyContainer, ReportWarpper, ReportBread, BreadDetailL, BreadDetailR } from './ReportUI';
 import { CreatePageData, EditPageData } from './hooks';
 
@@ -136,7 +136,10 @@ const Report = (props: any) => {
                         >
                             <span
                                 style={{ cursor: 'pointer' }}
-                                onClick={() => history.push(`${pathname}${pathname !== 'EditReport' ? 'edit' : ''}`)}
+                                onClick={() => {
+                                    const editPath = pathname.lastIndexOf("/") === pathname.length - 1 ? 'edit' : '/edit'
+                                    history.push(`${pathname}${pathname !== 'EditReport' ? editPath : ''}`)
+                                }}
                             >
                                 <Space align="center">
                                     <IconEdit />
@@ -165,7 +168,7 @@ const Report = (props: any) => {
             if (res.code === 200) {
                 message.success(formatMessage({ id: 'report.update.report.succeeded' }))
                 queryReport();
-                history.push(`/ws/${ws_id}/test_report/${saveReportData.id}/`)
+                history.push(`/ws/${ws_id}/test_report/${saveReportData.id}`)
             } else {
                 requestCodeMessage(res.code, res.msg)
             }

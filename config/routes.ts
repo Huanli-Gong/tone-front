@@ -317,6 +317,7 @@ const routes = [
 					},
 					{
 						path: '/ws/:ws_id/test_report/:report_id/edit',
+						exact: true,
 						name: 'EditReport',
 						component: '@/pages/WorkSpace/TestReport/NewReport',
 						access: 'IsWsSetting',
