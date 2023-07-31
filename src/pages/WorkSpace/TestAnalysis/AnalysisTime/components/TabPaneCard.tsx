@@ -162,8 +162,9 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
         const baseFormData = getAnalysisFormData()
         const obj = { ...baseFormData, ...metricData, metric: metricData?.metric?.toString() }
         if (fetchData?.length !== 0) {
-            fetchData?.forEach(({ key, metric }: any) => {
-                obj[key] = metric.toString()
+            fetchData?.forEach(({ metric }: any) => {
+                const $name = metric.at(0)
+                obj[$name] = metric.toString()
             })
         }
         setInfo(obj)
@@ -217,7 +218,7 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                 metric, title, test_suite_id, test_case_id, sub_case_name, days
             } = query
 
-            const $metric = Object.prototype.toString.call(metric) === "[object Array]" ? metric : metric.split(",")
+            const $metric = Object.prototype.toString.call(metric) === "[object Array]" ? metric : metric?.split(",")
 
             if (test_type === $test_type) {
                 const params: any = {
@@ -254,6 +255,9 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                         setTableData([])
                         setFetchData(metrics)
                     }
+                }
+                if (!title) {
+                    setLoading(false)
                 }
 
                 setMetricData({

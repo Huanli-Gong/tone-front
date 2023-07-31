@@ -89,6 +89,7 @@ const AnalysisTime: React.FC<any> = (props) => {
     const copy = () => {
         const { origin, pathname } = window.location
         const { test_type, show_type, provider_env, ...rest } = info
+        console.log(info)
         const isFunc = test_type === "functional"
         const text = origin + pathname + '?' + stringify({
             test_type,
