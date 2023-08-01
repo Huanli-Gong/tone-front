@@ -2,11 +2,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { useState, useImperativeHandle, useEffect } from 'react'
-import { Form, Radio, Row, Col, Select, Input, Space, Typography } from 'antd'
+import { Form, Radio, Row, Col, Select, Input, /* Space, Typography */ } from 'antd'
 import styles from './index.less'
 import type { FormProps } from './'
 import { queryKernelList } from '@/pages/SystemConf/KernelManage/services'
-import QuestionCircleComponent from '@/components/Public/QuestionCircle'
+// import QuestionCircleComponent from '@/components/Public/QuestionCircle'
 import IsPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/IsPushForm'
 import UnPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/UnPushForm'
 import BuildKernalForm from '@/pages/WorkSpace/TestJob/components/KernalForms/BuildKernalForm'
@@ -14,15 +14,17 @@ import FormList from '@/pages/WorkSpace/TestJob/components/FormList'
 import { getTextByJs } from '@/utils/hooks'
 import MonitorList from './MonitorList'
 
-import { useRequest, useIntl, FormattedMessage } from 'umi'
+import { useRequest, useIntl, FormattedMessage, useParams } from 'umi'
 import _ from 'lodash'
-import { v4 as uuid } from 'uuid'
+import { wsIgnoreScriptInput } from '@/utils/utils'
+// import { v4 as uuid } from 'uuid'
 
 /**
  * 环境配置
  */
 export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = null, template = {} }: FormProps) => {
     const { formatMessage } = useIntl()
+    const { ws_id } = useParams() as any
     const [form] = Form.useForm()
     const [reset, setReset] = useState(false) // 重装
     const [reboot, setReboot] = useState(false) // 重启
@@ -258,11 +260,16 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                     kernel={kernel}
                     kernelList={kernelList}
                     disabled={disabled}
+                    needScriptList={!wsIgnoreScriptInput.includes(ws_id)}
                 />
             }
             {
                 kernel === 'install_un_push' &&
-                <UnPushForm disabled={disabled} form={form} />
+                <UnPushForm
+                    disabled={disabled}
+                    form={form}
+                    needScriptList={!wsIgnoreScriptInput.includes(ws_id)}
+                />
             }
             {
                 kernel === 'install_build_kernel' &&
@@ -354,7 +361,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 />
             }
             {
-                'script' in contrl &&
+                (!wsIgnoreScriptInput.includes(ws_id) && 'script' in contrl) &&
                 <FormList
                     form={form}
                     // label="执行脚本"

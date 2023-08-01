@@ -11,6 +11,9 @@ import _ from 'lodash';
 
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
 
+export const wsIgnoreScriptInput = BUILD_APP_ENV === "opensource" ? [] : ['k5z7sxfu', 'qorjejwq', 'fgq5x4by', '0zn7ne0u']
+export const commonWsIgnoreItems = BUILD_APP_ENV === "opensource" ? [] : ['script', 'cleanup']
+
 export const OPENANOLIS_DOMAIN = "https://passport.openanolis.cn/"
 
 export const OPENANOLIS_LOGIN_URL = OPENANOLIS_DOMAIN + "login?callback=" + window.location.origin

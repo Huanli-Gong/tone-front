@@ -4,7 +4,8 @@ import { Row, Col, Space } from 'antd'
 import { EditTwoTone, CheckCircleFilled } from '@ant-design/icons'
 import { EditNameModal } from './EditNameModal'
 import styles from './index.less'
-
+import { wsIgnoreScriptInput, commonWsIgnoreItems } from '@/utils/utils'
+import { useParams } from 'umi'
 interface rectSelectProps {
     title: string,
     desc: string,
@@ -16,6 +17,7 @@ interface rectSelectProps {
 
 export const RectItem: React.FC<any> = ({ item, name, editModalShow, onSelect }) => {
 
+    const { ws_id } = useParams() as any
     const [iconShow, setIconShow] = useState(false)
     const [color, setColor] = useState('')
 
@@ -46,6 +48,7 @@ export const RectItem: React.FC<any> = ({ item, name, editModalShow, onSelect })
 
     const handleLeaveEdit = () => setColor('')
 
+    if (commonWsIgnoreItems.includes(item.name) && wsIgnoreScriptInput.includes(ws_id)) return <></>
 
     if (isDisableItem)
         return (
@@ -99,7 +102,7 @@ export const RectSelect: React.FC<rectSelectProps> = ({ title, desc, data, name,
                 <span className={styles.step_desc}>{desc}</span>
             </Col>
             <Col style={{ margin: '0px -10px', display: 'flex', flexFlow: 'row wrap' }}>
-                {data.map((item: any, index: number) => (
+                {data?.map((item: any, index: number) => (
                     !item.disable &&
                     <RectItem
                         key={index}
@@ -108,8 +111,7 @@ export const RectSelect: React.FC<rectSelectProps> = ({ title, desc, data, name,
                         name={name}
                         editModalShow={() => ref.current.show(item)}
                     />
-                ))
-                }
+                ))}
             </Col>
             <EditNameModal ref={ref} onOk={handleOk} />
         </Row>
