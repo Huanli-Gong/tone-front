@@ -155,7 +155,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
             className={styles.job_test_form}
         >
             {
-                'cleanup' in contrl &&
+                ('cleanup' in contrl) &&
                 <Form.Item
                     name="cleanup_info"
                     label={contrl.cleanup.alias || <FormattedMessage id={`job.form.${contrl.cleanup.name}`} />}

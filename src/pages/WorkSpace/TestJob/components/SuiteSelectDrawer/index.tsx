@@ -4,7 +4,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Drawer, Form, Spin, Space, Input, Tooltip, Button, Alert, Radio, InputNumber } from 'antd'
 import { forwardRef, useImperativeHandle, useState, useMemo, useCallback, memo, useEffect } from 'react'
-import { useIntl, FormattedMessage } from 'umi';
+import { useIntl, FormattedMessage, useParams } from 'umi';
 import styled from 'styled-components'
 import { DrawerProvider } from './Provider'
 import { QusetionIconTootip, getHasMuiltip, formatter } from '../untils'
@@ -71,6 +71,7 @@ const FieldsInput = styled.div`
 
 const SuiteDrawer = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
+    const { ws_id } = useParams() as any
     const { contrl, checked, server_type, test_type, run_mode, onDataSourceChange, testSuiteData, onOk } = props
 
     const [serverType, setServerType] = useState('pool') //pool custom
