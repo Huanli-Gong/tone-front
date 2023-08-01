@@ -4,6 +4,7 @@ import { Drawer, Space, Button, Form, Input } from 'antd'
 import styled from 'styled-components'
 import { checkTestServerIps } from '@/pages/WorkSpace/DeviceManage/GroupManage/services'
 import { AgentSelect } from '@/components/utils'
+import { wsIgnoreScriptInput } from '@/utils/utils'
 
 const FormWrapper = styled(Form)`
     .ant-form-item{
@@ -59,7 +60,7 @@ const TemplateListDrawer = (props: any, ref: any) => {
             maskClosable={false}
             keyboard={false}
             title={title}
-            visible={visible}
+            open={visible}
             width="376"
             onClose={handleClose}
             footer={
@@ -107,15 +108,20 @@ const TemplateListDrawer = (props: any, ref: any) => {
                 >
                     <Input placeholder={`${formatMessage({ id: 'plan.please.enter.IP' })}${!BUILD_APP_ENV ? "/SN" : ""}`} autoComplete="off" />
                 </Form.Item>
-                <Form.Item
-                    name="script"
-                    label={<FormattedMessage id="plan.custom.script" />}
-                    rules={[{ required: true, message: formatMessage({ id: 'plan.custom.script.cannot.empty' }) }]}
-                >
-                    <Input.TextArea rows={4} placeholder={formatMessage({ id: 'plan.custom.script' })} />
-                </Form.Item>
+
+                {
+                    !wsIgnoreScriptInput.includes(ws_id) &&
+                    < Form.Item
+                        name="script"
+                        label={<FormattedMessage id="plan.custom.script" />}
+                        rules={[{ required: true, message: formatMessage({ id: 'plan.custom.script.cannot.empty' }) }]}
+                    >
+                        <Input.TextArea rows={4} placeholder={formatMessage({ id: 'plan.custom.script' })} />
+                    </Form.Item>
+                }
+
             </FormWrapper>
-        </Drawer>
+        </Drawer >
     )
 }
 

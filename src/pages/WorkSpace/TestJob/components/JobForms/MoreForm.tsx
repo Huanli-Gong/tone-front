@@ -10,7 +10,6 @@ import QuestionCircleComponent from '@/components/Public/QuestionCircle'
 import { queryReportTemplateList } from '@/pages/WorkSpace/TestJob/services'
 import { useParams, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
-import { wsIgnoreScriptInput } from '@/utils/utils'
 
 const { Option } = Select;
 export default ({ contrl, disabled = false, onRef = null, template = {}, isReset, tagsDataRef, reportTemplateDataRef }: FormProps) => {
@@ -156,7 +155,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
             className={styles.job_test_form}
         >
             {
-                (!wsIgnoreScriptInput.includes(ws_id) && 'cleanup' in contrl) &&
+                ('cleanup' in contrl) &&
                 <Form.Item
                     name="cleanup_info"
                     label={contrl.cleanup.alias || <FormattedMessage id={`job.form.${contrl.cleanup.name}`} />}

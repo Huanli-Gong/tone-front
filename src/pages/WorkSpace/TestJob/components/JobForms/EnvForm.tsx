@@ -361,7 +361,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 />
             }
             {
-                (!wsIgnoreScriptInput.includes(ws_id) && 'script' in contrl) &&
+                ('script' in contrl) &&
                 <FormList
                     form={form}
                     // label="执行脚本"

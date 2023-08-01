@@ -1,7 +1,6 @@
 import { Row, Col, Checkbox, Space, Typography } from 'antd'
 import styles from './index.less'
 import { EditShowName } from './EditNameModal'
-import { wsIgnoreScriptInput, commonWsIgnoreItems } from '@/utils/utils'
 import { useParams } from 'umi'
 
 interface checkSelectProps {
@@ -31,35 +30,34 @@ export default ({ name, title, desc, data, onSelect, onEdit, defaultValue }: che
             <Col span={24}>
                 <Checkbox.Group style={{ width: '100%' }} value={defaultValue} onChange={handleChange}>
                     <Row className={styles.step_check_box}>
-                        {data?.filter((item: any) => !(commonWsIgnoreItems.includes(item.name) && wsIgnoreScriptInput.includes(ws_id)))
-                            .map((item: any) => (
-                                ["console", "monitor"].includes(item.name) ?
-                                    (
-                                        <div style={{ width: '33%', display: "flex", flexDirection: "column" }} key={item.id}>
-                                            <Checkbox disabled={true}>{item.show_name}</Checkbox>
-                                            <Typography.Text
-                                                style={{
-                                                    fontSize: 12,
-                                                    color: "#8C8C8C",
-                                                    paddingLeft: 24,
-                                                }}
-                                            >
-                                                {item.description}
-                                            </Typography.Text>
-                                        </div>
-                                    ) : (
-                                        <Col style={{ width: '33%' }} key={item.id} className={styles.step_check_col}>
-                                            <Space>
-                                                <Checkbox value={item.id} />
-                                                <EditShowName name={name} item={item} onEdit={onEdit} />
-                                            </Space>
-                                            <Row className={styles.step_check_desc}>
-                                                {item.description}
-                                            </Row>
-                                        </Col>
-                                    )
-                            )
-                            )}
+                        {data?.map((item: any) => (
+                            ["console", "monitor"].includes(item.name) ?
+                                (
+                                    <div style={{ width: '33%', display: "flex", flexDirection: "column" }} key={item.id}>
+                                        <Checkbox disabled={true}>{item.show_name}</Checkbox>
+                                        <Typography.Text
+                                            style={{
+                                                fontSize: 12,
+                                                color: "#8C8C8C",
+                                                paddingLeft: 24,
+                                            }}
+                                        >
+                                            {item.description}
+                                        </Typography.Text>
+                                    </div>
+                                ) : (
+                                    <Col style={{ width: '33%' }} key={item.id} className={styles.step_check_col}>
+                                        <Space>
+                                            <Checkbox value={item.id} />
+                                            <EditShowName name={name} item={item} onEdit={onEdit} />
+                                        </Space>
+                                        <Row className={styles.step_check_desc}>
+                                            {item.description}
+                                        </Row>
+                                    </Col>
+                                )
+                        )
+                        )}
                     </Row>
                 </Checkbox.Group>
             </Col>

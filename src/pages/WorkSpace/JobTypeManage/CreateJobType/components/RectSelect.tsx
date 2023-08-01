@@ -4,8 +4,7 @@ import { Row, Col, Space } from 'antd'
 import { EditTwoTone, CheckCircleFilled } from '@ant-design/icons'
 import { EditNameModal } from './EditNameModal'
 import styles from './index.less'
-import { wsIgnoreScriptInput, commonWsIgnoreItems } from '@/utils/utils'
-import { useParams } from 'umi'
+
 interface rectSelectProps {
     title: string,
     desc: string,
@@ -17,7 +16,6 @@ interface rectSelectProps {
 
 export const RectItem: React.FC<any> = ({ item, name, editModalShow, onSelect }) => {
 
-    const { ws_id } = useParams() as any
     const [iconShow, setIconShow] = useState(false)
     const [color, setColor] = useState('')
 
@@ -47,8 +45,6 @@ export const RectItem: React.FC<any> = ({ item, name, editModalShow, onSelect })
     const handleHoverEdit = () => setColor('#1890ff')
 
     const handleLeaveEdit = () => setColor('')
-
-    if (commonWsIgnoreItems.includes(item.name) && wsIgnoreScriptInput.includes(ws_id)) return <></>
 
     if (isDisableItem)
         return (
