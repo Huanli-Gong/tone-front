@@ -18,6 +18,8 @@ const ReportHeader = () => {
             ...obj,
         })
     }
+
+    console.log(saveReportData)
     return (
         <ModuleWrapper>
             <SettingTextArea
