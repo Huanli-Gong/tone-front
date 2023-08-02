@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useImperativeHandle, useCallback } from 'react';
 import { Space, Popconfirm, message, Typography } from 'antd';
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
-import { queryClusterMachine, delGroupMachine, editGroupMachine, stateRefresh } from '../../service';
+import { queryClusterMachine, delGroupMachine, editGroupMachine, stateRefresh, cloudManageSyncName } from '../../service';
 import DataSetPulic from '../../DataSetPulic';
 import { StateBadge } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -30,7 +30,7 @@ const GroupTree: React.FC<any> = (props) => {
     // step1.请求列表数据
     const getList = async () => {
         setLoading(true)
-        const data: any = await queryClusterMachine({ cluster_id: cluster_id }).catch(()=> setLoading(false)) || {};
+        const data: any = await queryClusterMachine({ cluster_id: cluster_id }).catch(() => setLoading(false)) || {};
         data.data = data.data?.map((item: any) => {
             item.machineId = item.id
             return { ...item, ...item.test_server }
@@ -42,6 +42,19 @@ const GroupTree: React.FC<any> = (props) => {
         }
         setLoading(false)
     };
+
+    const handleSyncName = async (id: number) => {
+        try {
+            const { code, msg } = await cloudManageSyncName({ id, })
+            if (code === 200) {
+                message.success(formatMessage({ id: 'operation.success' }));
+            } else {
+                requestCodeMessage(code, msg)
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
 
     const handleOpenLogDrawer = useCallback(
         (id) => {
@@ -325,7 +338,7 @@ const GroupTree: React.FC<any> = (props) => {
             fixed: 'right',
             valueType: 'option',
             key: 'operation',
-            width: BUILD_APP_ENV ? 222 : 182,
+            width: BUILD_APP_ENV ? (enLocale ? 300 : 260) : 220,
             render: (_: number, row: any) => (
                 <Space>
                     <Access
@@ -374,6 +387,12 @@ const GroupTree: React.FC<any> = (props) => {
                             </Popconfirm>
                         </Space>
                     </Access>
+                    {
+                        !!is_instance &&
+                        <Typography.Link onClick={() => handleSyncName(row.server_id)}>
+                            <FormattedMessage id="operation.sync.name" />
+                        </Typography.Link>
+                    }
                     <Typography.Link onClick={() => handleOpenLogDrawer(row.id)}>
                         <FormattedMessage id="operation.log" />
                     </Typography.Link>
@@ -382,7 +401,7 @@ const GroupTree: React.FC<any> = (props) => {
         }
     ]
 
-    useEffect(()=> {
+    useEffect(() => {
         getList()
     }, [])
 

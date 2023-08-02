@@ -44,6 +44,7 @@ export default {
   'operation.preview': '预览',
   'operation.share': '分享',
   'operation.log': '日志',
+  'operation.sync.name': '同步名称',
   'operation.log.off': '注销',
   'operation.success': '操作成功',
   'operation.failed': '操作失败',
