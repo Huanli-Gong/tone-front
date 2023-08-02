@@ -374,7 +374,7 @@ const routes = [
 				access: 'WsBtnPermission',
 				routes: [
 					{
-						path: '/ws/:ws_id/config',
+						path: '/ws/:ws_id/config/basic',
 						name: 'BasicConfig',
 						component: './WorkSpace/BasicConfig',
 						access: 'WsBtnPermission',

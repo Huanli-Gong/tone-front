@@ -2,7 +2,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import { Layout, Menu, Space, Popover } from 'antd'
 import styles from './index.less'
-import { FormattedMessage, history, useIntl, useParams, getLocale, useLocation } from 'umi'
+import { FormattedMessage, history, useIntl, useParams, getLocale, useLocation, useRouteMatch } from 'umi'
 import { useClientSize } from '@/utils/hooks'
 import { WorkspaceMenuIcon } from '@/utils/menuIcon'
 import AdCompoent from './components/Ad'
@@ -38,6 +38,7 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
     const enLocale = getLocale() === 'en-US'
     const { route: { routes } } = props
 
+    const routeMatch = useRouteMatch()
     const { ws_id }: any = useParams()
     const { pathname } = useLocation()
     const { formatMessage } = useIntl()
@@ -81,13 +82,9 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
         return false
     }, [routes, pathname])
 
-    const fiterHideRoutes = React.useMemo(() => {
-        return filterHideInMenu(filterUnaccessible(routes))
-    }, [routes])
-
     const inLeftRoutes = React.useMemo(() => {
-        return fiterHideRoutes.filter((route: any) => !route.inNav)
-    }, [fiterHideRoutes])
+        return filterHideInMenu(filterUnaccessible(routes)).filter((route: any) => !route.inNav)
+    }, [routes])
 
     const rootSubmenuKeys = useMemo(() => {
         return inLeftRoutes.reduce((pre: any, item: any) => {
@@ -96,29 +93,13 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
         }, [])
     }, [inLeftRoutes])
 
-    const getOpenKeys = useMemo(
-        () => {
-            if (inLeftRoutes && inLeftRoutes.length > 0) {
-                for (let x = 0, len = inLeftRoutes.length; x < len; x++) {
-                    const routerItem = inLeftRoutes[x]
-                    if (routerItem.path === realPath)
-                        return [realPath];
-                    if (routerItem.children) {
-                        for (let i = 0, l = routerItem.children.length; i < l; i++) {
-                            const childItem = routerItem.children[i]
-                            if (childItem.path === realPath)
-                                return [routerItem.path, realPath]
-                        }
-                    }
-                }
-            }
-            return []
-        }, [inLeftRoutes, realPath]
-    )
-
     useEffect(() => {
-        setOpenKeys(getOpenKeys)
-    }, [inLeftRoutes, pathname])
+        setOpenKeys(
+            realPath?.replace(routeMatch.path, '')?.split('/')?.filter(Boolean)?.map(
+                (i, index, arr) => `${routeMatch.path}/`.concat(arr.slice(0, index + 1).join('/'))
+            )
+        )
+    }, [])
 
     const onOpenChange = useCallback((keys: any) => {
         const latestOpenKey: any = keys.find((key: any) => openKeys.indexOf(key) === -1);
@@ -130,18 +111,10 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
     }, [rootSubmenuKeys, openKeys]);
 
     const selectedKeys = React.useMemo(() => {
-        const rp = pathname.replace(ws_id, ':ws_id')
-        const parentPath = routes.map((i: any) => i.path).filter((i: any) => ~rp.indexOf(i))[0]
-        if (rp === parentPath) return [rp]
-        const pathKeys: any = []
-        const componentPath = rp.split(parentPath).filter(Boolean)[0]
-        componentPath.split("/").reduce((p, c) => {
-            const z = p + (!c ? "/" : "") + c
-            pathKeys.push(parentPath + z)
-            return z
-        }, "")
-        return pathKeys
-    }, [pathname])
+        return realPath?.replace(routeMatch.path, '')?.split('/')?.filter(Boolean)?.map(
+            (i, index, arr) => `${routeMatch.path}/`.concat(arr.slice(0, index + 1).join('/'))
+        )
+    }, [realPath])
 
     // 国际化英文模式，菜单项内容过长缩略问题
     const EllipsisDiv = ({ placement = 'top', style = {}, item = {}, child = {} }: any) => {
@@ -169,7 +142,7 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
                         onOpenChange={onOpenChange}
                     >
                         {
-                            inLeftRoutes.map(
+                            inLeftRoutes?.map(
                                 (item: any) => {
                                     if (item.routes && item.routes.length > 0) {
                                         return (
