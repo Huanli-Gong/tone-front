@@ -780,6 +780,8 @@ const TestJob: React.FC<any> = (props) => {
                 btn,
                 key,
               });
+        } else {
+            handleTemplateEditFunction()
         }
         setFetching(false)
     }
