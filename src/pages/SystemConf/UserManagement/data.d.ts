@@ -1,10 +1,11 @@
 export interface UserList {
 	role_id?: number;
 	onRef: any;
-	RoleChange: any;
+	RoleChange?: any;
 	select: any[];
-	onSearch: any;
+	onSearch?: any;
 	rolelist: any[];
+	callbackTotal?: any;
 }
 
 export interface UserTable {
