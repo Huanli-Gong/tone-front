@@ -755,6 +755,7 @@ const TestJob: React.FC<any> = (props) => {
     const handleCancelTemplate = (key:any) =>  {
         notification.close(key)
         setFetching(false)
+        history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state || {} })
     }
 
     const handleSaveTemplateModify = async () => {
