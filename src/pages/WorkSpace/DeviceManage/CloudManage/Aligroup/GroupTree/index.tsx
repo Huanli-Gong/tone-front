@@ -429,7 +429,7 @@ const GroupTree: React.FC<any> = (props) => {
                 scroll={{ x: '100%' }}
                 columns={columns as any}
                 refreshDeps={[is_instance, ws_id, enLocale]}
-                name="ws-device-cloud-group"
+                name="ws-cloud-device-group"
                 showHeader={!!source.length}
                 dataSource={source}
                 rowKey={'id'}
