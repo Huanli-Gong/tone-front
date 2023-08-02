@@ -299,11 +299,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
 
     const functionTable = Array.isArray(funcData.list) && !!funcData.list.length ?
         funcData?.list?.map((suite: any, idx: number) => {
-            const hasDesc = ['test_env', 'test_description', 'test_conclusion'].map((i: string) => suite[i]).filter(Boolean).length > 0
             return (
                 <TestSuite key={suite?.suite_id}>
-                    {(hasDesc && !domainResult.is_default) &&
-                        <Configuration style={{ marginBottom: 16, backgroundColor: 'rgba(0,0,0,0.03)' }}>
+                    {(!domainResult.is_default) &&
+                        <Configuration style={{ backgroundColor: 'rgba(0,0,0,0.03)' }}>
                             {
                                 [
                                     ["need_test_env", "test_env", "env"],

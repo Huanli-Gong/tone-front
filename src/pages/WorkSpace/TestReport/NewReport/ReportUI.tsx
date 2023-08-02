@@ -476,6 +476,7 @@ export const SuiteName = styled.div`
     color:rgba(0,0,0,0.85);
     background:rgba(0,0,0,0.04);
     position:relative;
+    margin-top: 8px;
 `
 // suite conf
 export const TestConf = styled.div`
