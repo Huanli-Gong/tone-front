@@ -28,7 +28,7 @@ import OverflowList from '@/components/TagOverflow/index';
 import CommonPagination from '@/components/CommonPagination'
 import { ResizeHooksTable } from '@/utils/table.hooks';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
-import { stringify, parse } from 'querystring';
+import { stringify } from 'querystring';
 import { v4 as uuid } from 'uuid';
 /**
  * 云上单机
@@ -51,14 +51,14 @@ interface MachineParams {
 const channelTypeList = agent_list.map((i: any) => ({ id: i.value, name: i.label }))
 
 export default () => {
-    const { pathname, query } = useLocation() as any
+    const { query } = useLocation() as any
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
     const { ws_id }: any = useParams()
     const access = useAccess();
     const aloneMachine = useRef<any>(null)
     const [isInstance, setIsInstance] = useState<number>(Object.prototype.toString.call(query?.is_instance) === "[object String]" ? + query?.is_instance : 0)
-    const [loading, setLoading] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(true)
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
     const [source, setSource] = useState<any>({});
     const [deleteVisible, setDeleteVisible] = useState(false);
@@ -122,10 +122,10 @@ export default () => {
             is_instance: Boolean(+ isInstance),
             server_conf: name,
         }
+        history.replace(`/ws/${ws_id}/device/cloud?${stringify({ ...obj, is_instance: obj.is_instance ? 1 : 0 })}`)
         setLoading(true)
         const data: any = await cloudList(obj)
         setLoading(false)
-        history.replace(`${pathname}?${stringify({ ...obj, is_instance: obj.is_instance ? 1 : 0 })}`)
         data && setSource(data)
     };
 
@@ -200,9 +200,10 @@ export default () => {
             window.open(`/ws/${ws_id}/refenerce/6/?pk=${pk}`)
         // window.open(`/ws/${ws_id}/refenerce/6/?name=${deleteObj.name}&id=${deleteObj.id}`)
     }
+
     useEffect(() => {
         getList()
-    }, [params, isInstance]);
+    }, [params]);
 
     const tabRadioChange = (val: any) => {
         setIsInstance(val)

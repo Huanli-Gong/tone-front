@@ -10,23 +10,17 @@ import { TabCard } from '@/components/UpgradeUI';
  */
 export default () => {
     const { ws_id } = useParams() as any
-    const { query: { t }, search } = useLocation() as any
+    const { query: { t } } = useLocation() as any
 
     const { TabPane } = Tabs;
     const [tab, setTab] = useState(t ?? 'standalone')
     const [timeStr, setTimeStr] = useState(new Date().getTime())
 
-
     const handleTabClick = ($t: string) => {
         setTab($t)
-        history.push(`/ws/${ws_id}/device/cloud?t=${$t}`)
         setTimeStr(new Date().getTime())
+        history.push(`/ws/${ws_id}/device/cloud?t=${$t}`)
     }
-
-    React.useEffect(() => {
-        if (!search)
-            setTimeStr(new Date().getTime())
-    }, [search])
 
     return (
         <TabCard
@@ -43,8 +37,12 @@ export default () => {
         >
             {
                 tab === 'standalone' ?
-                    <Standalone key={timeStr} /> :
-                    <Aligroup key={timeStr} />
+                    <Standalone
+                        key={timeStr}
+                    /> :
+                    <Aligroup
+                        key={timeStr}
+                    />
             }
         </TabCard>
     )

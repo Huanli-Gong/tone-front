@@ -19,16 +19,15 @@ const CardStyles = styled(TabCard)`
 
 const GroupManagement: React.FC = (props) => {
     // 单机:'standalone'; 集群:'cluster';
-    const { ws_id } = useParams() as any
-    const { query: { t }, search } = useLocation() as any
+    const { query: { t } } = useLocation() as any
 
     const [tab, setTab] = useState(t ?? 'standalone') // 默认单机
     const [timeStr, setTimeStr] = useState(new Date().getTime())
 
     const handleTabClick = ($tab: string) => {
         setTab($tab)
-        history.push(`/ws/${ws_id}/device/group?t=${$tab}`)
         setTimeStr(new Date().getTime())
+        // history.replace(`/ws/${ws_id}/device/group?t=${$tab}`)
     }
 
     const standaloneRef: any = useRef(null)
@@ -41,11 +40,6 @@ const GroupManagement: React.FC = (props) => {
     const handleCreateServer = useCallback(() => {
         clusterRef.current.open()
     }, [])
-
-    React.useEffect(() => {
-        if (!search)
-            setTimeStr(new Date().getTime())
-    }, [search])
 
     return (
         <>

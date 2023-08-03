@@ -70,10 +70,10 @@ const Standalone = (props: any, ref: any) => {
     ]
     const channelTypeList = agent_list.map((i: any) => ({ id: i.value, name: i.label }))
     const getTestServerList = async () => {
+        history.replace(`/ws/${ws_id}/device/group?${stringify(urlParmas)}`)
         setLoading(true)
         const res = await queryTestServerList(urlParmas) || {}
         setLoading(false)
-        history.replace(`/ws/${ws_id}/device/group?${stringify(urlParmas)}`)
         const { data = [] } = res
         setDataSource(data)
         setTotal(res.total)
