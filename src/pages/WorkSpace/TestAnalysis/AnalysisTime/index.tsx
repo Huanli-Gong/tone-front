@@ -23,7 +23,7 @@ const AnalysisLayout = styled(Layout.Content).attrs((props: any) => ({
 
 const AnalysisTime: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
-    const { query } = useLocation() as any
+    const { query, key } = useLocation() as any
     const { ws_id } = useParams() as any
     const { route } = props
 
@@ -89,7 +89,6 @@ const AnalysisTime: React.FC<any> = (props) => {
     const copy = () => {
         const { origin, pathname } = window.location
         const { test_type, show_type, provider_env, ...rest } = info
-        console.log(info)
         const isFunc = test_type === "functional"
         const text = origin + pathname + '?' + stringify({
             test_type,
@@ -100,7 +99,7 @@ const AnalysisTime: React.FC<any> = (props) => {
     }
 
     return (
-        <Analysis.Provider value={{ metrics, setMetrics }}>
+        <Analysis.Provider value={{ metrics, setMetrics }} key={key}>
             <AnalysisLayout minHeight={innerHeight - 40}>
                 <Row style={{ background: '#fff' }}>
                     <Col span={24}>
