@@ -82,6 +82,7 @@ export default () => {
         filterDropdown: ({ confirm }: any) => (
             <SearchInput
                 confirm={confirm}
+                value={params[dataIndex]}
                 onConfirm={(val: string) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
             />
         ),
@@ -98,6 +99,7 @@ export default () => {
         filterDropdown: ({ confirm }: any) => (
             <SelectCheck
                 list={list}
+                value={params[dataIndex]}
                 confirm={confirm}
                 onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
             />
@@ -109,6 +111,7 @@ export default () => {
         filterDropdown: ({ confirm }: any) => (
             <SelectRadio
                 list={list}
+                value={params[dataIndex]}
                 confirm={confirm}
                 onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
             />
@@ -403,6 +406,7 @@ export default () => {
             filterDropdown: ({ confirm }: any) => (
                 <SelectCheck
                     list={channelTypeList}
+                    value={params?.channel_type}
                     confirm={confirm}
                     onConfirm={(channel_type: any) => setParams({ ...params, channel_type, page_num: 1 })}
                 />

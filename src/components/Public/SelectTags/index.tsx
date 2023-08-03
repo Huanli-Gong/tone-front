@@ -12,9 +12,8 @@ const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, value }) => {
 	const [isEnd, setIsEnd] = useState(false)
 	const [tags, setTags] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
-	const [val, setVal] = useState<any>(value || [])
+	const [val, setVal] = useState<any>(value?.map((i: any) => + i) || [])
 	const [fetching, setFetching] = useState<boolean>(true)
-	const { Option } = Select;
 	const [focus, setFous] = useState<boolean>(false)
 
 	const requestData = async (query: any, option = "concat") => {
@@ -63,8 +62,8 @@ const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, value }) => {
 	const tagRender = (props: any) => {
 		const { label, closable, onClose } = props;
 		return (
-			<Tag color={label.props.color} closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
-				{label.props.children}
+			<Tag color={label.props?.color} closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
+				{label.props?.children}
 			</Tag>
 		)
 	}
@@ -97,15 +96,13 @@ const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, value }) => {
 				}}
 				value={val}
 				tagRender={tagRender}
-			>
-				{
-					tags.map((item: any) => {
-						return <Option key={item.id} value={item.id}>
-							<Tag color={item.tag_color} >{item.name}</Tag>
-						</Option>
-					})
+				options={
+					tags?.map((item: any) => ({
+						value: item.id,
+						label: <Tag color={item.tag_color} >{item.name}</Tag>
+					}))
 				}
-			</Select>
+			/>
 			<Divider style={{ marginTop: '10px', marginBottom: '4px' }} />
 			<Space>
 				<Button
