@@ -17,7 +17,7 @@ import { editReport, saveReport } from '../services';
 import { history, useAccess, Access, useParams, useIntl, FormattedMessage, useLocation } from 'umi';
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { ReportContext } from './Provider';
-import _, { lastIndexOf } from 'lodash';
+import _ from 'lodash';
 import { ReportTemplate, ReportBodyContainer, ReportWarpper, ReportBread, BreadDetailL, BreadDetailR } from './ReportUI';
 import { CreatePageData, EditPageData } from './hooks';
 
@@ -71,13 +71,14 @@ const Report = (props: any) => {
             setBtnState(false)
         } else {
             setBtnState(true)
-            obj.test_env = _.cloneDeep(environmentResult)
-            obj.test_conclusion = _.cloneDeep(summaryData)
-            setObj({
-                ...obj
+
+            setObj((draft: any) => {
+                draft.test_env = environmentResult
+                draft.test_conclusion = summaryData
+                return draft
             })
         }
-    }, [routeName])
+    }, [routeName, environmentResult, summaryData])
 
     // job_li
     const getSelAllJob = () => {
@@ -162,6 +163,7 @@ const Report = (props: any) => {
         obj.tmpl_id = saveReportData.template
         obj.ws_id = ws_id
         obj.job_li = getSelAllJob()
+        obj.name = saveReportData.name
         if (saveReportData.id) {
             obj.report_id = saveReportData.id
             const res = await editReport(obj)

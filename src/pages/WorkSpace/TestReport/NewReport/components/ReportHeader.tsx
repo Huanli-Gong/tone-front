@@ -19,7 +19,6 @@ const ReportHeader = () => {
         })
     }
 
-    console.log(saveReportData)
     return (
         <ModuleWrapper>
             <SettingTextArea
@@ -48,8 +47,7 @@ const ReportHeader = () => {
                         style={{ marginBottom: 8 }}
                         defaultHolder={formatMessage({ id: 'report.please.enter.desc' })}
                         creator={creator}
-                    />
-                    :
+                    /> :
                     <SettingTextArea
                         name={saveReportData?.description}
                         btn={btnState}
@@ -66,12 +64,15 @@ const ReportHeader = () => {
                     />
             }
 
-            {!btnState && <Row>
-                <Space>
-                    <CreateMsg><FormattedMessage id="report.columns.creator" />&nbsp;{saveReportData?.creator_name}</CreateMsg>
-                    <CreateMsg><FormattedMessage id="report.columns.gmt_created" />&nbsp;{saveReportData?.gmt_created}</CreateMsg>
-                </Space>
-            </Row>}
+            {
+                !btnState &&
+                <Row>
+                    <Space>
+                        <CreateMsg><FormattedMessage id="report.columns.creator" />&nbsp;{saveReportData?.creator_name}</CreateMsg>
+                        <CreateMsg><FormattedMessage id="report.columns.gmt_created" />&nbsp;{saveReportData?.gmt_created}</CreateMsg>
+                    </Space>
+                </Row>
+            }
         </ModuleWrapper>
     )
 }

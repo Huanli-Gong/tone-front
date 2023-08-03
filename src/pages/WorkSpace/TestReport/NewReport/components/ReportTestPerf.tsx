@@ -128,8 +128,11 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
                 }
             })
         }
-        obj.test_item.perf_data = new_pref_data
-        setObj(obj)
+
+        setObj((draft: any) => {
+            draft.test_item.perf_data = new_pref_data
+            return draft
+        })
     }, [dataSource])
 
     const getGroupDesc = (group_name: string) => {

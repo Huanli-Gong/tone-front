@@ -65,8 +65,11 @@ const ReportTestFunc: React.FC<any> = () => {
                 }
             })
         }
-        obj.test_item.func_data = new_func_data
-        setObj(obj)
+
+        setObj((draft: any) => {
+            draft.test_item.func_data = new_func_data
+            return draft
+        })
     }, [dataSource])
 
     const getGroupDesc = (group_name: string) => {

@@ -43,16 +43,17 @@ export const SettingTextArea = ({
     }) => {
 
     const { formatMessage } = useIntl()
-    const [title, setTitle] = useState('')
+    const [title, setTitle] = useState(name)
+
     useEffect(() => {
         if (btnConfirm) {
             onOk(title)
         }
     }, [btnConfirm])
 
-    useEffect(() => {
+    React.useEffect(() => {
         setTitle(name)
-    }, [name])
+    }, [name, btn, isInput])
 
     const handleChange = (title: any) => {
         if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not.filled.in' })
