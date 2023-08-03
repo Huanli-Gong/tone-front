@@ -44,6 +44,7 @@ export default {
   'operation.preview': 'Preview',
   'operation.share': 'Share',
   'operation.log': 'Log',
+  'operation.sync.name': 'Sync Name',
   'operation.log.off': 'Log out',
   'operation.success': 'Operation is success',
   'operation.failed': 'Operation is failed',
