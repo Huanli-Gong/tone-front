@@ -181,9 +181,9 @@ const Performance = (props: any) => {
                             ...ix,
                             conf_list: ix.conf_list.map((confs: any) => {
                                 if (confs.conf_id === conf.conf_id) {
-                                    const currentSuite = child.list?.filter((xy: any) => xy.suite_id === suite.suite_id).at(0)
+                                    const currentSuite = child.list?.filter((xy: any) => xy.suite_id === suite.suite_id)?.[0]
                                     const useConfList = currentSuite.conf_list?.filter((confs: any) => confs.conf_id === conf.conf_id)
-                                    return useConfList.at(0) || confs
+                                    return useConfList?.[0] || confs
                                 }
                                 return confs
                             })

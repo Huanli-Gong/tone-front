@@ -60,6 +60,9 @@ export default defineConfig({
     nodeModulesTransform: {
         type: 'none',
     },
+    polyfill: {
+        imports: [`core-js/full/array/at`]
+    },
     ignoreMomentLocale: true,
     proxy: proxy[REACT_APP_ENV || 'dev'],
     manifest: {
