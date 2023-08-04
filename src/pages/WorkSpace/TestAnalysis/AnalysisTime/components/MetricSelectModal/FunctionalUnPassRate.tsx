@@ -122,7 +122,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                         type: 'radio',
                         selectedRowKeys: [selectSubcase],
                         onChange: (list: any) => {
-                            setSelectSubcase(list.at(0))
+                            setSelectSubcase(list?.[0])
                         }
                     }}
                     onRow={
