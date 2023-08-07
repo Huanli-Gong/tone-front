@@ -17,7 +17,7 @@ const Performance: React.FC<AnyType> = (props) => {
     const { formatMessage } = useIntl()
 
     const getQueryValue = (queryName: any) => {
-        if (query?.test_type !== "performance") return undefined
+        if (JSON.stringify(query) !== '{}' && (query?.test_type !== "performance")) return undefined
         if (basicValues) return basicValues[queryName]
         if (provider_env === query?.provider_env && query[queryName]) return query[queryName]
         return undefined
@@ -32,6 +32,8 @@ const Performance: React.FC<AnyType> = (props) => {
     const [activeSuite, setActiveSuite] = React.useState<any>(+ getQueryValue("test_suite_id") || undefined)
     const [activeConf, setActiveConf] = React.useState<any>(+ getQueryValue("test_case_id") || undefined)
     const [selectMetric, setSelectMetric] = React.useState<any>(getQueryValue("metric") || transMetric(query))
+
+    console.log(selectMetric)
 
     React.useEffect(() => {
         if (suiteList?.length > 0) {

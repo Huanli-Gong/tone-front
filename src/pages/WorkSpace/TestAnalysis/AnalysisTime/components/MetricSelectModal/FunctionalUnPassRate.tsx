@@ -9,7 +9,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
     const { query }: any = useLocation()
 
     const getQueryValue = (queryName: any) => {
-        if (query?.test_type !== "functional") return undefined
+        if (JSON.stringify(query) !== '{}' && (query?.test_type !== "functional")) return undefined
         if (basicValues) return basicValues[queryName]
         if (query[queryName]) return query[queryName]
         return undefined
