@@ -39,9 +39,11 @@ export default () => {
                 tab === 'standalone' ?
                     <Standalone
                         key={timeStr}
+                        tab={tab}
                     /> :
                     <Aligroup
                         key={timeStr}
+                        tab={tab}
                     />
             }
         </TabCard>

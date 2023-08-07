@@ -24,7 +24,7 @@ import CommonPagination from '@/components/CommonPagination';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
 import { v4 as uuid } from 'uuid';
 import DelConfirmModal from '../../components/DelConfirmModal';
-import { stringify, parse } from 'querystring';
+import { stringify } from 'querystring';
 
 /**
  * 云上集群
@@ -41,8 +41,9 @@ interface AligroupParams {
     is_instance?: number,
 }
 
-const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
-    const { pathname, query, search } = useLocation() as any
+const Aligroup: React.ForwardRefRenderFunction<any, any> = (props) => {
+    const { tab } = props
+    const { query } = useLocation() as any
     const { formatMessage } = useIntl()
     const { ws_id }: any = useParams()
     const [form] = Form.useForm();
@@ -54,6 +55,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     const [loading, setLoading] = useState<boolean>(false)
     const [source, setSource] = useState<any>({});
     const DEFAULT_PARAM = {
+        t: tab,
         refresh: true,
         page_num: 1,
         page_size: 10,

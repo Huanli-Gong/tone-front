@@ -50,7 +50,8 @@ interface MachineParams {
 
 const channelTypeList = agent_list.map((i: any) => ({ id: i.value, name: i.label }))
 
-export default () => {
+export default (props: any) => {
+    const { tab } = props
     const { query } = useLocation() as any
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
@@ -70,6 +71,7 @@ export default () => {
     const viewDetailRef: any = useRef(null)
 
     const DEFAULT_PARAM = {
+        t: tab,
         page_num: 1,
         page_size: 10,
         ws_id,
