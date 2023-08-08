@@ -104,8 +104,6 @@ const AnalysisTime: React.FC<any> = (props) => {
         handleCopyUri(text)
     }
 
-    console.log(info)
-
     return (
         <Analysis.Provider value={{ metrics, setMetrics }} key={key}>
             <AnalysisLayout minHeight={innerHeight - 40}>

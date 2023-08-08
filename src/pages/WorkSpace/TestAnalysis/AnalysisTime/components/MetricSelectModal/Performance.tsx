@@ -33,8 +33,6 @@ const Performance: React.FC<AnyType> = (props) => {
     const [activeConf, setActiveConf] = React.useState<any>(+ getQueryValue("test_case_id") || undefined)
     const [selectMetric, setSelectMetric] = React.useState<any>(getQueryValue("metric") || transMetric(query))
 
-    console.log(selectMetric)
-
     React.useEffect(() => {
         if (suiteList?.length > 0) {
             const tsi = getQueryValue("test_suite_id")
