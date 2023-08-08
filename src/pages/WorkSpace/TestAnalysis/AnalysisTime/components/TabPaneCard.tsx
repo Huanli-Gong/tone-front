@@ -225,7 +225,8 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                     metric: $metric,
                     project_id, tag,
                     test_suite_id, test_case_id, sub_case_name,
-                    show_type, provider_env: $provider_env
+                    show_type,
+                    provider_env: $provider_env
                 }
 
                 let start = start_time
