@@ -387,7 +387,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
 
     return (
         <>
-            <TestGroupItem id={`func_item-${id}`} className="tree_mark" isGroup={name === 'group'}>
+            <TestGroupItem id={`func_item-${id}`} className="position_mark" isGroup={name === 'group'}>
                 <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                 <TestItemText>
                     <GroupItemText

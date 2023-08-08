@@ -171,7 +171,7 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
                                         {
                                             item.is_group ?
                                                 <>
-                                                    <TestGroup id={`pref_item-${item.rowKey}`} className="tree_mark">
+                                                    <TestGroup id={`perf_item-${item.rowKey}`} className="position_mark">
                                                         <TestGroupIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                                                         <TestItemText>
                                                             <GroupItemText

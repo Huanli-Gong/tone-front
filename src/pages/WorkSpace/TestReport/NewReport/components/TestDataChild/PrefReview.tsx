@@ -447,7 +447,7 @@ const Performance = (props: any) => {
 
     return (
         <div key={id}>
-            <TestGroupItem id={`perf_item-${id}`} className="tree_mark" isGroup={name === 'group'} >
+            <TestGroupItem id={`perf_item-${id}`} className="position_mark" isGroup={name === 'group'} >
                 <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                 <TestItemText>
                     <GroupItemText

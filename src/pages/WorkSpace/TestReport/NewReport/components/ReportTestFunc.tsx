@@ -81,7 +81,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                     {
                                         item.is_group ?
                                             <>
-                                                <TestGroup id={`func_item-${item.rowKey}`} className="tree_mark">
+                                                <TestGroup id={`func_item-${item.rowKey}`} className="position_mark">
                                                     <TestGroupIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                                                     <TestItemText>
                                                         <GroupItemText

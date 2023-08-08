@@ -51,7 +51,7 @@ export const CatalogBody = styled.div`
         white-space: nowrap;
         text-overflow: ellipsis;
     }
-    #left-catalog-wrapper .spaceWarpper .ant-space-item .toc-selected {
+    #left-catalog-wrapper .spaceWarpper .ant-space-item .markSpace .toc-selected {
         color: #1890FF;
     }
 `
