@@ -73,6 +73,7 @@ const text = {
   'business.fail': 'Fail',
   'business_name': 'Business Name',
   'the.server': 'Server',
+  'timeout': 'Timeout(s)',
   'result': 'Result',
   'business_business': 'Total/Success/Fail',
   'performance': 'Metric Total/Raise/Drop/Normal/Invalid/NA',

@@ -58,7 +58,7 @@ const Outline: React.FC<IProps> = ({ json }) => {
         })
     }, [json]);
 
-    const min = React.useMemo(() => result?.map(({ level }: any) => level).sort((a: number, b: number) => a - b).at(0) || 0, [result])
+    const min = React.useMemo(() => result?.map(({ level }: any) => level).sort((a: number, b: number) => a - b)?.[0] || 0, [result])
 
     const [catalogHeight, setCatalogHeight] = React.useState(0)
     const ref = React.useRef<HTMLDivElement>(null)

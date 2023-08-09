@@ -18,11 +18,11 @@ export const querySearchListQuantity = async (params: any) => {
 }
 // 2.2 列表数据
 export const querySearchList = async (params: any) => {
-  const { search_key, search_type, page_num, page_size } = params
+  const { search_key, search_type, page_num, page_size, ws_id } = params
   return request(`/api/case/test_suite/retrieve/`, {
     method: 'POST',
     params: { page_num, page_size },
-    data: { search_key, search_type },
+    data: { search_key, search_type, ws_id },
   })
 }
 

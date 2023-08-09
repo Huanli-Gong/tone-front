@@ -13,6 +13,7 @@ import { useRef } from 'react';
 import AvatarCover from '@/components/AvatarCover';
 import { useIntl, FormattedMessage } from 'umi';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
+import { ResizeHooksTable } from '@/utils/table.hooks';
 
 const validatorParams = (params: any) => {
     const row: any = {};
@@ -121,6 +122,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, rolelist, call
         {
             title: <FormattedMessage id="user.email" />,
             dataIndex: 'email',
+            width: 200,
             ellipsis: {
                 showTitle: false
             },
@@ -156,12 +158,15 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, rolelist, call
             ellipsis: {
                 showTitle: false
             },
-            width: 200,
+            width: 300,
         },
         {
             title: <FormattedMessage id="user.gmt_created" />,
             dataIndex: 'gmt_created',
             width: 145,
+            ellipsis: {
+                showTitle: false
+            },
         },
         BUILD_APP_ENV === 'opensource' &&
         {
@@ -185,13 +190,15 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, rolelist, call
 
     return (
         <div>
-            <Table
+            <ResizeHooksTable
                 loading={loading}
+                name="system-user-management-column"
                 rowKey="id"
                 size="small"
                 columns={columns as any}
                 dataSource={listPage.data}
                 pagination={false}
+                scroll={{ x: '100%' }}
             />
             <CommonPagination
                 size="default"

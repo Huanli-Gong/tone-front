@@ -126,7 +126,7 @@ const BuildKernelTable: React.FC<IProps> = (props) => {
             )
         },
         {
-            dataIndex: 'start_timne',
+            dataIndex: 'start_time',
             title: <FormattedMessage id="ws.result.details.start_time" />,
             ...tooltipTd(),
         },

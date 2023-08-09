@@ -70,7 +70,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
         setInitialStyle({ marginTop: 20, minWidth: 800, width: '70%', show: true });
         setShowInitialList(false);
       }
-      getSearchListQuantity({ search_key: value })
+      getSearchListQuantity({ search_key: value, ws_id })
       setRefresh(new Date().getTime())
       history.push({
         pathname: `/ws/${ws_id}/suite_search/key`,

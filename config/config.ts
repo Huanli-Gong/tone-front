@@ -65,6 +65,9 @@ export default defineConfig({
     nodeModulesTransform: {
         type: 'none',
     },
+    polyfill: {
+        imports: [`core-js/full/array/at`]
+    },
     ignoreMomentLocale: true,
     /* @ts-ignore */
     proxy: proxy[REACT_APP_ENV || 'dev'],

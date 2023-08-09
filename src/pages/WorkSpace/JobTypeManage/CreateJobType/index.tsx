@@ -29,7 +29,7 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
 
     const previewDrawer: React.RefObject<any> = useRef()
 
-    const [source, setSource] = useState({ basic: [], env: [], server: [], more: [] })
+    const [source, setSource] = useState<any>({ basic: [], env: [], server: [], more: [] })
     const [loading, setLoading] = useState(true)
     const [padding, setPadding] = useState(false)
 
@@ -136,7 +136,7 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
     }
 
     const handleFinish = async (saveType: string = '') => {
-        const item_dict = {}
+        const item_dict: any = {}
         setPadding(true)
         if (padding) return
         form.validateFields()

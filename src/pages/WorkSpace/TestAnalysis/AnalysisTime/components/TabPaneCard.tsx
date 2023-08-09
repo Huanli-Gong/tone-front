@@ -42,13 +42,13 @@ const SuiteConfMetric = (props: any) => {
                     label="Suite"
                     labelStyle={{ ...fontStyle, paddingLeft: 10 }}
                 >
-                    {str?.at(0)}
+                    {str?.[0]}
                 </Descriptions.Item>
                 <Descriptions.Item
                     label="Conf"
                     labelStyle={{ ...fontStyle, paddingLeft: 12 }}
                 >
-                    {str?.at(1)}
+                    {str?.[1]}
                 </Descriptions.Item>
                 <Descriptions.Item
                     label="Metric"

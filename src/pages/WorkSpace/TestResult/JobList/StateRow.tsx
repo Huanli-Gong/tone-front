@@ -201,8 +201,8 @@ const StateRow: React.FC<IProps> = (props) => {
                     allowClear
                     value={inp}
                     onChange={({ target }) => setInp(target.value)}
-                    onPressEnter={() => setPageQuery((p: any) => ({ ...p, search: inp.replaceAll(" ", "") }))}
-                    onSearch={(val) => setPageQuery((p: any) => ({ ...p, search: val.replaceAll(" ", "") }))}
+                    onPressEnter={() => setPageQuery((p: any) => ({ ...p, search: inp.replaceAll(" ", ""), page_num: 1 }))}
+                    onSearch={(val) => setPageQuery((p: any) => ({ ...p, search: val.replaceAll(" ", ""), page_num: 1 }))}
                 />
                 <div onClick={() => onFilterChange(!filter)} style={{ cursor: 'pointer' }}>
                     {

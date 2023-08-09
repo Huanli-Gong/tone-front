@@ -35,6 +35,17 @@ export default ({ data = [], testType, provider_name, columnsRefresh, onColumnsC
             render: (text: string, row: any) => <ServerTooltip provider_name={provider_name} {...row} />
         },
         {
+            title: <FormattedMessage id="ws.result.details.timeout" />,
+            dataIndex: 'timeout',
+            width: 150,
+            ellipsis: {
+                showTitle: false
+            },
+            render(_: any, row: any) {
+                return row.timeout || "-"
+            }
+        },
+        {
             title: 'Repeat',
             dataIndex: 'repeat',
             width: 100,

@@ -84,6 +84,14 @@ const SuiteManagement: React.FC<any> = () => {
             setMsg(res.msg)
             return
         }
+        if (res.code === '1-12-002') {
+            setTimeout(function () {
+                setFetching(false)
+            }, 1)
+            setValidateStatus('error')
+            setMsg(res.msg)
+            return
+        }
         if (res.code == 1302) {
             setValidateStatus('error')
             setMsg(formatMessage({ id: 'job.tags.msg2' }))
