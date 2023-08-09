@@ -4,9 +4,9 @@ import { Space, Button, Input, Divider } from 'antd';
 import { useIntl, FormattedMessage } from 'umi'
 
 const FilterRadio: React.FC<any> = (props) => {
-	const { confirm, onConfirm, initVal, autoFocus, placeholder, styleObj, currentData } = props
+	const { confirm, onConfirm, autoFocus, placeholder, styleObj, currentData, value } = props
 	const { formatMessage } = useIntl()
-	const [val, setVal] = useState<any>()
+	const [val, setVal] = useState<any>(value || undefined)
 	const input: any = useRef(null);
 	useEffect(() => {
 		input.current.focus()
@@ -19,8 +19,8 @@ const FilterRadio: React.FC<any> = (props) => {
 	const { Search } = Input;
 
 	useEffect(() => {
-		setVal(initVal)
-	}, [initVal])
+		setVal(value)
+	}, [value])
 
 	return (
 		<div style={{ padding: 8 }}>

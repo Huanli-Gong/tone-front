@@ -7,8 +7,8 @@ import styles from './index.less'
 import SearchInput from '@/components/Public/SearchInput';
 import moment from "moment"
 
-const RadioGroupTableFilter: React.FC<any> = ({ confirm, onConfirm, list, initVal }) => {
-    const [val, setVal] = useState<any>(initVal === undefined ? '' : initVal)
+const RadioGroupTableFilter: React.FC<any> = ({ confirm, onConfirm, list, value }) => {
+    const [val, setVal] = useState<any>(value || undefined)
 
     const handleConfirm = () => {
         confirm?.()
@@ -67,8 +67,8 @@ const RadioGroupTableFilter: React.FC<any> = ({ confirm, onConfirm, list, initVa
     )
 }
 
-const CheckboxTableFilter: React.FC<any> = ({ confirm, onConfirm, list, initVal }) => {
-    const [groupValue, setGroupValue] = useState<any>(initVal || [])
+const CheckboxTableFilter: React.FC<any> = ({ confirm, onConfirm, list, value }) => {
+    const [groupValue, setGroupValue] = useState<any>(value || [])
     const [allChecked, setAllChecked] = useState<boolean>(false)
     // const scrollbarsRef: any = useRef(null)
     // const { height: layoutHeight } = useClientSize()
@@ -231,7 +231,7 @@ export const getRangeDatePickerFilter = (value: any, onOk: any) => {
 export const getCheckboxFilter = (props: any, setProps: any, list: any, name: string) => ({
     filterDropdown: ({ confirm }: any) => (
         <CheckboxTableFilter
-            initVal={props[name]}
+            value={props[name]}
             list={list}
             confirm={confirm}
             onConfirm={(val: string) => setProps({ ...props, [name]: val, page_num: 1 })}
@@ -245,7 +245,7 @@ export const getSearchFilter = (props: any, setProps: any, name: string, desc?: 
         <SearchInput
             confirm={confirm}
             onConfirm={(val: string) => setProps({ ...props, [name]: val, page_num: 1 })}
-            initVal={props[name]}
+            value={props[name]}
             placeholder={[desc]}
         />
     ),
@@ -255,7 +255,7 @@ export const getSearchFilter = (props: any, setProps: any, name: string, desc?: 
 export const getRadioFilter = (props: any, setProps: any, list: any, name: string) => ({
     filterDropdown: ({ confirm }: any) => (
         <RadioGroupTableFilter
-            initVal={props[name]}
+            value={props[name]}
             list={list}
             confirm={confirm}
             onConfirm={(val: string) => setProps({ ...props, [name]: val, page_num: 1 })}
@@ -267,7 +267,7 @@ export const getRadioFilter = (props: any, setProps: any, list: any, name: strin
 export const getUserFilter = (params: any, setParams: any, name: string) => ({
     filterDropdown: ({ confirm }: any) => (
         <SelectDrop
-            initVal={{ id: params[name], name: params.userName }}
+            value={{ id: params[name], name: params.userName }}
             confirm={confirm}
             onConfirm={(val: string, valName: string) => setParams({ ...params, [name]: val, userName: valName, page_num: 1 })}
         />
