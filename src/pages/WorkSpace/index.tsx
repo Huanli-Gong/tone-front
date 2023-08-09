@@ -2,11 +2,10 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import { Layout, Menu, Space, Popover } from 'antd'
 import styles from './index.less'
-import { FormattedMessage, history, useIntl, useParams, getLocale, useLocation, useModel } from 'umi'
+import { FormattedMessage, history, useIntl, useParams, getLocale, useLocation, useRouteMatch, useModel } from 'umi'
 import { useClientSize } from '@/utils/hooks'
 import { WorkspaceMenuIcon } from '@/utils/menuIcon'
 import AdCompoent from './components/Ad'
-import { envIgnoreIds } from '@/utils/utils'
 
 const { document }: any = window
 
@@ -35,11 +34,11 @@ const getRegString = (path: any) => path?.split('/').reduce((p: any, c: any) => 
 const ignorePath = ["401", "500", "404", "403"].map((i: string) => `/ws/:ws_id/${i}`)
 
 const WorkspaceLayout: React.FC<AnyType> = (props) => {
-    const { initialState } = useModel('@@initialState')
-
+    // const { initialState } = useModel('@@initialState')
     const enLocale = getLocale() === 'en-US'
-    const { route: { routes: baseRoutes } } = props
+    const { route: { routes } } = props
 
+    const routeMatch = useRouteMatch()
     const { ws_id }: any = useParams()
     const { pathname } = useLocation()
     const { formatMessage } = useIntl()
@@ -50,22 +49,6 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
     const realPath = pathname.replace(ws_id, ':ws_id')
 
     const onMenuClick = ({ path }: any) => history.push(path?.replace(':ws_id', ws_id))
-
-    const routes = React.useMemo(() => {
-        const { authList } = initialState
-        const { ws_role_title, sys_role_title } = authList
-
-        const isMember = ['ws_member', 'ws_tourist'].includes(ws_role_title)
-        const isSys = ['sys_admin'].includes(sys_role_title)
-
-        return baseRoutes?.map((i: any) => {
-            const { path } = i
-            if (!!~path?.indexOf(`/ws/:ws_id/device`) && envIgnoreIds().includes(ws_id)) {
-                if (!isSys && isMember) return
-            }
-            return i
-        }).filter(Boolean)
-    }, [baseRoutes])
 
     useEffect(() => {
         if (ignorePath.includes(realPath))
@@ -99,13 +82,9 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
         return false
     }, [routes, pathname])
 
-    const fiterHideRoutes = React.useMemo(() => {
-        return filterHideInMenu(filterUnaccessible(routes))
-    }, [routes])
-
     const inLeftRoutes = React.useMemo(() => {
-        return fiterHideRoutes.filter((route: any) => !route.inNav)
-    }, [fiterHideRoutes])
+        return filterHideInMenu(filterUnaccessible(routes)).filter((route: any) => !route.inNav)
+    }, [routes])
 
     const rootSubmenuKeys = useMemo(() => {
         return inLeftRoutes.reduce((pre: any, item: any) => {
@@ -114,29 +93,13 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
         }, [])
     }, [inLeftRoutes])
 
-    const getOpenKeys = useMemo(
-        () => {
-            if (inLeftRoutes && inLeftRoutes.length > 0) {
-                for (let x = 0, len = inLeftRoutes.length; x < len; x++) {
-                    const routerItem = inLeftRoutes[x]
-                    if (routerItem.path === realPath)
-                        return [realPath];
-                    if (routerItem.children) {
-                        for (let i = 0, l = routerItem.children.length; i < l; i++) {
-                            const childItem = routerItem.children[i]
-                            if (childItem.path === realPath)
-                                return [routerItem.path, realPath]
-                        }
-                    }
-                }
-            }
-            return []
-        }, [inLeftRoutes, realPath]
-    )
-
     useEffect(() => {
-        setOpenKeys(getOpenKeys)
-    }, [inLeftRoutes, pathname])
+        setOpenKeys(
+            realPath?.replace(routeMatch.path, '')?.split('/')?.filter(Boolean)?.map(
+                (i, index, arr) => `${routeMatch.path}/`.concat(arr.slice(0, index + 1).join('/'))
+            )
+        )
+    }, [])
 
     const onOpenChange = useCallback((keys: any) => {
         const latestOpenKey: any = keys.find((key: any) => openKeys.indexOf(key) === -1);
@@ -148,18 +111,10 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
     }, [rootSubmenuKeys, openKeys]);
 
     const selectedKeys = React.useMemo(() => {
-        const rp = pathname.replace(ws_id, ':ws_id')
-        const parentPath = routes.map((i: any) => i.path).filter((i: any) => ~rp.indexOf(i))[0]
-        if (rp === parentPath) return [rp]
-        const pathKeys: any = []
-        const componentPath = rp.split(parentPath).filter(Boolean)[0]
-        componentPath.split("/").reduce((p, c) => {
-            const z = p + (!c ? "/" : "") + c
-            pathKeys.push(parentPath + z)
-            return z
-        }, "")
-        return pathKeys
-    }, [pathname])
+        return realPath?.replace(routeMatch.path, '')?.split('/')?.filter(Boolean)?.map(
+            (i, index, arr) => `${routeMatch.path}/`.concat(arr.slice(0, index + 1).join('/'))
+        )
+    }, [realPath])
 
     // 国际化英文模式，菜单项内容过长缩略问题
     const EllipsisDiv = ({ placement = 'top', style = {}, item = {}, child = {} }: any) => {
@@ -187,7 +142,7 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
                         onOpenChange={onOpenChange}
                     >
                         {
-                            inLeftRoutes.map(
+                            inLeftRoutes?.map(
                                 (item: any) => {
                                     if (item.routes && item.routes.length > 0) {
                                         return (
