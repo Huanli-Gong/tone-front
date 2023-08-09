@@ -164,6 +164,8 @@ const Report = (props: any) => {
         obj.ws_id = ws_id
         obj.job_li = getSelAllJob()
         obj.name = saveReportData.name
+        if (Object.prototype.toString.call(baselineGroupIndex) === "[object Number]")
+            obj.test_env.base_index = baselineGroupIndex
         if (saveReportData.id) {
             obj.report_id = saveReportData.id
             const res = await editReport(obj)
