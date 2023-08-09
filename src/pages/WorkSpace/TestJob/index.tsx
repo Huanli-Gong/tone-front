@@ -757,7 +757,7 @@ const TestJob: React.FC<any> = (props) => {
     const handleCancelTemplate = (key:any) =>  {
         notification.close(key)
         setFetching(false)
-        history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state || {} })
+        history.push({ pathname: `/ws/${ws_id}/job/templates` })
     }
 
     const handleSaveTemplateModify = async () => {
@@ -910,7 +910,7 @@ const TestJob: React.FC<any> = (props) => {
                                     if (name === 'JobTypePreview') history.push(`/ws/${ws_id}/job/types`)
                                     else {
                                         /* @ts-ignore */
-                                        history.push(access.IsWsSetting() ? { pathname: `/ws/${ws_id}/job/templates`, state: state || {} } : "./")
+                                        history.push(access.IsWsSetting() ? { pathname: `/ws/${ws_id}/job/templates`, } : "./")
                                     }
                                 }
                             }
