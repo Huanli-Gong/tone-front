@@ -21,82 +21,16 @@ import _ from 'lodash';
 import { ReportTemplate, ReportBodyContainer, ReportWarpper, ReportBread, BreadDetailL, BreadDetailR } from './ReportUI';
 import { CreatePageData, EditPageData } from './hooks';
 
-const Report = (props: any) => {
-    const { pathname } = useLocation()
+// 面包屑
+const BreadcrumbItem: React.FC<any> = ({ saveReportData, routeName, creator }) => {
+    const { report_id, ws_id } = useParams() as any;
     const { formatMessage } = useIntl()
+
+    const { pathname } = useLocation()
     const access = useAccess();
-    const routeName = props.route.name
-    const { ws_id } = props.match.params
-    const { report_id } = useParams() as any;
-    const [btnState, setBtnState] = useState<boolean>(routeName === 'EditReport')
-    const [btnConfirm, setBtnConfirm] = useState<boolean>(false)
-    const [collapsed, setCollapsed] = useState(false)
-    const { height: windowHeight } = useClientSize()
-    const bodyRef = useRef<any>(null)
-    const [obj, setObj] = useState<any>({
-        test_item: {
-            func_data: [],
-            perf_data: []
-        }
-    })
     const handleCopyText = useCopyText(formatMessage({ id: 'report.link.copied.successfully' }))
 
-    const basicData: any = ['Report', 'EditReport', 'ShareReport'].includes(routeName) ? EditPageData(props) : CreatePageData(props);
-
-    const {
-        environmentResult,
-        allGroupData,
-        baselineGroupIndex,
-        logoData,
-        envData,
-        summaryData,
-        domainResult,
-        compareGroupData,
-        setDomainResult,
-        loading,
-        saveReportData,
-        wsId,
-        queryReport,
-        isFlag,
-        creator
-    } = basicData
-
-    const groupLen = allGroupData?.length
-    window.document.title = saveReportData.name || 'T-one'
-
-    useEffect(() => {
-        if (routeName === 'Report') {
-            setBtnState(false)
-        } else if (routeName === 'ShareReport') {
-            setBtnState(false)
-        } else {
-            setBtnState(true)
-
-            setObj((draft: any) => {
-                draft.test_env = environmentResult
-                draft.test_conclusion = summaryData
-                return draft
-            })
-        }
-    }, [routeName, environmentResult, summaryData])
-
-    // job_li
-    const getSelAllJob = () => {
-        let result = []
-        if (_.isArray(allGroupData)) {
-            result = _.reduce(allGroupData, (arr: any, group: any) => {
-                const members = _.isArray(_.get(group, 'members')) ? _.get(group, 'members') : []
-                members.forEach((obj: any) => {
-                    if (obj && obj.id) arr.push(obj.id)
-                })
-                return arr
-            }, []);
-        }
-        return result
-    }
-
-    // 面包屑
-    const BreadcrumbItem: React.FC<any> = () => (
+    return (
         <Row justify={"space-between"} align="middle" style={{ height: 50 }}>
             <ReportBread>
                 <Breadcrumb.Item >
@@ -153,6 +87,80 @@ const Report = (props: any) => {
             }
         </Row>
     )
+}
+
+const Report = (props: any) => {
+    const { formatMessage } = useIntl()
+    const { ws_id } = useParams() as any;
+    const routeName = props.route.name
+    const [btnState, setBtnState] = useState<boolean>(routeName === 'EditReport')
+    const [btnConfirm, setBtnConfirm] = useState<boolean>(false)
+    const [collapsed, setCollapsed] = useState(false)
+    const { height: windowHeight } = useClientSize()
+    const bodyRef = useRef<any>(null)
+    const [obj, setObj] = useState<any>({
+        test_item: {
+            func_data: [],
+            perf_data: []
+        }
+    })
+
+    const basicData: any = ['Report', 'EditReport', 'ShareReport'].includes(routeName) ? EditPageData(props) : CreatePageData(props);
+
+    const {
+        environmentResult,
+        allGroupData,
+        baselineGroupIndex,
+        logoData,
+        envData,
+        summaryData,
+        domainResult,
+        compareGroupData,
+        setDomainResult,
+        loading,
+        saveReportData,
+        wsId,
+        queryReport,
+        isFlag,
+        creator
+    } = basicData
+
+    const groupLen = allGroupData?.length
+
+    React.useEffect(() => {
+        window.document.title = saveReportData.name || 'T-one'
+    }, [saveReportData.name])
+
+    useEffect(() => {
+        if (routeName === 'Report') {
+            setBtnState(false)
+        } else if (routeName === 'ShareReport') {
+            setBtnState(false)
+        } else {
+            setBtnState(true)
+
+            setObj((draft: any) => {
+                draft.test_env = environmentResult
+                draft.test_conclusion = summaryData
+                return draft
+            })
+        }
+    }, [environmentResult, summaryData])
+
+    // job_li
+    const getSelAllJob = () => {
+        let result = []
+        if (_.isArray(allGroupData)) {
+            result = _.reduce(allGroupData, (arr: any, group: any) => {
+                const members = _.isArray(_.get(group, 'members')) ? _.get(group, 'members') : []
+                members.forEach((obj: any) => {
+                    if (obj && obj.id) arr.push(obj.id)
+                })
+                return arr
+            }, []);
+        }
+        return result
+    }
 
     //保存报告
     const handleSubmit = async () => {
@@ -191,31 +199,33 @@ const Report = (props: any) => {
     const containerRef = React.useRef<HTMLDivElement>(null)
 
     return (
-        <ReportContext.Provider value={{
-            btnState,
-            obj,
-            saveReportData,
-            allGroupData,
-            compareGroupData,
-            logoData,
-            envData,
-            routeName,
-            btnConfirm,
-            baselineGroupIndex,
-            domainResult,
-            setDomainResult,
-            summaryData,
-            environmentResult,
-            collapsed,
-            groupLen,
-            bodyRef,
-            wsId,
-            creator,
-            isOldReport: saveReportData?.old_report,
-            setCollapsed,
-            setObj,
-            containerRef
-        }}>
+        <ReportContext.Provider
+            value={{
+                btnState,
+                obj,
+                saveReportData,
+                allGroupData,
+                compareGroupData,
+                logoData,
+                envData,
+                routeName,
+                btnConfirm,
+                baselineGroupIndex,
+                domainResult,
+                setDomainResult,
+                summaryData,
+                environmentResult,
+                collapsed,
+                groupLen,
+                bodyRef,
+                wsId,
+                creator,
+                isOldReport: saveReportData?.old_report,
+                setCollapsed,
+                setObj,
+                containerRef
+            }}
+        >
             <Spin spinning={loading}>
                 <ReportTemplate
                     height={windowHeight - 50}
@@ -231,7 +241,7 @@ const Report = (props: any) => {
                     >
                         <ReportWarpper ref={bodyRef}>
                             <Col span={24}>
-                                {!!ws_id && <BreadcrumbItem />}
+                                {!!ws_id && <BreadcrumbItem saveReportData={saveReportData} routeName={routeName} creator={creator} />}
                                 <ReportHeader />
                                 <ReportBasicInfo />
                                 <div style={{ width: 1200 }}>

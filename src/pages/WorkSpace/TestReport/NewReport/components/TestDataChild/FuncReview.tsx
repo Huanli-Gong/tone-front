@@ -302,7 +302,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
             return (
                 <TestSuite key={suite?.suite_id}>
                     {(!domainResult.is_default) &&
-                        <Configuration style={{ backgroundColor: 'rgba(0,0,0,0.03)' }}>
+                        <Configuration>
                             {
                                 [
                                     ["need_test_env", "test_env", "env"],
