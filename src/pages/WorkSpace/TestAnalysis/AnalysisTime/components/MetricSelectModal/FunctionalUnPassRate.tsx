@@ -1,26 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from "react"
-import { useRequest, useLocation } from "umi"
+import { useLocation } from "umi"
 import { Table, Row, Col, Select } from "antd"
-import { queryFunctionalSubcases } from '../../services'
 import styles from '../index.less'
 
-
 const FunctionalPassRate: React.FC<AnyType> = (props) => {
-    const { suiteList, test_type, isFetching, show_type, onChange, basicValues } = props
+    const { suiteList = [], test_type, isFetching, show_type, onChange, basicValues, metrics = [], runGetMetrics } = props
     const { query }: any = useLocation()
 
     const getQueryValue = (queryName: any) => {
-        if (query?.test_type !== "functional") return undefined
+        if (JSON.stringify(query) !== '{}' && (query?.test_type !== "functional")) return undefined
         if (basicValues) return basicValues[queryName]
         if (query[queryName]) return query[queryName]
         return undefined
     }
-
-    const { data: subcaseList, run: requestSubcaseList } = useRequest(
-        queryFunctionalSubcases,
-        { manual: true, initialData: [] }
-    )
 
     const [activeSuite, setActiveSuite] = React.useState<any>(+ getQueryValue("test_suite_id") || undefined)
     const [activeConf, setActiveConf] = React.useState<any>(+ getQueryValue("test_case_id") || undefined)
@@ -28,19 +21,25 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
 
     React.useEffect(() => {
         if (suiteList.length > 0)
-            setActiveSuite(+ getQueryValue("test_suite_id") || suiteList?.[0].id)
+            setActiveSuite(+ getQueryValue("test_suite_id") || suiteList?.[0].test_suite_id)
     }, [suiteList, query])
 
     React.useEffect(() => {
         onChange?.({ activeSuite, activeConf, selectSubcase })
     }, [activeSuite, activeConf, selectSubcase])
 
+    React.useEffect(() => {
+        if (activeConf && activeSuite) {
+            runGetMetrics({ test_suite_id: activeSuite, test_case_id: activeConf })
+        }
+    }, [activeConf, activeSuite])
+
     const confList = React.useMemo(() => {
+        if (!suiteList) return []
         for (let len = suiteList.length, i = 0; i < len; i++)
-            if (suiteList[i].id === activeSuite) {
+            if (suiteList[i].test_suite_id === activeSuite) {
                 if (suiteList[i].test_case_list.length > 0) {
-                    const test_case_id = activeConf || suiteList[i].test_case_list[0].id
-                    requestSubcaseList({ test_case_id, test_suite_id: activeSuite })
+                    const test_case_id = activeConf || suiteList[i].test_case_list[0].test_case_id
                     if (!activeConf)
                         setActiveConf(test_case_id)
                     return suiteList[i].test_case_list
@@ -51,7 +50,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
     }, [activeSuite, suiteList, test_type])
 
     return (
-        <Row style={{ height: 400 }}>
+        <Row >
             <Col span={24} style={{ marginBottom: 10 }}>
                 <Row>
                     <Col span={12}>
@@ -71,9 +70,9 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                                 }
                                 showSearch
                                 options={
-                                    suiteList.map((i: any) => ({
-                                        value: i.id,
-                                        label: i.name
+                                    suiteList?.map((i: any) => ({
+                                        value: i.test_suite_id,
+                                        label: i.test_suite_name
                                     }))
                                 }
                             />
@@ -87,8 +86,8 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                                 onChange={(test_case_id) => {
                                     setActiveConf(test_case_id)
                                     if (test_type !== 'performance' && show_type !== 'pass_rate')
-                                        requestSubcaseList({ test_case_id, test_suite_id: activeSuite })
-                                    setSelectSubcase([])
+                                        /* requestSubcaseList({ test_case_id, test_suite_id: activeSuite }) */
+                                        setSelectSubcase([])
                                 }}
                                 filterOption={(input, option: any) =>
                                     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -97,10 +96,10 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                                 placeholder="请选择Test Conf"
                                 value={activeConf}
                                 options={
-                                    confList.map((i: any) => (
+                                    confList?.map((i: any) => (
                                         {
-                                            value: i.id,
-                                            label: i.name
+                                            value: i.test_case_id,
+                                            label: i.test_case_name
                                         }
                                     ))
                                 }
@@ -109,10 +108,13 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                     </Col>
                 </Row>
             </Col >
-            <Col span={24} style={{ height: 350 }}>
+            <Col span={24}>
                 <Table
-                    dataSource={subcaseList}
-                    columns={[{ dataIndex: '', title: 'Test Case' }]}
+                    dataSource={metrics}
+                    columns={[{
+                        dataIndex: '', title: 'Test Case',
+                    }]}
+                    /* @ts-ignore */
                     rowKey={record => record}
                     size="small"
                     loading={isFetching}
@@ -132,7 +134,11 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                             }
                         })
                     }
-                    pagination={false}
+                    pagination={{
+                        hideOnSinglePage: true,
+                        pageSize: 2000,
+                        style: { marginBottom: 0 }
+                    }}
                 />
             </Col>
         </Row >

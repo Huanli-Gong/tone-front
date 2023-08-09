@@ -75,12 +75,16 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
     const [chartData, setChartData] = useState<any>({})
     const [tableData, setTableData] = useState<any>([])
     const [metricData, setMetricData] = useState<any>(null)
-    const [projectId, setProjectId] = useState('')
     const [loading, setLoading] = useState(JSON.stringify(query) !== "{}")
     const [fetchData, setFetchData] = React.useState<any[]>([])
 
     const selectMetricRef: any = useRef()
     const [form] = Form.useForm()
+
+    const project_id = Form.useWatch("project_id", form)
+    const tag_id = Form.useWatch("tag", form)
+    const form_time = Form.useWatch("time", form)
+
 
     React.useImperativeHandle(ref, () => ({
         reset() {
@@ -158,8 +162,9 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
         const baseFormData = getAnalysisFormData()
         const obj = { ...baseFormData, ...metricData, metric: metricData?.metric?.toString() }
         if (fetchData?.length !== 0) {
-            fetchData?.forEach(({ key, metric }: any) => {
-                obj[key] = metric.toString()
+            fetchData?.forEach(({ metric }: any) => {
+                const $name = metric.at(0)
+                obj[$name] = metric.toString()
             })
         }
         setInfo(obj)
@@ -213,14 +218,15 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                 metric, title, test_suite_id, test_case_id, sub_case_name, days
             } = query
 
-            const $metric = Object.prototype.toString.call(metric) === "[object Array]" ? metric : metric.split(",")
+            const $metric = Object.prototype.toString.call(metric) === "[object Array]" ? metric : metric?.split(",")
 
             if (test_type === $test_type) {
                 const params: any = {
                     metric: $metric,
                     project_id, tag,
                     test_suite_id, test_case_id, sub_case_name,
-                    show_type, provider_env: $provider_env
+                    show_type,
+                    provider_env: $provider_env
                 }
 
                 let start = start_time
@@ -251,6 +257,9 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                         setFetchData(metrics)
                     }
                 }
+                if (!title) {
+                    setLoading(false)
+                }
 
                 setMetricData({
                     title,
@@ -273,10 +282,6 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
             }
         }
     }, [query])
-
-    const handleProductChange = (val: any) => {
-        setProjectId(val)
-    }
 
     const handleListChange = (list: any[]) => {
         setTableData((p: any) => {
@@ -307,7 +312,6 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                         >
                             <Select
                                 placeholder={formatMessage({ id: 'analysis.project.placeholder' })}
-                                onChange={handleProductChange}
                                 showSearch
                                 filterOption={(input, option: any) => option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                 options={
@@ -478,7 +482,10 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
 
             <SelectMertric
                 ref={selectMetricRef}
-                projectId={projectId}
+                project_id={project_id}
+                start_time={form_time && moment(form_time[0]).format("YYYY-MM-DD")}
+                end_time={form_time && moment(form_time[1]).format("YYYY-MM-DD")}
+                tag={tag_id}
                 show_type={show_type}
                 provider_env={provider_env}
                 test_type={test_type}
