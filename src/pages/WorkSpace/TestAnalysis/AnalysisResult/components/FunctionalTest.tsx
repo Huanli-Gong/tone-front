@@ -19,7 +19,7 @@ import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/compon
 import { toShowNum, handleCaseColor } from '@/components/AnalysisMethods/index';
 import { JumpResult } from '@/utils/hooks';
 import { useIntl, FormattedMessage } from 'umi'
-const { Option } = Select
+import { useScroll } from "ahooks"
 import {
     TestDataTitle,
     TestWrapper,
@@ -40,9 +40,11 @@ import {
 } from '../AnalysisUI';
 import _ from 'lodash';
 
+const { Option } = Select
+
 const ReportTestFunc: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
-    const { allGroupData, compareResult, baselineGroupIndex, group, wsId, containerScroll } = useContext(ReportContext)
+    const { allGroupData, compareResult, baselineGroupIndex, group, wsId, containerRef } = useContext(ReportContext)
     const { scrollLeft } = props
     const { func_data_result } = compareResult
     const [arrowStyle, setArrowStyle] = useState('')
@@ -207,6 +209,8 @@ const ReportTestFunc: React.FC<any> = (props) => {
             </TestItemFunc>
         )
     }
+
+    const containerScroll = useScroll(containerRef)
 
     return (
         <>

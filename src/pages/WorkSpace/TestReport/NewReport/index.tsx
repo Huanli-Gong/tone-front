@@ -14,20 +14,21 @@ import ReportTestPref from './components/ReportTestPerf';
 import { useClientSize, useCopyText } from '@/utils/hooks'
 import Catalog from './components/Catalog'
 import { editReport, saveReport } from '../services';
-import { history, useAccess, Access, useParams, useIntl, FormattedMessage } from 'umi';
+import { history, useAccess, Access, useParams, useIntl, FormattedMessage, useLocation } from 'umi';
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { ReportContext } from './Provider';
 import _ from 'lodash';
 import { ReportTemplate, ReportBodyContainer, ReportWarpper, ReportBread, BreadDetailL, BreadDetailR } from './ReportUI';
 import { CreatePageData, EditPageData } from './hooks';
-import { useScroll } from "ahooks"
 
 const Report = (props: any) => {
+    const { pathname } = useLocation()
     const { formatMessage } = useIntl()
     const access = useAccess();
+    const routeName = props.route.name
     const { ws_id } = props.match.params
     const { report_id } = useParams() as any;
-    const [btnState, setBtnState] = useState<boolean>(false)
+    const [btnState, setBtnState] = useState<boolean>(routeName === 'EditReport')
     const [btnConfirm, setBtnConfirm] = useState<boolean>(false)
     const [collapsed, setCollapsed] = useState(false)
     const { height: windowHeight } = useClientSize()
@@ -38,7 +39,6 @@ const Report = (props: any) => {
             perf_data: []
         }
     })
-    const routeName = props.route.name
     const handleCopyText = useCopyText(formatMessage({ id: 'report.link.copied.successfully' }))
 
     const basicData: any = ['Report', 'EditReport', 'ShareReport'].includes(routeName) ? EditPageData(props) : CreatePageData(props);
@@ -71,13 +71,14 @@ const Report = (props: any) => {
             setBtnState(false)
         } else {
             setBtnState(true)
-            obj.test_env = _.cloneDeep(environmentResult)
-            obj.test_conclusion = _.cloneDeep(summaryData)
-            setObj({
-                ...obj
+
+            setObj((draft: any) => {
+                draft.test_env = environmentResult
+                draft.test_conclusion = summaryData
+                return draft
             })
         }
-    }, [routeName])
+    }, [routeName, environmentResult, summaryData])
 
     // job_li
     const getSelAllJob = () => {
@@ -96,7 +97,7 @@ const Report = (props: any) => {
 
     // 面包屑
     const BreadcrumbItem: React.FC<any> = () => (
-        <Row justify={"space-between"} align="middle">
+        <Row justify={"space-between"} align="middle" style={{ height: 50 }}>
             <ReportBread>
                 <Breadcrumb.Item >
                     <BreadDetailL onClick={() => history.push(`/ws/${ws_id}/test_report`)}>
@@ -108,56 +109,47 @@ const Report = (props: any) => {
                 </Breadcrumb.Item>
             </ReportBread>
             {
-                btnState ?
-                    routeName !== 'ShareReport' &&
-                    <Button
-                        type="primary"
-                        disabled={btnConfirm}
-                        onClick={handleSubmit}
-                        loading={isFlag}
+                !['EditReport', 'CreateReport'].includes(routeName) &&
+                <Space>
+                    <span
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => handleCopyText(location.origin + `/share/report/${report_id}`)}
                     >
-                        {
-                            saveReportData?.id ?
-                                <FormattedMessage id="operation.update" /> :
-                                <FormattedMessage id="operation.save" />
-                        }
-                    </Button> :
-                    <Space>
-                        <span style={{ cursor: 'pointer' }} onClick={() => handleCopyText(location.origin + `/share/report/${report_id}`)}>
-                            <Space>
-                                <IconLink />
-                                <FormattedMessage id="operation.share" />
-                            </Space>
-                        </span>
-                        {
-                            routeName !== 'ShareReport' &&
-                            <Access accessible={access.WsTourist()}>
-                                <Access
-                                    accessible={access.WsMemberOperateSelf(creator)}
-                                    fallback={
-                                        <span
-                                            onClick={() => AccessTootip()}
-                                        >
-                                            <Space align="center">
-                                                <IconWarp />
-                                                <FormattedMessage id="operation.edit" />
-                                            </Space>
-                                        </span>
-                                    }
+                        <Space>
+                            <IconLink />
+                            <FormattedMessage id="operation.share" />
+                        </Space>
+                    </span>
+                    {
+                        routeName !== 'ShareReport' &&
+                        <Access
+                            accessible={access.WsTourist() && access.WsMemberOperateSelf(creator)}
+                            fallback={
+                                <span
+                                    onClick={() => AccessTootip()}
                                 >
-                                    <span
-                                        style={{ cursor: 'pointer' }}
-                                        onClick={() => setBtnState(true)}
-                                    >
-                                        <Space align="center">
-                                            <IconEdit />
-                                            <FormattedMessage id="operation.edit" />
-                                        </Space>
-                                    </span>
-                                </Access>
-                            </Access>
-                        }
-                    </Space>
+                                    <Space align="center">
+                                        <IconWarp />
+                                        <FormattedMessage id="operation.edit" />
+                                    </Space>
+                                </span>
+                            }
+                        >
+                            <span
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => {
+                                    const editPath = pathname.lastIndexOf("/") === pathname.length - 1 ? 'edit' : '/edit'
+                                    history.push(`${pathname}${pathname !== 'EditReport' ? editPath : ''}`)
+                                }}
+                            >
+                                <Space align="center">
+                                    <IconEdit />
+                                    <FormattedMessage id="operation.edit" />
+                                </Space>
+                            </span>
+                        </Access>
+                    }
+                </Space>
             }
         </Row>
     )
@@ -171,13 +163,14 @@ const Report = (props: any) => {
         obj.tmpl_id = saveReportData.template
         obj.ws_id = ws_id
         obj.job_li = getSelAllJob()
+        obj.name = saveReportData.name
         if (saveReportData.id) {
             obj.report_id = saveReportData.id
             const res = await editReport(obj)
             if (res.code === 200) {
                 message.success(formatMessage({ id: 'report.update.report.succeeded' }))
                 queryReport();
-                setBtnState(false)
+                history.push(`/ws/${ws_id}/test_report/${saveReportData.id}`)
             } else {
                 requestCodeMessage(res.code, res.msg)
             }
@@ -194,7 +187,6 @@ const Report = (props: any) => {
     }
 
     const containerRef = React.useRef<HTMLDivElement>(null)
-    const containerScroll = useScroll(containerRef)
 
     return (
         <ReportContext.Provider value={{
@@ -220,14 +212,21 @@ const Report = (props: any) => {
             isOldReport: saveReportData?.old_report,
             setCollapsed,
             setObj,
-            containerScroll
+            containerRef
         }}>
             <Spin spinning={loading}>
-                <ReportTemplate height={windowHeight - 50} >
+                <ReportTemplate
+                    height={windowHeight - 50}
+                    style={{ paddingBottom: ['EditReport', 'CreateReport'].includes(routeName) ? 50 : 0 }}
+                >
                     {/* 目录部分 */}
                     <Catalog />
                     {/* 报告内容 */}
-                    <ReportBodyContainer id={'report-body-container'} ref={containerRef} collapsed={collapsed}>
+                    <ReportBodyContainer
+                        id={'report-body-container'}
+                        ref={containerRef}
+                        collapsed={collapsed}
+                    >
                         <ReportWarpper ref={bodyRef}>
                             <Col span={24}>
                                 {!!ws_id && <BreadcrumbItem />}
@@ -241,6 +240,29 @@ const Report = (props: any) => {
                                     <ReportTestPref />
                                 </div>
                             </Col>
+
+                            {
+                                ['EditReport', 'CreateReport'].includes(routeName) &&
+                                <Row
+                                    align={'middle'}
+                                    justify={'end'}
+                                    style={{ height: 50, position: "fixed", bottom: 0, left: 0, width: "100%", backgroundColor: "#fff", paddingRight: 20, boxShadow: '0 0 10px 0 rgba(0,0,0,0.06)' }}
+                                >
+                                    <Button
+                                        type="primary"
+                                        disabled={btnConfirm}
+                                        onClick={handleSubmit}
+                                        loading={isFlag}
+                                    >
+                                        {
+                                            saveReportData?.id ?
+                                                <FormattedMessage id="operation.update" /> :
+                                                <FormattedMessage id="operation.save" />
+                                        }
+                                    </Button>
+                                </Row>
+                            }
+
                         </ReportWarpper>
                     </ReportBodyContainer>
                 </ReportTemplate>

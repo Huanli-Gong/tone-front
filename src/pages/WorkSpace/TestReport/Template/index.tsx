@@ -36,6 +36,15 @@ const defaultConf = {
     test_data: false,
 }
 
+const funcDefaultConf = {
+    need_test_suite_description: false,
+    need_test_env: false,
+    need_test_description: false,
+    need_test_conclusion: false,
+    show_type: "list",
+    test_data: false,
+}
+
 const RenderTestBody: React.FC<any> = ({ testType }) => {
     const { formatMessage } = useIntl()
     const { dataSource, setDataSource, contrl } = useProvider()
@@ -114,46 +123,46 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
             {
                 dataSource[bodyProps.testRadioName] &&
                 <Row style={{ paddingLeft: 24 }}>
-                    {
-                        bodyProps.name !== 'functional' &&
-                        <Col
-                            span={24}
-                            style={{ background: 'rgba(0,0,0,0.03)', padding: 14, marginTop: 12 }}
+                    <Col
+                        span={24}
+                        style={{ background: 'rgba(0,0,0,0.03)', padding: 14, marginTop: 12 }}
+                    >
+                        <Space
+                            direction="vertical"
+                            style={{ width: "100%" }}
                         >
                             <Space
                                 direction="vertical"
                                 style={{ width: "100%" }}
                             >
+                                <Space>
+                                    <Typography.Text><FormattedMessage id="report.basic.information" /></Typography.Text>
+                                </Space>
                                 <Space
-                                    direction="vertical"
                                     style={{ width: "100%" }}
                                 >
-                                    <Space>
-                                        <Typography.Text><FormattedMessage id="report.basic.information" /></Typography.Text>
-                                    </Space>
-                                    <Space
-                                        style={{ width: "100%" }}
-                                    >
-                                        {
-                                            [
-                                                // ["测试工具", "need_test_suite_description"],
-                                                [formatMessage({ id: 'report.test_env' }), "need_test_env"],
-                                                [formatMessage({ id: 'report.test.description' }), "need_test_description"],
-                                                [formatMessage({ id: 'report.test.conclusion' }), "need_test_conclusion"],
-                                            ].map((item: any) => {
-                                                const [title, name, text] = item
-                                                return (
-                                                    <ConfigCheckbox
-                                                        key={name}
-                                                        field={bodyProps.conf}
-                                                        title={title}
-                                                        name={name}
-                                                        text={text}
-                                                    />
-                                                )
-                                            })
-                                        }
-                                    </Space>
+                                    {
+                                        [
+                                            // ["测试工具", "need_test_suite_description"],
+                                            [formatMessage({ id: 'report.test_env' }), "need_test_env"],
+                                            [formatMessage({ id: 'report.test.description' }), "need_test_description"],
+                                            [formatMessage({ id: 'report.test.conclusion' }), "need_test_conclusion"],
+                                        ].map((item: any) => {
+                                            const [title, name, text] = item
+                                            return (
+                                                <ConfigCheckbox
+                                                    key={name}
+                                                    field={bodyProps.conf}
+                                                    title={title}
+                                                    name={name}
+                                                    text={text}
+                                                />
+                                            )
+                                        })
+                                    }
+                                </Space>
+                                {
+                                    bodyProps.name !== 'functional' &&
                                     <div style={{ display: 'flex' }}>
                                         <div style={{ marginRight: 12 }}><FormattedMessage id="report.data.view.style" /></div>
                                         <div>
@@ -167,10 +176,12 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
                                             </Radio.Group>
                                         </div>
                                     </div>
-                                </Space>
+                                }
+
                             </Space>
-                        </Col>
-                    }
+                        </Space>
+                    </Col>
+
                     <Col span={24}>
                         {
                             dataSource[bodyProps.dataItem].map(
@@ -326,7 +337,7 @@ const TemplatePage = (props: any) => {
         need_perf_data: true,
         description: "",
         perf_conf: defaultConf,
-        func_conf: defaultConf,
+        func_conf: funcDefaultConf,
         perf_item: [],
         func_item: [],
     })
@@ -371,7 +382,7 @@ const TemplatePage = (props: any) => {
         setContrl(access.WsMemberOperateSelf(data.creator))
 
         const params: any = {
-            func_conf: func_conf || defaultConf,
+            func_conf: func_conf || funcDefaultConf,
             perf_conf: perf_conf || defaultConf,
             perf_item: refreshRowkey(perf_item),
             func_item: refreshRowkey(func_item)
@@ -571,11 +582,12 @@ const TemplatePage = (props: any) => {
     const handleSelectSuiteOk = ({ result, rowkey, testType }: any) => handleFieldChange(result, 'list', rowkey, testType)
 
     const checkName = (data: any) => {
-        const obj = {}
+        const obj: any = {}
         for (let x = 0, len = data.length; x < len; x++) {
             const { name } = data[x]
-            if (obj[name])
+            if (obj[name]) {
                 throw formatMessage({ id: 'report.please.check' })
+            }
             obj[name] = name
         }
     }

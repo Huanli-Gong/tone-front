@@ -89,9 +89,7 @@ export const CreatePageData = (props: any) => {
                         compareResult.perf_data_result = compareResult.perf_data_result.concat(res.data)
                     }
                 }
-                setCompareResult({
-                    ...compareResult
-                })
+                setCompareResult({ ...compareResult })
                 if (res.code !== 200) {
                     message.error(res.msg)
                     return
@@ -314,13 +312,13 @@ export const CreatePageData = (props: any) => {
                         }
                     }
                 }
-                let newObj: any = {
+
+                setDomainResult({
                     ...domainResult,
                     is_default: true,
                     perf_item: perData,
                     func_item: funData
-                }
-                setDomainResult(newObj)
+                })
                 setLoading(false)
             }
         } else {
@@ -471,12 +469,12 @@ export const CreatePageData = (props: any) => {
                                 }
                             }
                         }
-                        let newObj: any = {
+
+                        setDomainResult({
                             ...obj,
                             perf_item: perData,
                             func_item: funData
-                        }
-                        setDomainResult(newObj)
+                        })
                         setLoading(false)
                     }
                 } else {
@@ -592,6 +590,8 @@ export const CreatePageData = (props: any) => {
         return allGroupData.filter((item: any) => item.members.length > 0)
     }, [allGroupData])
 
+    const isFlag = useMemo(() => compareLen !== suiteLen, [compareLen, suiteLen])
+
     return {
         environmentResult,
         allGroupData: allGroupList,
@@ -606,7 +606,7 @@ export const CreatePageData = (props: any) => {
         setDomainResult,
         loading,
         saveReportData,
-        isFlag: compareLen !== suiteLen
+        isFlag
     }
 }
 
@@ -642,7 +642,7 @@ export const EditPageData = (props: any) => {
         if (code == 200) {
             setDataSource(data[0])
             window.document.title = data[0]?.name || 'T-one'
-            console.log(data)
+            // console.log(data)
             if (data?.length === 0)
                 return redirectErrorPage(404)
             const { tmpl_id, ws_id, creator } = data[0]
@@ -726,6 +726,8 @@ export const EditPageData = (props: any) => {
     }
 
     const saveReportData = {
+        func_desc: dataSource?.func_desc,
+        perf_desc: dataSource?.perf_desc,
         creator_name: dataSource?.creator_name,
         description: dataSource?.description,
         gmt_created: dataSource?.gmt_created,
