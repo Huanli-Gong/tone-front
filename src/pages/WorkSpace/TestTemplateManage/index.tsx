@@ -95,13 +95,10 @@ export default () => {
         // window.open(`/ws/${ws_id}/refenerce/3/?name=${deleteObj.name}&id=${deleteObj.id}`)
     }
 
-    const handlePreview = ({ id, job_type, creator }: any): any => {
+    const handlePreview = ({ id, job_type }: any): any => {
         if (!job_type) return message.warning(formatMessage({ id: 'job.templates.delete.the.problem.template' }))
         history.push({
-            pathname: `/ws/${ws_id}/test_template/${id}/preview`, state: {
-                creator,
-                params
-            }
+            pathname: `/ws/${ws_id}/test_template/${id}/preview`, state: params
         })
     }
 
@@ -217,7 +214,7 @@ export default () => {
 
     const handleEdit = ({ id, job_type }: any): any => {
         if (!job_type) return message.warning(formatMessage({ id: 'job.templates.delete.the.problem.template' }))
-        history.push({ pathname: `/ws/${ws_id}/test_template/${id}/edit`, state: paramCurrent.current })
+        history.push({ pathname: `/ws/${ws_id}/test_template/${id}/edit`, state: params })
     }
 
     const setResizeScrollX = () => setScrollX(resizeTableRef.current.clientWidth)
