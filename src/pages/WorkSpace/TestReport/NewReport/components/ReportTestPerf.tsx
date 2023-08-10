@@ -108,8 +108,8 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
     }
 
     useEffect(() => {
-        let new_pref_data: any = []
         if (dataSource && !!dataSource.length) {
+            const new_pref_data: any = []
             dataSource.map((item: any, idx: number) => {
                 if (item.is_group) {
                     item.list?.map((child: any, listId: number) => {
@@ -127,12 +127,11 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
                     })
                 }
             })
+            setObj((draft: any) => {
+                draft.test_item.perf_data = new_pref_data
+                return draft
+            })
         }
-
-        setObj((draft: any) => {
-            draft.test_item.perf_data = new_pref_data
-            return draft
-        })
     }, [dataSource])
 
     const getGroupDesc = (group_name: string) => {
