@@ -9,6 +9,7 @@ import { redirectErrorPage, requestCodeMessage } from '@/utils/utils';
 import _ from 'lodash';
 import { fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
 import { queryCompareResultList } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/services'
+import { useParams } from 'umi';
 
 export const CreatePageData = (props: any) => {
     const [logoData, setLogoData] = useState<any[]>([])
@@ -47,7 +48,7 @@ export const CreatePageData = (props: any) => {
         func_item: [],
     })
 
-    const { ws_id } = props.match.params
+    const { ws_id } = useParams() as any
 
     const {
         environmentResult = {},
@@ -634,7 +635,7 @@ export const EditPageData = (props: any) => {
     const [baselineGroupIndex, setBaselineGroupIndex] = useState<number>(0)
     const [creator, setCreator] = useState<any>()
     const [template, setTemplate] = useState<any>({})
-    const { report_id } = props.match.params
+    const { report_id } = useParams() as any
 
     const queryReport = async () => {
         setLoading(true)

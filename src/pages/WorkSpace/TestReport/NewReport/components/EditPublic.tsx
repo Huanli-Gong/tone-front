@@ -167,6 +167,7 @@ export const SettingRegUpdate = ({
             obj[field] = title
         }
         const { code, msg } = await editReportInfo(obj)
+
         if (code === 200) {
             openNotification(changeName(field))
             setBtn(false)

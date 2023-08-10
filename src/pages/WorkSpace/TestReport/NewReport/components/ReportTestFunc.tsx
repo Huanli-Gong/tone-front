@@ -45,8 +45,8 @@ const ReportTestFunc: React.FC<any> = () => {
 
     // 保存报告数据整理
     useEffect(() => {
-        let new_func_data: any = []
         if (!!dataSource.length) {
+            const new_func_data: any = []
             dataSource.map((item: any, idx: number) => {
                 if (item.is_group) {
                     item.list.map((child: any, index: number) => {
@@ -64,12 +64,11 @@ const ReportTestFunc: React.FC<any> = () => {
                     })
                 }
             })
+            setObj((draft: any) => {
+                draft.test_item.func_data = new_func_data
+                return draft
+            })
         }
-
-        setObj((draft: any) => {
-            draft.test_item.func_data = new_func_data
-            return draft
-        })
     }, [dataSource])
 
     const getGroupDesc = (group_name: string) => {

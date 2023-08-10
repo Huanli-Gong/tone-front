@@ -89,6 +89,10 @@ const BreadcrumbItem: React.FC<any> = ({ saveReportData, routeName, creator }) =
     )
 }
 
+
+const templDesc = ['background_desc', 'test_method_desc']
+const dataField = ['test_background', 'test_method', 'custom']
+
 const Report = (props: any) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any;
@@ -138,14 +142,33 @@ const Report = (props: any) => {
             setBtnState(false)
         } else {
             setBtnState(true)
-
             setObj((draft: any) => {
                 draft.test_env = environmentResult
-                draft.test_conclusion = summaryData
                 return draft
             })
         }
-    }, [environmentResult, summaryData])
+    }, [environmentResult])
+
+    React.useEffect(() => {
+        if (!saveReportData?.id) {
+            if (summaryData && summaryData !== undefined && JSON.stringify(domainResult) !== "{}") {
+                setObj((draft: any) => {
+                    dataField.forEach((i: any, idx: number) => {
+                        if (i === 'custom') {
+                            if (summaryData && summaryData !== undefined) {
+                                summaryData[i] = saveReportData?.test_conclusion?.custom || domainResult?.test_conclusion_desc
+                                draft.test_conclusion = summaryData
+                            }
+                        }
+                        else if (!draft[i] && saveReportData?.[i] || domainResult?.[templDesc[idx]]) {
+                            draft[i] = saveReportData?.[i] || domainResult?.[templDesc[idx]]
+                        }
+                    })
+                    return draft
+                })
+            }
+        }
+    }, [saveReportData, domainResult, summaryData])
 
     // job_li
     const getSelAllJob = () => {
