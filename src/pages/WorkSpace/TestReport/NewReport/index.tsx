@@ -195,10 +195,14 @@ const Report = (props: any) => {
         obj.ws_id = ws_id
         obj.job_li = getSelAllJob()
         obj.name = saveReportData.name
+
         if (Object.prototype.toString.call(baselineGroupIndex) === "[object Number]")
             obj.test_env.base_index = baselineGroupIndex
         if (saveReportData.id) {
             obj.report_id = saveReportData.id
+
+            delete obj.test_env.text
+
             const res = await editReport(obj)
             if (res.code === 200) {
                 message.success(formatMessage({ id: 'report.update.report.succeeded' }))
