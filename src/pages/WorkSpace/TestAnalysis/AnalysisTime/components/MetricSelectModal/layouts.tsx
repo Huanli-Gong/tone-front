@@ -112,7 +112,7 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
         return () => {
             setBasicValues(undefined)
         }
-    }, [])
+    }, [visible])
 
     const baseProps = {
         test_type,
