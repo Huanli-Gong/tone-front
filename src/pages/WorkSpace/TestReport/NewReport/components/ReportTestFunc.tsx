@@ -70,8 +70,8 @@ const ReportTestFunc: React.FC<any> = () => {
 
     return (
         <>
-            <TestDataTitle><FormattedMessage id="functional.test" /></TestDataTitle>
-            <TestWrapper id="func_item" className="position_mark">
+            <TestDataTitle id="func_item" className="position_mark"><FormattedMessage id="functional.test" /></TestDataTitle>
+            <TestWrapper>
                 {/* 有组有项 */}
                 {
                     (Array.isArray(dataSource) && !!dataSource.length) ?

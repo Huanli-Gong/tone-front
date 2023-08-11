@@ -190,7 +190,7 @@ const TemplateCatalog = () => {
     }
 
     const dictNav = (name: string) => {
-        const list:any = {
+        const list: any = {
             'need_test_background': formatMessage({ id: 'report.test.background' }),
             'need_test_method': formatMessage({ id: 'report.test.method' }),
             'need_test_conclusion': formatMessage({ id: 'report.test.conclusion' }),
@@ -206,37 +206,48 @@ const TemplateCatalog = () => {
         let bst = e.target.scrollTop
         let arr = document.querySelectorAll(`.spaceWarpper .ant-space-item .markSpace span`) as any
         let leftArr = document.querySelectorAll('.position_mark') as any
-
-        for (let i = 0; i < leftArr.length; i++) {
-            let title = document.querySelector(`#${leftArr[i].id}`) as any
-            let leftTitle = document.querySelector(`#left_${leftArr[i].id}`) as any
-            if (title.offsetParent?.offsetTop === 0) {
-                if (title?.offsetTop <= bst) {
-                    i > 0 && arr[i - 1]?.classList.remove('toc-selected');
-                    leftTitle?.classList.add('toc-selected');
-                    setRoundHeight(leftTitle?.offsetTop)
+        if (bst < 120) {
+            for (let i = 0; i < arr.length; i++) {
+                arr[i].classList.remove('toc-selected');
+            }
+            setRoundHeight(undefined)
+        } else {
+            for (let i = 0; i < leftArr.length; i++) {
+                let title = document.querySelector(`#${leftArr[i].id}`) as any
+                let leftTitle = document.querySelector(`#left_${leftArr[i].id}`) as any
+                if (title?.offsetParent?.offsetTop === 0) {
+                    if (title?.offsetTop - 1 <= bst) {
+                        for (let k = 0; k < arr.length; k++) {
+                            arr[k]?.classList.remove('toc-selected')
+                        }
+                        leftTitle?.classList.add('toc-selected');
+                        setRoundHeight(leftTitle?.offsetTop)
+                    }
                 } else {
-                    arr[i]?.classList.remove('toc-selected')
-                }
-            } else {
-                if (title?.offsetParent?.offsetTop + title?.offsetTop - 52 <= bst) {
-                    for (let k = 0; k < arr.length; k++) {
-                        arr[k]?.classList.remove('toc-selected')
+                    if (title?.offsetParent?.offsetTop + title?.offsetTop - 52 <= bst) {
+                        for (let k = 0; k < arr.length; k++) {
+                            arr[k]?.classList.remove('toc-selected')
+                        }
+                        leftTitle?.classList.add('toc-selected');
+                        const parentNode = leftTitle?.id.substring(5, 14)
+                        const parentTop = (document.querySelector(`#left_${parentNode}`) as any).offsetTop
+                        const parentTreeTop = (document.querySelector(`#left_tree_${parentNode}`) as any).offsetTop
+                        if (leftTitle.attributes['class'].nodeValue == 'toc-selected') {
+                            if (leftTitle?.id === 'left_perf_item' || leftTitle?.id === 'left_func_item') {
+                                setRoundHeight(parentTop)
+                            } else {
+                                const childTop = leftTitle.offsetParent.offsetTop
+                                setRoundHeight(parentTreeTop + childTop)
+                            }
+                        } else {
+                            const childTop = leftTitle.children[0].children[0].offsetParent.offsetTop
+                            setRoundHeight(parentTreeTop + childTop)
+                        }
                     }
-                    const parentNode = leftTitle?.id.substring(5,14)
-                    const parentTop = (document.querySelector(`#left_tree_${parentNode}`) as any).offsetTop
-                    leftTitle?.classList.add('toc-selected');
-                    if (leftTitle.attributes['class'].nodeValue == 'toc-selected') {
-                        const childTop = leftTitle.offsetParent.offsetTop
-                        setRoundHeight(parentTop + childTop)
-                    } else {
-                        const childTop = leftTitle.children[0].children[0].offsetParent.offsetTop
-                        setRoundHeight(parentTop + childTop)
-                    }
                 }
-            }   
+            }
         }
-    },200)
+    }, 200)
 
     useEffect(() => {
         window.addEventListener('scroll', handleScroll, true)
@@ -250,38 +261,38 @@ const TemplateCatalog = () => {
         for (let i = 0; i < arr.length; i++) {
             arr[i].classList.remove('toc-selected');
         }
-        let leftName = document.getElementById(`left_${name}`) as any
+        let leftName = document.querySelector(`#left_${name}`) as any
+        leftName?.classList.add('toc-selected');
         setRoundHeight(leftName?.offsetTop)
-        leftName.classList.add('toc-selected');
         document.querySelector(`#${name}`)?.scrollIntoView()
-        // document.querySelector("#report-body-container")?.scrollBy({ top: -104 })
+        if (leftName?.id === 'left_perf_item' || leftName?.id === 'left_func_item') {
+            document.querySelector("#report-body-container")?.scrollBy({ top: -52 })
+        }
     }
 
     const handleSelectTree = (_: any, evt: any) => {
         let brr = document.querySelectorAll(`.spaceWarpper .ant-space-item .markSpace span`) as any
-
         for (let i = 0; i < brr.length; i++) {
             brr[i].classList.remove('toc-selected');
         }
-
         const { node } = evt
         const { rowKey, name } = node
         let tree_name = `${name}-${rowKey}`
         let leftName = document.querySelector(`#left_${tree_name}`) as any
         leftName.classList.add('toc-selected');
         const target = evt?.nativeEvent?.target
-        const parentTop = (document.querySelector(`#left_tree_${node.name}`) as any).offsetTop
+        const parentTreeTop = (document.querySelector(`#left_tree_${node.name}`) as any).offsetTop
         if (target.attributes['class'].nodeValue == 'toc-selected') {
             const childTop = target.offsetParent.offsetTop
-            setRoundHeight(parentTop + childTop)
+            setRoundHeight(parentTreeTop + childTop)
         } else {
             const childTop = target.children[0].children[0].offsetParent.offsetTop
-            setRoundHeight(parentTop + childTop)
+            setRoundHeight(parentTreeTop + childTop)
         }
         document.querySelector(`#${tree_name}`)?.scrollIntoView()
         document.querySelector("#report-body-container")?.scrollBy({ top: -52 })
     }
-    
+
     return (
         <Catalog collapsed={collapsed}>
             {/* 目录 icon 展开 */}
