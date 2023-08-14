@@ -9,6 +9,7 @@ import _ from 'lodash';
 const ReportBasicInfo = () => {
     const { formatMessage } = useIntl()
     const { btnState, obj, setObj, saveReportData, summaryData, btnConfirm, domainResult, creator } = useContext(ReportContext)
+
     const handleChangeVal = (val: any, text: string) => {
         if (text == 'custom') {
             if (summaryData && summaryData !== undefined) {

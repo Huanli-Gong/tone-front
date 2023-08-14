@@ -2,7 +2,7 @@
 import { useState, useImperativeHandle, forwardRef } from 'react'
 import { Table, Drawer, Divider, Row } from 'antd'
 import { queryServerHistory } from './service'
-import { FormattedMessage, useIntl } from 'umi';
+import { FormattedMessage, useIntl, useParams } from 'umi';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import styles from './style.less'
 import { isArray } from 'lodash';
@@ -33,6 +33,7 @@ interface LogDrawerProps {
 
 export default forwardRef(
     ({ operation_object }: LogDrawerProps, ref: any) => {
+        const { ws_id } = useParams() as any
         const { formatMessage } = useIntl()
         const [dataSource, setDataSource] = useState<any>({})
         const [visible, setVisible] = useState(false)
@@ -40,7 +41,7 @@ export default forwardRef(
 
         const getList = async (pid: any) => {
             setLoading(true)
-            const data = await queryServerHistory({ operation_object, pid })
+            const data = await queryServerHistory({ operation_object, pid, ws_id })
             setDataSource(data || {})
             setLoading(false)
         }

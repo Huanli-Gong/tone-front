@@ -26,7 +26,6 @@ export const SettingTextArea = ({
     },
     defaultHolder,
     btn = false,
-    btnConfirm = false,
     isInput = false,
     onOk,
 }:
@@ -37,19 +36,13 @@ export const SettingTextArea = ({
         fontStyle?: any,
         defaultHolder?: string,
         btn: boolean,
-        btnConfirm: boolean,
+        btnConfirm?: boolean,
         isInput?: boolean,
         onOk: any
     }) => {
 
     const { formatMessage } = useIntl()
     const [title, setTitle] = useState(name)
-
-    useEffect(() => {
-        if (btnConfirm) {
-            onOk(title)
-        }
-    }, [btnConfirm])
 
     React.useEffect(() => {
         setTitle(name)
@@ -69,7 +62,10 @@ export const SettingTextArea = ({
                     placeholder={defaultHolder}
                     style={{ padding: '6px 8px 6px 8px', width: '93%', ...fontStyle }}
                     value={title}
-                    onChange={evt => setTitle(evt.target.value)}
+                    onChange={evt => {
+                        setTitle(evt.target.value)
+                        onOk(evt.target.value)
+                    }}
                 />
             )
         return (
@@ -80,7 +76,10 @@ export const SettingTextArea = ({
                     placeholder={defaultHolder}
                     style={{ padding: '10px', ...fontStyle }}
                     value={title}
-                    onChange={evt => setTitle(evt.target.value)}
+                    onChange={evt => {
+                        setTitle(evt.target.value)
+                        onOk(evt.target.value)
+                    }}
                 />
             </div>
         )
@@ -168,6 +167,7 @@ export const SettingRegUpdate = ({
             obj[field] = title
         }
         const { code, msg } = await editReportInfo(obj)
+
         if (code === 200) {
             openNotification(changeName(field))
             setBtn(false)
