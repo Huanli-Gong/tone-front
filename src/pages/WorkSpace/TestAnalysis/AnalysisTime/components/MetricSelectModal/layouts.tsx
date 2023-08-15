@@ -108,12 +108,6 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
         handleClose()
     }
 
-    React.useEffect(() => {
-        return () => {
-            setBasicValues(undefined)
-        }
-    }, [visible])
-
     const baseProps = {
         test_type,
         show_type,
@@ -122,6 +116,7 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
         provider_env,
         loading,
         suiteList,
+        visible,
         runGetMetrics,
         metrics,
         onChange: (data: any) => {

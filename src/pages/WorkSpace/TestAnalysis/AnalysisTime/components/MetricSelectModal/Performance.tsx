@@ -12,26 +12,37 @@ const transMetric = (query: any) => {
 }
 
 const Performance: React.FC<AnyType> = (props) => {
-    const { suiteList, provider_env, onChange, basicValues, metrics, runGetMetrics } = props
+    const { suiteList, provider_env, onChange, basicValues, metrics, runGetMetrics, visible } = props
     const { query }: any = useLocation()
     const { formatMessage } = useIntl()
-
-    const getQueryValue = (queryName: any) => {
-        if (JSON.stringify(query) !== '{}' && (query?.test_type !== "performance")) return undefined
-        if (basicValues) return basicValues[queryName]
-        if (provider_env === query?.provider_env && query[queryName]) return query[queryName]
-        return undefined
-    }
-
     const { setMetrics } = useAnalysisProvider()
 
-    React.useEffect(() => {
-        setMetrics(metrics)
-    }, [metrics])
+    const getQueryValue = (queryName: any) => {
+        if (basicValues) return basicValues[queryName]
+        if (JSON.stringify(query) !== '{}' && (query?.test_type !== "performance")) return undefined
+        if (provider_env === query?.provider_env && query[queryName]) {
+            if (queryName === 'metric')
+                return transMetric(query)
+            return query[queryName]
+        }
+        return undefined
+    }
 
     const [activeSuite, setActiveSuite] = React.useState<any>(+ getQueryValue("test_suite_id") || undefined)
     const [activeConf, setActiveConf] = React.useState<any>(+ getQueryValue("test_case_id") || undefined)
     const [selectMetric, setSelectMetric] = React.useState<any>(getQueryValue("metric") || transMetric(query))
+
+    React.useEffect(() => {
+        if (!visible) {
+            setActiveSuite(undefined)
+            setActiveConf(undefined)
+            setSelectMetric([])
+        }
+    }, [visible])
+
+    React.useEffect(() => {
+        setMetrics(metrics)
+    }, [metrics])
 
     React.useEffect(() => {
         if (suiteList?.length > 0) {
@@ -40,7 +51,7 @@ const Performance: React.FC<AnyType> = (props) => {
             setActiveSuite(tsi ? + tsi : suiteList[0].test_suite_id)
             setActiveConf(tci ? + tci : undefined)
         }
-    }, [suiteList, query])
+    }, [suiteList])
 
     const currentSuite = React.useMemo(() => {
         if (!suiteList) return

@@ -185,7 +185,7 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
     }
 
     const handleFormChange = () => {
-        const params = getAnalysisFormData()
+        // const params = getAnalysisFormData()
         setTableData([])
         setChartData(null)
         setMetricData(null)
@@ -281,11 +281,11 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
 
                 form.setFieldsValue({
                     project_id: + project_id || undefined,
-                    tag: + tag || undefined,
+                    tag: + tag || '',
                 })
             }
         }
-    }, [query])
+    }, [])
 
     const handleListChange = (list: any[]) => {
         setTableData((p: any) => {
