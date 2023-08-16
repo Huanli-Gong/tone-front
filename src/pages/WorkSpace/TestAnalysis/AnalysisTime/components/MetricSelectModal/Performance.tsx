@@ -34,8 +34,6 @@ const Performance: React.FC<AnyType> = (props) => {
 
     React.useEffect(() => {
         if (!visible) {
-            setActiveSuite(undefined)
-            setActiveConf(undefined)
             setSelectMetric([])
         }
     }, [visible])
@@ -50,6 +48,10 @@ const Performance: React.FC<AnyType> = (props) => {
             const tci = getQueryValue("test_case_id")
             setActiveSuite(tsi ? + tsi : suiteList[0].test_suite_id)
             setActiveConf(tci ? + tci : undefined)
+        }
+        return () => {
+            setActiveSuite(undefined)
+            setActiveConf(undefined)
         }
     }, [suiteList])
 
