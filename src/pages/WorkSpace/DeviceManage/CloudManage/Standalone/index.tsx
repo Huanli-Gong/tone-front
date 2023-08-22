@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button, Space, Tag, message, Tooltip, Tabs, Modal, Row, Typography } from 'antd';
 import { FilterFilled, QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import DataSetPulic from '../DataSetPulic';
@@ -50,22 +50,18 @@ interface MachineParams {
 
 const channelTypeList = agent_list.map((i: any) => ({ id: i.value, name: i.label }))
 
-const DEFAULT_PARAM = {
-    page_num: 1,
-    page_size: 10,
-}
-export default () => {
-    const { pathname, query } = useLocation() as any
+export default (props: any) => {
+    const { tab } = props
+    const { query } = useLocation() as any
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
     const { ws_id }: any = useParams()
     const access = useAccess();
     const aloneMachine = useRef<any>(null)
-    const [isInstance, setIsInstance] = useState<number>(Object.prototype.toString.call(query?.isInstance) === "[object String]" ? + query?.isInstance : 0)
-    const [loading, setLoading] = useState<boolean>(false)
+    const [isInstance, setIsInstance] = useState<number>(Object.prototype.toString.call(query?.is_instance) === "[object String]" ? + query?.is_instance : 0)
+    const [loading, setLoading] = useState<boolean>(true)
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
     const [source, setSource] = useState<any>({});
-    const [params, setParams] = useState<MachineParams>(DEFAULT_PARAM)
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
@@ -73,12 +69,22 @@ export default () => {
     const logDrawer: any = useRef()
     const deployModal: any = useRef(null);
     const viewDetailRef: any = useRef(null)
+
+    const DEFAULT_PARAM = {
+        t: tab,
+        page_num: 1,
+        page_size: 10,
+        ws_id,
+    }
+
+    const [params, setParams] = useState<MachineParams>({ ...DEFAULT_PARAM, ...query })
     const pageCurrent = useStateRef(params)
 
     const inputFilterCommonFields = (dataIndex: string) => ({
         filterDropdown: ({ confirm }: any) => (
             <SearchInput
                 confirm={confirm}
+                value={params[dataIndex]}
                 onConfirm={(val: string) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
             />
         ),
@@ -95,6 +101,7 @@ export default () => {
         filterDropdown: ({ confirm }: any) => (
             <SelectCheck
                 list={list}
+                value={params[dataIndex]}
                 confirm={confirm}
                 onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
             />
@@ -106,6 +113,7 @@ export default () => {
         filterDropdown: ({ confirm }: any) => (
             <SelectRadio
                 list={list}
+                value={params[dataIndex]}
                 confirm={confirm}
                 onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
             />
@@ -119,10 +127,11 @@ export default () => {
             is_instance: Boolean(+ isInstance),
             server_conf: name,
         }
+        history.replace(`/ws/${ws_id}/device/cloud?${stringify({ ...obj, is_instance: obj.is_instance ? 1 : 0 })}`)
         setLoading(true)
-        const data: any = await cloudList({ ...obj, ws_id })
-        data && setSource(data)
+        const data: any = await cloudList(obj)
         setLoading(false)
+        data && setSource(data)
     };
 
     const handleRefresh = async (row: any) => {
@@ -142,7 +151,7 @@ export default () => {
             1: formatMessage({ id: 'operation.release' }),
             2: formatMessage({ id: 'device.failed.save' })
         }
-        return dict[val] || ''
+        return (dict as any)[val] || ''
     }
 
     const $instance = + isInstance
@@ -209,14 +218,15 @@ export default () => {
             window.open(`/ws/${ws_id}/refenerce/6/?pk=${pk}`)
         // window.open(`/ws/${ws_id}/refenerce/6/?name=${deleteObj.name}&id=${deleteObj.id}`)
     }
+
     useEffect(() => {
         getList()
-    }, [params, isInstance]);
+    }, [params]);
 
     const tabRadioChange = (val: any) => {
         setIsInstance(val)
         setParams(DEFAULT_PARAM)
-        history.replace(`${pathname}?${stringify({ ...query, isInstance: val })}`)
+        history.push(`/ws/${ws_id}/device/cloud?${stringify({ ...query, is_instance: val })}`)
     }
 
     const addMachine = () => {
@@ -251,7 +261,7 @@ export default () => {
                 <ColumnEllipsisText ellipsis={{ tooltip: row.name }} >
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                        searchWords={[params.name || '']}
+                        searchWords={[params?.name || '']}
                         autoEscape
                         textToHighlight={row.name.toString()}
                     />
@@ -407,10 +417,11 @@ export default () => {
                 showTitle: false
             },
             dataIndex: 'channel_type',
-            filterIcon: () => <FilterFilled style={{ color: params.channel_type ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.channel_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectCheck
                     list={channelTypeList}
+                    value={params?.channel_type}
                     confirm={confirm}
                     onConfirm={(channel_type: any) => setParams({ ...params, channel_type, page_num: 1 })}
                 />
@@ -432,12 +443,12 @@ export default () => {
                 showTitle: false
             },
             render: (_: any, row: any) => StateBadge(_, row, ws_id),
-            filterIcon: () => <FilterFilled style={{ color: params.state ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync
                     confirm={confirm}
                     onConfirm={(val: string) => setParams({ ...params, state: val, page_num: 1 })}
-                    stateVal={params.state}
+                    value={params?.state}
                     tabType={$instance}
                     dataArr={['Available', 'Occupied', 'Broken', 'Reserved', "Unusable"]}
                 />
@@ -459,13 +470,12 @@ export default () => {
             },
             dataIndex: 'real_state',
             render: (_: any, row: any) => StateBadge(_, row, ws_id),
-            filterIcon: () => <FilterFilled style={{ color: params.real_state ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.real_state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync
                     confirm={confirm}
-                    onConfirm={(val: string) =>
-                        setParams({ ...params, real_state: val, page_num: 1 })}
-                    stateVal={params.real_state}
+                    onConfirm={(val: string) => setParams({ ...params, real_state: val, page_num: 1 })}
+                    value={params?.real_state}
                     tabType={$instance}
                     dataArr={['Online', 'Offline']}
                 />
@@ -478,9 +488,10 @@ export default () => {
             ellipsis: {
                 showTitle: false
             },
-            filterIcon: () => <FilterFilled style={{ color: params.owner ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.owner ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectUser
+                    value={params?.owner}
                     confirm={confirm}
                     onConfirm={(val: number) => { setParams({ ...params, owner: val, page_num: 1 }) }}
                 />
@@ -493,9 +504,10 @@ export default () => {
             ellipsis: {
                 showTitle: false
             },
-            filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags?.length > 0 ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.tags && params?.tags?.length > 0 ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectTags
+                    value={params?.tags}
                     ws_id={ws_id}
                     run_mode={'standalone'}
                     autoFocus={autoFocus}
@@ -523,7 +535,7 @@ export default () => {
                 <ColumnEllipsisText ellipsis={{ tooltip: row.description }} >
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                        searchWords={[params.description || '']}
+                        searchWords={[params?.description || '']}
                         autoEscape
                         textToHighlight={row.description ? row.description.toString() : '-'}
                     />
@@ -656,8 +668,8 @@ export default () => {
             {
                 <CommonPagination
                     total={source.total}
-                    pageSize={params.page_size}
-                    currentPage={params.page_num}
+                    pageSize={params?.page_size}
+                    currentPage={params?.page_num}
                     onPageChange={
                         (page_num: any, page_size: any) => {
                             setParams({ ...params, page_num, page_size })

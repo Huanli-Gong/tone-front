@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
-import { useIntl, FormattedMessage, getLocale } from 'umi';
+import { useIntl, FormattedMessage, getLocale, useLocation } from 'umi';
 import { ReportContext } from '../../Provider';
 import { Typography, Space, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
 import { PerfTextArea, GroupItemText } from '../EditPerfText';
@@ -51,6 +51,7 @@ import {
 } from '../../ReportUI';
 import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMethods/index';
 import { getCompareType } from '@/utils/utils';
+import { useScroll } from 'ahooks';
 const { Option } = Select;
 
 const getSortNum = (compare_result: string) => new Map([
@@ -69,9 +70,10 @@ const compare = ($props: any) => {
 
 const Performance = (props: any) => {
     const { formatMessage } = useIntl()
-
+    const { pathname } = useLocation()
     const { child, name, btn, id, onDelete, dataSource, setDataSource } = props
     const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
+    const isEditPage = !!~pathname?.indexOf('/edit')
 
     const [filterName, setFilterName] = useState('all')
     const [perData, setPerData] = useState<any>({})
@@ -181,9 +183,9 @@ const Performance = (props: any) => {
                             ...ix,
                             conf_list: ix.conf_list.map((confs: any) => {
                                 if (confs.conf_id === conf.conf_id) {
-                                    const currentSuite = child.list?.filter((xy: any) => xy.suite_id === suite.suite_id).at(0)
+                                    const currentSuite = child.list?.filter((xy: any) => xy.suite_id === suite.suite_id)?.[0]
                                     const useConfList = currentSuite.conf_list?.filter((confs: any) => confs.conf_id === conf.conf_id)
-                                    return useConfList.at(0) || confs
+                                    return useConfList?.[0] || confs
                                 }
                                 return confs
                             })
@@ -252,12 +254,14 @@ const Performance = (props: any) => {
         )
     }
 
+    const { containerRef } = useContext(ReportContext)
+    const containerScroll = useScroll(containerRef)
+
     // suite遍历
     const RenderSuite = () => {
-        const { containerScroll } = useContext(ReportContext)
         return (
             Array.isArray(perData.list) && !!perData.list.length ? perData.list.map((suite: any, id: number) => (
-                <TestSuite key={id}>
+                <TestSuite key={suite.suite_id}>
                     <SuiteName>
                         <Typography.Text style={{ display: "inline-block", textIndent: containerScroll?.left > 50 ? containerScroll?.left - 50 : 0 }}>
                             {suite.suite_name}
@@ -287,6 +291,7 @@ const Performance = (props: any) => {
                                         const [$var, name, $locale] = $item
                                         if (!domainResult.perf_conf) return
                                         if (!domainResult.perf_conf[$var]) return
+                                        if (!isEditPage && !suite[name]) return
                                         return (
                                             <SigleWrapper
                                                 key={$var}
@@ -364,7 +369,7 @@ const Performance = (props: any) => {
                                                 </PrefData>
                                                 {
                                                     conf.metric_list.map((metric: any, idx: number) => (
-                                                        <PrefMetric key={idx}>
+                                                        <PrefMetric key={metric.metric}>
                                                             <DelBtn conf={conf} cid={cid} />
                                                             {/* <DelBtnEmpty conf={conf} cid={cid} /> */}
                                                             <MetricTitle gLen={groupLen}>
@@ -446,7 +451,7 @@ const Performance = (props: any) => {
     }
 
     return (
-        <div key={id}>
+        <div >
             <TestGroupItem id={`perf_item-${id}`} className="position_mark" isGroup={name === 'group'} >
                 <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                 <TestItemText>

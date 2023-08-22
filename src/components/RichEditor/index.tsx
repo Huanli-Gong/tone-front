@@ -1,8 +1,9 @@
 import { EditorContent, useEditor, ReactNodeViewRenderer } from '@tiptap/react'
 import type { EditorOptions } from '@tiptap/react'
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import MenuBar from './MenuBar'
 import { EditorCls } from "./styled"
+import { Image as ImagePreview } from 'antd'
 
 import StarterKit from '@tiptap/starter-kit'
 import Underline from "@tiptap/extension-underline"
@@ -53,7 +54,8 @@ const RichEditor: React.FC<IProps> = (props) => {
                     addNodeView() {
                         return ReactNodeViewRenderer(CodeBlockComponent)
                     },
-                }).configure({
+                })
+                .configure({
                     lowlight,
                     defaultLanguage: 'plaintext',
                 }),
@@ -67,17 +69,43 @@ const RichEditor: React.FC<IProps> = (props) => {
             TextAlign.configure({
                 types: ['heading', 'paragraph'],
             }),
-            Image.configure({
-                inline: true,
-                allowBase64: true,
-            }),
+            Image
+                .configure({
+                    inline: true,
+                    allowBase64: true,
+                    HTMLAttributes: {
+                        class: 'tiptap-image-cls',
+                    },
+                }),
             SmilieReplacer,
         ],
         ...props,
     }, [content])
 
+    const ref = useRef<HTMLDivElement>(null)
+    const [preview, setPreview] = useState({ src: undefined, visible: false })
+
+    const handlePreview = (event: Event) => {
+        if (editor?.isEditable) return
+        const targetDom = event.target as any
+        if (!!~targetDom.className.indexOf('tiptap-image-cls')) {
+            setPreview({ src: targetDom.getAttribute('src'), visible: true })
+        }
+    }
+
+    React.useEffect(() => {
+        ref.current?.addEventListener('click', handlePreview)
+        return () => {
+            ref.current?.removeEventListener('click', handlePreview)
+        }
+    }, [])
+
+
     return (
-        <EditorCls editable={editable}>
+        <EditorCls
+            editable={editable}
+            ref={ref}
+        >
             {
                 editable &&
                 <MenuBar editor={editor} />
@@ -89,6 +117,19 @@ const RichEditor: React.FC<IProps> = (props) => {
                     style={{ height: `calc(100%${editable ? " - 48px" : ""})` }}
                 />
             }
+            {
+                (!editor?.isEditable && preview?.src) &&
+                <ImagePreview
+                    src={preview?.src}
+                    preview={{
+                        visible: preview?.visible,
+                        onVisibleChange: (visible) => {
+                            setPreview({ src: undefined, visible })
+                        }
+                    }}
+                />
+            }
+
         </EditorCls>
     )
 }

@@ -6,24 +6,31 @@ import Performance from "./Performance";
 import FunctionalPassRate from "./FunctionalPassRate";
 import FunctionalUnPassRate from "./FunctionalUnPassRate"
 
-import { queryTestSuiteCases } from '../../services'
+import { getSelectSuiteConfs, getSelectMetricOrSubcase } from '../../services'
 
 const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
-    const { test_type, projectId, provider_env, onOk, show_type } = props
+    const { test_type, project_id, provider_env, onOk, show_type, tag, start_time, end_time } = props
     const { ws_id } = useParams() as any
 
     const [visible, setVisible] = React.useState(false)
     const [info, setInfo] = React.useState<any>({})
     const [basicValues, setBasicValues] = React.useState(undefined)
 
-    const { data: suiteList, loading } = useRequest(
-        () => queryTestSuiteCases({ test_type, ws_id, page_num: 1, page_size: 200 }),
-        { initialData: [], refreshDeps: [test_type, ws_id] }
-    )
+    const defaultParams = { ws_id, project_id, start_time, end_time, tag, test_type, provider_env }
+
+    const { data: suiteList, run, loading } = useRequest(() => getSelectSuiteConfs(defaultParams), {
+        manual: true
+    })
+
+    const { data: metrics, run: runGetMetrics } = useRequest((params: any) => getSelectMetricOrSubcase({
+        ...defaultParams,
+        ...params,
+    }), { manual: true })
 
     React.useImperativeHandle(ref, () => ({
         show: async (vals: any) => {
             setVisible(true)
+            run()
             setBasicValues(vals)
         },
     }))
@@ -50,15 +57,17 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
     }, [test_type, show_type, info])
 
     const selectSuiteName = React.useMemo(() => {
+        if (!suiteList) return
         for (let len = suiteList.length, i = 0; i < len; i++)
-            if (suiteList[i].id === info?.activeSuite)
-                return suiteList[i].name
+            if (suiteList[i].test_suite_id === info?.activeSuite)
+                return suiteList[i].test_suite_name
         return
     }, [suiteList, info])
 
     const confList = React.useMemo(() => {
+        if (!suiteList) return
         for (let len = suiteList.length, i = 0; i < len; i++)
-            if (suiteList[i].id === info?.activeSuite) {
+            if (suiteList[i].test_suite_id === info?.activeSuite) {
                 if (suiteList[i].test_case_list.length > 0) {
                     return suiteList[i].test_case_list
                 }
@@ -68,9 +77,10 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
     }, [suiteList, info])
 
     const selectConfName = React.useMemo(() => {
+        if (!confList) return
         for (let len = confList.length, i = 0; i < len; i++)
-            if (confList[i].id === info?.activeConf)
-                return confList[i].name
+            if (confList[i].test_case_id === info?.activeConf)
+                return confList[i].test_case_name
         return
     }, [confList, info])
 
@@ -108,10 +118,12 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
         test_type,
         show_type,
         basicValues,
-        projectId,
+        project_id,
         provider_env,
         loading,
         suiteList,
+        runGetMetrics,
+        metrics,
         onChange: (data: any) => {
             setInfo((p: any) => ({ ...p, ...data }))
         }

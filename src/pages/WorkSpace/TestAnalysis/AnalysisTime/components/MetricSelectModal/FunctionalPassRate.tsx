@@ -5,11 +5,11 @@ import styles from '../index.less'
 import { useLocation } from "umi"
 
 const FunctionalPassRate: React.FC<AnyType> = (props) => {
-    const { suiteList, test_type, isFetching, onChange, basicValues } = props
+    const { suiteList = [], test_type, isFetching, onChange, basicValues } = props
     const { query }: any = useLocation()
 
     const getQueryValue = (queryName: any) => {
-        if (query?.test_type !== "functional") return undefined
+        if (JSON.stringify(query) !== '{}' && (query?.test_type !== "functional")) return undefined
         if (basicValues) return basicValues[queryName]
         if (query[queryName]) return query[queryName]
         return undefined
@@ -20,7 +20,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
 
     React.useEffect(() => {
         if (suiteList.length > 0)
-            setActiveSuite(+ getQueryValue("test_suite_id") || suiteList?.[0].id)
+            setActiveSuite(+ getQueryValue("test_suite_id") || suiteList?.[0].test_suite_id)
     }, [suiteList, query])
 
     React.useEffect(() => {
@@ -28,10 +28,11 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
     }, [activeSuite, activeConf])
 
     const confList = React.useMemo(() => {
+        if (!suiteList) return []
         for (let len = suiteList.length, i = 0; i < len; i++)
-            if (suiteList[i].id === activeSuite) {
+            if (suiteList[i].test_suite_id === activeSuite) {
                 if (suiteList[i].test_case_list.length > 0) {
-                    const test_case_id = activeConf || suiteList[i].test_case_list[0].id
+                    const test_case_id = activeConf || suiteList[i].test_case_list[0].test_case_id
                     if (!activeConf)
                         setActiveConf(test_case_id)
                     return suiteList[i].test_case_list
@@ -59,12 +60,10 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                         placeholder="请选择Test Suite"
                         value={activeSuite}
                         options={
-                            suiteList.map((i: any) => (
-                                {
-                                    value: i.id,
-                                    label: i.name
-                                }
-                            ))
+                            suiteList?.map((i: any) => ({
+                                value: i.test_suite_id,
+                                label: i.test_suite_name
+                            }))
                         }
                     />
                 </Row>
@@ -72,8 +71,8 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
             <Col span={24} style={{ height: 350 }}>
                 <Table
                     dataSource={confList}
-                    columns={[{ dataIndex: 'name', title: 'Test Conf' }]}
-                    rowKey={'id'}
+                    columns={[{ dataIndex: 'test_case_name', title: 'Test Conf' }]}
+                    rowKey={'test_case_id'}
                     size="small"
                     loading={isFetching}
                     scroll={{ y: 320 }}
@@ -86,7 +85,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                     onRow={
                         record => ({
                             onClick: () => {
-                                setActiveConf(record.id)
+                                setActiveConf(record.test_case_id)
                             }
                         })
                     }

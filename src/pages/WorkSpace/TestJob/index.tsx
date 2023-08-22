@@ -945,7 +945,7 @@ const TestJob: React.FC<any> = (props) => {
                                 !modifyTemplate &&
                                 <>
                                     <Button onClick={() => handleCopyText(location.href)}><FormattedMessage id="ws.test.job.copy.link" /></Button>
-                                    <Access accessible={access.WsMemberOperateSelf(state?.creator)}
+                                    <Access accessible={access.WsMemberOperateSelf(templateDatas?.creator)}
                                         fallback={<Button onClick={() => AccessTootip()}><FormattedMessage id="ws.test.job.ModifySetting" /></Button>}
                                     >
                                         <Button onClick={handleModifySetting}><FormattedMessage id="ws.test.job.ModifySetting" /></Button>

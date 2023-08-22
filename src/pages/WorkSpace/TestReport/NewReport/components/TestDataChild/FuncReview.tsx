@@ -5,8 +5,8 @@
 /* eslint-disable prefer-const */
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
 import { ReportContext } from '../../Provider';
-import { Button, Space, Select, Typography, Popconfirm, Empty, Row, Col } from 'antd';
-import { useIntl, FormattedMessage } from 'umi';
+import { Button, Space, Select, Typography, Popconfirm, Empty, Row, Col, Pagination } from 'antd';
+import { useIntl, FormattedMessage, useLocation } from 'umi';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
 import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
 // import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
@@ -14,7 +14,7 @@ import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
 import { ReactComponent as TestItemIcon } from '@/assets/svg/Report/TestItem.svg';
 import { toShowNum, handleCaseColor } from '@/components/AnalysisMethods/index';
-import { GroupItemText } from '../EditPerfText';
+import { GroupItemText, PerfTextArea } from '../EditPerfText';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/DiffTootip';
 import { reportDelete } from '../ReportFunction';
@@ -38,15 +38,98 @@ import {
     ExpandIcon,
     CloseBtn,
     PrefDataDel,
+
+    Configuration,
+    SigleWrapper,
+    TestTitle,
+    TestContent,
 } from '../../ReportUI';
 import _ from 'lodash';
 import { getCompareType } from '@/utils/utils';
+
 const { Option } = Select;
 
+const DelBtnEmpty: React.FC<any> = ({ btnState }) => {
+    return btnState && <PrefDataDel empty={true} />
+}
+
+// 单个展开
+const ExpandSubcases: React.FC<any> = (props) => {
+    const { sub_case_list, conf_id, expandKeys, isOldReport, baseIndex, groupLen, btnState } = props
+    const expand = expandKeys.includes(conf_id)
+    const [page, setPage] = React.useState({ size: 100, num: 1 })
+    const total = (sub_case_list || []).length
+
+    React.useEffect(() => {
+        return () => {
+            setPage({ size: 100, num: 1 })
+        }
+    }, [expand])
+
+    const { size, num } = page
+    const currentPage = num - 1
+    const result = sub_case_list.slice(currentPage * size, currentPage * size + size)
+
+    if (!expand)
+        return <></>
+
+    return (
+        <>
+            {
+                result?.map((item: any) => {
+                    if (isOldReport) {
+                        item.compare_data.splice(baseIndex, 0, item.result)
+                    }
+                    return (
+                        <TestSubCase key={item?.sub_case_name} >
+                            <DelBtnEmpty btnState={btnState} />
+                            <SubCaseTitle gLen={groupLen}>
+                                <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
+                            </SubCaseTitle>
+                            {
+                                !!item.compare_data.length ?
+                                    item.compare_data?.slice(0, groupLen).map((cur: any, idx: number) => {
+                                        return (
+                                            <SubCaseText gLen={groupLen} btnState={btnState} key={idx}>
+                                                <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
+                                            </SubCaseText>
+                                        )
+                                    })
+                                    :
+                                    <SubCaseText gLen={groupLen} btnState={btnState}>
+                                        <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
+                                    </SubCaseText>
+
+                            }
+                        </TestSubCase>
+                    )
+                })
+            }
+            <Row justify={'end'}>
+                <Pagination
+                    style={{ marginTop: 12, marginBottom: 12 }}
+                    total={total}
+                    size="small"
+                    current={page.num}
+                    pageSize={size}
+                    showQuickJumper
+                    showSizeChanger
+                    pageSizeOptions={[100, 200, 500, 1000, 2000]}
+                    onChange={(num, size) => setPage({ num, size })}
+                    showTotal={(total) => `共（${total}）条`}
+                />
+            </Row>
+        </>
+    )
+}
+
 const FuncDataIndex: React.FC<any> = (props) => {
+    const { pathname } = useLocation()
+
+    const isEditPage = !!~pathname?.indexOf('/edit')
     const { formatMessage } = useIntl()
     const { child, name, id, onDelete, dataSource, setDataSource } = props
-    const { btnState, allGroupData, baselineGroupIndex, groupLen, wsId, isOldReport } = useContext(ReportContext)
+    const { btnState, allGroupData, baselineGroupIndex, groupLen, wsId, isOldReport, domainResult } = useContext(ReportContext)
     const [expandKeys, setExpandKeys] = useState<any>([])
     const [filterName, setFilterName] = useState('All')
     const [arrowStyle, setArrowStyle] = useState('')
@@ -75,7 +158,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
             data.list.map((item: any) => {
                 let conf_list: any = []
                 item.conf_list.map((conf: any) => {
-                    let sub_case_list = isOldReport
+                    const sub_case_list = isOldReport
                         ? conf.sub_case_list.filter((i: any) => i.result == value)
                         : conf.sub_case_list.filter((i: any) => i.compare_data.includes(value))
                     conf_list.push({
@@ -88,11 +171,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
                     conf_list
                 })
             })
-            let obj = {
+            setFuncData({
                 ...data,
                 list: newData
-            }
-            setFuncData(obj)
+            })
         }
     }
     const OpenSubCase = () => {
@@ -124,7 +206,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
             }
         })
 
-        let list = child.list.map((item: any) => {
+        const list = child.list.map((item: any) => {
             if (item.suite_id === conf.suite_id)
                 return {
                     ...item,
@@ -132,11 +214,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 }
             return item
         })
-        let obj = {
+        setFuncData({
             ...child,
             list,
-        }
-        setFuncData(obj)
+        })
     }
 
     useEffect(() => {
@@ -208,10 +289,6 @@ const FuncDataIndex: React.FC<any> = (props) => {
         )
     }
 
-    const DelBtnEmpty: React.FC<any> = () => {
-        return btnState && <PrefDataDel empty={true} />
-    }
-
     const hanldeExpand = (id: any) => {
         const expand = expandKeys.includes(id)
         if (expand)
@@ -220,169 +297,167 @@ const FuncDataIndex: React.FC<any> = (props) => {
             setExpandKeys(expandKeys.concat(id))
     }
 
-    // 单个展开
-    const ExpandSubcases = (props: any) => {
-        const { sub_case_list, conf_id } = props
-        const expand = expandKeys.includes(conf_id)
-        let subCaseList = _.cloneDeep(sub_case_list)
-        return (
-            <>
-                {
-                    expand && subCaseList?.map((item: any, idx: number) => {
-                        if (isOldReport) {
-                            item.compare_data.splice(baseIndex, 0, item.result)
-                        }
-                        return (
-                            <TestSubCase key={idx}>
-                                <DelBtnEmpty />
-                                <SubCaseTitle gLen={groupLen}>
-                                    <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
-                                </SubCaseTitle>
-                                {
-                                    !!item.compare_data.length ?
-                                        item.compare_data?.slice(0, groupLen).map((cur: any, idx: number) => {
-                                            return (
-                                                <SubCaseText gLen={groupLen} btnState={btnState} key={idx}>
-                                                    <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
-                                                </SubCaseText>
-                                            )
-                                        })
-                                        :
-                                        <SubCaseText gLen={groupLen} btnState={btnState}>
-                                            <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
-                                        </SubCaseText>
-
-                                }
-                            </TestSubCase>
-                        )
-                    })
-                }
-            </>
-        )
-    }
-
-    let functionTable = Array.isArray(funcData.list) && !!funcData.list.length ?
-        funcData.list.map((suite: any, idx: number) => (
-            <TestSuite key={idx}>
-                <SuiteName>
-                    {suite.suite_name}
-                    <Popconfirm
-                        title={<FormattedMessage id="delete.prompt" />}
-                        onConfirm={() => handleDelete('suite', suite, idx)}
-                        cancelText={<FormattedMessage id="operation.cancel" />}
-                        okText={<FormattedMessage id="operation.delete" />}
-                    >
-                        {btnState && <CloseBtn />}
-                    </Popconfirm>
-                </SuiteName>
-                <TestConf>
-                    <ConfTitle gLen={groupLen} style={{ marginLeft: btnState ? 39 : 0 }}>Conf</ConfTitle>
-                    {
-                        allGroupData?.map((cont: any, i: number) => (
-                            <ConfData gLen={groupLen} btnState={btnState} key={i}>
-                                <Row>
-                                    <Col span={12}>
-                                        <FormattedMessage id="report.total/pass/fail" />
-                                    </Col>
-                                    {
-                                        i !== baseIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
-                                            <FormattedMessage id="report.comparison.results" />
-                                            <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
-                                                {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
-                                            </span>
-                                            <DiffTootip />
-                                        </Col>
-                                    }
-                                </Row>
-                            </ConfData>
-                        ))
+    const functionTable = Array.isArray(funcData.list) && !!funcData.list.length ?
+        funcData?.list?.map((suite: any, idx: number) => {
+            return (
+                <TestSuite key={suite?.suite_id}>
+                    {(!domainResult.is_default) &&
+                        <Configuration>
+                            {
+                                [
+                                    ["need_test_env", "test_env", "env"],
+                                    ["need_test_description", "test_description", "description"],
+                                    ["need_test_conclusion", "test_conclusion", "conclusion"],
+                                ].map(($item: any) => {
+                                    const [$var, name, $locale] = $item
+                                    if (!domainResult.func_conf) return
+                                    if (!domainResult.func_conf[$var]) return
+                                    if (!isEditPage && !suite[name]) return
+                                    return (
+                                        <SigleWrapper key={$var} >
+                                            <TestTitle>
+                                                <FormattedMessage id={`report.test.${$locale}`} />
+                                            </TestTitle>
+                                            <TestContent>
+                                                {/* need_test_description  need_test_conclusion edit button*/}
+                                                <PerfTextArea
+                                                    name={suite[name]}
+                                                    field={name}
+                                                    suite={suite}
+                                                    creator={domainResult?.creator}
+                                                />
+                                            </TestContent>
+                                        </SigleWrapper>
+                                    )
+                                }).filter(Boolean)
+                            }
+                        </Configuration>
                     }
-                </TestConf>
-                <TestConfWarpper>
-                    {
-                        suite?.conf_list?.map((conf: any, cid: number) => {
-                            const expand = expandKeys.includes(conf.conf_id)
-                            let metricList: any = []
-                            if (isOldReport) {
-                                const { all_case, success_case, fail_case, obj_id } = conf.conf_source || conf
-                                let conf_data = conf.conf_compare_data || conf.compare_conf_list
-                                for (let i = 0; i < allGroupData.length; i++) {
-                                    if (i === baseIndex)
-                                        metricList.push({
-                                            all_case,
-                                            success_case,
-                                            fail_case,
-                                            obj_id,
-                                        })
-                                    !!conf_data.length ?
-                                        conf_data.map((item: any, idx: number) => {
-                                            if (item) {
-                                                const { all_case, success_case, fail_case, obj_id } = item || item.conf_source
-                                                idx === i && metricList.push({
-                                                    all_case,
-                                                    success_case,
-                                                    fail_case,
-                                                    obj_id
-                                                })
-                                            } else {
-                                                idx === i && metricList.push({
-                                                    all_case: '-',
-                                                    success_case: '-',
-                                                    fail_case: '-'
+                    <SuiteName>
+                        {suite.suite_name}
+                        <Popconfirm
+                            title={<FormattedMessage id="delete.prompt" />}
+                            onConfirm={() => handleDelete('suite', suite, idx)}
+                            cancelText={<FormattedMessage id="operation.cancel" />}
+                            okText={<FormattedMessage id="operation.delete" />}
+                        >
+                            {btnState && <CloseBtn />}
+                        </Popconfirm>
+                    </SuiteName>
+                    <TestConf>
+                        <ConfTitle gLen={groupLen} style={{ marginLeft: btnState ? 39 : 0 }}>Conf</ConfTitle>
+                        {
+                            allGroupData?.map((cont: any, i: number) => (
+                                <ConfData gLen={groupLen} btnState={btnState} key={i}>
+                                    <Row>
+                                        <Col span={12}>
+                                            <FormattedMessage id="report.total/pass/fail" />
+                                        </Col>
+                                        {
+                                            i !== baseIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
+                                                <FormattedMessage id="report.comparison.results" />
+                                                <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
+                                                    {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
+                                                </span>
+                                                <DiffTootip />
+                                            </Col>
+                                        }
+                                    </Row>
+                                </ConfData>
+                            ))
+                        }
+                    </TestConf>
+                    <TestConfWarpper>
+                        {
+                            suite?.conf_list?.map((conf: any, cid: number) => {
+                                const expand = expandKeys.includes(conf.conf_id)
+                                let metricList: any = []
+                                if (isOldReport) {
+                                    const { all_case, success_case, fail_case, obj_id } = conf.conf_source || conf
+                                    const conf_data = conf.conf_compare_data || conf.compare_conf_list
+                                    for (let i = 0; i < allGroupData.length; i++) {
+                                        if (i === baseIndex)
+                                            metricList.push({
+                                                all_case,
+                                                success_case,
+                                                fail_case,
+                                                obj_id,
+                                            })
+                                        !!conf_data.length ?
+                                            conf_data.map((item: any, idx: number) => {
+                                                if (item) {
+                                                    const { all_case, success_case, fail_case, obj_id } = item || item.conf_source
+                                                    idx === i && metricList.push({
+                                                        all_case,
+                                                        success_case,
+                                                        fail_case,
+                                                        obj_id
+                                                    })
+                                                } else {
+                                                    idx === i && metricList.push({
+                                                        all_case: '-',
+                                                        success_case: '-',
+                                                        fail_case: '-'
+                                                    })
+                                                }
+                                            })
+                                            :
+                                            (allGroupData.length > 1) && (i - 1) && metricList.push({
+                                                all_case: '-',
+                                                success_case: '-',
+                                                fail_case: '-'
+                                            })
+                                    }
+                                }
+                                const dataList = isOldReport ? metricList : (conf.conf_compare_data || conf.compare_conf_list)
+                                return (
+                                    <React.Fragment key={conf.conf_id}>
+                                        <TestCase expand={expand}>
+                                            <DelBtn conf={conf} cid={cid} />
+                                            <CaseTitle gLen={groupLen}>
+                                                <EllipsisPulic title={conf.conf_name}>
+                                                    <ExpandIcon
+                                                        rotate={expand ? 90 : 0}
+                                                        onClick={() => hanldeExpand(conf.conf_id)}
+                                                    />
+                                                    <Typography.Text>{conf.conf_name}</Typography.Text>
+                                                </EllipsisPulic>
+                                            </CaseTitle>
+                                            {
+                                                dataList?.map((item: any, idx: number) => {
+                                                    return (
+                                                        <CaseText gLen={groupLen} btnState={btnState} key={idx}>
+                                                            <Space size={16}>
+                                                                <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(item.all_case)}</Typography.Text>
+                                                                <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(item.success_case)}</Typography.Text>
+                                                                <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(item.fail_case)}</Typography.Text>
+                                                                {
+                                                                    !getCompareType(item) &&
+                                                                    <JumpResult ws_id={wsId} job_id={item.obj_id} style={{ paddingLeft: 10 }} />
+                                                                }
+                                                            </Space>
+                                                        </CaseText>
+                                                    )
                                                 })
                                             }
-                                        })
-                                        :
-                                        (allGroupData.length > 1) && (i - 1) && metricList.push({
-                                            all_case: '-',
-                                            success_case: '-',
-                                            fail_case: '-'
-                                        })
-                                }
-                            }
-                            let dataList = isOldReport ? metricList : (conf.conf_compare_data || conf.compare_conf_list)
-                            return (
-                                <React.Fragment key={cid}>
-                                    <TestCase expand={expand}>
-                                        <DelBtn conf={conf} cid={cid} />
-                                        <CaseTitle gLen={groupLen}>
-                                            <EllipsisPulic title={conf.conf_name}>
-                                                <ExpandIcon
-                                                    rotate={expand ? 90 : 0}
-                                                    onClick={() => hanldeExpand(conf.conf_id)}
-                                                />
-                                                <Typography.Text>{conf.conf_name}</Typography.Text>
-                                            </EllipsisPulic>
-                                        </CaseTitle>
-                                        {
-                                            dataList?.map((item: any, idx: number) => {
-                                                return (
-                                                    <CaseText gLen={groupLen} btnState={btnState} key={idx}>
-                                                        <Space size={16}>
-                                                            <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(item.all_case)}</Typography.Text>
-                                                            <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(item.success_case)}</Typography.Text>
-                                                            <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(item.fail_case)}</Typography.Text>
-                                                            {
-                                                                !getCompareType(item) &&
-                                                                <JumpResult ws_id={wsId} job_id={item.obj_id} style={{ paddingLeft: 10 }} />
-                                                            }
-                                                        </Space>
-                                                    </CaseText>
-                                                )
-                                            })
-                                        }
-                                    </TestCase>
-                                    <ExpandSubcases
-                                        {...conf}
-                                        btn={btnState}
-                                    />
-                                </React.Fragment>
-                            )
-                        })
-                    }
-                </TestConfWarpper>
-            </TestSuite>
-        )) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                                        </TestCase>
+                                        <ExpandSubcases
+                                            {...conf}
+                                            expandKeys={expandKeys}
+                                            isOldReport={isOldReport}
+                                            baseIndex={baseIndex}
+                                            groupLen={groupLen}
+                                            btnState={btnState}
+                                            btn={btnState}
+                                        />
+                                    </React.Fragment>
+                                )
+                            })
+                        }
+                    </TestConfWarpper>
+                </TestSuite>
+            )
+        }) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
     // suite遍历
 
     return (
@@ -411,6 +486,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 }
                 {!btnState && <ItemFunc />}
             </TestGroupItem>
+
             {functionTable}
         </>
     )

@@ -39,3 +39,21 @@ export const queryMetricList = function (params: any) {
 export const updateAnalysisNote = function (data: any) {
     return request(`/api/job/test/editor/note/`, { data, method: 'post' })
 }
+
+type SuiteConfsServiceProps = {
+    ws_id: string;
+    start_time: string;
+    end_time: string;
+    project_id: number;
+    tag: number;
+    test_type: string;
+    provider_env: string;
+}
+
+export const getSelectSuiteConfs = function (data: SuiteConfsServiceProps) {
+    return request(`/api/job/result/perf/suite/list/`, { method: "post", data })
+}
+
+export const getSelectMetricOrSubcase = function (data: any) {
+    return request(`/api/job/result/analysis/metric/list/`, { method: "post", data })
+}

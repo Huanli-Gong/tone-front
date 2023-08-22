@@ -127,7 +127,7 @@ const Catalog: React.FC<IProps> = ({ source }) => {
         }, {})
         const levs = Object.keys(levels)
         const minMaxs: any = levs.sort((a: any, b: any) => a - b)
-        const min = minMaxs.at(0) ? + minMaxs.at(0) : 1
+        const min = minMaxs?.[0] ? + minMaxs?.[0] : 1
         return min
     }, [base])
 

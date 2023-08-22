@@ -61,31 +61,34 @@ export const HearderDropdown: React.FC<any> = (props) => {
 
     const queryWorkspaceList = async () => {
         setInitialState((p: any) => ({ ...p, listFetchLoading: true }))
+        let num = isOver ? wsList?.page_num : wsList?.page_num + 1
         const { code, data, page_num, total_page } = await queryWorkspaceHistory({
-            page_num: (wsList?.page_num || 0) + 1, page_size: 20, call_page: 'menu', ws_id
+            page_num: num, page_size: 20, call_page: 'menu', ws_id
         })
         if (code !== 200) {
             redirectErrorPage(500)
             return
         }
         setIsOver(total_page === page_num)
-        setInitialState((p: any) => {
-            const obj = p.wsList.data.concat(data).reduce((pre: any, cur: any) => {
-                pre[cur?.id] = cur
-                return pre
-            }, {})
-            return {
-                ...p,
-                listFetchLoading: false,
-                wsList: {
-                    page_num,
-                    data: Object.entries(obj).map((item: any) => {
-                        const [, val] = item
-                        return val
-                    })
+        if (Object.prototype.toString.call(data) === "[object Array]" && !!data.length) {
+            setInitialState((p: any) => {
+                const obj = p.wsList.data.concat(data).reduce((pre: any, cur: any) => {
+                    pre[cur.id] = cur
+                    return pre
+                }, {})
+                return {
+                    ...p,
+                    listFetchLoading: false,
+                    wsList: {
+                        page_num,
+                        data: Object.entries(obj).map((item: any) => {
+                            const [, val] = item
+                            return val
+                        })
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 
     const current = React.useMemo(() => {
@@ -101,8 +104,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
             queryWorkspaceList()
         }
     }
-
-    if (listFetchLoading || wsList?.data?.length === 0)
+    if (wsList?.data?.length === 0)
         return (
             <WorkspaceTitle align="middle" justify="space-between">
                 <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
@@ -157,13 +159,19 @@ export const HearderDropdown: React.FC<any> = (props) => {
                 )
             }
         >
-            <WorkspaceTitle align="middle" justify="space-between">
-                <Space>
-                    <WorkspaceCover {...current} />
-                    <ShowName ellipsis>{current.show_name}</ShowName>
-                </Space>
-                <CaretDownOutlined style={{ fontSize: 10, marginLeft: 14 }} />
-            </WorkspaceTitle>
+            {
+                listFetchLoading ?
+                    <WorkspaceTitle align="middle" justify="space-between">
+                        <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}/>
+                    </WorkspaceTitle> :
+                    <WorkspaceTitle align="middle" justify="space-between">
+                        <Space>
+                            <WorkspaceCover {...current} />
+                            <ShowName ellipsis>{current.show_name}</ShowName>
+                        </Space>
+                        <CaretDownOutlined style={{ fontSize: 10, marginLeft: 14 }} />
+                    </WorkspaceTitle>
+            }
         </Dropdown>
     )
 }

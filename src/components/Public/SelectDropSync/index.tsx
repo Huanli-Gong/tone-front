@@ -3,17 +3,18 @@ import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Badge } from 'antd';
 import { FormattedMessage } from 'umi'
 
-const FilterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dataArr }) => {
+const FilterRadio: React.FC<any> = ({ confirm, onConfirm, dataArr, value }) => {
 	const [optionData, setOptionData] = useState<string[]>([])
-	const [val, setVal] = useState<string | undefined>(stateVal)
+	const [val, setVal] = useState<string | undefined>(value)
 
-	const { Option } = Select;
 	useEffect(() => {
 		setOptionData(dataArr)
 	}, [])
+
 	useEffect(() => {
-		setVal('')
-	}, [tabType])
+		setVal(value)
+	}, [value])
+
 	const handleSearch = (value: string) => {
 		const data = dataArr.filter((item: any) => {
 			return item.toLowerCase().includes(value)
@@ -50,14 +51,11 @@ const FilterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dat
 					onSearch={handleSearch}
 					onChange={handleSelectChange}
 					value={val}
-				>
-					{
-						optionData.map((item: string) => <Option key={item} value={item}>
-							{StateBadge(item)}
-						</Option>)
-
-					}
-				</Select>
+					options={optionData.map((item: any) => ({
+						value: item,
+						label: StateBadge(item)
+					}))}
+				/>
 			</div>
 			<Divider style={{ marginTop: '10px', marginBottom: '4px' }} />
 			<Space>
