@@ -109,6 +109,7 @@ const TestJob: React.FC<any> = (props) => {
                     .catch(() => {
                         reject()
                         setFetching(false)
+                        setNewSaveLoading(false)
                     })
             )
         )
