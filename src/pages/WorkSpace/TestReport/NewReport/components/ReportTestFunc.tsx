@@ -79,8 +79,8 @@ const ReportTestFunc: React.FC<any> = () => {
 
     return (
         <>
-            <TestDataTitle><FormattedMessage id="functional.test" /></TestDataTitle>
-            <TestWrapper id="func_item" className="position_mark">
+            <TestDataTitle id="func_item" className="position_mark"><FormattedMessage id="functional.test" /></TestDataTitle>
+            <TestWrapper>
                 {/* 有组有项 */}
                 {
                     Object.prototype.toString.call(dataSource) === '[object Array]' ?
@@ -92,7 +92,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                     {
                                         item.is_group ?
                                             <>
-                                                <TestGroup id={`func_item-${item.rowKey}`} className="tree_mark">
+                                                <TestGroup id={`func_item-${item.rowKey}`} className="position_mark">
                                                     <TestGroupIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                                                     <TestItemText>
                                                         <GroupItemText

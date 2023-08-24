@@ -132,7 +132,7 @@ const Report = (props: any) => {
     const groupLen = allGroupData?.length
 
     React.useEffect(() => {
-        window.document.title = saveReportData.name || 'T-one'
+        window.document.title = `${saveReportData.name || ""} - T-one`
     }, [saveReportData.name])
 
     useEffect(() => {

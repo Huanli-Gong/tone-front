@@ -1,15 +1,10 @@
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-shadow */
-/* eslint-disable prefer-const */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { memo, useMemo, useEffect, useState, useContext } from 'react'
 import { ReactComponent as CatalogCollapsed } from '@/assets/svg/Report/collapsed.svg'
 import { useIntl, FormattedMessage } from 'umi';
 import { Typography, Space, Tree, Row } from 'antd'
-import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import produce from 'immer'
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { throttle } from 'lodash';
+import produce from 'immer';
 
 import {
     CatalogExpand,
@@ -173,11 +168,6 @@ const TemplateCatalog = () => {
     }
 
     const onDrop = ({ event, node, dragNode, dragNodesKeys }: any): any => {
-        //if (!contrl) return false
-        // if (!dragNode.allowDrop) return false
-        // if ( dragNode.is_group && !node.is_group ) return false
-        // console.log('node ', node)
-        // console.log('dragNode', dragNode)
         catalogSource.forEach((item: any) => {
             if (item.id === node.name) {
                 const delDate = item.treeData.reduce(
@@ -200,7 +190,7 @@ const TemplateCatalog = () => {
     }
 
     const dictNav = (name: string) => {
-        const list = {
+        const list: any = {
             'need_test_background': formatMessage({ id: 'report.test.background' }),
             'need_test_method': formatMessage({ id: 'report.test.method' }),
             'need_test_conclusion': formatMessage({ id: 'report.test.conclusion' }),
@@ -208,63 +198,76 @@ const TemplateCatalog = () => {
             'need_test_env': formatMessage({ id: 'report.test.env' }),
             'test_data': formatMessage({ id: 'report.test.data' }),
         }
-        /* @ts-ignore */
         return list[name]
     }
-    const handleScroll = (e: any) => {
+
+
+    const handleScroll = throttle((e: any) => {
         let bst = e.target.scrollTop
-        let treeArr = document.querySelectorAll('.tree_mark') as any
-        // for (let i = 0; i < treeArr.length; i++) {
-        //     treeArr[i].classList.remove('toc-selected');
-        // }
         let arr = document.querySelectorAll(`.spaceWarpper .ant-space-item .markSpace span`) as any
-        let leftArr = document.querySelectorAll('.position_mark')
-        for (let i = 0; i < leftArr.length; i++) {
-            let title = document.querySelector(`#${leftArr[i].id}`) as any
-            let leftTitle = document.querySelector(`#left_${leftArr[i].id}`) as any
-            if (title.offsetParent?.offsetTop + title?.offsetTop <= bst) {
-                i > 0 && arr[i - 1]?.classList.remove('toc-selected');
-                leftTitle?.classList.add('toc-selected');
-                setRoundHeight(leftTitle?.offsetTop)
-            } else {
-                arr[i]?.classList.remove('toc-selected')
+        let leftArr = document.querySelectorAll('.position_mark') as any
+        if (bst < 120) {
+            for (let i = 0; i < arr.length; i++) {
+                arr[i].classList.remove('toc-selected');
             }
-        }
-
-        for (let b = 0; b < treeArr.length; b++) {
-            let treeTitle = document.querySelector(`#${treeArr[b].id}`) as any
-            let leftTreeTitle = document.querySelector(`#left_${treeArr[b].id}`) as any
-            if (treeTitle?.offsetParent.offsetTop + treeTitle?.offsetTop <= bst) {
-                b > 0 && leftTreeTitle?.classList.remove('toc-selected');
-                leftTreeTitle?.classList.add('toc-selected');
-                let treeName = treeTitle?.id.substring(0, 9)
-                setRoundHeight((document.querySelector(`#left_tree_${treeName}`) as any)?.offsetTop + leftTreeTitle?.offsetParent.offsetTop)
-                for (let i = 0; i < leftArr.length; i++) {
-                    arr[i]?.classList.remove('toc-selected')
+            setRoundHeight(undefined)
+        } else {
+            for (let i = 0; i < leftArr.length; i++) {
+                let title = document.querySelector(`#${leftArr[i].id}`) as any
+                let leftTitle = document.querySelector(`#left_${leftArr[i].id}`) as any
+                if (title?.offsetParent?.offsetTop === 0) {
+                    if (title?.offsetTop - 1 <= bst) {
+                        for (let k = 0; k < arr.length; k++) {
+                            arr[k]?.classList.remove('toc-selected')
+                        }
+                        leftTitle?.classList.add('toc-selected');
+                        setRoundHeight(leftTitle?.offsetTop)
+                    }
+                } else {
+                    if (title?.offsetParent?.offsetTop + title?.offsetTop - 52 <= bst) {
+                        for (let k = 0; k < arr.length; k++) {
+                            arr[k]?.classList.remove('toc-selected')
+                        }
+                        leftTitle?.classList.add('toc-selected');
+                        const parentNode = leftTitle?.id.substring(5, 14)
+                        const parentTop = (document.querySelector(`#left_${parentNode}`) as any).offsetTop
+                        const parentTreeTop = (document.querySelector(`#left_tree_${parentNode}`) as any).offsetTop
+                        if (leftTitle.attributes['class'].nodeValue == 'toc-selected') {
+                            if (leftTitle?.id === 'left_perf_item' || leftTitle?.id === 'left_func_item') {
+                                setRoundHeight(parentTop)
+                            } else {
+                                const childTop = leftTitle.offsetParent.offsetTop
+                                setRoundHeight(parentTreeTop + childTop)
+                            }
+                        } else {
+                            const childTop = leftTitle.children[0].children[0].offsetParent.offsetTop
+                            setRoundHeight(parentTreeTop + childTop)
+                        }
+                    }
                 }
-            } else {
-                leftTreeTitle?.classList.remove('toc-selected');
-
             }
         }
-    }
+    }, 200)
+
     useEffect(() => {
         window.addEventListener('scroll', handleScroll, true)
         return () => {
             window.removeEventListener('scroll', handleScroll, true)
         }
     }, [])
+
     const handleCatalogItemClick = (name: string) => {
         let arr = document.querySelectorAll(`.spaceWarpper .ant-space-item .markSpace span`) as any
         for (let i = 0; i < arr.length; i++) {
             arr[i].classList.remove('toc-selected');
         }
         let leftName = document.querySelector(`#left_${name}`) as any
-        leftName.classList.add('toc-selected');
+        leftName?.classList.add('toc-selected');
         setRoundHeight(leftName?.offsetTop)
-        console.log(name)
         document.querySelector(`#${name}`)?.scrollIntoView()
-        document.querySelector("#report-body-container")?.scrollBy({ top: -104 })
+        if (leftName?.id === 'left_perf_item' || leftName?.id === 'left_func_item') {
+            document.querySelector("#report-body-container")?.scrollBy({ top: -52 })
+        }
     }
 
     const handleSelectTree = (_: any, evt: any) => {
@@ -272,23 +275,24 @@ const TemplateCatalog = () => {
         for (let i = 0; i < brr.length; i++) {
             brr[i].classList.remove('toc-selected');
         }
-        let arr = document.querySelectorAll('.tree_mark') as any
-        for (let i = 0; i < arr.length; i++) {
-            arr[i].classList.remove('toc-selected');
-        }
         const { node } = evt
         const { rowKey, name } = node
-        const id = rowKey ? `${name}-${rowKey}` : `${name}`
-        let tree_name = rowKey === 0 ? `${name}-${rowKey}` : id
+        let tree_name = `${name}-${rowKey}`
         let leftName = document.querySelector(`#left_${tree_name}`) as any
         leftName.classList.add('toc-selected');
-        const nativeEvent = evt?.nativeEvent
-        const target = nativeEvent.target
-        setRoundHeight((document.querySelector(`#left_tree_${node.name}`) as any).offsetTop + target.offsetParent.offsetTop)
-
+        const target = evt?.nativeEvent?.target
+        const parentTreeTop = (document.querySelector(`#left_tree_${node.name}`) as any).offsetTop
+        if (target.attributes['class'].nodeValue == 'toc-selected') {
+            const childTop = target.offsetParent.offsetTop
+            setRoundHeight(parentTreeTop + childTop)
+        } else {
+            const childTop = target.children[0].children[0].offsetParent.offsetTop
+            setRoundHeight(parentTreeTop + childTop)
+        }
         document.querySelector(`#${tree_name}`)?.scrollIntoView()
         document.querySelector("#report-body-container")?.scrollBy({ top: -52 })
     }
+
     return (
         <Catalog collapsed={collapsed}>
             {/* 目录 icon 展开 */}
@@ -311,7 +315,7 @@ const TemplateCatalog = () => {
                     <Space direction="vertical" style={{ width: '100%' }} className="spaceWarpper">
                         {
                             leftArr.map((item: any, idx: number) => (
-                                <div className='markSpace' key={idx + Math.random()}>
+                                <div className='markSpace' key={item + idx}>
                                     <span
                                         onClick={() => handleCatalogItemClick(item)}
                                         id={`left_${item}`}

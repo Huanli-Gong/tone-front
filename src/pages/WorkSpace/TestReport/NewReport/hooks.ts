@@ -11,6 +11,36 @@ import { fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonM
 import { queryCompareResultList } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/services'
 import { useParams } from 'umi';
 
+/* import { v4 as uuid } from "uuid"
+
+const t = Object.keys(perf_data).reduce((pre: any, cur: any) => {
+    const term = perf_data[cur]
+    const isList = Object.prototype.toString.call(term) === '[object Array]'
+    if (isList)
+        return pre.concat({
+            name: cur,
+            rowkey: uuid(),
+            list: perf_data[cur].map((item: any) => ({
+                ...item,
+                rowkey: uuid()
+            }))
+        })
+    return pre.concat({
+        name: cur,
+        rowkey: uuid(),
+        list: Object.keys(term).reduce((p: any, c: any) => {
+            return p.concat({
+                name: c,
+                rowkey: uuid(),
+                list: term[c].map(($ele: any) => ({
+                    ...$ele,
+                    rowkey: uuid()
+                }))
+            })
+        }, [])
+    })
+}, []) */
+
 export const CreatePageData = (props: any) => {
     const [logoData, setLogoData] = useState<any[]>([])
     const [loading, setLoading] = useState<boolean>(true)
@@ -640,82 +670,87 @@ export const EditPageData = (props: any) => {
     const queryReport = async () => {
         setLoading(true)
         const { code, msg, data } = await reportDetail({ report_id })
-        if (code == 200) {
-            setDataSource(data[0])
-            window.document.title = data[0]?.name || 'T-one'
-            // console.log(data)
-            if (data?.length === 0)
-                return redirectErrorPage(404)
-            const { tmpl_id, ws_id, creator } = data[0]
-            setCreator(creator)
-            const res = await detailTemplate({ id: tmpl_id, ws_id })
-            let perf_item: any = []
-            let func_item: any = []
-            const { perf_data, func_data } = data[0].test_item
-            if (JSON.stringify(perf_data) !== '{}') {
-                Object.keys(perf_data).map((i: any, index: number) => {
-                    if (_.isArray(perf_data[i])) {
-                        perf_item.push({
-                            name: i,
-                            rowKey: index,
-                            list: perf_data[i]?.map((suite: any, id: number) => {
-                                return {
-                                    ...suite,
-                                    rowKey: `${index}-${id}`
-                                }
-                            })
-                        })
-                    } else {
-                        perf_item.push({
-                            name: i,
-                            rowKey: index,
-                            is_group: true,
-                            list: changeChild(perf_data[i], index)
-                        })
-                    }
-                })
-            }
-            if (JSON.stringify(func_data) !== '{}') {
-                Object.keys(func_data).map((i: any, index: number) => {
-                    if (_.isArray(func_data[i])) {
-                        func_item.push({
-                            name: i,
-                            rowKey: index,
-                            list: func_data[i]
-                        })
-                    } else {
-                        func_item.push({
-                            name: i,
-                            rowKey: index,
-                            is_group: true,
-                            list: changeChild(func_data[i], index)
-                        })
-                    }
-                })
-            }
-            if (res.code == 200) {
-                setTemplate({
-                    ...res.data,
-                    perf_item,
-                    func_item
-                })
-            }
-            let test_env = JSON.parse(data[0].test_env)
-            if (test_env) {
-                let env = test_env?.compare_groups
-                let newArr: any = []
-                for (let i = 0; i < env.length; i++) {
-                    newArr.push(env[i])
-                }
-                newArr.splice(test_env?.base_index, 0, test_env?.base_group)
-                setAllGroupData(newArr)
-                setBaselineGroupIndex(test_env?.base_index === undefined ? 0 : test_env?.base_index)
-            }
-            setLoading(false)
-        } else {
+        if (code !== 200) {
             requestCodeMessage(code, msg)
+            return redirectErrorPage(404)
         }
+        setDataSource(data)
+        window.document.title = data?.name || 'T-one'
+        // console.log(data)
+        const { tmpl_id, ws_id, creator, template_detail } = data
+        setCreator(creator)
+        let templateSource = template_detail
+        if (!templateSource || JSON.stringify(templateSource) === "{}") {
+            if (Object.prototype.toString.call(tmpl_id) === "[object Number]") {
+                const { data, code } = await detailTemplate({ id: tmpl_id, ws_id })
+                if (code === 200)
+                    templateSource = data
+            }
+        }
+        let perf_item: any = []
+        let func_item: any = []
+        const { perf_data, func_data } = data.test_item
+
+        if (JSON.stringify(perf_data) !== '{}') {
+            Object.keys(perf_data).map((i: any, index: number) => {
+                if (_.isArray(perf_data[i])) {
+                    perf_item.push({
+                        name: i,
+                        rowKey: index,
+                        list: perf_data[i]?.map((suite: any, id: number) => {
+                            return {
+                                ...suite,
+                                rowKey: `${index}-${id}`
+                            }
+                        })
+                    })
+                } else {
+                    perf_item.push({
+                        name: i,
+                        rowKey: index,
+                        is_group: true,
+                        list: changeChild(perf_data[i], index)
+                    })
+                }
+            })
+        }
+        if (JSON.stringify(func_data) !== '{}') {
+            Object.keys(func_data).map((i: any, index: number) => {
+                if (_.isArray(func_data[i])) {
+                    func_item.push({
+                        name: i,
+                        rowKey: index,
+                        list: func_data[i]
+                    })
+                } else {
+                    func_item.push({
+                        name: i,
+                        rowKey: index,
+                        is_group: true,
+                        list: changeChild(func_data[i], index)
+                    })
+                }
+            })
+        }
+        setTemplate({
+            ...templateSource,
+            perf_item,
+            func_item
+        })
+        let test_env = JSON.parse(data.test_env)
+        if (test_env) {
+            let env = test_env?.compare_groups
+            let newArr: any = []
+            for (let i = 0; i < env.length; i++) {
+                newArr.push(env[i])
+            }
+            newArr.splice(test_env?.base_index, 0, test_env?.base_group)
+            setAllGroupData(newArr)
+            setBaselineGroupIndex(test_env?.base_index === undefined ? 0 : test_env?.base_index)
+        }
+        setLoading(false)
     }
+
     useEffect(() => {
         queryReport()
     }, [])
