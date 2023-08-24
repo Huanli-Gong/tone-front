@@ -90,6 +90,7 @@ export default ({ data = [], testType, provider_name, columnsRefresh, onColumnsC
             },
             width: 150,
             render: (_: any, row: any) => {
+                if (!row?.need_reboot) return '-'
                 const before = formatMessage({ id: 'ws.result.details.restart.before' })
                 const after = formatMessage({ id: 'ws.result.details.restart.after' })
 
