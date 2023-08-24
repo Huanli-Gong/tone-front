@@ -81,6 +81,7 @@ const TestJob: React.FC<any> = (props) => {
     const [projectId, setProjectId] = useState()
     const [templateEnabel, setTemplateEnable] = useState(false)
     const [fetching, setFetching] = useState(false)
+    const [newSaveLoading, setNewSaveLoading] = useState(false)
     const [isReset, setIsReset] = useState(false)
 
     const [jobInfo, setJobInfo] = useState('')
@@ -108,6 +109,7 @@ const TestJob: React.FC<any> = (props) => {
                     .catch(() => {
                         reject()
                         setFetching(false)
+                        setNewSaveLoading(false)
                     })
             )
         )
@@ -123,7 +125,6 @@ const TestJob: React.FC<any> = (props) => {
             setTest_config(data.test_config)
             job_type_id = data.job_type_id
         }
-
 
         if (["TestTemplate", "TemplatePreview", "TemplateEdit", "TestJob"].includes(name)) {
             let template_id: any = null
@@ -151,6 +152,8 @@ const TestJob: React.FC<any> = (props) => {
         }
 
         const { data: [jobTypedetail] } = await queryJobTypeList({ jt_id: job_type_id })
+        if (!jobTypedetail)
+            return redirectErrorPage(404)
         setDetail(jobTypedetail)
         const { data: items } = await queryJobTypeItems({ jt_id: job_type_id })
         filterItems(items)
@@ -792,16 +795,16 @@ const TestJob: React.FC<any> = (props) => {
     }
 
     const handleSaveCreateSubmit = async () => {
-        if (fetching) return
-        setFetching(true)
+        if (newSaveLoading) return
+        setNewSaveLoading(true)
 
         const data = await transformDate()
         if (isMonitorEmpty(data)) {
-            setFetching(false)
+            setNewSaveLoading(false)
             return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
         }
         if (!data.test_config) {
-            setFetching(false)
+            setNewSaveLoading(false)
             return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         }
         if (!data.baseline) {
@@ -821,7 +824,7 @@ const TestJob: React.FC<any> = (props) => {
             history.push(`/ws/${ws_id}/test_job/${detail.id}?template_id=${templateDatas.id}`)
         }
         else requestCodeMessage(code, msg)
-        setFetching(false)
+        setNewSaveLoading(false)
     }
 
     const handleTemplatePopoverChange = (v: any) => {
@@ -890,7 +893,7 @@ const TestJob: React.FC<any> = (props) => {
 
     const renderButton = (
         <>
-            {templateEnabel && <Button onClick={handleSaveCreateSubmit}><FormattedMessage id="ws.test.job.SaveCreateSubmit" /></Button>}
+            {templateEnabel && <Button onClick={handleSaveCreateSubmit} loading={newSaveLoading}><FormattedMessage id="ws.test.job.SaveCreateSubmit" /></Button>}
             <Button type="primary" onClick={handleSaveTemplateModify} loading={fetching}><FormattedMessage id="ws.test.job.SaveTemplateModify" /></Button>
         </>
     )

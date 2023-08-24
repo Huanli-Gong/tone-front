@@ -90,7 +90,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 		{
 			title: 'Test Conf',
 			dataIndex: 'title',
-			// width: nameWidth,
+			width: 200,
 			ellipsis: {
 				shwoTitle: false,
 			},

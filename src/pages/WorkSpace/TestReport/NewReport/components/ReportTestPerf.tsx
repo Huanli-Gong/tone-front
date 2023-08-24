@@ -142,13 +142,13 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
 
     return (
         <ModuleWrapper
+            id="test_data"
+            className="position_mark"
             style={{
                 width: groupLen > 3 ? groupLen * 390 : 1200,
                 position: 'relative'
             }}
             ref={testDataRef}
-            id="test_data"
-            className="position_mark"
         >
             <SubTitle><span className="line" /><FormattedMessage id="report.test.data" /></SubTitle>
             <Summary ref={groupRowRef} style={{ paddingLeft: 34, paddingRight: 31 }}>
@@ -167,12 +167,12 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
                 (domainResult.is_default || (!domainResult.is_default && domainResult.need_perf_data)) &&
                 <>
                     <Row justify='space-between'>
-                        <TestDataTitle><FormattedMessage id="performance.test" /></TestDataTitle>
+                        <TestDataTitle id="perf_item" className="position_mark"><FormattedMessage id="performance.test" /></TestDataTitle>
                         <Button onClick={switchMode} style={{ marginTop: 12 }}>
                             {btnName === 'chart' ? <FormattedMessage id="report.chart.btn" /> : <FormattedMessage id="report.table.btn" />}
                         </Button>
                     </Row>
-                    <TestWrapper id="perf_item" className="position_mark">
+                    <TestWrapper>
                         {
                             Array.isArray(dataSource) && !!dataSource.length ?
                                 dataSource?.map((item: any, idx: number) => {
@@ -182,7 +182,7 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
                                             {
                                                 item.is_group ?
                                                     <>
-                                                        <TestGroup id={`pref_item-${item.rowKey}`} className="tree_mark">
+                                                        <TestGroup id={`pref_item-${item.rowKey}`} className="position_mark">
                                                             <TestGroupIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                                                             <TestItemText>
                                                                 <GroupItemText
