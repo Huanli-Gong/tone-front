@@ -55,10 +55,12 @@ const SuiteConfMetric = (props: any) => {
                     contentStyle={{ display: 'inline-block', paddingBottom: 8 }}
                     labelStyle={{ ...fontStyle }}
                 >
-                    {props?.metric?.map(
-                        (item: any) =>
-                            // eslint-disable-next-line react/no-array-index-key
-                            <div key={item}>{item}</div>)
+                    {
+                        props?.metric?.map(
+                            (item: any) => (
+                                <div key={item}>{item}</div>
+                            )
+                        )
                     }
                 </Descriptions.Item>
             </Descriptions>
@@ -85,7 +87,6 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
     const tag_id = Form.useWatch("tag", form)
     const form_time = Form.useWatch("time", form)
 
-
     React.useImperativeHandle(ref, () => ({
         reset() {
             form.resetFields()
@@ -102,17 +103,17 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
     const requestAnalysisData = async (params: any) => {
         setInfo(params)
         setLoading(true)
+        setTableData([])
+        setChartData({})
+
         const { data, code } = test_type === 'performance' ?
             await queryPerfAnalysisList(params) :
             await queryFuncAnalysisList(params)
         setLoading(false)
 
-        if (code !== 200) {
-            setTableData([])
-            setChartData({})
-            return
-        }
+        if (code !== 200) return
         if (!data) return
+
         const { job_list, metric_map, case_map } = data
         if (job_list && job_list.length > 0) {
             setChartData(test_type === 'performance' ? metric_map : case_map)
@@ -184,14 +185,17 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
     }
 
     const handleFormChange = () => {
-        const params = getAnalysisFormData()
-        if (metricData) {
+        // const params = getAnalysisFormData()
+        setTableData([])
+        setChartData(null)
+        setMetricData(null)
+        setFetchData([])
+        /* if (metricData) {
             const { test_suite_id, test_case_id, metric } = metricData
             const { project_id } = params
             if (test_suite_id && test_case_id && project_id) {
                 if (test_type === "performance") {
                     const metrics = metric.map((i: any) => ({ ...params, ...metricData, metric: [i], key: uuid() }))
-                    setTableData([])
                     setFetchData(metrics)
                     return
                 }
@@ -200,7 +204,7 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                     ...metricData
                 })
             }
-        }
+        } */
     }
 
     useEffect(() => {
@@ -277,11 +281,11 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
 
                 form.setFieldsValue({
                     project_id: + project_id || undefined,
-                    tag: + tag || undefined,
+                    tag: + tag || '',
                 })
             }
         }
-    }, [query])
+    }, [])
 
     const handleListChange = (list: any[]) => {
         setTableData((p: any) => {
@@ -332,17 +336,17 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                                         style={{ width: 300 }}
                                         filterOption={(input, option: any) => option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                         options={
-                                            [{ value: "", label: formatMessage({ id: "analysis.indistinguishable" }) }]
-                                                .concat(
-                                                    tagList
-                                                        .filter(({ creator }: any) => Object.prototype.toString.call(creator) === "[object Number]")
-                                                        .map(
-                                                            (i: any) => ({
-                                                                value: i.id,
-                                                                label: i.name
-                                                            })
-                                                        )
-                                                )}
+                                            [{ value: "", label: formatMessage({ id: "analysis.indistinguishable" }) }].concat(
+                                                tagList
+                                                    .filter(({ creator }: any) => Object.prototype.toString.call(creator) === "[object Number]")
+                                                    .map(
+                                                        (i: any) => ({
+                                                            value: i.id,
+                                                            label: i.name
+                                                        })
+                                                    )
+                                            )
+                                        }
                                     />
                                 </Form.Item>
                                 <div className="tootip_pos">

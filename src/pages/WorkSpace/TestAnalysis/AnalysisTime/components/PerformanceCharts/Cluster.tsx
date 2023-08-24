@@ -12,18 +12,19 @@ import { targetJump } from "@/utils/utils"
 
 const symbol = 'path://M873,435C877.4182739257812,435,881,438.58172607421875,881,443C881,447.41827392578125,877.4182739257812,451,873,451C868.5817260742188,451,865,447.41827392578125,865,443C865,438.58172607421875,868.5817260742188,435,873,435ZM873,436C869.134033203125,436,866,439.1340026855469,866,443C866,446.8659973144531,869.134033203125,450,873,450C876.865966796875,450,880,446.8659973144531,880,443C880,439.1340026855469,876.865966796875,436,873,436ZM873,439C875.2091674804688,439,877,440.7908630371094,877,443C877,445.2091369628906,875.2091674804688,447,873,447C870.7908325195312,447,869,445.2091369628906,869,443C869,440.7908630371094,870.7908325195312,439,873,439Z'
 
-const ClusterChart: React.FC<AnyType> = ({ fetchData = {}, setFetchData, provider_env, valueChange, setLoading }) => {
+const ClusterChart: React.FC<AnyType> = (props) => {
+    const { fetchData = {}, setFetchData, provider_env, valueChange, setLoading } = props
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const ref = React.useRef<HTMLDivElement>(null)
     const [chart, setChart] = React.useState<any>(undefined)
 
-    const { data, run, mutate } = useRequest(
+    const { data, mutate } = useRequest(
         (params = fetchData) => queryPerfAnalysisList(params),
         {
-            manual: true,
             debounceInterval: 200,
             refreshDeps: [fetchData],
+            ready: !!fetchData?.metric,
             onSuccess() {
                 setLoading(false)
             },
@@ -32,10 +33,6 @@ const ClusterChart: React.FC<AnyType> = ({ fetchData = {}, setFetchData, provide
             }
         }
     )
-
-    React.useEffect(() => {
-        if (fetchData?.metric) run()
-    }, [fetchData])
 
     React.useEffect(() => {
         if (!data) return
@@ -155,7 +152,6 @@ const ClusterChart: React.FC<AnyType> = ({ fetchData = {}, setFetchData, provide
                 },
                 extraCssText: 'box-shadow: 0 2px 8px 0 rgba(0,0,0,0.15);border-radius: 2px;padding:12px;',
                 formatter: function (params: any) {
-                    // console.log(ticket)
                     const item = params.data || {}
                     const { baseline_data } = item
                     const element = (
@@ -250,4 +246,4 @@ const ClusterChart: React.FC<AnyType> = ({ fetchData = {}, setFetchData, provide
     )
 }
 
-export default ClusterChart
+export default React.memo(ClusterChart, (prev, next) => prev.fetchData.key === next.fetchData.key)
