@@ -712,27 +712,7 @@ const TestJob: React.FC<any> = (props) => {
         requestTemplateRun({ job_type_id: detail.id, name: target.value })
     }
 
-    const handleTemplateEditFunction = async () => {
-        const data = await transformDate()
-        if (isMonitorEmpty(data)) {
-            setFetching(false)
-            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
-        }
-        if (!data.test_config) {
-            setFetching(false)
-            message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
-            return
-        }
-        if (!data.baseline) {
-            data.baseline = null
-        }
-
-        if (!data.baseline_job_id) {
-            data.baseline_job_id = null
-        }
-        if (!data.cleanup_info) {
-            data.cleanup_info = ""
-        }
+    const handleTemplateEditFunction = async (data:any) => {
         const $test_config = handleServerChannel(data.test_config)
         const { code, msg } = await updateTestTemplate({
             template_id: templateDatas.id,
@@ -766,28 +746,50 @@ const TestJob: React.FC<any> = (props) => {
     const handleSaveTemplateModify = async () => {
         if (fetching) return
         setFetching(true)
-        const key = `open${Date.now()}`;
-        const btn = (
-            <Space>
-                <Button type="primary" size="small" onClick={() => handleTemplateEditFunction()}>
-                    确认
-                </Button>
-                <Button type="primary" size="small" onClick={() => handleCancelTemplate(key)}>
-                    取消
-                </Button>
-            </Space>
-        );
-        const res = await queryCheckJobTemplate({ template_id: jt_id })
-        if (res.code === 200 && res.data.length > 0) {
-            notification.warning({
-                duration: null,
-                message: '提示',
-                description: `当前有测试计划（${res.data[0].plan_name}）引用了该模版，编辑该模版将同时影响到测试计划中的此模版配置，请谨慎操作！`,
-                btn,
-                key,
-            });
-        } else {
-            handleTemplateEditFunction()
+        const data = await transformDate()
+        if (isMonitorEmpty(data)) {
+            setFetching(false)
+            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
+        }
+        if (!data.test_config) {
+            setFetching(false)
+            message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
+            return
+        }
+        if (!data.baseline) {
+            data.baseline = null
+        }
+
+        if (!data.baseline_job_id) {
+            data.baseline_job_id = null
+        }
+        if (!data.cleanup_info) {
+            data.cleanup_info = ""
+        }
+        if (Object.prototype.toString.call(data) === "[object Object]") {
+            const key = `open${Date.now()}`;
+            const btn = (
+                <Space>
+                    <Button type="primary" size="small" onClick={() => handleTemplateEditFunction(data)}>
+                        确认
+                    </Button>
+                    <Button type="primary" size="small" onClick={() => handleCancelTemplate(key)}>
+                        取消
+                    </Button>
+                </Space>
+            );
+            const res = await queryCheckJobTemplate({ template_id: jt_id })
+            if (res.code === 200 && res.data.length > 0) {
+                notification.warning({
+                    duration: null,
+                    message: '提示',
+                    description: `当前有测试计划（${res.data[0].plan_name}）引用了该模版，编辑该模版将同时影响到测试计划中的此模版配置，请谨慎操作！`,
+                    btn,
+                    key,
+                });
+            } else {
+                handleTemplateEditFunction(data)
+            }
         }
         setFetching(false)
     }
