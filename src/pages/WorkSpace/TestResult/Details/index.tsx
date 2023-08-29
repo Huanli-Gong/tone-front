@@ -79,8 +79,10 @@ const TestResultDetails: React.FC = () => {
         if (code !== 200) return
         setInitialState((p: any) => ({ ...p, token: data }))
     }
+
     React.useEffect(() => {
-        getUserToken()
+        if (BUILD_APP_ENV !== 'opensource')
+            getUserToken()
     }, [])
 
     const getJobState = async () => {

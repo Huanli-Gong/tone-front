@@ -19,15 +19,18 @@ export default ({ test_case_id, suite_id }: any) => {
     const { initialState } = useModel('@@initialState')
 
     const handlePathClick = async (ctx: any, state: string) => {
-        const username = initialState?.authList?.username
-        const token = `${username}|${initialState?.token}|${new Date().getTime()}`;
-        const signature = encode(token);
-
         const obj: any = {
-            username,
-            signature,
             path: ctx.path,
             job_id
+        }
+
+        if (BUILD_APP_ENV !== 'opensource') {
+            const username = initialState?.authList?.username;
+            const token = `${username}|${initialState?.token}|${new Date().getTime()}`;
+            const signature = encode(token);
+
+            obj.username = username;
+            obj.signature = signature
         }
 
         if (state == 'download') obj.download = '1';
