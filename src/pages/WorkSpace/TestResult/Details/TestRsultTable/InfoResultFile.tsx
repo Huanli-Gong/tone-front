@@ -1,33 +1,37 @@
 import React from 'react'
 import { queryCaseResultFile } from '../service'
-import { useRequest, request, useParams, useIntl } from 'umi'
+import { useRequest, request, useParams, useIntl, useModel } from 'umi'
 import { Tree, Spin, Empty, message, Space } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons';
 
 import styles from './index.less'
+import { encode } from 'js-base64'
 
 const TreeFileIcon: React.FC<any> = (props: any) => (
-    <>
-        {
-            props.items.length > 0 ?
-                <span className={styles.dir_icon} /> :
-                <span className={styles.file_icon} />
-        }
-    </>
+    props.items.length > 0 ?
+        <span className={styles.dir_icon} /> :
+        <span className={styles.file_icon} />
 )
 
 export default ({ test_case_id, suite_id }: any) => {
     const { formatMessage } = useIntl()
     const { id: job_id } = useParams() as any
+    const { initialState } = useModel('@@initialState')
 
     const handlePathClick = async (ctx: any, state: string) => {
-        let obj = {}
-        if (state == 'download') {
-            obj = { path: ctx.path, job_id, download: '1' }
+        const username = initialState?.authList?.username
+        const token = `${username}|${initialState?.token}|${new Date().getTime()}`;
+        const signature = encode(token);
+
+        const obj: any = {
+            username,
+            signature,
+            path: ctx.path,
+            job_id
         }
-        if (state == 'look') {
-            obj = { path: ctx.path, job_id }
-        }
+
+        if (state == 'download') obj.download = '1';
+
         const data = await request(`/api/get/oss/url/`, { params: obj })
         if (data) {
             if (data.code === 200 && data.msg === 'ok') window.open(data.data)
@@ -67,24 +71,6 @@ export default ({ test_case_id, suite_id }: any) => {
             },
         }
     )
-
-    /* const handleOpenOss = async (path: string) => {
-        const { data: source, code, msg } = await request(`/api/get/oss/url/`, { params: { path, job_id } })
-        if (source) {
-            if (code === 200 && msg === 'ok') window.open(source)
-            else message.warn(formatMessage({ id: 'ws.result.details.failed.get.file' }))
-        }
-    }
-
-    const mapChildKey = (arr: any, clickKey: any): any => {
-        if (!arr.length) return
-        for (let x = 0; x < arr.length; x++) {
-            let item = arr[x]
-            if ((item.key === clickKey) && item.path)
-                return handleOpenOss(item.path)
-            item.children.length > 0 && mapChildKey(item.children, clickKey)
-        }
-    } */
 
     return (
         <div style={{ minHeight: 50 }}>

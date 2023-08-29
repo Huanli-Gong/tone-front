@@ -1,12 +1,12 @@
-import React, { useState, useCallback, useEffect } from 'react'
-import { Layout, Tabs, message, Space, Avatar, Tag, Spin } from 'antd'
+import React, { useState, useEffect } from 'react'
+import { Layout, Tabs, Space, Avatar, Tag } from 'antd'
 import PersonWorkspace from './PersonWorkspace'
 import PersonApprove from './PersonApprove'
 import TokenConfig from './TokenConfig'
 import styles from './index.less'
 import { queryWorkspace, queryApprove, queryGetToken } from './services'
 import _ from 'lodash'
-import { history, useModel, useLocation, useAccess, Access, useIntl, FormattedMessage, getLocale } from 'umi'
+import { history, useModel, useLocation, useIntl, FormattedMessage } from 'umi'
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useClientSize } from '@/utils/hooks'
 import { requestCodeMessage, switchUserRole2 } from '@/utils/utils'
@@ -20,11 +20,9 @@ const reqUrlMap = new Map([
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
-    const enLocale = getLocale() === 'en-US'
 
     const { initialState } = useModel('@@initialState')
     const { authList } = initialState
-    const access = useAccess();
     const { query } = useLocation() as any
     const { height: layoutHeight } = useClientSize()
 

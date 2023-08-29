@@ -88,6 +88,7 @@
     "echarts": "^5.2.2",
     "highlight.js": "^11.7.0",
     "immer": "^9.0.6",
+    "js-base64": "^3.7.5",
     "moment": "^2.25.3",
     "normalize.css": "^8.0.1",
     "numeral": "^2.0.6",

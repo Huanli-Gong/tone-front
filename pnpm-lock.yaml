@@ -82,6 +82,7 @@ specifiers:
   highlight.js: ^11.7.0
   husky: ^4.0.7
   immer: ^9.0.6
+  js-base64: ^3.7.5
   lint-staged: ^10.0.0
   lodash: ^4.17.21
   lowlight: ^2.8.0
@@ -155,6 +156,7 @@ dependencies:
   echarts: registry.npmmirror.com/echarts/5.4.1
   highlight.js: registry.npmmirror.com/highlight.js/11.7.0
   immer: registry.npmmirror.com/immer/9.0.19
+  js-base64: registry.npmmirror.com/js-base64/3.7.5
   moment: registry.npmmirror.com/moment/2.29.4
   normalize.css: registry.npmmirror.com/normalize.css/8.0.1
   numeral: registry.npmmirror.com/numeral/2.0.6
@@ -12010,6 +12012,12 @@ packages:
     version: 2.2.5
     engines: {node: '>=6'}
     dev: true
+
+  registry.npmmirror.com/js-base64/3.7.5:
+    resolution: {integrity: sha512-3MEt5DTINKqfScXKfJFrRbxkrnk2AxPWGBL/ycjz4dK8iqiSJ06UxD8jh8xuh6p10TX4t2+7FsBYVxxQbMg+qA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/js-base64/-/js-base64-3.7.5.tgz}
+    name: js-base64
+    version: 3.7.5
+    dev: false
 
   registry.npmmirror.com/js-cookie/2.2.1:
     resolution: {integrity: sha512-HvdH2LzI/EAZcUwA8+0nKNtWHqS+ZmijLA30RwZA0bo7ToCckjK5MkGhjED9KoRcXO6BaGI3I9UIzSA1FKFPOQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/js-cookie/-/js-cookie-2.2.1.tgz}

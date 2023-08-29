@@ -2,7 +2,7 @@
 import React, { useRef, useState } from 'react'
 import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Space, Alert, Popconfirm } from 'antd'
 import styles from './index.less'
-import { history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale, useLocation } from 'umi'
+import { history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale, useLocation, useModal } from 'umi'
 import { querySummaryDetail, updateSuiteCaseOption } from './service'
 
 import { addMyCollection, deleteMyCollection, queryJobState } from '@/pages/WorkSpace/TestResult/services'
@@ -20,11 +20,13 @@ import RenderMachinePrompt from './components/MachinePrompt'
 import ReRunModal from './components/ReRunModal'
 import { requestCodeMessage, AccessTootip, matchTestType } from '@/utils/utils';
 import { isNull } from 'lodash'
+import { queryGetToken } from '@/pages/PersonCenter/services';
 
 import { BreadcrumbItem, CAN_STOP_JOB_STATES, RenderDesItem, EditNoteBtn } from "./components/MainPageComponents"
 
 const TestResultDetails: React.FC = () => {
     const { formatMessage } = useIntl()
+
     const locale = getLocale() === 'en-US';
     const widthStyle = locale ? 120 : 58
     const { ws_id, id: job_id } = useParams() as any
@@ -38,7 +40,7 @@ const TestResultDetails: React.FC = () => {
     const [refreshResult, setRefreshResult] = React.useState(false)
     const allReport: any = useRef(null)
     const veiwReportHeight: any = useRef(null)
-    const { initialState } = useModel('@@initialState');
+    const { initialState, setInitialState } = useModel('@@initialState');
 
     const [loading, setLoading] = React.useState(true)
     const [details, setDetails] = React.useState<any>({})
@@ -64,11 +66,21 @@ const TestResultDetails: React.FC = () => {
 
     React.useEffect(() => {
         queryJobDetails()
+
         return () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             timer.current && clearTimeout(timer.current)
             setDetails({})
         }
+    }, [])
+
+    const getUserToken = async () => {
+        const { data, code } = await queryGetToken()
+        if (code !== 200) return
+        setInitialState((p: any) => ({ ...p, token: data }))
+    }
+    React.useEffect(() => {
+        getUserToken()
     }, [])
 
     const getJobState = async () => {
