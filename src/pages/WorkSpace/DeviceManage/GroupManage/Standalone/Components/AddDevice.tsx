@@ -9,15 +9,19 @@ import Owner from '@/components/Owner/index';
 import DeployServer from '../../Components/DeployServer'
 import DeployModal from './DeployModal'
 import styles from './AddDevice.less'
-import { useParams, useIntl, FormattedMessage } from 'umi'
+import { useParams, useIntl, FormattedMessage, useModel } from 'umi'
 import { AgentSelect } from '@/components/utils';
 import MachineTags from '@/components/MachineTags';
+import Disclaimer from '@/components/Disclaimer';
 
 const AddDeviceDrawer = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
     const { ws_id }: any = useParams()
     const { onFinish } = props
-
+    const { openModal, handleDisclaimerOpen } = useModel('disclaimer', (ret) => ({
+        openModal: ret.openModal,
+        handleDisclaimerOpen: ret.handleDisclaimerOpen,
+    }));
     const [visible, setVisible] = useState(false)
     const [modifyProps, setModifyProps] = useState<any>(null)
     const deployServerRef: any = useRef(null)
@@ -75,8 +79,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
         return modifyProps && modifyProps.state === 'Occupied'
     }, [modifyProps])
 
-    // 提交
-    const handleFinish = () => {
+    const handleFormFinish = () => {
         setPadding(true)
         form.validateFields().then(async (values: any) => {
             let data: any;
@@ -135,6 +138,11 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                 console.log(err)
             })
     }
+
+    const handleModalState = useCallback((flag: any) => {
+        if (flag) handleFormFinish()
+        setPadding(false)
+    }, [])
 
     // 部署Agent
     const deployClick = (selectedRow: any) => {
@@ -287,7 +295,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                 <div style={{ textAlign: 'right' }}>
                     <Space>
                         <Button onClick={handleClose} disabled={padding}><FormattedMessage id="operation.cancel" /></Button>
-                        <Button onClick={isMoreEdit ? handleMoreEditFinish : handleFinish} type="primary" loading={padding}>
+                        <Button onClick={isMoreEdit ? handleMoreEditFinish : !modifyProps ? handleDisclaimerOpen : handleFormFinish} type="primary" loading={padding}>
                             {!modifyProps ? <FormattedMessage id="operation.ok" /> : <FormattedMessage id="operation.update" />}
                         </Button>
                     </Space>
@@ -401,6 +409,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             </Spin>
             <DeployServer ref={deployServerRef} handleOk={handleDeployOk} />
             <DeployModal ref={deployModal} callback={deployCallback} />
+            {openModal && <Disclaimer onOk={handleModalState} />}
         </Drawer>
     )
 }

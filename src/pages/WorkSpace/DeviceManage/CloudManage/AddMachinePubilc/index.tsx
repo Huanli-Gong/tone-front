@@ -1,13 +1,4 @@
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/dot-notation */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-shadow */
-/* eslint-disable prefer-const */
-/* eslint-disable @typescript-eslint/no-use-before-define */
-
-import React, { useEffect, useState, useImperativeHandle, useMemo } from 'react';
+import React, { useEffect, useState, useImperativeHandle, useMemo, useCallback } from 'react';
 import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Spin, message, Cascader, InputNumber, Badge, Space } from 'antd';
 import {
     addCloud, editCloud, queryInstance, querysImage, queryCategories, querysServer, querysAK,
@@ -18,12 +9,13 @@ import { textRender } from '@/utils/hooks';
 import { requestCodeMessage, resetImage, resetECI, enumerEnglish } from '@/utils/utils';
 import { PlusCircleTwoTone, MinusCircleTwoTone } from '@ant-design/icons'
 import styles from './style.less';
-import { useParams, useIntl, FormattedMessage } from 'umi';
+import { useParams, useIntl, FormattedMessage, useModel } from 'umi';
 import _ from 'lodash';
 import { AgentSelect } from '@/components/utils'
 import MachineTags from '@/components/MachineTags';
 import { QusetionIconTootip } from '@/components/Product/index'
 import { displayRender } from '../DataSetPulic';
+import Disclaimer from '@/components/Disclaimer';
 const { Option } = Select;
 const optionLists = [
     {
@@ -53,6 +45,10 @@ const getInitialExtra = (obj: any) => {
  */
 const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
     const { formatMessage } = useIntl();
+    const { openModal, handleDisclaimerOpen } = useModel('disclaimer', (ret) => ({
+        openModal: ret.openModal,
+        handleDisclaimerOpen: ret.handleDisclaimerOpen,
+    }));
     const { ws_id }: any = useParams();
     const [form] = Form.useForm();
     const [tagFlag, setTagFlag] = useState({ list: [], isQuery: '' })
@@ -523,6 +519,11 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
             }
         })
     }
+
+    const handleModalState = useCallback((flag: any) => {
+        if (flag) onSubmit()
+    }, [clusterId, image])
+
     const onClose = () => {
         // 初始化状态
         setValidateRegion(true)
@@ -559,7 +560,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                         <Button onClick={onClose}>
                             <FormattedMessage id="operation.cancel" />
                         </Button>
-                        <Button onClick={() => onSubmit()} type="primary" loading={btnLoading}>
+                        <Button onClick={editData.id ? onSubmit : handleDisclaimerOpen} type="primary" loading={btnLoading}>
                             <FormattedMessage id="operation.ok" />
                         </Button>
                     </Space>
@@ -1080,6 +1081,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                     </Row>
                 </Form>
             </Spin>
+            {openModal && <Disclaimer onOk={handleModalState} />}
         </Drawer>
     )
 }
