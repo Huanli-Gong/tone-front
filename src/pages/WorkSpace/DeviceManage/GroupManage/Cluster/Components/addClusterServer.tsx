@@ -11,10 +11,7 @@ import Disclaimer from '@/components/Disclaimer';
 
 const CreateClusterDrawer = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
-    const { openModal, handleDisclaimerOpen } = useModel('disclaimer', (ret) => ({
-        openModal: ret.openModal,
-        handleDisclaimerOpen: ret.handleDisclaimerOpen,
-    }));
+    const { openModal, handleDisclaimerOpen } = useModel('disclaimer');
     const { onFinish } = props
     const { ws_id } = useParams() as any
     const [form] = Form.useForm()

@@ -18,10 +18,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
     const { ws_id }: any = useParams()
     const { onFinish } = props
-    const { openModal, handleDisclaimerOpen } = useModel('disclaimer', (ret) => ({
-        openModal: ret.openModal,
-        handleDisclaimerOpen: ret.handleDisclaimerOpen,
-    }));
+    const { openModal, handleDisclaimerOpen } = useModel('disclaimer');
     const [visible, setVisible] = useState(false)
     const [modifyProps, setModifyProps] = useState<any>(null)
     const deployServerRef: any = useRef(null)

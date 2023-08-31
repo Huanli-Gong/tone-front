@@ -45,10 +45,7 @@ const getInitialExtra = (obj: any) => {
  */
 const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
     const { formatMessage } = useIntl();
-    const { openModal, handleDisclaimerOpen } = useModel('disclaimer', (ret) => ({
-        openModal: ret.openModal,
-        handleDisclaimerOpen: ret.handleDisclaimerOpen,
-    }));
+    const { openModal, handleDisclaimerOpen } = useModel('disclaimer');
     const { ws_id }: any = useParams();
     const [form] = Form.useForm();
     const [tagFlag, setTagFlag] = useState({ list: [], isQuery: '' })
