@@ -139,7 +139,7 @@ const Index: React.FC<any> = () => {
       getListDataMetric({ case_id })
     }
     if (suite_id && case_id) {
-      getListDataRetrieve({ case_id, suite_id })
+      getListDataRetrieve({ case_id, suite_id, ws_id })
     }
   }, [case_id, suite_id])
 
@@ -172,7 +172,7 @@ const Index: React.FC<any> = () => {
     // showSizeChanger,
     hideOnSinglePage: true,
     onChange: (page_num: number, page_size: number) => {
-      getListDataRetrieve({ case_id, suite_id, page_num, page_size })
+      getListDataRetrieve({ case_id, suite_id, page_num, page_size, ws_id })
     },
     onShowSizeChange: () => { }
   }
