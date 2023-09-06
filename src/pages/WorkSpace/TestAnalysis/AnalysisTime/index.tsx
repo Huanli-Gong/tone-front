@@ -2,12 +2,12 @@ import React from 'react';
 import { writeDocumentTitle, useCopyText } from '@/utils/hooks';
 import { Layout, Tabs, Row, Radio, Col } from 'antd';
 import styles from './index.less'
-import { useLocation, useIntl, FormattedMessage, useParams } from 'umi';
+import { useLocation, useIntl, FormattedMessage, useParams, useRequest } from 'umi';
 import TabPaneCard from './components/TabPaneCard'
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import { stringify } from 'querystring';
 import styled from "styled-components"
-import { queryPerfomanceMetrics } from './services'
+import { getSelectSuiteConfs, queryPerfomanceMetrics } from './services'
 
 import { Analysis } from './provider';
 
@@ -61,6 +61,19 @@ const AnalysisTime: React.FC<any> = (props) => {
         end_time: query?.end_time || undefined,
     })
 
+    const { data: suiteList, loading, run } = useRequest(
+        getSelectSuiteConfs,
+        {
+            manual: true
+        }
+    )
+
+    React.useEffect(() => {
+        const { test_type, provider_env } = info
+        if (test_type && provider_env)
+            run({ ws_id, test_type, provider_env })
+    }, [info?.test_type, info?.provider_env])
+
     const clearAndSetFields = (val: any) => {
         const { test_type, provider_env = 'aliyun', show_type = 'pass_rate' } = info
 
@@ -105,7 +118,10 @@ const AnalysisTime: React.FC<any> = (props) => {
     }
 
     return (
-        <Analysis.Provider value={{ metrics, setMetrics }} key={key}>
+        <Analysis.Provider
+            value={{ metrics, setMetrics, suiteList, suiteListLoading: loading }}
+            key={key}
+        >
             <AnalysisLayout minHeight={innerHeight - 40}>
                 <Row style={{ background: '#fff' }}>
                     <Col span={24}>
