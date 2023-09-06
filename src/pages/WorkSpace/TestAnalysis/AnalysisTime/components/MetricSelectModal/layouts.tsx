@@ -16,7 +16,7 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
     const [info, setInfo] = React.useState<any>({})
     const [basicValues, setBasicValues] = React.useState(undefined)
 
-    const defaultParams = { ws_id, project_id, start_time, end_time, tag, test_type, provider_env }
+    const defaultParams = { ws_id, test_type, provider_env }
 
     const { data: suiteList, run, loading } = useRequest(() => getSelectSuiteConfs(defaultParams), {
         manual: true
@@ -24,6 +24,7 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
 
     const { data: metrics, run: runGetMetrics } = useRequest((params: any) => getSelectMetricOrSubcase({
         ...defaultParams,
+        project_id, start_time, end_time, tag,
         ...params,
     }), { manual: true })
 
