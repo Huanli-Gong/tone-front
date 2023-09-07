@@ -105,6 +105,7 @@ export default forwardRef(
         }
 
         const handleOk = async () => {
+            if (disable) return
             if (JSON.stringify(dataSource) !== '{}' && !BUILD_APP_ENV) {
                 const keys = form.getFieldValue('visible_range')
                 const nKeys = dataSource.visible_range || ''
