@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } f
 import { Space, Drawer, message, Pagination, Tooltip, Row, Table, Spin, Typography, Tag, Alert } from 'antd';
 import type { TableColumnProps } from "antd"
 import { CaretRightFilled, CaretDownFilled, FilterFilled, EditOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { suiteList, addSuite, editSuite, delSuite, syncSuite, manual, lastSync, batchDeleteMetric } from '../service';
+import { suiteList, editSuite, delSuite, syncSuite, manual, lastSync, batchDeleteMetric } from '../service';
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
 import Highlighter from 'react-highlight-words';
 import { suiteChange } from '@/components/Public/TestSuite';
@@ -23,7 +23,6 @@ import ConfEditDrawer from './components/CaseTable/ConfEditDrawer'
 import lodash from 'lodash'
 import { editBentch, editCase, addCase } from '@/pages/SystemConf/TestSuite/service'
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
-import { requestCodeMessage } from '@/utils/utils';
 import { useSuiteProvider } from '../hooks';
 
 import DeleteTips from "./components/DeleteTips"
@@ -198,13 +197,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             setPageParams({ ...pageParams, page_num: 1 })
     }
 
-    const submitSuite = async (data: any, editId: any) => {
-        const params = { ...data }
-        const { code, msg } = editId ?
-            await editSuite(editId, params) :
-            await addSuite(params)
-        if (code !== 200) return requestCodeMessage(code, msg);
-        suiteEditDrawer.current.hide()
+    const submitSuite = async () => {
         message.success(formatMessage({ id: 'operation.success' }));
         getList()
     }
