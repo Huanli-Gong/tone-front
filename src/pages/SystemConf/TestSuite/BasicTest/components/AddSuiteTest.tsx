@@ -394,6 +394,9 @@ export default forwardRef(
                 <DeleteTips
                     ref={delTip}
                     onOk={handleEditOK}
+                    onCancel={() => {
+                        setDisable(false)
+                    }}
                     okText={
                         <FormattedMessage id="TestSuite.tips.okText" />
                     }

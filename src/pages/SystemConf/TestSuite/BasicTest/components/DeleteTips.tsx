@@ -9,7 +9,7 @@ type Iprops = AnyType
 type IRefs = AnyType
 
 const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) => {
-    const { onOk, basePath } = props
+    const { onOk, basePath, onCancel } = props
     const { formatMessage } = useIntl()
 
     const [visible, setVisible] = React.useState(false)
@@ -29,6 +29,7 @@ const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) =>
 
     const hanldeCancel = () => {
         setVisible(false)
+        onCancel?.()
     }
 
     const handleOpenRef = async () => {
