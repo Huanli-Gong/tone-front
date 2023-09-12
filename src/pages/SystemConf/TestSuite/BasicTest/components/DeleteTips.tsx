@@ -9,7 +9,7 @@ type Iprops = AnyType
 type IRefs = AnyType
 
 const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) => {
-    const { onOk, basePath } = props
+    const { onOk, basePath, okText, onCancel } = props
     const { formatMessage } = useIntl()
 
     const [visible, setVisible] = React.useState(false)
@@ -29,6 +29,7 @@ const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) =>
 
     const hanldeCancel = () => {
         setVisible(false)
+        onCancel?.()
     }
 
     const handleOpenRef = async () => {
@@ -47,7 +48,9 @@ const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) =>
             onCancel={hanldeCancel}
             footer={[
                 <Button key="submit" onClick={handleOk} type={"danger" as any}>
-                    <FormattedMessage id="operation.confirm.delete" />
+                    {
+                        okText || <FormattedMessage id="operation.confirm.delete" />
+                    }
                 </Button>,
                 <Button key="back" type="primary" onClick={hanldeCancel}>
                     <FormattedMessage id="operation.cancel" />
