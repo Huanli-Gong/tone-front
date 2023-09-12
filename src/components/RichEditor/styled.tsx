@@ -295,6 +295,14 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
                 color: #fbbc88;
             }
 
+            .hljs-punctuation {
+                color: #fff !important;
+            }
+
+            .hljs-attr {
+                color: #9cdcfe !important;
+            }
+
             .hljs-string,
             .hljs-symbol,
             .hljs-bullet {
