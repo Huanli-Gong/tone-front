@@ -69,10 +69,11 @@ const AnalysisTime: React.FC<any> = (props) => {
     )
 
     React.useEffect(() => {
-        const { test_type, provider_env } = info
-        if (test_type && provider_env)
-            run({ ws_id, test_type, provider_env })
-    }, [info?.test_type, info?.provider_env])
+        console.log(info)
+        const { test_type, provider_env, project_id } = info
+        if (test_type && provider_env && project_id)
+            run({ ws_id, test_type, provider_env, project_id })
+    }, [info?.test_type, info?.provider_env, info?.project_id])
 
     const clearAndSetFields = (val: any) => {
         const { test_type, provider_env = 'aliyun', show_type = 'pass_rate' } = info
