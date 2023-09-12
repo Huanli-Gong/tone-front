@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import React, { useState, useImperativeHandle, forwardRef } from 'react'
+import React, { useState, useImperativeHandle, forwardRef, useCallback } from 'react'
 import { Drawer, Form, Radio, Input, Select, Space, Button, message, Spin, Badge, Row, Col, Tooltip, AutoComplete } from 'antd'
-import { useIntl, FormattedMessage, useParams } from 'umi'
+import { useIntl, FormattedMessage, useParams, useModel } from 'umi'
 import { addServerGroup, checkTestServerIps, queryTestServerList } from '../../services'
 import Owner from '@/components/Owner/index';
 import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils';
 import { AgentSelect } from '@/components/utils';
+import Disclaimer from '@/components/Disclaimer';
 
 const CreateClusterDrawer = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
+    const { openModal, handleDisclaimerOpen } = useModel('disclaimer');
     const { onFinish } = props
     const { ws_id } = useParams() as any
     const [form] = Form.useForm()
@@ -112,6 +114,10 @@ const CreateClusterDrawer = (props: any, ref: any) => {
             )
     }
 
+    const handleModalState = useCallback((flag: any) => {
+        if (flag) handleOk()
+    }, [source])
+
     const ValidateDisplayMessage: React.FC<any> = ({ data }) => (
         <Space>
             <span>{data.msg[0]}</span>
@@ -159,7 +165,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                 <div style={{ textAlign: 'right' }} >
                     <Space>
                         <Button onClick={handleCancel}><FormattedMessage id="operation.cancel" /></Button>
-                        <Button type="primary" onClick={handleOk}><FormattedMessage id="operation.ok" /></Button>
+                        <Button type="primary" onClick={handleDisclaimerOpen}><FormattedMessage id="operation.ok" /></Button>
                     </Space>
                 </div>
             }
@@ -254,6 +260,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                     </Form.Item>
                 </Form>
             </Spin>
+            {openModal && <Disclaimer onOk={handleModalState} />}
         </Drawer>
     )
 }
