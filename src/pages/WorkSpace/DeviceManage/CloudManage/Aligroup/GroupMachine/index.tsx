@@ -337,7 +337,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             ak_id: param.ak_id,
             region: param.region[0],
             zone: param.region[1],
-            id: param.manufacturer[0]
+            id: param.manufacturer[0],
+            instance_type: param.instance_type,
         }
         if (param.ak_name == 'aliyun_eci') {
             const t = param.instance_type
