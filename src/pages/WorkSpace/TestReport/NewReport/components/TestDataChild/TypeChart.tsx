@@ -132,7 +132,6 @@ const TypeChart = (props: any) => {
     }, [data])
 
     useEffect(() => {
-        console.log('ChartList',ChartList)
         const { series, subText, xAxisData, legData, dataZoom_end } = ChartList
         const duration = time.reduce((p: any, c: any) => p += c * 2, 0)
         let option = {
@@ -184,7 +183,6 @@ const TypeChart = (props: any) => {
                 },
                 extraCssText: 'box-shadow: 0 2px 8px 0 rgba(0,0,0,0.15);border-radius: 2px;padding:12px;z-index:9999',
                 formatter: function (params: any) {
-                    console.log('params',params)
                     let result = ''
                     for (let i = 0; i < params.length; i++) {
                         result += `
