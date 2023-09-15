@@ -67,7 +67,6 @@ const GroupBarWrapper: React.FC<any> = (props) => {
     const { groupRowRef, parentDom, groupLen, envData } = props
 
     const { top } = useScroll(document.querySelector('.ant-layout-has-sider .ant-layout') as any)
-    // console.log(top)
     const floatRow = groupRowRef.current
     const testDataEle = parentDom.current
 
@@ -109,10 +108,12 @@ const ReportTestPref: React.FC<any> = (props) => {
     const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group, wsId, containerRef } = useContext(ReportContext)
     const { parentDom, scrollLeft } = props
     const [sortKeys, setSortKeys] = useState<any>([])
+    // const [sortFlag, setSortFlag] = useState<any>(0)
     const [dataSource, setDataSource] = useState<any>([])
     const [btn, setBtn] = useState<boolean>(true)
     const [btnName, setBtnName] = useState<string>('')
     const [filterName, setFilterName] = useState('all')
+    const sortRef = useRef();
     const groupRowRef = useRef<any>(null)
     const { perf_data_result } = compareResult
     // 当没有定义基准组时baseIndex的值
@@ -168,22 +169,29 @@ const ReportTestPref: React.FC<any> = (props) => {
 
     //差异化排序
     const handleArrow = (suite: any, i: any, conf: any) => {
-        if (sortKeys.includes(conf.conf_id)) {
-            const { perf_data_result } = compareResult
-            setSortKeys((p: any) => p.filter((iy: any) => iy !== conf.conf_id))
-            setDataSource((p: any) => p.map((item: any) => {
-                if (item.suite_id === suite.suite_id) {
-                    return {
-                        ...item,
-                        conf_list: perf_data_result.filter((ix: any) => ix.suite_id === suite.suite_id)[0]?.conf_list
-                    }
-                }
-                return item
-            }))
-            return
-        }
-        setSortKeys((p: any) => p.concat(conf.conf_id))
-
+        sortRef.current = i
+       
+        // if (sortKeys.includes(conf.conf_id)) {
+        //     const { perf_data_result } = compareResult
+        //     // const arr = [...new Set(sortKeys)]
+        //     setDataSource((p: any) => p.map((item: any) => {
+        //         if (item.suite_id === suite.suite_id) {
+        //             return {
+        //                 ...item,
+        //                 conf_list: perf_data_result.filter((ix: any) => ix.suite_id === suite.suite_id)[0]?.conf_list
+        //             }
+        //         }
+        //         return item
+        //     }))
+        //     return
+        // } else {
+        //     let arr:Array<[]> = []
+        //     setSortKeys(arr.concat(conf.conf_id))
+        //     // setSortKeys((p: any) => p.concat(conf.conf_id))
+        // }
+        let arr:Array<[]> = []
+        setSortKeys(arr.concat(conf.conf_id))
+        // setSortKeys(sortKeys.filter((iy: any) => iy !== conf.conf_id))
         const endList = suite.conf_list
             .reduce((pre: any[], cur: any) => {
                 if (cur.conf_id === conf.conf_id)
@@ -201,6 +209,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                     })
                 return pre.concat(cur)
             }, [])
+
 
         setDataSource(
             dataSource.map((item: any) => {
@@ -305,7 +314,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                                         <RightResult>
                                                                                             <FormattedMessage id="analysis.comparison/tracking.results" />
                                                                                             <span onClick={() => handleArrow(item, i, conf)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
-                                                                                                {sortKeys.includes(conf.conf_id) ? <IconArrowBlue /> : <IconArrow />}
+                                                                                                {sortKeys.includes(conf.conf_id) && sortRef.current === i ? <IconArrowBlue /> : <IconArrow />}
                                                                                             </span>
                                                                                             <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
                                                                                                 title={

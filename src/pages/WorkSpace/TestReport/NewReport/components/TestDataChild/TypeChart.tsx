@@ -31,10 +31,13 @@ const TypeChart = (props: any) => {
         let result = [] // 组装后数组处理的容器
         let metricLen = 0
         let len = 0
-        obj.legData.push(envData.base_group.tag)
+        let legArr = []
         for (let compare = envData.compare_groups, k = 0; k < compare.length; k++) {
-            obj.legData.push(compare[k].tag)
+            legArr.push(compare[k].tag)
         }
+        let newLegArr = legArr.splice(0)
+        newLegArr.splice(envData.base_index, 0, envData.base_group.tag)
+        obj.legData = obj.legData.concat(newLegArr)
         if (chartType == '1') {
             obj.subText.push(data.direction)
             for (let compare = data.compare_data, i = 0; i < compare.length; i++) {
@@ -129,6 +132,7 @@ const TypeChart = (props: any) => {
     }, [data])
 
     useEffect(() => {
+        console.log('ChartList',ChartList)
         const { series, subText, xAxisData, legData, dataZoom_end } = ChartList
         const duration = time.reduce((p: any, c: any) => p += c * 2, 0)
         let option = {
@@ -180,6 +184,7 @@ const TypeChart = (props: any) => {
                 },
                 extraCssText: 'box-shadow: 0 2px 8px 0 rgba(0,0,0,0.15);border-radius: 2px;padding:12px;z-index:9999',
                 formatter: function (params: any) {
+                    console.log('params',params)
                     let result = ''
                     for (let i = 0; i < params.length; i++) {
                         result += `
