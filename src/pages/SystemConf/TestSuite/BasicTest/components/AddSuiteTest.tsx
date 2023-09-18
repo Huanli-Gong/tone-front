@@ -1,12 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { useState, forwardRef, useImperativeHandle, useMemo } from 'react'
+import React, { useState, forwardRef, useImperativeHandle, useMemo } from 'react'
 import { Drawer, Button, Form, Col, Row, Select, Input, Radio } from 'antd'
 import styles from '../style.less'
 import Owner from '@/components/Owner/index';
 import { useLocation, useIntl, FormattedMessage } from 'umi'
 import { useSuiteProvider } from '../../hooks'
 import { QusetionIconTootip } from '@/components/Product'
+import { requestCodeMessage } from '@/utils/utils';
+import { addSuite, editSuite } from '../../service';
+import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
+import DeleteTips from './DeleteTips';
 
 /**
  * @module 系统级
@@ -28,6 +32,7 @@ export default forwardRef(
         const [dataSource, setDataSource] = useState<any>({})
 
         const visibleRange = Form.useWatch('visible_range', form)
+        const delTip = React.useRef<any>()
 
         const handleCancel = () => {
             setVisible(false)
@@ -63,15 +68,14 @@ export default forwardRef(
             hide: handleCancel
         }))
 
-        const handleOk = () => {
-            form.validateFields().then(val => {
+        const handleEditOK = () => {
+            form.validateFields().then(async val => {
                 if (!val.name || val.name.replace(/\s+/g, "") == '') {
                     setValidateStatus('error')
                     setHelp(formatMessage({ id: 'please.enter' }))
                     return
                 }
                 val.name = val.name.replace(/\s+/g, "")
-                setDisable(true)
                 if (val.owner === dataSource.owner_name) val.owner = dataSource.owner
                 val.domain_list_str = val.domain_list_str.join()
 
@@ -80,8 +84,17 @@ export default forwardRef(
                     val.visible_range = visible_range?.toString()
                 }
 
-                onOk(val, dataSource.id ? dataSource.id : '')
+                setDisable(true)
+                const { code, msg } = dataSource?.id ?
+                    await editSuite(dataSource?.id, val) :
+                    await addSuite(val)
                 setDisable(false)
+
+                if (code !== 200)
+                    return requestCodeMessage(code, msg);
+
+                handleCancel()
+                onOk?.()
             }).catch(err => {
                 if (!err.values.name || err.values.name.replace(/\s+/g, "") == '') {
                     setValidateStatus('error')
@@ -89,6 +102,24 @@ export default forwardRef(
                 }
                 setDisable(false)
             })
+        }
+
+        const handleOk = async () => {
+            if (disable) return
+            if (JSON.stringify(dataSource) !== '{}' && !BUILD_APP_ENV) {
+                const keys = form.getFieldValue('visible_range')
+                const nKeys = dataSource.visible_range || ''
+
+                const s = keys.sort((a: string, b: string) => a.localeCompare(b)).toString()
+                const t = nKeys.split(',').sort((a: string, b: string) => a.localeCompare(b)).toString()
+
+                if (s !== t) {
+                    setDisable(true)
+                    const { code } = await queryConfirm({ flag: 'pass', suite_id: dataSource.id, visible_range: s })
+                    if (code === 200) return delTip.current?.show({ ...dataSource, path: 'visible_range', visible_range: s })
+                }
+            }
+            handleEditOK()
         }
 
         const hanldFocus = () => {
@@ -135,7 +166,7 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right' }}>
                         <Button onClick={handleCancel} style={{ marginRight: 8 }}><FormattedMessage id="operation.cancel" /></Button>
-                        <Button onClick={handleOk} disabled={disable} type="primary" htmlType="submit" >
+                        <Button onClick={handleOk} loading={disable} type="primary" htmlType="submit" >
                             {buttonText}
                         </Button>
                     </div>
@@ -360,6 +391,16 @@ export default forwardRef(
                         </Col>
                     </Row>
                 </Form>
+                <DeleteTips
+                    ref={delTip}
+                    onOk={handleEditOK}
+                    onCancel={() => {
+                        setDisable(false)
+                    }}
+                    okText={
+                        <FormattedMessage id="TestSuite.tips.okText" />
+                    }
+                />
             </Drawer>
         )
     }

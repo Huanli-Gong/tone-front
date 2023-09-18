@@ -41,13 +41,13 @@ export const updateAnalysisNote = function (data: any) {
 }
 
 type SuiteConfsServiceProps = {
-    ws_id: string;
-    start_time: string;
-    end_time: string;
-    project_id: number;
-    tag: number;
-    test_type: string;
-    provider_env: string;
+    ws_id?: string;
+    start_time?: string;
+    end_time?: string;
+    project_id?: number;
+    tag?: number;
+    test_type?: string;
+    provider_env?: string;
 }
 
 export const getSelectSuiteConfs = function (data: SuiteConfsServiceProps) {

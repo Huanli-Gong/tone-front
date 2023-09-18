@@ -6,31 +6,30 @@ import Performance from "./Performance";
 import FunctionalPassRate from "./FunctionalPassRate";
 import FunctionalUnPassRate from "./FunctionalUnPassRate"
 
-import { getSelectSuiteConfs, getSelectMetricOrSubcase } from '../../services'
+import { getSelectMetricOrSubcase } from '../../services'
+import { useAnalysisProvider } from '@/pages/WorkSpace/TestAnalysis/AnalysisTime/provider';
 
 const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
     const { test_type, project_id, provider_env, onOk, show_type, tag, start_time, end_time } = props
     const { ws_id } = useParams() as any
 
+    const { suiteList, suiteListLoading } = useAnalysisProvider()
+
     const [visible, setVisible] = React.useState(false)
     const [info, setInfo] = React.useState<any>({})
     const [basicValues, setBasicValues] = React.useState(undefined)
 
-    const defaultParams = { ws_id, project_id, start_time, end_time, tag, test_type, provider_env }
-
-    const { data: suiteList, run, loading } = useRequest(() => getSelectSuiteConfs(defaultParams), {
-        manual: true
-    })
+    const defaultParams = { ws_id, test_type, provider_env }
 
     const { data: metrics, run: runGetMetrics } = useRequest((params: any) => getSelectMetricOrSubcase({
         ...defaultParams,
+        project_id, start_time, end_time, tag,
         ...params,
     }), { manual: true })
 
     React.useImperativeHandle(ref, () => ({
         show: async (vals: any) => {
             setVisible(true)
-            run()
             setBasicValues(vals)
         },
     }))
@@ -114,8 +113,8 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
         basicValues,
         project_id,
         provider_env,
-        loading,
         suiteList,
+        loading: suiteListLoading,
         visible,
         runGetMetrics,
         metrics,
@@ -144,7 +143,7 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
                 </Space>
             }
         >
-            <Spin spinning={loading}>
+            <Spin spinning={suiteListLoading}>
                 {
                     test_type === "performance" &&
                     <Performance {...baseProps} />

@@ -100,7 +100,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
 
     const hanldeScroll = ({ target }: any) => {
         const { clientHeight, scrollTop, scrollHeight } = target
-        if (clientHeight + scrollTop === scrollHeight && !isOver) {
+        if (clientHeight + scrollTop === scrollHeight && !isOver && Object.prototype.toString.call(wsList?.next) === '[object String]') {
             queryWorkspaceList()
         }
     }
