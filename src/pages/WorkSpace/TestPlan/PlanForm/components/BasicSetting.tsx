@@ -13,6 +13,7 @@ import UnPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/UnPushF
 import BuildKernalForm from '@/pages/WorkSpace/TestJob/components/KernalForms/BuildKernalForm'
 
 import styled from 'styled-components'
+import { wsIgnoreScriptInput } from '@/utils/utils'
 
 const BaselineSpan = styled.span`
     position:absolute;
@@ -214,12 +215,15 @@ const BasicSetting = (props: any, ref: any) => {
                                 form={form}
                                 kernel={kernel}
                                 kernelList={kernelList}
-                                needScriptList={true}
+                                needScriptList={!wsIgnoreScriptInput.includes(ws_id)}
                             />
                         }
                         {
                             (kernel === 'install_un_push') &&
-                            <UnPushForm needScriptList={true} form={form} />
+                            <UnPushForm
+                                form={form}
+                                needScriptList={!wsIgnoreScriptInput.includes(ws_id)}
+                            />
                         }
                         {
                             (kernel === 'install_build_kernel') &&

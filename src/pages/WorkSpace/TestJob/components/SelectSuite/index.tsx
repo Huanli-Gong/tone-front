@@ -103,7 +103,7 @@ const SelectSuite: React.FC<any> = ({
 		const { var: confVar, title, name } = $case
 		const {
 			server_is_deleted, test_case_id,
-			repeat, need_reboot, is_instance,
+			repeat, timeout, need_reboot, is_instance,
 			priority, console: $console, monitor_info
 		} = conf
 		let conf_var = [];
@@ -127,6 +127,7 @@ const SelectSuite: React.FC<any> = ({
 			name: name,
 			id: test_case_id,
 			repeat,
+			timeout,
 			need_reboot,
 			is_instance, priority,
 			console: $console,

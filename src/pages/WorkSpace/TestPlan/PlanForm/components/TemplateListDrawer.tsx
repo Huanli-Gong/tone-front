@@ -104,7 +104,7 @@ const TemplateListDrawer = (props: any, ref: any) => {
             maskClosable={false}
             keyboard={false}
             title={<FormattedMessage id="plan.template.list" />}
-            visible={visible}
+            open={visible}
             width="376"
             onClose={handleClose}
             footer={

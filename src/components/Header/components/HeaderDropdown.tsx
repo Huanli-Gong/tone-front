@@ -50,23 +50,7 @@ const WorkspaceCover: React.FC<any> = ({ logo, show_name, theme_color }) => logo
     /> :
     <Cover size={24} theme_color={theme_color}>{show_name?.slice(0, 1)}</Cover>
 
-const WorkspaceDropdownMenu = styled(Menu)`
-    width: 220px;
-    overflow: auto;
-    max-height: 430px;
-    padding: 20px 0;
 
-    .ant-dropdown-menu-item {
-        height:40px;
-        display:flex;
-        padding: 0 8px;
-        color: rgba(0, 0, 0, 0.85);
-    }
-
-    .current_ws {
-        background:rgba(0,0,0,.02);
-    }
-`
 
 export const HearderDropdown: React.FC<any> = (props) => {
     const { ws_id } = props
@@ -87,7 +71,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
         setIsOver(total_page === page_num)
         setInitialState((p: any) => {
             const obj = p.wsList.data.concat(data).reduce((pre: any, cur: any) => {
-                pre[cur.id] = cur
+                pre[cur?.id] = cur
                 return pre
             }, {})
             return {
@@ -129,9 +113,10 @@ export const HearderDropdown: React.FC<any> = (props) => {
             placement="bottomLeft"
             arrow={true}
             overlayClassName={styles.dropdownClass}
-            overlay={
+            dropdownRender={
                 () => (
-                    <WorkspaceDropdownMenu
+                    <Menu
+                        className={styles.workspaceDropdownMenu}
                         onScroll={hanldeScroll}
                     >
                         {
@@ -168,7 +153,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
                                 }
                             )
                         }
-                    </WorkspaceDropdownMenu>
+                    </Menu>
                 )
             }
         >

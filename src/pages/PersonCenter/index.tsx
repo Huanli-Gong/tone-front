@@ -26,7 +26,7 @@ export default (props: any) => {
     const { authList } = initialState
     const access = useAccess();
     const { query } = useLocation() as any
-    const {height: layoutHeight} = useClientSize()
+    const { height: layoutHeight } = useClientSize()
 
     const [tab, setTab] = useState(query.person ?? 'workspace')
     const [data, setData] = useState<any>([])
@@ -38,8 +38,11 @@ export default (props: any) => {
         setLoading(true)
         setData([])
         const { data, code, msg } = await reqUrlMap.get(t)()
-        if (code !== 200) requestCodeMessage(code, msg)
-        data && setData(data)
+        if (code === 200) {
+            data && setData(data)
+        } else {
+            requestCodeMessage(code, msg)
+        }
         setLoading(false)
     }
 
@@ -80,7 +83,7 @@ export default (props: any) => {
                             {
                                 authList.avatar ?
                                     <Avatar size="small" src={authList.avatar || ''} alt="avatar" className={styles.avatar} /> :
-                                    <AvatarCover shape="circle" size={ 56 } fontSize={ 28 } theme_color={authList.avatar_color} show_name={authList.last_name} />
+                                    <AvatarCover shape="circle" size={56} fontSize={28} theme_color={authList.avatar_color} show_name={authList.last_name} />
                             }
                         </div>
                         <div>
@@ -99,10 +102,10 @@ export default (props: any) => {
                     <Tabs.TabPane tab="Workspace" key="workspace" className={styles.tab_item}>
                         {tab === 'workspace' && <PersonWorkspace loading={loading} workspaceList={data} userId={Number(authList.id)} />}
                     </Tabs.TabPane>
-                    <Tabs.TabPane tab={<FormattedMessage id="person.center.approve"/>} key="approve">
-                        {tab === 'approve' && <PersonApprove loading={loading} approveData={data} handleTabClick={handleTabClick} userId={Number(authList.id)}/>}
+                    <Tabs.TabPane tab={<FormattedMessage id="person.center.approve" />} key="approve">
+                        {tab === 'approve' && <PersonApprove loading={loading} approveData={data} handleTabClick={handleTabClick} userId={Number(authList.id)} />}
                     </Tabs.TabPane>
-                    <Tabs.TabPane tab={<FormattedMessage id="person.center.tokenConfig"/>} key="tokenConfig">
+                    <Tabs.TabPane tab={<FormattedMessage id="person.center.tokenConfig" />} key="tokenConfig">
                         {tab === 'tokenConfig' && <TokenConfig loading={loading} tokenData={data} />}
                     </Tabs.TabPane>
                 </Tabs>

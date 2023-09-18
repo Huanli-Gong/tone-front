@@ -46,7 +46,6 @@ export const RectItem: React.FC<any> = ({ item, name, editModalShow, onSelect })
 
     const handleLeaveEdit = () => setColor('')
 
-
     if (isDisableItem)
         return (
             <div className={styles.setting_item_disable}>
@@ -99,7 +98,7 @@ export const RectSelect: React.FC<rectSelectProps> = ({ title, desc, data, name,
                 <span className={styles.step_desc}>{desc}</span>
             </Col>
             <Col style={{ margin: '0px -10px', display: 'flex', flexFlow: 'row wrap' }}>
-                {data.map((item: any, index: number) => (
+                {data?.map((item: any, index: number) => (
                     !item.disable &&
                     <RectItem
                         key={index}
@@ -108,8 +107,7 @@ export const RectSelect: React.FC<rectSelectProps> = ({ title, desc, data, name,
                         name={name}
                         editModalShow={() => ref.current.show(item)}
                     />
-                ))
-                }
+                ))}
             </Col>
             <EditNameModal ref={ref} onOk={handleOk} />
         </Row>

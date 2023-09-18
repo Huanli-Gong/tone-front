@@ -7,7 +7,8 @@ import { useRequest, useAccess, Access, useParams, useIntl, FormattedMessage } f
 import qs from 'querystring'
 import styles from './index.less'
 import { targetJump } from '@/utils/utils'
-import { ResizeHooksTable } from '@/utils/table.hooks'
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import EllipsisPulic from '@/components/Public/EllipsisPulic';
 
 export default ({ test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType }: any) => {
     const { formatMessage } = useIntl()
@@ -57,7 +58,9 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
                 />
             ),
             dataIndex: 'test_value',
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             width: 120,
             render: (_: any, row: any) => (
                 <ResultTdPopver
@@ -86,7 +89,7 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
                                     }
                                 }}
                             >
-                                {`${_}±${row.baseline_cv_value}`}
+                                <EllipsisPulic title={`${_}±${row.baseline_cv_value}`}/>
                             </span>
                         </Access> :
                         '-'
@@ -108,9 +111,11 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
             title: <QusetionIconTootip title={strLocals} desc={`AVG ${strLocals} / CV ${strLocals}`} />,
             dataIndex: 'threshold',
             width: 120,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             render: (_: any) => (
-                _ ? _ : '-'
+                _ ? <EllipsisPulic title={_}/> : '-'
             )
         },
         {

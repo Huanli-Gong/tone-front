@@ -81,7 +81,7 @@ const TestSuiteCreate: React.FC = () => {
     const [flag, setFlag] = useState(true)
     const [btnLoad, setBtnLoad] = useState(false)
     const [suiteList, setSuiteList] = useState<any[]>([])
-    const [suiteParams, setSuiteParams] = useState({ domain: '', test_type, name: '', scope: 'brief_case' })
+    const [suiteParams, setSuiteParams] = useState({ domain: '', visible_ws_id: ws_id, test_type, name: '', scope: 'brief_case' })
     const [expandRows, setExpandRows] = useState<any[]>([])
     const [addFlag, setAddFlag] = useState(false)
     const [loading, setLoading] = useState(true)

@@ -124,14 +124,14 @@ const TidDetail: React.FC<any> = ({ tid }) => {
                         <Col span={18}>{details?.pid || '-'}</Col>
                     </TidRow>
                 </Layout.Content>
-                <Layout.Content style={{ marginBottom: 20 }}>
+                {/* <Layout.Content style={{ marginBottom: 20 }}>
                     <Divider orientation="left" plain>
                         <Typography.Text strong><SegmentationMark/>任务脚本</Typography.Text>
                     </Divider>
                     <Row gutter={20} style={{ margin:'0 10px', height: 200 }}>
                         <CodeEditer code={details.script} />
                     </Row>
-                </Layout.Content>
+                </Layout.Content> */}
                 <Layout.Content style={{ marginBottom: 30 }}>
                     <Divider orientation="left" plain>
                         <Typography.Text strong><SegmentationMark/>任务结果</Typography.Text>

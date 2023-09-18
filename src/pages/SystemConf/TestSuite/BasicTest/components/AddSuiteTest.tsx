@@ -6,14 +6,14 @@ import styles from '../style.less'
 import Owner from '@/components/Owner/index';
 import { useLocation, useIntl, FormattedMessage } from 'umi'
 import { useSuiteProvider } from '../../hooks'
-import { QusetionIconTootip } from '@/components/Product/index'
+import { QusetionIconTootip } from '@/components/Product'
 
 /**
  * @module 系统级
  * @description 新增、编辑suite级
  */
 export default forwardRef(
-    ({ onOk }: any, ref: any) => {
+    ({ onOk, wsList }: any, ref: any) => {
         const { formatMessage } = useIntl()
         const { query }: any = useLocation()
         const testType = query.test_type || 'functional'
@@ -26,6 +26,8 @@ export default forwardRef(
         const [help, setHelp] = useState<string | undefined>()
         const [disable, setDisable] = useState(false)
         const [dataSource, setDataSource] = useState<any>({})
+
+        const visibleRange = Form.useWatch('visible_range', form)
 
         const handleCancel = () => {
             setVisible(false)
@@ -41,11 +43,21 @@ export default forwardRef(
                 setVisible(true)
                 setDisable(false)
                 d && setDataSource(d)
-                form.setFieldsValue({
+                if (!BUILD_APP_ENV) {
+                    const { visible_range } = d
+                    form.setFieldsValue({
+                        ...d,
+                        test_type: testType,
+                        owner: d.owner_name,
+                        certificated: d.certificated ? 1 : 0,
+                        visible_range: visible_range?.split(',')
+                    })
+                }
+                else form.setFieldsValue({
                     ...d,
                     test_type: testType,
                     owner: d.owner_name,
-                    certificated: d.certificated ? 1 : 0
+                    certificated: d.certificated ? 1 : 0,
                 })
             },
             hide: handleCancel
@@ -62,6 +74,12 @@ export default forwardRef(
                 setDisable(true)
                 if (val.owner === dataSource.owner_name) val.owner = dataSource.owner
                 val.domain_list_str = val.domain_list_str.join()
+
+                if (!BUILD_APP_ENV) {
+                    const { visible_range } = val
+                    val.visible_range = visible_range?.toString()
+                }
+
                 onOk(val, dataSource.id ? dataSource.id : '')
                 setDisable(false)
             }).catch(err => {
@@ -93,17 +111,26 @@ export default forwardRef(
             return JSON.stringify(dataSource) !== '{}' ? <FormattedMessage id="operation.update" /> : <FormattedMessage id="operation.ok" />
         }, [])
 
+        /* const wsAttr = React.useMemo(() => {
+            return wsList.reduce((pre: any, cur: any) => {
+                const { is_public, id } = cur
+                if (is_public) pre.public.push(id)
+                else pre.unPublic.push(id)
+                return pre
+            }, { public: [], unPublic: [] })
+        }, [wsList]) */
+
         return (
             <Drawer
                 maskClosable={false}
                 keyboard={false}
                 className={styles.warp}
-                forceRender={true}
-                destroyOnClose={true}
+                forceRender
+                destroyOnClose
                 title={title}
                 width={376}
                 onClose={handleCancel}
-                visible={visible}
+                open={visible}
                 bodyStyle={{ paddingBottom: 80 }}
                 footer={
                     <div style={{ textAlign: 'right' }}>
@@ -118,7 +145,7 @@ export default forwardRef(
                     layout="vertical"
                     form={form}
                     /*hideRequiredMark*/
-                    initialValues={{ is_default: 1, view_type: 'Type1' }}
+                    initialValues={{ is_default: 1, view_type: 'Type1', visible_range: '*' }}
                 >
                     <Row gutter={16}>
                         <Col span={24}>
@@ -150,6 +177,83 @@ export default forwardRef(
                                 </Select>
                             </Form.Item>
                         </Col>
+                        {
+                            !BUILD_APP_ENV &&
+                            <Col span={24}>
+                                <Form.Item
+                                    name="visible_range"
+                                    label={
+                                        <FormattedMessage id={`TestSuite.workspace_visible_range`} />
+                                    }
+                                    rules={[{
+                                        required: true,
+                                        validator(rule, value, callback) {
+                                            if (!value)
+                                                return Promise.reject(formatMessage({ id: `TestSuite.workspace_visible_range.required` }))
+                                            return Promise.resolve()
+                                        },
+                                    }]}
+                                >
+                                    <Select
+                                        allowClear
+                                        mode="multiple"
+                                        placeholder={formatMessage({ id: 'TestSuite.workspace_visible_range.placeholder' })}
+                                        filterOption={(input, option: any) => {
+                                            return option?.show_name?.toLowerCase().indexOf(input?.toLowerCase()) >= 0
+                                        }}
+                                        maxTagCount={'responsive'}
+                                        onSelect={(val) => {
+                                            if (val === "*")
+                                                form.setFieldsValue({ visible_range: ['*'] })
+                                        }}
+                                        /* dropdownRender={(menu) => (
+                                            <>
+                                                {menu}
+                                                <Divider style={{ margin: '8px 0' }} />
+                                                <Row style={{ paddingLeft: 12 }}>
+                                                    <Tag
+                                                        style={{ cursor: 'pointer' }}
+                                                        onClick={() => form.setFieldsValue({ visible_range: wsAttr.public })}
+                                                        color="processing"
+                                                    >
+                                                        <FormattedMessage id={`TestSuite.workspace_visible_range_all.public`} />
+                                                    </Tag>
+                                                    <Tag
+                                                        style={{ cursor: 'pointer' }}
+                                                        onClick={() => form.setFieldsValue({ visible_range: wsAttr.unPublic })}
+                                                        color="processing"
+                                                    >
+                                                        <FormattedMessage id={`TestSuite.workspace_visible_range_all.un_public`} />
+                                                    </Tag>
+                                                </Row>
+                                            </>
+                                        )} */
+                                        options={
+                                            [{
+                                                label: (
+                                                    <span>
+                                                        {/* <span style={{ display: 'inline-block', width: 12, textAlign: 'center' }}>
+                                                        *
+                                                    </span> */}
+                                                        *
+                                                        <FormattedMessage id={`TestSuite.workspace_visible_range_all`} />
+                                                    </span>
+                                                ),
+                                                value: "*",
+                                                show_name: "*"
+                                            },
+                                            ...(wsList || []).map((item: any) => ({
+                                                show_name: item.show_name,
+                                                disabled: visibleRange?.includes("*"),
+                                                label: (item.show_name),
+                                                value: item.id
+                                            }))]
+                                        }
+                                    />
+                                </Form.Item>
+                            </Col>
+                        }
+
                         <Col span={24}>
                             <Form.Item
                                 name="run_mode"
