@@ -317,6 +317,7 @@ const routes = [
 					},
 					{
 						path: '/ws/:ws_id/test_report/:report_id/edit',
+						exact: true,
 						name: 'EditReport',
 						component: '@/pages/WorkSpace/TestReport/NewReport',
 						access: 'IsWsSetting',
@@ -374,7 +375,7 @@ const routes = [
 				access: 'WsBtnPermission',
 				routes: [
 					{
-						path: '/ws/:ws_id/config',
+						path: '/ws/:ws_id/config/basic',
 						name: 'BasicConfig',
 						component: './WorkSpace/BasicConfig',
 						access: 'WsBtnPermission',

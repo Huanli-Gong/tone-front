@@ -87,7 +87,7 @@ const ReportListTable = (props: any) => {
                         searchWords={[pageParam.name || '']}
                         autoEscape
                         textToHighlight={_ || '-'}
-                        onClick={() => window.open(`/ws/${ws_id}/test_report/${row.id}/`)}
+                        onClick={() => window.open(`/ws/${ws_id}/test_report/${row.id}`)}
                     />
                 </ColumnEllipsisText>
             )

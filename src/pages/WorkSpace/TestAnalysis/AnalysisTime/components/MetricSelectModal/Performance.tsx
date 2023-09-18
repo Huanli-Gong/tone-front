@@ -2,8 +2,6 @@
 import React from "react"
 import { useIntl, useLocation } from "umi"
 import { Table, Row, Col, Select } from "antd"
-import lodash from 'lodash'
-import { queryPerfomanceMetrics } from '../../services'
 import styles from '../index.less'
 import { useAnalysisProvider } from "../../provider"
 
@@ -14,12 +12,12 @@ const transMetric = (query: any) => {
 }
 
 const Performance: React.FC<AnyType> = (props) => {
-    const { suiteList, projectId, test_type, provider_env, onChange, basicValues } = props
+    const { suiteList, provider_env, onChange, basicValues, metrics, runGetMetrics } = props
     const { query }: any = useLocation()
     const { formatMessage } = useIntl()
 
     const getQueryValue = (queryName: any) => {
-        if (query?.test_type !== "performance") return undefined
+        if (JSON.stringify(query) !== '{}' && (query?.test_type !== "performance")) return undefined
         if (basicValues) return basicValues[queryName]
         if (provider_env === query?.provider_env && query[queryName]) return query[queryName]
         return undefined
@@ -27,53 +25,47 @@ const Performance: React.FC<AnyType> = (props) => {
 
     const { setMetrics } = useAnalysisProvider()
 
+    React.useEffect(() => {
+        setMetrics(metrics)
+    }, [metrics])
+
     const [activeSuite, setActiveSuite] = React.useState<any>(+ getQueryValue("test_suite_id") || undefined)
     const [activeConf, setActiveConf] = React.useState<any>(+ getQueryValue("test_case_id") || undefined)
-    const [metricList, setMetricList] = React.useState<any>([])
     const [selectMetric, setSelectMetric] = React.useState<any>(getQueryValue("metric") || transMetric(query))
-    const [fetch, setFetch] = React.useState(false)
 
     React.useEffect(() => {
-        if (suiteList.length > 0) {
-            setActiveSuite(+ getQueryValue("test_suite_id") || suiteList?.[0].id)
+        if (suiteList?.length > 0) {
+            const tsi = getQueryValue("test_suite_id")
+            const tci = getQueryValue("test_case_id")
+            setActiveSuite(tsi ? + tsi : suiteList[0].test_suite_id)
+            setActiveConf(tci ? + tci : undefined)
         }
     }, [suiteList, query])
 
-    const requestMetricList = lodash.debounce(
-        async (params: any) => {
-            setFetch(true)
-            params.project_id = projectId || query.project_id
-            const { data: list } = await queryPerfomanceMetrics(params)
-            setMetricList(list || [])
-            setFetch(false)
-        },
-        500,
-        { trailing: true }
-    )
+    const currentSuite = React.useMemo(() => {
+        if (!suiteList) return
+        return suiteList.filter((i: any) => (i.test_suite_id === activeSuite))[0]
+    }, [suiteList, activeSuite])
 
     React.useEffect(() => {
-        setMetrics(metricList)
-    }, [metricList])
+        if (activeConf && activeSuite) {
+            runGetMetrics({ test_suite_id: activeSuite, test_case_id: activeConf })
+        }
+    }, [activeConf, activeSuite])
 
-    const confList = React.useMemo(() => {
-        for (let len = suiteList.length, i = 0; i < len; i++)
-            if (suiteList[i].id === activeSuite) {
-                if (suiteList[i].test_case_list.length > 0) {
-                    const test_case_id = activeConf || suiteList[i].test_case_list[0].id
-                    requestMetricList({ test_suite_id: suiteList[i].id, test_case_id })
+    React.useMemo(() => {
+        if (!currentSuite) return
+        const { test_case_list } = currentSuite
 
-                    if (!activeConf)
-                        setActiveConf(test_case_id)
-                    return suiteList[i].test_case_list
-                }
-                return []
-            }
-        return []
-    }, [activeSuite, suiteList, test_type])
+        const rl = activeConf ? test_case_list.filter((i: any) => (i.test_case_id === activeConf))[0] : test_case_list[0]
+        if (rl && !activeConf)
+            setActiveConf(rl.test_case_id)
+        return rl
+    }, [currentSuite, activeConf])
 
     React.useEffect(() => {
-        onChange?.({ activeSuite, activeConf, metricList, selectMetric })
-    }, [activeSuite, activeConf, metricList, selectMetric])
+        onChange?.({ activeSuite, activeConf, selectMetric })
+    }, [activeSuite, activeConf, selectMetric])
 
     return (
         <Row style={{ height: 400 }}>
@@ -85,7 +77,6 @@ const Performance: React.FC<AnyType> = (props) => {
                             <Select
                                 style={{ width: 'calc(100% - 91px - 8px)' }}
                                 onChange={(v) => {
-                                    setMetricList([])
                                     setActiveSuite(v)
                                     setActiveConf(null)
                                     setSelectMetric([])
@@ -97,9 +88,9 @@ const Performance: React.FC<AnyType> = (props) => {
                                 }
                                 showSearch
                                 options={
-                                    suiteList.map((i: any) => ({
-                                        value: i.id,
-                                        label: i.name
+                                    suiteList?.map((i: any) => ({
+                                        value: i.test_suite_id,
+                                        label: i.test_suite_name
                                     }))
                                 }
                             />
@@ -113,7 +104,7 @@ const Performance: React.FC<AnyType> = (props) => {
                                 onChange={(test_case_id) => {
                                     setActiveConf(test_case_id)
                                     setSelectMetric([])
-                                    requestMetricList({ test_suite_id: activeSuite, test_case_id })
+                                    // requestMetricList({ test_suite_id: activeSuite, test_case_id })
                                 }}
                                 filterOption={(input, option: any) =>
                                     option.label?.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -122,9 +113,9 @@ const Performance: React.FC<AnyType> = (props) => {
                                 placeholder="请选择Test Conf"
                                 value={activeConf}
                                 options={
-                                    confList.map((i: any) => ({
-                                        value: i.id,
-                                        label: i.name
+                                    currentSuite?.test_case_list?.map((i: any) => ({
+                                        value: i.test_case_id,
+                                        label: i.test_case_name
                                     }))
                                 }
                             />
@@ -134,12 +125,12 @@ const Performance: React.FC<AnyType> = (props) => {
             </Col>
             <Col span={24} style={{ height: 350 }}>
                 <Table
-                    dataSource={metricList}
+                    dataSource={metrics}
                     columns={[{ dataIndex: '', title: formatMessage({ id: 'analysis.metric' }) }]}
                     rowKey={record => record}
                     size="small"
                     scroll={{ y: 320 }}
-                    loading={fetch}
+                    // loading={fetch}
                     rowSelection={{
                         selectedRowKeys: selectMetric,
                         onChange: (list: any) => {

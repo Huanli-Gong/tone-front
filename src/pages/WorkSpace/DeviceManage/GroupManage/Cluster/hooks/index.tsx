@@ -2,40 +2,43 @@
 import { useState, useEffect } from 'react'
 
 import { queryServerGroupList } from '../../services'
+import { useParams, useLocation, history } from 'umi'
+import { stringify } from 'querystring'
 
-export const usePageInit = (ws_id: string) => {
-    const [loading, setLoading] = useState(true)
-    const [params, setParams] = useState<any>({
+export const usePageInit = () => {
+    const { query } = useLocation() as any
+    const { ws_id } = useParams() as any
+
+    const DEFAULT_PAGE_PARAMS = {
         ws_id,
         page_num: 1,
         page_size: 10,
         cluster_type: 'aligroup',
-    })
-    const [refresh, setRefresh] = useState<any>()
-    const [total, setTotal] = useState(0)
+    }
 
-    const [dataSource, setDataSource] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [params, setParams] = useState<any>({ ...DEFAULT_PAGE_PARAMS, ...query })
+    const [refresh, setRefresh] = useState<any>()
+    const [dataSource, setDataSource] = useState<any>()
 
     const init = async () => {
         setLoading(true)
-        const { data, total: $total } = await queryServerGroupList(params)
-        setDataSource(data)
-        setTotal($total)
+        const data = await queryServerGroupList(params)
         setLoading(false)
+        setDataSource(data)
+        history.replace(`/ws/${ws_id}/device/group?${stringify(params)}`)
     }
 
     useEffect(() => {
         init()
-    }, [params, refresh])
+    }, [refresh, params])
 
     return {
         loading,
         params,
-        total,
         dataSource,
         refresh,
         setRefresh,
         setParams,
-        setTotal
     }
 }

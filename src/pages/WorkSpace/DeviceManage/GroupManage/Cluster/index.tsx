@@ -13,7 +13,6 @@ import SearchInput from '@/components/Public/SearchInput';
 import SelectTags from '@/components/Public/SelectTags';
 import CommonPagination from '@/components/CommonPagination'
 import { usePageInit } from './hooks'
-import { useClientSize } from '@/utils/hooks'
 import { requestCodeMessage, AccessTootip, saveRefenerceData } from '@/utils/utils';
 import { Access, useAccess } from 'umi';
 import OverflowList from '@/components/TagOverflow/index'
@@ -29,7 +28,7 @@ const Cluster = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const access = useAccess();
-    const { loading, dataSource, params, total, setParams, setRefresh } = usePageInit(ws_id)
+    const { loading, dataSource, params, setParams, setRefresh } = usePageInit()
     // 刷新子表格的标记
     const [syncServerLoading, setSyncServerLoading] = useState(false)
 
@@ -45,8 +44,6 @@ const Cluster = (props: any, ref: any) => {
     useImperativeHandle(ref, () => ({
         open: createClusterRef.current.show
     }))
-
-    const { height: layoutHeight } = useClientSize()
 
     const handleDelServer = async (row: any) => {
         setDeleteObj(row)
@@ -109,7 +106,7 @@ const Cluster = (props: any, ref: any) => {
             title: <FormattedMessage id="device.cluster.name" />,
             dataIndex: 'name',
             render: (record: any) => (<Typography.Text ellipsis={{ tooltip: true }}>{record}</Typography.Text>),
-            filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(name: string) => setParams({ ...params, page_num: 1, name })} />
             )
@@ -118,7 +115,7 @@ const Cluster = (props: any, ref: any) => {
             title: 'Owner',
             width: 150,
             dataIndex: 'owner_name',
-            filterIcon: () => <FilterFilled style={{ color: params.owner ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.owner ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <MembersFilter confirm={confirm} onOk={(owner: any) => setParams({ ...params, page_num: 1, owner })} />
             )
@@ -136,7 +133,7 @@ const Cluster = (props: any, ref: any) => {
                     }
                 />
             ),
-            filterIcon: () => <FilterFilled style={{ color: params.tags ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.tags ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectTags
                     ws_id={ws_id}
@@ -149,7 +146,7 @@ const Cluster = (props: any, ref: any) => {
             title: <FormattedMessage id="device.description" />,
             width: 300,
             dataIndex: 'description',
-            filterIcon: () => <FilterFilled style={{ color: params.description ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params?.description ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(description: string) => setParams({ ...params, page_num: 1, description })} />
             ),
@@ -191,9 +188,9 @@ const Cluster = (props: any, ref: any) => {
                     loading={loading}
                     rowKey="id"
                     columns={columns}
-                    dataSource={dataSource}
+                    dataSource={dataSource?.data || []}
                     pagination={false}
-                    scroll={{ y: layoutHeight - 50 - 66 - 30 - 20 }}
+                    scroll={{ y: innerHeight - 50 - 66 - 30 - 20 }}
                     size="small"
                     className={styles.pro_table_card}
                     expandable={{
@@ -217,9 +214,9 @@ const Cluster = (props: any, ref: any) => {
                     }}
                 />
                 <CommonPagination
-                    pageSize={params.page_size}
-                    currentPage={params.page_num}
-                    total={total}
+                    pageSize={dataSource?.page_size}
+                    currentPage={dataSource?.page_num}
+                    total={dataSource?.total}
                     onPageChange={(page_num: number, page_size: number = 10) => {
                         setParams({ ...params, page_num, page_size })
                     }}

@@ -22,79 +22,83 @@ import {
     SubTitle,
 } from '../ReportUI'
 
+const conversionNum = (val: any) => {
+    if (val == 0) {
+        return 0;
+    } else if (isNaN(val) || isUndefined(val)) {
+        return '-';
+    } else {
+        return val;
+    }
+}
+
+const RenderPerfItem: React.FC<any> = ({ logoData, groupLen }) => (
+    Array.isArray(logoData) && !!logoData.length ?
+        <Result>
+            <PerfResultTitle gLen={groupLen}><FormattedMessage id="performance.test" /></PerfResultTitle>
+            {
+                logoData.map((item: any, idx: number) => {
+                    const { perfAll, increase, decline } = item.perf_data || item
+                    return (
+                        <PerfResultData gLen={groupLen} key={idx}>
+                            <div style={{ display: 'flex', margin: '18px 0' }}>
+                                <Statistical>
+                                    <i className="logo"><FormattedMessage id="report.all" /></i><br />
+                                    <b className="all">{conversionNum(perfAll)}</b>
+                                </Statistical>
+                                <Statistical>
+                                    <i className="logo"><FormattedMessage id="report.increase" /></i><br />
+                                    <b className="up">{conversionNum(increase)}</b>
+                                </Statistical>
+                                <Statistical >
+                                    <i className="logo"><FormattedMessage id="report.decline" /></i><br />
+                                    <b className="down">{conversionNum(decline)}</b>
+                                </Statistical>
+                            </div>
+                        </PerfResultData>
+                    )
+                })
+            }
+        </Result>
+        : <></>
+)
+
+const RenderFuncItem: React.FC<any> = ({ logoData, groupLen }) => (
+    Array.isArray(logoData) && !!logoData.length ?
+        <Result>
+            <FuncResultTitle gLen={groupLen}><FormattedMessage id="functional.test" /></FuncResultTitle>
+            {
+                logoData.map((item: any, idx: number) => {
+                    const { funcAll, success, fail } = item.func_data || item
+                    return (
+                        <FuncResultData gLen={groupLen} key={idx}>
+                            <div style={{ display: 'flex', margin: '18px 0' }}>
+                                <Statistical >
+                                    <i className="logo"><FormattedMessage id="report.all" /></i><br />
+                                    <b className="all">{conversionNum(funcAll)}</b>
+                                </Statistical>
+                                <Statistical >
+                                    <i className="logo"><FormattedMessage id="report.success" /></i><br />
+                                    <b className="up">{conversionNum(success)}</b>
+                                </Statistical>
+                                <Statistical>
+                                    <i className="logo"><FormattedMessage id="report.fail" /></i><br />
+                                    <b className="down">{conversionNum(fail)}</b>
+                                </Statistical>
+                            </div>
+                        </FuncResultData>
+                    )
+                })
+            }
+        </Result>
+        : <></>
+)
+
 const ReportSummary = () => {
     const { logoData, envData, domainResult, groupLen, baselineGroupIndex } = useContext(ReportContext)
-    const conversionNum = (val: any) => {
-        if (val == 0) {
-            return 0;
-        } else if (isNaN(val) || isUndefined(val)) {
-            return '-';
-        } else {
-            return val;
-        }
-    }
+
     // console.log(logoData)
     // const statisticalWidth = `${String(base_group.all).length * 20}px`  动态计算测试数据的宽度
-    const RenderPerfItem: React.FC<any> = () => (
-        Array.isArray(logoData) && !!logoData.length ?
-            <Result>
-                <PerfResultTitle gLen={groupLen}><FormattedMessage id="performance.test" /></PerfResultTitle>
-                {
-                    logoData.map((item: any, idx: number) => {
-                        const { perfAll, increase, decline } = item.perf_data || item
-                        return (
-                            <PerfResultData gLen={groupLen} key={idx}>
-                                <div style={{ display: 'flex', margin: '18px 0' }}>
-                                    <Statistical>
-                                        <i className="logo"><FormattedMessage id="report.all" /></i><br />
-                                        <b className="all">{conversionNum(perfAll)}</b>
-                                    </Statistical>
-                                    <Statistical>
-                                        <i className="logo"><FormattedMessage id="report.increase" /></i><br />
-                                        <b className="up">{conversionNum(increase)}</b>
-                                    </Statistical>
-                                    <Statistical >
-                                        <i className="logo"><FormattedMessage id="report.decline" /></i><br />
-                                        <b className="down">{conversionNum(decline)}</b>
-                                    </Statistical>
-                                </div>
-                            </PerfResultData>
-                        )
-                    })
-                }
-            </Result>
-            : <></>
-    )
-    const RenderFuncItem: React.FC<any> = () => (
-        Array.isArray(logoData) && !!logoData.length ?
-            <Result>
-                <FuncResultTitle gLen={groupLen}><FormattedMessage id="functional.test" /></FuncResultTitle>
-                {
-                    logoData.map((item: any, idx: number) => {
-                        const { funcAll, success, fail } = item.func_data || item
-                        return (
-                            <FuncResultData gLen={groupLen} key={idx}>
-                                <div style={{ display: 'flex', margin: '18px 0' }}>
-                                    <Statistical >
-                                        <i className="logo"><FormattedMessage id="report.all" /></i><br />
-                                        <b className="all">{conversionNum(funcAll)}</b>
-                                    </Statistical>
-                                    <Statistical >
-                                        <i className="logo"><FormattedMessage id="report.success" /></i><br />
-                                        <b className="up">{conversionNum(success)}</b>
-                                    </Statistical>
-                                    <Statistical>
-                                        <i className="logo"><FormattedMessage id="report.fail" /></i><br />
-                                        <b className="down">{conversionNum(fail)}</b>
-                                    </Statistical>
-                                </div>
-                            </FuncResultData>
-                        )
-                    })
-                }
-            </Result>
-            : <></>
-    )
 
     const PerfFlag = useMemo(() => {
         let baseIndex = 0
@@ -141,10 +145,10 @@ const ReportSummary = () => {
                         })
                     }
                 </Group>
-                {(domainResult.is_default && PerfFlag) && <RenderPerfItem />}
-                {((!domainResult.is_default && domainResult.need_perf_data) && PerfFlag) && <RenderPerfItem />}
-                {(domainResult.is_default && FuncFlag) && <RenderFuncItem />}
-                {((!domainResult.is_default && domainResult.need_func_data) && FuncFlag) && <RenderFuncItem />}
+                {(domainResult.is_default && PerfFlag) && <RenderPerfItem groupLen={groupLen} logoData={logoData} />}
+                {((!domainResult.is_default && domainResult.need_perf_data) && PerfFlag) && <RenderPerfItem groupLen={groupLen} logoData={logoData} />}
+                {(domainResult.is_default && FuncFlag) && <RenderFuncItem groupLen={groupLen} logoData={logoData} />}
+                {((!domainResult.is_default && domainResult.need_func_data) && FuncFlag) && <RenderFuncItem groupLen={groupLen} logoData={logoData} />}
             </Summary>
         </ModuleWrapper>
     )

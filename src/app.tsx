@@ -15,11 +15,19 @@ import { enterWsAndGetList } from './utils/hooks';
 const jumpLoginPage = () => {
     if (["opensource", "openanolis"].includes(BUILD_APP_ENV || "") && ~window.location.pathname.indexOf(`/login`))
         return
+
     if (BUILD_APP_ENV === 'opensource') {
         history.push(`/login?redirect_url=${window.location.pathname}`)
         return
     }
-    window.location.href = OPENANOLIS_LOGIN_URL + window.location.pathname
+
+    if (BUILD_APP_ENV === 'openanolis')
+        window.location.href = OPENANOLIS_LOGIN_URL + window.location.href
+
+    if (!BUILD_APP_ENV)
+        return window.location.href = logoutUrl + window.location.href
+
+    return
 }
 console.log(version)
 

@@ -3,7 +3,7 @@
 /* eslint-disable prefer-const */
 import React, { useContext, useState, useEffect, useRef, memo, useMemo } from 'react';
 import { Popconfirm, Empty, Row, Button } from 'antd';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage, useIntl, useParams } from 'umi';
 import { ReportContext } from '../Provider';
 import ReportTestFunc from './ReportTestFunc';
 import { ReactComponent as TestGroupIcon } from '@/assets/svg/Report/TestGroup.svg';
@@ -25,6 +25,7 @@ import {
     PerfGroupTitle,
     CloseBtn,
 } from '../ReportUI';
+import { TextAreaEditBlock } from './EditPublic';
 
 const GroupBar = styled.div<{ width?: number, y?: number, top?: any }>`
     background: #fff;
@@ -70,7 +71,9 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 }
 
 const ReportTestPref: React.FC<AnyType> = (props) => {
-    const { btnState, obj, setObj, envData, domainResult, groupLen, isOldReport } = useContext(ReportContext)
+    const { btnState, obj, setObj, envData, domainResult, groupLen, isOldReport, routeName, saveReportData } = useContext(ReportContext)
+    const { report_id } = useParams() as any
+    const intl = useIntl()
     const testDataRef = useRef(null)
     const groupRowRef = useRef<any>(null)
     const [btnName, setBtnName] = useState<string>('')
@@ -105,8 +108,8 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
     }
 
     useEffect(() => {
-        let new_pref_data: any = []
         if (dataSource && !!dataSource.length) {
+            const new_pref_data: any = []
             dataSource.map((item: any, idx: number) => {
                 if (item.is_group) {
                     item.list?.map((child: any, listId: number) => {
@@ -124,12 +127,18 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
                     })
                 }
             })
+            setObj((draft: any) => {
+                draft.test_item.perf_data = new_pref_data
+                return draft
+            })
         }
-        obj.test_item.perf_data = new_pref_data
-        setObj({
-            ...obj,
-        })
     }, [dataSource])
+
+    const getGroupDesc = (group_name: string) => {
+        const list = saveReportData.perf_desc || []
+        const ret = list.filter((i: { name: string; value: string; }) => i.name === group_name).filter(Boolean).at(0)
+        return ret
+    }
 
     return (
         <ModuleWrapper
@@ -166,63 +175,78 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
                     <TestWrapper id="perf_item" className="position_mark">
                         {
                             Array.isArray(dataSource) && !!dataSource.length ?
-                                dataSource?.map((item: any, idx: number) => (
-                                    <div key={idx}>
-                                        {
-                                            item.is_group ?
-                                                <>
-                                                    <TestGroup id={`pref_item-${item.rowKey}`} className="tree_mark">
-                                                        <TestGroupIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
-                                                        <TestItemText>
-                                                            <GroupItemText
-                                                                name={item.name}
-                                                                rowKey={item.rowKey}
-                                                                btn={btnState}
-                                                                dataSource={dataSource}
-                                                                setDataSource={setDataSource}
+                                dataSource?.map((item: any, idx: number) => {
+                                    const groupDesc = getGroupDesc(item.name)
+                                    return (
+                                        <div key={item?.rowKey}>
+                                            {
+                                                item.is_group ?
+                                                    <>
+                                                        <TestGroup id={`pref_item-${item.rowKey}`} className="tree_mark">
+                                                            <TestGroupIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
+                                                            <TestItemText>
+                                                                <GroupItemText
+                                                                    name={item.name}
+                                                                    rowKey={item.rowKey}
+                                                                    btn={btnState}
+                                                                    dataSource={dataSource}
+                                                                    setDataSource={setDataSource}
+                                                                />
+                                                            </TestItemText>
+                                                            <Popconfirm
+                                                                title={<FormattedMessage id="delete.prompt" />}
+                                                                onConfirm={() => handleDelete('item', item.name, item.rowKey)}
+                                                                cancelText={<FormattedMessage id="operation.cancel" />}
+                                                                okText={<FormattedMessage id="operation.delete" />}
+                                                            >
+                                                                {btnState && <CloseBtn />}
+                                                            </Popconfirm>
+                                                        </TestGroup>
+                                                        {
+                                                            (groupDesc?.desc || 'EditReport' === routeName) &&
+                                                            <TextAreaEditBlock
+                                                                default_state={'EditReport' === routeName}
+                                                                title={item.name}
+                                                                value={groupDesc?.desc}
+                                                                report_id={report_id}
+                                                                item_id={groupDesc?.item_id}
+                                                                item_name={item.name}
+                                                                placeholder={intl.formatMessage({ id: 'report.group.desc.placeholder' })}
                                                             />
-                                                        </TestItemText>
-                                                        <Popconfirm
-                                                            title={<FormattedMessage id="delete.prompt" />}
-                                                            onConfirm={() => handleDelete('item', item.name, item.rowKey)}
-                                                            cancelText={<FormattedMessage id="operation.cancel" />}
-                                                            okText={<FormattedMessage id="operation.delete" />}
-                                                        >
-                                                            {btnState && <CloseBtn />}
-                                                        </Popconfirm>
-                                                    </TestGroup>
-                                                    {
-                                                        item.list.map((child: any, id: number) => {
-                                                            return (
-                                                                <div key={id}>
-                                                                    <Performance
-                                                                        child={child}
-                                                                        name="group"
-                                                                        btn={btn}
-                                                                        id={child.rowKey}
-                                                                        dataSource={dataSource}
-                                                                        setDataSource={setDataSource}
-                                                                        onDelete={handleDelete}
-                                                                    />
-                                                                </div>
+                                                        }
+                                                        {
+                                                            item.list?.map((child: any, id: number) => {
+                                                                return (
+                                                                    <div key={child?.rowKey}>
+                                                                        <Performance
+                                                                            child={child}
+                                                                            name="group"
+                                                                            btn={btn}
+                                                                            id={child.rowKey}
+                                                                            dataSource={dataSource}
+                                                                            setDataSource={setDataSource}
+                                                                            onDelete={handleDelete}
+                                                                        />
+                                                                    </div>
 
-                                                            )
-                                                        })
-                                                    }
-                                                </>
-                                                :
-                                                <Performance
-                                                    child={item}
-                                                    name="item"
-                                                    btn={btn}
-                                                    id={item.rowKey}
-                                                    dataSource={dataSource}
-                                                    setDataSource={setDataSource}
-                                                    onDelete={handleDelete}
-                                                />
-                                        }
-                                    </div>
-                                ))
+                                                                )
+                                                            })
+                                                        }
+                                                    </>
+                                                    :
+                                                    <Performance
+                                                        child={item}
+                                                        name="item"
+                                                        btn={btn}
+                                                        id={item.rowKey}
+                                                        dataSource={dataSource}
+                                                        setDataSource={setDataSource}
+                                                        onDelete={handleDelete}
+                                                    />
+                                            }
+                                        </div>
+                                    )
+                                })
                                 :
                                 <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                         }

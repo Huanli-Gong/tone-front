@@ -336,7 +336,7 @@ export const FuncItem = styled.div`
 export const Configuration = styled.div`
     //border:1px solid rgba(0,0,0,0.1);
     background-color: #FDFEFF;
-    margin-top: 11px;
+    /* margin-top: 11px; */
     border-bottom:none;
 `
 export const SigleWrapper = styled(Row)`
@@ -464,7 +464,7 @@ export const TestSuite = styled.div`
     height:auto;
     background:rgba(0,0,0,0.03);
     margin:0 16px 18px 16px;
-    padding-bottom: 18px;
+    padding-bottom: 16px;
 `
 // suite title
 export const SuiteName = styled.div`
@@ -476,6 +476,7 @@ export const SuiteName = styled.div`
     color:rgba(0,0,0,0.85);
     background:rgba(0,0,0,0.04);
     position:relative;
+    margin-top: 8px;
 `
 // suite conf
 export const TestConf = styled.div`
@@ -522,6 +523,7 @@ export const ConfData = styled.div<GroupRowProps>`
     }
 `
 export const TestConfWarpper = styled.div`
+    border-top: 1px solid rgba(0,0,0,0.10);
     margin: 0px 15px 0px 17px;
     /* border-top:1px solid rgba(0,0,0,0.10); */
 `
@@ -565,6 +567,7 @@ export const CaseText = styled.div<GroupRowProps>`
 export const ExpandIcon = styled(CaretRightOutlined)`
     cursor:pointer;
     padding:13px 0px 13px 8px;
+    margin-right: 12px;
 
 `
 export const TestSubCase = styled.div`

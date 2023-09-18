@@ -5,9 +5,11 @@ import { SettingTextArea, SettingRegUpdate } from './EditPublic';
 import { ReportContext } from '../Provider';
 import { ModuleWrapper, SubTitle } from '../ReportUI';
 import _ from 'lodash';
+
 const ReportBasicInfo = () => {
     const { formatMessage } = useIntl()
     const { btnState, obj, setObj, saveReportData, summaryData, btnConfirm, domainResult, creator } = useContext(ReportContext)
+
     const handleChangeVal = (val: any, text: string) => {
         if (text == 'custom') {
             if (summaryData && summaryData !== undefined) {

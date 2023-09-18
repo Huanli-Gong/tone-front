@@ -22,36 +22,28 @@ import Log from '@/components/Public/Log';
 import OverflowList from '@/components/TagOverflow/index';
 import CommonPagination from '@/components/CommonPagination';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
-import { stringify } from 'querystring';
 import { v4 as uuid } from 'uuid';
 import DelConfirmModal from '../../components/DelConfirmModal';
+import { stringify } from 'querystring';
 
 /**
  * 云上集群
  * 
  */
 interface AligroupParams {
-    refresh: boolean,
-    page_num: number,
-    page_size: number,
-    name: string,
-    owner: any,
-    tags: any,
-    description: string,
-    is_instance: number,
+    refresh?: boolean,
+    page_num?: number,
+    page_size?: number,
+    name?: string,
+    owner?: any,
+    tags?: any,
+    description?: string,
+    is_instance?: number,
 }
-const DEFAULT_PARAM = {
-    refresh: true,
-    page_num: 1,
-    page_size: 10,
-    name: '',
-    owner: '',
-    tags: '',
-    description: '',
-    is_instance: 0,
-}
-const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
-    const { pathname, query } = useLocation() as any
+
+const Aligroup: React.ForwardRefRenderFunction<any, any> = (props) => {
+    const { tab } = props
+    const { query } = useLocation() as any
     const { formatMessage } = useIntl()
     const { ws_id }: any = useParams()
     const [form] = Form.useForm();
@@ -59,10 +51,22 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     const aloneMachine = useRef<any>(null)
     const tree = useRef<any>(null)
     const outTable = useRef<any>(null)
-    const [isInstance, setIsInstance] = useState<number>(Object.prototype.toString.call(query?.isInstance) === "[object String]" ? + query?.isInstance : 0)
+    const [isInstance, setIsInstance] = useState<number>(Object.prototype.toString.call(query?.is_instance) === "[object String]" ? + query?.is_instance : 0)
     const [loading, setLoading] = useState<boolean>(false)
     const [source, setSource] = useState<any>({});
-    const [params, setParams] = useState<AligroupParams>(DEFAULT_PARAM)
+    const DEFAULT_PARAM = {
+        t: tab,
+        refresh: true,
+        page_num: 1,
+        page_size: 10,
+        name: '',
+        owner: '',
+        tags: '',
+        description: '',
+        cluster_type: 'aliyun',
+        ws_id
+    }
+    const [params, setParams] = useState<AligroupParams>({ ...DEFAULT_PARAM, ...query })
     const [tagFlag, setTagFlag] = useState({ list: [], isQuery: '' })
     const [outParam, setOutParam] = useState<any>({})
     const [expandKey, setExpandKey] = useState<string[]>([])
@@ -74,16 +78,14 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     const delConfirm: any = useRef()
 
     const pageCurrent = useStateRef(params)
-    const handleOpenLogDrawer = useCallback(
-        (id) => {
-            logDrawer.current.show(id)
-        },
-        []
-    )
+    const handleOpenLogDrawer = useCallback((id) => {
+        logDrawer.current.show(id)
+    }, [])
 
     const getList = async ($params: any = {}) => {
         setLoading(true)
         const data: any = await querysCluster({ ...$params })
+        history.replace(`/ws/${ws_id}/device/cloud?${stringify({ ...$params, is_instance: $params.is_instance ? 1 : 0 })}`)
         data && setSource(data)
         setLoading(false)
     };
@@ -95,7 +97,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     }
 
     useEffect(() => {
-        getList({ ...params, cluster_type: 'aliyun', is_instance: + isInstance, ws_id })
+        getList({ ...params, is_instance: + isInstance })
     }, [params, isInstance]);
 
     const { width: windowWidth } = useClientSize()
@@ -168,7 +170,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
                 setFocus(!autoFocus)
             }
         },
-        filterIcon: () => <FilterFilled style={{ color: params[dataIndex] ? '#1890ff' : undefined }} />,
+        filterIcon: () => <FilterFilled style={{ color: (params as any)[dataIndex] ? '#1890ff' : undefined }} />,
     })
 
     const columns: any = [
@@ -271,7 +273,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     const tabRadioChange = (val: any) => {
         setIsInstance(val)
         setParams(DEFAULT_PARAM)
-        history.replace(`${pathname}?${stringify({ ...query, isInstance: val })}`)
+        history.replace(`/ws/${ws_id}/device/cloud?${stringify({ ...query, isInstance: val })}`)
     }
 
     const $insdance = + isInstance
@@ -324,8 +326,8 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
             <Row justify="space-between" style={{ padding: '16px 20px 0' }} ref={outTable}>
                 <CommonPagination
                     total={source.total}
-                    pageSize={params.page_size}
-                    currentPage={params.page_num}
+                    pageSize={params?.page_size as any}
+                    currentPage={params?.page_num as any}
                     onPageChange={
                         (page_num: any, page_size: any) => {
                             setParams({ ...params, page_num, page_size })

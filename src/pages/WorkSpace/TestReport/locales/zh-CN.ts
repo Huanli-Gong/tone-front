@@ -156,4 +156,6 @@ export default {
   'report.text.save': '环境描述保存成功',
   'report.not.filled': '未填写', // Not filled
 
+  'report.group.desc.save.ok': '描述保存成功',
+  'report.group.desc.placeholder': '输入报告测试组描述'
 }

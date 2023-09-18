@@ -23,7 +23,7 @@ const AnalysisLayout = styled(Layout.Content).attrs((props: any) => ({
 
 const AnalysisTime: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
-    const { query } = useLocation() as any
+    const { query, key } = useLocation() as any
     const { ws_id } = useParams() as any
     const { route } = props
 
@@ -62,8 +62,14 @@ const AnalysisTime: React.FC<any> = (props) => {
     })
 
     const clearAndSetFields = (val: any) => {
-        const { test_type, provider_env, show_type } = info
-        setInfo({ test_type, provider_env, show_type, ...val })
+        const { test_type, provider_env = 'aliyun', show_type = 'pass_rate' } = info
+
+        setInfo({
+            test_type,
+            provider_env,
+            show_type: ['pass_rate', 'result_trend'].includes(show_type) ? show_type : 'pass_rate',
+            ...val
+        })
         tabPaneRef.current?.reset()
     }
 
@@ -99,7 +105,7 @@ const AnalysisTime: React.FC<any> = (props) => {
     }
 
     return (
-        <Analysis.Provider value={{ metrics, setMetrics }}>
+        <Analysis.Provider value={{ metrics, setMetrics }} key={key}>
             <AnalysisLayout minHeight={innerHeight - 40}>
                 <Row style={{ background: '#fff' }}>
                     <Col span={24}>
