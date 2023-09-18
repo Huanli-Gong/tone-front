@@ -273,7 +273,6 @@ const RenderCheckbox: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const { name, title, desc } = props
     const { dataSource, setDataSource, contrl } = useProvider()
-
     const handeleCheckboxChange = (name: string, val: boolean | string) => {
         setDataSource(
             produce(dataSource, (draftState: any) => {
@@ -322,7 +321,6 @@ const TemplatePage = (props: any) => {
     const [isPreview, setIsPreview] = React.useState(false)
     const { height: windowHeight } = useClientSize()
     const suiteSelectRef = useRef<any>()
-
     const [dataSource, setDataSource] = useState<any>({
         ws_id,
         name: "",
@@ -393,8 +391,13 @@ const TemplatePage = (props: any) => {
         setLoading(false)
     }
 
+    const createPageSetData = async () => {
+        setContrl(access.IsWsSetting())
+    }
+
     useEffect(() => {
         if (route.name === 'TemplateEdit') editPageSetData()
+        if (route.name === 'TemplateCreate') createPageSetData()
         else {
             document.title = `${formatMessage({ id: 'report.create.report.template' })} - T-One`
             setLoading(false)

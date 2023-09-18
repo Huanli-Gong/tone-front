@@ -63,6 +63,7 @@ const CreateDoc: React.FC = () => {
     const [text, setText] = React.useState("")
     const [vm, setVm] = React.useState<Editor>()
     const [json, setJson] = React.useState<any>()
+    const [sub, setSub] = React.useState(false)
 
     const setting = useRef<FormInstance | undefined>()
     const ele = useRef() as any
@@ -118,7 +119,8 @@ const CreateDoc: React.FC = () => {
         if (!html) return message.warning("内容不能为空！")
         if (!title) return message.warning('标题不能为空！')
         const form = setting.current
-
+        if (sub) return
+        setSub(true)
         form?.validateFields()
             .then(async (values) => {
                 const param: any = {
@@ -131,10 +133,11 @@ const CreateDoc: React.FC = () => {
                     await createDoc(param) :
                     await updateDoc({ ...param, id: doc_id })
                 if (code !== 200) {
+                    setSub(false)
                     message.error(msg)
                     return
                 }
-
+                setSub(false)
                 const $id = doc_id ? `/${doc_id}` : `/${data.id}`
                 const isEdit = `/${doc_type}${$id}`
                 history.push(isEdit)
@@ -161,7 +164,7 @@ const CreateDoc: React.FC = () => {
                     >
                         <ArrowLeftOutlined style={{ fontSize: 20 }} />
                     </span>
-                    <Button type="primary" onClick={handlePublish}>
+                    <Button type="primary" onClick={handlePublish} loading={sub}>
                         {
                             doc_id ? "更新" : "发布"
                         }

@@ -81,6 +81,7 @@ const TestJob: React.FC<any> = (props) => {
     const [projectId, setProjectId] = useState()
     const [templateEnabel, setTemplateEnable] = useState(false)
     const [fetching, setFetching] = useState(false)
+    const [newSaveLoading, setNewSaveLoading] = useState(false)
     const [isReset, setIsReset] = useState(false)
 
     const [jobInfo, setJobInfo] = useState('')
@@ -108,6 +109,7 @@ const TestJob: React.FC<any> = (props) => {
                     .catch(() => {
                         reject()
                         setFetching(false)
+                        setNewSaveLoading(false)
                     })
             )
         )
@@ -123,7 +125,6 @@ const TestJob: React.FC<any> = (props) => {
             setTest_config(data.test_config)
             job_type_id = data.job_type_id
         }
-
 
         if (["TestTemplate", "TemplatePreview", "TemplateEdit", "TestJob"].includes(name)) {
             let template_id: any = null
@@ -151,6 +152,8 @@ const TestJob: React.FC<any> = (props) => {
         }
 
         const { data: [jobTypedetail] } = await queryJobTypeList({ jt_id: job_type_id })
+        if (!jobTypedetail)
+            return redirectErrorPage(404)
         setDetail(jobTypedetail)
         const { data: items } = await queryJobTypeItems({ jt_id: job_type_id })
         filterItems(items)
@@ -159,7 +162,7 @@ const TestJob: React.FC<any> = (props) => {
     }
 
     const filterItems = (t: any) => {
-        const basic:any = {}, env:any = {}, suite:any = {}, more:any = {}
+        const basic: any = {}, env: any = {}, suite: any = {}, more: any = {}
         t?.forEach((i: any) => {
             if (i.config_index === 1) basic[i.name] = i
             if (i.config_index === 2) env[i.name] = i
@@ -189,7 +192,7 @@ const TestJob: React.FC<any> = (props) => {
     }, [pathname, query])
 
     const compact = (obj: any) => {
-        const result:any = {}
+        const result: any = {}
         Object.keys(obj).forEach(
             key => {
                 const z = obj[key]
@@ -708,28 +711,8 @@ const TestJob: React.FC<any> = (props) => {
     const handleChangeTemplateName = ({ target }: any) => {
         requestTemplateRun({ job_type_id: detail.id, name: target.value })
     }
-    
-    const handleTemplateEditFunction = async() => {
-        const data = await transformDate()
-        if (isMonitorEmpty(data)) {
-            setFetching(false)
-            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
-        }
-        if (!data.test_config) {
-            setFetching(false)
-            message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
-            return
-        }
-        if (!data.baseline) {
-            data.baseline = null
-        }
-        
-        if (!data.baseline_job_id) {
-            data.baseline_job_id = null
-        }
-        if (!data.cleanup_info) {
-            data.cleanup_info = ""
-        }
+
+    const handleTemplateEditFunction = async (data:any) => {
         const $test_config = handleServerChannel(data.test_config)
         const { code, msg } = await updateTestTemplate({
             template_id: templateDatas.id,
@@ -754,7 +737,7 @@ const TestJob: React.FC<any> = (props) => {
         setFetching(false)
     }
 
-    const handleCancelTemplate = (key:any) =>  {
+    const handleCancelTemplate = (key: any) => {
         notification.close(key)
         setFetching(false)
         history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state || {} })
@@ -763,36 +746,6 @@ const TestJob: React.FC<any> = (props) => {
     const handleSaveTemplateModify = async () => {
         if (fetching) return
         setFetching(true)
-        const key = `open${Date.now()}`;
-        const btn = (
-            <Space>
-              <Button type="primary" size="small" onClick={()=> handleTemplateEditFunction()}>
-                确认
-              </Button>
-              <Button type="primary" size="small" onClick={()=> handleCancelTemplate(key)}>
-                取消
-              </Button>
-            </Space>
-        );
-        const res = await queryCheckJobTemplate({ template_id: jt_id })
-        if(res.code === 200 && res.data.length > 0){
-            notification.warning({
-                duration: null,
-                message: '提示',
-                description:`当前有测试计划（${res.data[0].plan_name}）引用了该模版，编辑该模版将同时影响到测试计划中的此模版配置，请谨慎操作！`,
-                btn,
-                key,
-              });
-        } else {
-            handleTemplateEditFunction()
-        }
-        setFetching(false)
-    }
-
-    const handleSaveCreateSubmit = async () => {
-        if (fetching) return
-        setFetching(true)
-
         const data = await transformDate()
         if (isMonitorEmpty(data)) {
             setFetching(false)
@@ -800,6 +753,58 @@ const TestJob: React.FC<any> = (props) => {
         }
         if (!data.test_config) {
             setFetching(false)
+            message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
+            return
+        }
+        if (!data.baseline) {
+            data.baseline = null
+        }
+
+        if (!data.baseline_job_id) {
+            data.baseline_job_id = null
+        }
+        if (!data.cleanup_info) {
+            data.cleanup_info = ""
+        }
+        if (Object.prototype.toString.call(data) === "[object Object]") {
+            const key = `open${Date.now()}`;
+            const btn = (
+                <Space>
+                    <Button type="primary" size="small" onClick={() => handleTemplateEditFunction(data)}>
+                        确认
+                    </Button>
+                    <Button type="primary" size="small" onClick={() => handleCancelTemplate(key)}>
+                        取消
+                    </Button>
+                </Space>
+            );
+            const res = await queryCheckJobTemplate({ template_id: jt_id })
+            if (res.code === 200 && res.data.length > 0) {
+                notification.warning({
+                    duration: null,
+                    message: '提示',
+                    description: `当前有测试计划（${res.data[0].plan_name}）引用了该模版，编辑该模版将同时影响到测试计划中的此模版配置，请谨慎操作！`,
+                    btn,
+                    key,
+                });
+            } else {
+                handleTemplateEditFunction(data)
+            }
+        }
+        setFetching(false)
+    }
+
+    const handleSaveCreateSubmit = async () => {
+        if (newSaveLoading) return
+        setNewSaveLoading(true)
+
+        const data = await transformDate()
+        if (isMonitorEmpty(data)) {
+            setNewSaveLoading(false)
+            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
+        }
+        if (!data.test_config) {
+            setNewSaveLoading(false)
             return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         }
         if (!data.baseline) {
@@ -819,7 +824,7 @@ const TestJob: React.FC<any> = (props) => {
             history.push(`/ws/${ws_id}/test_job/${detail.id}?template_id=${templateDatas.id}`)
         }
         else requestCodeMessage(code, msg)
-        setFetching(false)
+        setNewSaveLoading(false)
     }
 
     const handleTemplatePopoverChange = (v: any) => {
@@ -888,7 +893,7 @@ const TestJob: React.FC<any> = (props) => {
 
     const renderButton = (
         <>
-            {templateEnabel && <Button onClick={handleSaveCreateSubmit}><FormattedMessage id="ws.test.job.SaveCreateSubmit" /></Button>}
+            {templateEnabel && <Button onClick={handleSaveCreateSubmit} loading={newSaveLoading}><FormattedMessage id="ws.test.job.SaveCreateSubmit" /></Button>}
             <Button type="primary" onClick={handleSaveTemplateModify} loading={fetching}><FormattedMessage id="ws.test.job.SaveTemplateModify" /></Button>
         </>
     )

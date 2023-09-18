@@ -31,7 +31,7 @@ const getRegString = (path: any) => path?.split('/').reduce((p: any, c: any) => 
     return p.concat(c)
 }, []).join('\/')
 
-const ignorePath = ["401", "500", "404", "403"].map((i: string) => `/ws/:ws_id/${i}`)
+const ignorePath = ["401", "500", "404", "403", 'test_report'].map((i: string) => `/ws/:ws_id/${i}`)
 
 const WorkspaceLayout: React.FC<AnyType> = (props) => {
     // const { initialState } = useModel('@@initialState')
@@ -51,8 +51,8 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
     const onMenuClick = ({ path }: any) => history.push(path?.replace(':ws_id', ws_id))
 
     useEffect(() => {
-        if (ignorePath.includes(realPath))
-            return
+        const l = ignorePath.filter((i: any) => !!~realPath.indexOf(i))
+        if (l?.length > 0) return
         routes.forEach((item: any) => {
             if (~realPath.indexOf(item.path)) {
                 let title = `Workspace.${item.name}`;
