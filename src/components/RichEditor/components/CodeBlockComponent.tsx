@@ -1,5 +1,4 @@
 import { NodeViewContent, NodeViewWrapper } from '@tiptap/react'
-import React from 'react'
 import { ReactComponent as CopyOutline } from "../assets/copy.svg"
 import ClipboardJS from 'clipboard'
 import { message, Select } from "antd"
@@ -38,8 +37,9 @@ export default ({ node, updateAttributes, extension, editor }: any) => {
                         onChange={value => updateAttributes({ language: value })}
                         optionFilterProp="children"
                         showSearch
-                        filterOption={(input, option) =>
-                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                        filterOption={
+                            /* @ts-ignore */
+                            (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                         }
                         options={
                             extension.options?.lowlight?.listLanguages()?.map((lang: string, index: number) => ({

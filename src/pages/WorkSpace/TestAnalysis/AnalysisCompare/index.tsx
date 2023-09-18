@@ -113,7 +113,7 @@ export default (props: any) => {
     const checkSameTitleAndReturnNew = (arr: any[], title: string) => {
         const trimTitle = title.trim()
         const nameCountArr = arr.filter(i => i.name.trim().replace(/\(\d+\)$/, "") === trimTitle).map(i => getNameRepeatCount(i.name)).sort((a, b) => b - a)
-        const hasCount = nameCountArr.at(0)
+        const hasCount = nameCountArr?.[0]
         return Object.prototype.toString.call(hasCount) === "[object Number]" ? `${trimTitle}(${(hasCount as number) + 1})` : trimTitle
     }
 

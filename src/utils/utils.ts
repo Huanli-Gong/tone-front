@@ -330,7 +330,7 @@ export const enumerChinese = (name: any) => {
     自定义镜像: 'self',
     共享镜像: 'others',
   };
-  return list[name];
+  return (list as any)[name];
 };
 export const enumerEnglish = (name: any, formatMessage: any) => {
   const list = {
@@ -338,7 +338,7 @@ export const enumerEnglish = (name: any, formatMessage: any) => {
     self: formatMessage({ id: `${name}.image` }),
     others: formatMessage({ id: `${name}.image` }),
   };
-  return list[name];
+  return (list as any)[name];
 };
 
 export const gblen = (str: string) => {
@@ -452,7 +452,7 @@ export const role_type_enum = [
 
 export const deepObject = (data: any) => {
   if (Object.prototype.toString.call(data) !== '[object Object]') return data;
-  return Object.keys(data).reduce((p, c) => {
+  return Object.keys(data).reduce((p: any, c: any) => {
     const ctx = data[c];
     if (Object.prototype.toString.call(ctx) === '[object Object]') {
       const len = Object.keys(ctx);

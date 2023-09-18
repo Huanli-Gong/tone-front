@@ -13,7 +13,7 @@ import SelectTags from '@/components/Public/SelectTags';
 import Log from '@/components/Public/Log';
 import AloneMachine from '../AddMachinePubilc/index'
 import { StateBadge } from '../../GroupManage/Components'
-import { cloudList, delCloud, stateRefresh } from '../service';
+import { cloudList, delCloud, stateRefresh, cloudManageSyncName } from '../service';
 import { queryServerDel } from '../../GroupManage/services'
 import CloudDetail from './CloudDetail'
 import styles from './style.less';
@@ -157,6 +157,19 @@ export default () => {
             logDrawer.current.show(id)
         }, []
     )
+
+    const handleSyncName = async(id: number) => {
+        try { 
+            const { code, msg } = await cloudManageSyncName({ id })
+            if( code === 200 ) {
+                message.success(formatMessage({ id: 'operation.success' }));
+            } else {
+                requestCodeMessage(code, msg)
+            }
+        } catch(err){
+            console.log(err)
+        }
+    }
 
     const removeCloud = lodash.debounce(
         async (id: number, is_release: boolean) => {
@@ -522,7 +535,7 @@ export default () => {
             fixed: 'right',
             valueType: 'option',
             key: 'operation',
-            width: !$instance ? 230 : (enLocale ? 380 : BUILD_APP_ENV ? 310 : 270),
+            width: !$instance ? 230 : (enLocale ? 440 : BUILD_APP_ENV ? 360 : 320),
             ellipsis: {
                 showTitle: false
             },
@@ -598,6 +611,11 @@ export default () => {
                             </Typography.Link>
                         </Space>
                     </Access>
+                    {(!!$instance) &&
+                        <Typography.Link onClick={() => handleSyncName(row.id)}>
+                            <FormattedMessage id="operation.sync.name" />
+                        </Typography.Link>
+                    }
                     <Typography.Link onClick={() => handleOpenLogDrawer(row.id)}>
                         <FormattedMessage id="operation.log" />
                     </Typography.Link>
@@ -630,7 +648,7 @@ export default () => {
                 loading={loading}
                 columns={columns}
                 refreshDeps={[$instance, ws_id, access, enLocale, params]}
-                name={`ws-server-cloud-standalone-${$instance ? "setting" : "server"}`}
+                name={`ws-cloud-server-standalone-${$instance ? "setting" : "server"}`}
                 dataSource={source.data}
                 rowKey={'id'}
                 pagination={false}
