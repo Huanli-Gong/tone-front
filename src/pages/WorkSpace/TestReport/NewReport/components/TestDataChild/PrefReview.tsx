@@ -4,7 +4,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
+import React, { useContext, useEffect, useState, memo, useMemo, useRef } from 'react';
 import { useIntl, FormattedMessage, getLocale, useLocation } from 'umi';
 import { ReportContext } from '../../Provider';
 import { Typography, Space, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
@@ -70,6 +70,7 @@ const compare = ($props: any) => {
 
 const Performance = (props: any) => {
     const { formatMessage } = useIntl()
+    const sortRef = useRef<any>();
     const { pathname } = useLocation()
     const { child, name, btn, id, onDelete, dataSource, setDataSource } = props
     const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
@@ -173,29 +174,34 @@ const Performance = (props: any) => {
     }
     // 差异化排序
     const handleArrow = (suite: any, conf: any, i: number) => {
-        if (sortKeys.includes(conf.conf_id)) {
-            setSortKeys((p: any) => p.filter((iy: any) => iy !== conf.conf_id))
-            setPerData((p: any) => ({
-                ...p,
-                list: p.list.map((ix: any) => {
-                    if (ix.suite_id === suite.suite_id) {
-                        return {
-                            ...ix,
-                            conf_list: ix.conf_list.map((confs: any) => {
-                                if (confs.conf_id === conf.conf_id) {
-                                    const currentSuite = child.list?.filter((xy: any) => xy.suite_id === suite.suite_id)?.[0]
-                                    const useConfList = currentSuite.conf_list?.filter((confs: any) => confs.conf_id === conf.conf_id)
-                                    return useConfList?.[0] || confs
-                                }
-                                return confs
-                            })
-                        }
-                    }
-                    return ix
-                })
-            }))
-            return
-        }
+        sortRef.current = i
+
+        let arr:Array<[]> = []
+        setSortKeys(arr.concat(conf.conf_id))
+
+        // if (sortKeys.includes(conf.conf_id)) {
+        //     setSortKeys((p: any) => p.filter((iy: any) => iy !== conf.conf_id))
+        //     setPerData((p: any) => ({
+        //         ...p,
+        //         list: p.list.map((ix: any) => {
+        //             if (ix.suite_id === suite.suite_id) {
+        //                 return {
+        //                     ...ix,
+        //                     conf_list: ix.conf_list.map((confs: any) => {
+        //                         if (confs.conf_id === conf.conf_id) {
+        //                             const currentSuite = child.list?.filter((xy: any) => xy.suite_id === suite.suite_id)?.[0]
+        //                             const useConfList = currentSuite.conf_list?.filter((confs: any) => confs.conf_id === conf.conf_id)
+        //                             return useConfList?.[0] || confs
+        //                         }
+        //                         return confs
+        //                     })
+        //                 }
+        //             }
+        //             return ix
+        //         })
+        //     }))
+        //     return
+        // }
         const newConf = {
             ...conf,
             metric_list: conf.metric_list?.reduce((pre: any, metric: any) => {
@@ -206,10 +212,10 @@ const Performance = (props: any) => {
             }, []).sort(compare('sortNum'))
         }
 
-        setSortKeys((p: any) => {
-            if (p.includes(conf.conf_id)) return p
-            return p.concat(conf.conf_id)
-        })
+        // setSortKeys((p: any) => {
+        //     if (p.includes(conf.conf_id)) return p
+        //     return p.concat(conf.conf_id)
+        // })
 
         setPerData((p: any) => ({
             ...p,
@@ -337,7 +343,7 @@ const Performance = (props: any) => {
                                                                         <RightResult>
                                                                             <FormattedMessage id="report.comparison/tracking.results" />
                                                                             <span onClick={() => handleArrow(suite, conf, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: "pointer" }}>
-                                                                                {sortKeys.includes(conf.conf_id) ? <IconArrowBlue /> : <IconArrow />}
+                                                                                {sortKeys.includes(conf.conf_id) && sortRef.current === i ? <IconArrowBlue /> : <IconArrow />}
                                                                             </span>
                                                                             <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
                                                                                 title={

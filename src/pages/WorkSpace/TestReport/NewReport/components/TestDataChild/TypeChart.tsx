@@ -201,7 +201,7 @@ const TypeChart = (props: any) => {
                     }
                     if (chartType == '1') {
                         return `
-                                <div style"width:auto;min-width:280px">
+                                <div style"width:auto;min-width:300px">
                                     <div style="display:flex;flex-warp:wrap">
                                         <div style="width:180px;word-break:break-all;white-space:normal;font-weight:bold;padding-right:5px">${data.metric}</div>
                                         (${`${toPercentage(data.cv_threshold)}/${toPercentage(data.cmp_threshold)}`})
@@ -219,12 +219,12 @@ const TypeChart = (props: any) => {
                                     </div>
                                 </div>`
                     } else if (chartType == '2') {
-                        return `<div style="width:auto;min-width:280px">
+                        return `<div style="width:auto;min-width:300px">
                                     <div style="font-weight:bold">${params[0].name}</div>
                                     ${result}
                                 </div>`
                     } else {
-                        return `<div style="width:auto;min-width:280px">
+                        return `<div style="width:auto;min-width:300px">
                                     <div>
                                         <span style="font-weight:bold;padding-right:5px">${params[0].name}</span>
                                         (${`${toPercentage(params[0].data.cv_threshold)}/${toPercentage(params[0].data.cmp_threshold)}`})
