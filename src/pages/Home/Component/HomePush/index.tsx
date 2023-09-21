@@ -57,10 +57,10 @@ export default forwardRef((props: any, ref: any) => {
   })()
 
   return (
-    <div className={styles.HomePush_Modal_root}>
       <Modal className={styles.HomePush_root}
+        centered
         title={null}
-        visible={visible}
+        open={visible}
         maskClosable={false}
         closeIcon={openInitial ? <span className={styles.close_btn_text}>{current == 3 ? '进入T-One' : '跳过'}</span> : null}
         onOk={handleOk}
@@ -95,6 +95,5 @@ export default forwardRef((props: any, ref: any) => {
           <RightOutlined className={styles.next} style={current == 3 ? { opacity: 0.05 } : {}} onClick={nextClick} />
         </div>
       </Modal>
-    </div>
   )
 })

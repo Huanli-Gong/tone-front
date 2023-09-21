@@ -109,7 +109,7 @@ const ReportSummary = () => {
     }, [logoData, baselineGroupIndex])
 
     const FuncFlag: any = useMemo(() => {
-        return JSON.stringify(logoData[baselineGroupIndex].func_data) !== '{}'
+        return JSON.stringify(logoData[baselineGroupIndex]?.func_data) !== '{}'
     }, [logoData, baselineGroupIndex])
 
     return (
