@@ -73,7 +73,7 @@ const ReportTestFunc: React.FC<any> = () => {
 
     const getGroupDesc = (group_name: string) => {
         const list = saveReportData.func_desc || []
-        const ret = list.filter((i: { name: string; value: string; }) => i.name === group_name).filter(Boolean).at(0)
+        const ret = list.filter((i: { name: string; value: string; }) => i.name === group_name).filter(Boolean)?.[0]
         return ret
     }
 

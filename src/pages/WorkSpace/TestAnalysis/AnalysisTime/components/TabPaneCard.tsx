@@ -164,7 +164,7 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
         const obj = { ...baseFormData, ...metricData, metric: metricData?.metric?.toString() }
         if (fetchData?.length !== 0) {
             fetchData?.forEach(({ metric }: any) => {
-                const $name = metric.at(0)
+                const $name = metric?.[0]
                 obj[$name] = metric.toString()
             })
         }

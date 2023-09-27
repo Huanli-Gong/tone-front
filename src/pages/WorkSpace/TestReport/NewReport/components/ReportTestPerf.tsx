@@ -136,7 +136,7 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
 
     const getGroupDesc = (group_name: string) => {
         const list = saveReportData.perf_desc || []
-        const ret = list.filter((i: { name: string; value: string; }) => i.name === group_name).filter(Boolean).at(0)
+        const ret = list.filter((i: { name: string; value: string; }) => i.name === group_name).filter(Boolean)?.[0]
         return ret
     }
 
