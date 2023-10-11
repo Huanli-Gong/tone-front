@@ -28,7 +28,7 @@ const Container = styled.div`
 `
 
 export const dataSetMethod = (dict: any, formatMessage?: any) => {
-    const obj = {
+    const obj: any = {
         cloud: formatMessage({ id: 'common.cloud' }),
         cloud_efficiency: formatMessage({ id: 'common.cloud_efficiency' }),
         cloud_ssd: formatMessage({ id: 'common.cloud_ssd' }),
@@ -291,7 +291,8 @@ const ServerTooltip: React.FC<any> = ({ server_ip, is_instance, run_mode, provid
             if (run_mode === "standalone") {
                 const { data, code } = await queryCloudServer({
                     ws_id, [is_instance ? "private_ip" : "server_conf"]: server_ip,
-                    in_pool: is_instance ? "" : "all"
+                    in_pool: is_instance ? "" : "all",
+                    query_size: 1
                 })
                 if (code === 200) {
                     if (Object.prototype.toString.call(data) === "[object Array]" && !!data.length)
@@ -311,7 +312,7 @@ const ServerTooltip: React.FC<any> = ({ server_ip, is_instance, run_mode, provid
     if (provider_name === "aliyun" && !["", null, "随机"].includes(server_ip) && $isNumber)
         return (
             <Tooltip
-                visible={visible}
+                open={visible}
                 overlayStyle={{
                     width: 510,
                     maxWidth: "unset",
@@ -327,7 +328,7 @@ const ServerTooltip: React.FC<any> = ({ server_ip, is_instance, run_mode, provid
                         <ClusterServer {...source} is_instance={is_instance} /> :
                         source.map((item: any) => <ServerDetail key={item.id} {...item} $type={is_instance} />)
                 }
-                onVisibleChange={handleVisible}
+                onOpenChange={handleVisible}
             >
                 {basicText}
             </Tooltip>
