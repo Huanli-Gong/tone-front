@@ -307,6 +307,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             width: 200,
             dataIndex: 'visible_range',
             render(row) {
+                if (!row) return '-'
                 return (
                     <OverflowList
                         list={
