@@ -91,7 +91,7 @@ const BaselineSearch: React.FC<IProps> = (props) => {
             onClick={() => setOpen(true)}
         >
             <FilterSpanWrapper>
-                <FilterFilled style={{ color: search ? '#1890ff' : undefined }} />
+                <FilterFilled style={{ color: !!search ? '#1890ff' : undefined }} />
             </FilterSpanWrapper>
             {
                 open &&

@@ -102,7 +102,7 @@ const BaselineManage: React.FC<IProps> = (props) => {
     const intl = useIntl()
     const { pathname, query } = useLocation() as any
     const { ws_id }: any = useParams()
-    const { baseline_id } = query
+    const { baseline_id, baseline_name } = query
 
     const addBaselineModal = React.useRef<any>(null)
     const importBaselineModal = React.useRef<any>(null)
@@ -111,13 +111,18 @@ const BaselineManage: React.FC<IProps> = (props) => {
         test_type: name,
         page_size: 20,
         page_num: 1,
-        ws_id
+        ws_id,
+        name: baseline_name
     }
 
     const [list, setList] = React.useState<Workspace.BaselineListQuery>()
     const [loading, setLoading] = React.useState<boolean>(true)
     const [listParams, setListParams] = React.useState<any>(PAGE_DEFAULT_PARAMS)
     const [current, setCurrent] = React.useState<Workspace.BaselineItem>({})  // 当前基线
+
+    React.useEffect(() => {
+        setListParams((p: any) => ({ ...p, test_type: name, name: baseline_name }))
+    }, [name, baseline_name])
 
     const fetchList = async (params = PAGE_DEFAULT_PARAMS) => {
         setLoading(true)
