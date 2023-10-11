@@ -21,10 +21,10 @@ import { v4 as uuid } from 'uuid'
 
 const TootipTipRow = styled(Row)`
     position:relative;
-    width:300px;
+    width:100%;
     .tootip_pos {
         position:absolute;
-        left:300px;
+        left:330px;
         top:4px;
     }
 `
@@ -184,7 +184,14 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
         }
     }
 
-    const handleFormChange = () => {
+    const handleFormChange = (_: any) => {
+        if (_?.[0].name?.[0] === 'project_id') {
+            setMetricData(null)
+            setTableData([])
+            setChartData(null)
+            setFetchData([])
+            return
+        }
         const params = getAnalysisFormData()
         setTableData([])
         setChartData(null)
@@ -309,6 +316,11 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                         colon
                         onFieldsChange={handleFormChange}
                         className={styles.formInlineStyles}
+                        wrapperCol={{ span: 20 }}
+                        initialValues={{
+                            time: [moment().subtract(29, 'days'), moment().startOf('day')],
+                            tag: ''
+                        }}
                     >
                         <Form.Item
                             label={<FormattedMessage id="analysis.project" />}
@@ -328,12 +340,12 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                         </Form.Item>
                         <Form.Item label={<FormattedMessage id="analysis.tag" />}>
                             <TootipTipRow>
-                                <Form.Item name="tag" initialValue="">
+                                <Form.Item name="tag">
                                     <Select
                                         allowClear
+                                        style={{ width: 330 }}
                                         placeholder={formatMessage({ id: 'analysis.tag.placeholder' })}
                                         showSearch
-                                        style={{ width: 300 }}
                                         filterOption={(input, option: any) => option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                         options={
                                             [{ value: "", label: formatMessage({ id: "analysis.indistinguishable" }) }].concat(
@@ -365,7 +377,6 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                         <Form.Item
                             label={<FormattedMessage id="analysis.date" />}
                             name="time"
-                            initialValue={[moment().subtract(29, 'days'), moment().startOf('day')]}
                         >
                             <DatePicker.RangePicker
                                 /* @ts-ignore */
