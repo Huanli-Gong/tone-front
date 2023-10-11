@@ -182,24 +182,33 @@ const mapToArr = (m: any) => Array.from(m).map((i: any) => {
     return v
 })
 
-const getJobRefSuit = (suiteData: any) => {
+const getJobRefSuit = (suiteData: any, objList: any[]) => {
     const baseArr: any = new Map()
     const compareArr: any = new Map()
     const allData = [...Object.values(suiteData.func_suite_dic), ...Object.values(suiteData.perf_suite_dic)]
+
+    const jobObj = objList?.reduce((p, c) => {
+        p[c.id] = c
+        return p
+    }, {})
+
     allData.forEach((suit: any) => {
         suit.group_jobs.forEach((item: any, idx: number) => {
             const obj_li = _.get(item, 'job_list') || []
             obj_li.forEach((arr: any) => {
+                const { server_provider } = jobObj[arr]
                 if (suit.base_index === idx) {
                     if (!baseArr.get(arr))
                         baseArr.set(arr, {
                             is_baseline: item.is_baseline,
+                            server_provider,
                             obj_id: arr,
                         })
                 } else {
                     if (!compareArr.get(arr))
                         compareArr.set(arr, {
                             is_baseline: item.is_baseline,
+                            server_provider,
                             obj_id: arr,
                         })
                 }

@@ -20,11 +20,6 @@ export default defineConfig({
     dva: {
         hmr: true,
     },
-    polyfill: {
-        imports: [
-            'core-js/stable',
-        ]
-    },
     devtool: isDev ? "eval-source-map" : undefined,
     layout: {
         name: 'T-One',

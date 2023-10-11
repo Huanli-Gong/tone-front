@@ -409,6 +409,7 @@ export default (props: any) => {
     const handleGroupData = () => {
         return groupData.filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length)
     }
+
     const handleSureOk = (suiteData: any) => { // suiteData：已选的
         const params: any = handleDomainList(suiteData)
         const paramEenvironment = handlEenvironment(suiteData)
@@ -527,7 +528,7 @@ export default (props: any) => {
     }
 
     const handlEenvironment = (selData: any) => {
-        const { baseArr, compareArr } = getJobRefSuit(selData)
+        const { baseArr, compareArr } = getJobRefSuit(selData, groupData.map((i: any) => i.members || []).flat(Infinity))
         let groupDataCopy = _.cloneDeep(groupData).filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length)
         let newGroup: any = []
         if (groupDataCopy.length) {
