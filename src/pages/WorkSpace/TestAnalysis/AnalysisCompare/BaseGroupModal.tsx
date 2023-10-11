@@ -171,7 +171,7 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
     const onExpand = async (expanded: boolean, record: any) => {
         const { test_job_id, suite_id, is_baseline } = record
         if (expanded) {
-            const data = await queryConfList({ test_job_id, suite_id, is_baseline })
+            const data = await queryConfList({ test_job_id, suite_id, is_baseline, test_type: tab })
             if (data.code === 200) {
                 const { conf_dic } = data.data
                 if (tab === 'functional') {
