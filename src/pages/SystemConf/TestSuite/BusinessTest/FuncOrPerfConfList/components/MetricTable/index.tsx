@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Space, message, Modal, Popconfirm } from 'antd';
+import { Button, Space, message, Modal, Popconfirm, Row } from 'antd';
 import { metricList, addMetric, editMetric, delMetric, getDomain } from '@/pages/SystemConf/TestSuite/service';
 import CommonTable from '@/components/Public/CommonTable';
 import { ExclamationCircleOutlined } from '@ant-design/icons'
@@ -117,12 +117,12 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 		{ title: <FormattedMessage id="TestSuite.direction" />, dataIndex: 'direction', width: 130 },
 		{
 			title: (
-				<Space>
+				<Row justify={'space-between'} style={{ width: '100%' }}>
 					<FormattedMessage id="Table.columns.operation" />
 					<Button type='primary' onClick={() => newMetric(id)} size="small">
 						<FormattedMessage id="operation.new" />
 					</Button>
-				</Space>
+				</Row>
 			),
 			valueType: 'option',
 			dataIndex: 'id',

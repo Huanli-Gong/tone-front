@@ -102,7 +102,7 @@ export default forwardRef(({ id }: any, ref: any) => {
     }
 
     const newCase = () => {
-        confDrawerShow('new', { bentch: false, test_suite_id: id })
+        confDrawerShow('new', { batch: false, test_suite_id: id })
     }
     const rowSelection = + status === 0 ? {
         selectedRowKeys,
