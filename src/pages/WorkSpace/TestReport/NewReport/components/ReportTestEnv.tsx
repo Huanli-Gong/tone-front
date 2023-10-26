@@ -78,15 +78,23 @@ const ReportTestEnv = () => {
                 </>
             }
 
-            <EditTitle style={{ margin: '17px 0 14px 0' }}><FormattedMessage id="report.server.env" /></EditTitle>
-            <EnvGroup>
-                <EnvGroupL><FormattedMessage id="report.comparison.group.name" /></EnvGroupL>
-                <Identify envData={envData} group={groupLen} />
-            </EnvGroup>
-            {/* 机器信息 */}
-            <TestEnv envData={envData} environmentResult={environmentResult} group={groupLen} />
+            {
+                !!domainResult?.server_info_config?.length &&
+                <>
+                    <EditTitle style={{ margin: '17px 0 14px 0' }}>
+                        <FormattedMessage id="report.server.env" />
+                    </EditTitle>
+                    <EnvGroup>
+                        <EnvGroupL><FormattedMessage id="report.comparison.group.name" /></EnvGroupL>
+                        <Identify envData={envData} group={groupLen} />
+                    </EnvGroup>
+                    {/* 机器信息 */}
+                    <TestEnv envData={envData} environmentResult={environmentResult} group={groupLen} />
+                </>
+            }
         </ModuleWrapper>
     )
 }
+
 export default memo(ReportTestEnv)
 

@@ -241,6 +241,7 @@ const TemplatePreview = (props: any) => {
                         }
 
                         <TestEnv
+                            server_info_config={dataSource?.server_info_config}
                             env_description_desc={dataSource?.env_description_desc}
                             need_test_env={dataSource?.need_test_env}
                             need_env_description={dataSource?.need_env_description}

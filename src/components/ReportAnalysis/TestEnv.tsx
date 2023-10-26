@@ -9,6 +9,7 @@ import { Row, Tooltip, Typography } from "antd";
 import { DoubleRightOutlined } from "@ant-design/icons"
 import styled, { keyframes } from "styled-components"
 import { useIntl } from "umi";
+import { useReportContext } from "@/pages/WorkSpace/TestReport/NewReport/Provider";
 
 const collapsedAnimate = keyframes`
     from {
@@ -43,7 +44,7 @@ export const TestEnv: React.FC<EnvType> = ({ envData, environmentResult, group }
     const { count } = environmentResult
     const intl = useIntl()
     const [collapsed, setCollapsed] = React.useState(false);
-
+    const { domainResult } = useReportContext()
     React.useEffect(() => {
         return () => {
             setCollapsed(false)
@@ -86,6 +87,7 @@ export const TestEnv: React.FC<EnvType> = ({ envData, environmentResult, group }
                                     // ["RPM", "rpm"],
                                 ].map((tm: any, i: number) => {
                                     const [title, field] = tm
+                                    if (!domainResult?.server_info_config?.includes(field)) return undefined
                                     return (
                                         <Row key={i}>
                                             <MachineGroupL style={{ background: '#fafafa' }}>
@@ -120,7 +122,7 @@ export const TestEnv: React.FC<EnvType> = ({ envData, environmentResult, group }
                                             }
                                         </Row>
                                     )
-                                })
+                                }).filter(Boolean)
                             }
                         </MachineGroup>
                     )
