@@ -1,8 +1,9 @@
 import { requestCodeMessage } from '@/utils/utils'
-import { Drawer, Space, Button, Form, Row, Col, Input, Typography, message } from 'antd'
+import { Drawer, Space, Button, Form, Row, Input, message } from 'antd'
 import React, { useState, forwardRef, useImperativeHandle } from 'react'
 import { updateNode } from '../service'
 import { useParams, useIntl, FormattedMessage } from "umi"
+import { renderTitle } from "."
 
 //编辑备注
 
@@ -64,23 +65,13 @@ const EditRemark: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             .catch(console.log)
     }
 
-    const renderTitle: React.FC<any> = (name, title) => (
-        title &&
-        <Col span={24}>
-            <Row>
-                <Typography.Text style={{ width: 70, fontWeight: 600, marginRight: 8 }}>{name}</Typography.Text>
-                <Typography.Paragraph style={{ width: "calc( 100% - 70px - 8px)" }} ellipsis>{title}</Typography.Paragraph>
-            </Row>
-        </Col>
-    )
-
     return (
         <Drawer
             maskClosable={false}
             keyboard={false}
             width="376"
             title={<FormattedMessage id="ws.result.details.edit.remarks" />}
-            visible={visible}
+            open={visible}
             onClose={handleClose}
             bodyStyle={{ padding: 0 }}
             footer={
@@ -93,11 +84,11 @@ const EditRemark: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             }
         >
             {
-                (data.suite_name || data.conf_name) &&
+                (data?.suite_name || data?.conf_name) &&
                 <Row style={{ marginBottom: 10, background: '#fff', padding: 20, borderBottom: '10px solid #f0f2f5' }}>
-                    {renderTitle('Test Suite', data.suite_name)}
-                    {renderTitle('Test Conf', data.conf_name)}
-                    {renderTitle('Test Case', data.case_name)}
+                    {renderTitle('Test Suite', data?.suite_name)}
+                    {renderTitle('Test Conf', data?.conf_name)}
+                    {renderTitle('Test Case', data?.case_name)}
                 </Row>
             }
             <Form
