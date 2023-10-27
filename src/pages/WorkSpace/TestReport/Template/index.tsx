@@ -407,10 +407,12 @@ const TemplatePage: React.FC<any> = (props) => {
 
         const {
             perf_item, func_item, perf_conf, func_conf,
+            server_info_config
         } = data
         setContrl(access.WsMemberOperateSelf(data.creator))
 
         const params: any = {
+            server_info_config: server_info_config ? JSON.parse(server_info_config) : SERVER_INFO_CONFIG,
             func_conf: func_conf || funcDefaultConf,
             perf_conf: perf_conf || defaultConf,
             perf_item: refreshRowkey(perf_item),
