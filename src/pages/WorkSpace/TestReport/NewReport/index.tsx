@@ -194,7 +194,6 @@ const Report = (props: any) => {
         obj.tmpl_id = saveReportData.template
         obj.ws_id = ws_id
         obj.job_li = getSelAllJob()
-        obj.name = saveReportData.name
 
         if (Object.prototype.toString.call(baselineGroupIndex) === "[object Number]")
             obj.test_env.base_index = baselineGroupIndex
@@ -212,6 +211,8 @@ const Report = (props: any) => {
                 requestCodeMessage(res.code, res.msg)
             }
         } else {
+            if (!obj.name)
+                obj.name = saveReportData.name
             const data = await saveReport(obj)
             if (data.code === 200) {
                 message.success(formatMessage({ id: 'report.saved.successfully' }))
