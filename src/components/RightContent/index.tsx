@@ -102,7 +102,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                     <Typography.Text>
                         {msg}
                     </Typography.Text>
-                    <Typography.Link href={`/ws/${ws_id}/message?sys`}>
+                    <Typography.Link href={`/ws/${ws_id}/personCenter?person=approve`}>
                         查看
                     </Typography.Link>
                 </Space>

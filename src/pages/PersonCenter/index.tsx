@@ -1,12 +1,11 @@
-import React, { useState, useCallback, useEffect } from 'react'
-import { Layout, Tabs, message, Space, Avatar, Tag, Spin } from 'antd'
+import React, { useState, useEffect } from 'react'
+import { Layout, Tabs, Space, Avatar, Tag } from 'antd'
 import PersonWorkspace from './PersonWorkspace'
 import PersonApprove from './PersonApprove'
 import TokenConfig from './TokenConfig'
 import styles from './index.less'
 import { queryWorkspace, queryApprove, queryGetToken } from './services'
-import _ from 'lodash'
-import { history, useModel, useLocation, useAccess, Access, useIntl, FormattedMessage, getLocale } from 'umi'
+import { history, useModel, useLocation, useIntl, FormattedMessage } from 'umi'
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useClientSize } from '@/utils/hooks'
 import { requestCodeMessage, switchUserRole2 } from '@/utils/utils'
@@ -18,13 +17,12 @@ const reqUrlMap = new Map([
     ['tokenConfig', queryGetToken],
 ]) as any
 
-export default (props: any) => {
+const PersonCenterPage: React.FC = () => {
     const { formatMessage } = useIntl()
-    const enLocale = getLocale() === 'en-US'
+    const { pathname } = useLocation()
 
     const { initialState } = useModel('@@initialState')
     const { authList } = initialState
-    const access = useAccess();
     const { query } = useLocation() as any
     const { height: layoutHeight } = useClientSize()
 
@@ -34,45 +32,31 @@ export default (props: any) => {
 
     const handleTabClick = async (t: string) => {
         setTab(t)
-        history.replace(`/personCenter?person=${t}`)
-        setLoading(true)
+        history.replace(`${pathname}?person=${t}`)
         setData([])
-        const { data, code, msg } = await reqUrlMap.get(t)()
-        if (code === 200) {
-            data && setData(data)
-        } else {
-            requestCodeMessage(code, msg)
-        }
-        setLoading(false)
     }
 
     const init = async () => {
         setLoading(true)
-        const { data, code } = await reqUrlMap.get(tab)()
+        const { data, code, msg } = await reqUrlMap.get(tab)()
+        setLoading(false)
+        if (code !== 200) {
+            requestCodeMessage(code, msg)
+        }
         if (code === 200)
             setData(data)
-        setLoading(false)
     }
 
     useEffect(() => {
         init()
-    }, [])
-
-    // const handleSys_Role = (title_type: any) => {
-    //     const dict = {
-    //         user: '普通用户',
-    //         sys_test_admin: '测试管理员',
-    //         sys_admin: '系统管理员',
-    //         super_admin: '超级管理员'
-    //     }
-    //     return dict[title_type]
-    // }
+    }, [tab])
 
     const scroll = {
         // 最大高度，内容超出该高度会出现滚动条
         height: layoutHeight - 50
         // width: 2000
     }
+
     return (
         <Scrollbars style={scroll}>
             <Layout.Content className={styles.content}>
@@ -113,3 +97,5 @@ export default (props: any) => {
         </Scrollbars >
     )
 }
+
+export default PersonCenterPage
