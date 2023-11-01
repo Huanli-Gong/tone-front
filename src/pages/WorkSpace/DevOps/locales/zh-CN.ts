@@ -1,5 +1,5 @@
 export default {
-  'broken.automatic.recovery': 'broken机器自动恢复',
+  'broken.automatic.recovery': 'Broken机器自动恢复',
   'devOps.time': '时间',
   'devOps.day': '天',
   'devOps.hours': '时',
@@ -14,4 +14,8 @@ export default {
 
   'devOps.matrix_repo.aliyun': '云上用例仓库',
   'devOps.matrix_repo.aligroup': '内网用例仓库',
+
+  'devOps.pending_job_num': 'Job预警机制',
+  'devOps.pedding_job_num.desc': 'Pending数量超过',
+  'devOps.pedding_job_num.desc_1': '条时发出预警',
 }

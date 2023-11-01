@@ -2,9 +2,13 @@ import React from "react"
 import ConfigRow from "./ConfigRow"
 import { FormattedMessage } from "umi"
 import { Button, Space, Input } from "antd"
+import { useDevOpsContext } from "../Provider"
 
 const MatrixBranch: React.FC<any> = (props) => {
-    const { data, update, field, iType } = props
+    const { field, iType } = props
+    const { dataSource, update } = useDevOpsContext()
+
+    const data = dataSource[field]
 
     const [val, setVal] = React.useState(data)
 
