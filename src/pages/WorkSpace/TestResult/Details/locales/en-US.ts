@@ -121,6 +121,7 @@ const text = {
 
   'breadcrumb.button.download': 'Download',
   'breadcrumb.button.share': 'Share',
+  'breadcrumb.button.fail_case_upload': 'Fail Case Upload',
 
   // ProcessTable
   'build.kernel': 'Build Kernel',
