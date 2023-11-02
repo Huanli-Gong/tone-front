@@ -25,7 +25,7 @@ const JobPeddingCount: React.FC<any> = (props) => {
                     size="small"
                     value={val}
                     min={1}
-                    onChange={({ target }) => update({ [field]: target.value?.trim() })}
+                    onBlur={({ target }) => update({ [field]: target.value?.trim() })}
                 />
                 <FormattedMessage id={'devOps.pedding_job_num.desc_1'} />
             </Space>
