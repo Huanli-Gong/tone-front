@@ -13,7 +13,7 @@ const JobPeddingCount: React.FC<any> = (props) => {
     const [val, setVal] = React.useState(data)
 
     React.useEffect(() => {
-        setVal(data?.trim())
+        setVal(data)
     }, [data])
 
     return (
@@ -25,7 +25,7 @@ const JobPeddingCount: React.FC<any> = (props) => {
                     size="small"
                     value={val}
                     min={1}
-                    onBlur={({ target }) => update({ [field]: target.value?.trim() })}
+                    onBlur={({ target }) => update({ [field]: target.value })}
                 />
                 <FormattedMessage id={'devOps.pedding_job_num.desc_1'} />
             </Space>
