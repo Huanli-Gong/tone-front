@@ -90,6 +90,8 @@ export const getCompareType = ({ is_job, is_baseline }: any) => {
   return isBaseline
 }
 
+export const SERVER_INFO_CONFIG = ["ip/sn", "distro", "cpu_info", "memory_info", "disk", "ether", "os", "kernel", "gcc", "glibc"]
+
 export const useServerConfigArray = () => {
   const { formatMessage } = useIntl()
   return [

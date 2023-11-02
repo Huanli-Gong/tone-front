@@ -12,7 +12,7 @@ import { useClientSize } from '@/utils/hooks'
 import SuiteSelectDrawer from './components/SuiteSelectDrawer'
 import { createReportTemplate, queryReportTemplateDetails, updateReportTemplate } from './services'
 import produce from 'immer'
-import { requestCodeMessage, useServerConfigArray } from '@/utils/utils'
+import { SERVER_INFO_CONFIG, requestCodeMessage, useServerConfigArray } from '@/utils/utils'
 import { ReportTemplateContext, useProvider } from './Provider'
 import Catalog from './components/TemplateCatalog'
 import TemplateBreadcrumb from './components/TemplateBreadcrumb'
@@ -26,8 +26,6 @@ import TestGroup from './components/Group'
 import TestItem from './components/Term'
 
 import Preview from './Preview'
-
-const SERVER_INFO_CONFIG = ["ip/sn", "distro", "cpu_info", "memory_info", "disk", "ether", "os", "kernel", "gcc", "glibc"]
 
 const defaultConf = {
     need_test_suite_description: true,

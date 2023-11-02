@@ -19,6 +19,7 @@ import { ReactComponent as BaseGroupIcon } from '@/assets/svg/TestReport/BaseIco
 import lodash from 'lodash'
 import produce from 'immer'
 import styled from 'styled-components'
+import { SERVER_INFO_CONFIG } from '@/utils/utils'
 interface PreviewContainerProps {
     height: number;
 }
@@ -79,7 +80,6 @@ const GroupTableRow = styled(FullRow)`
 `
 
 const { document }: any = window
-const SERVER_INFO_CONFIG = ["ip/sn", "distro", "cpu_info", "memory_info", "disk", "ether", "os", "kernel", "gcc", "glibc"]
 
 const TemplatePreview: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
