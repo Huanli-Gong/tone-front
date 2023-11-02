@@ -195,6 +195,7 @@ const ConfEditDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = ({ onOk
                     var: [{ name: '', val: '', des: '' }]
                 }}
                 scrollToFirstError
+                preserve
             >
                 {
                     !data.batch &&
