@@ -8,11 +8,14 @@ import { useSuiteProvider } from '../../../hooks'
 import { editBentch, editCase, addCase } from '@/pages/SystemConf/TestSuite/service'
 
 const getVars = (vars: any) => {
-    if (!vars) return JSON.stringify([])
+    if (!vars) return undefined
     let arr = vars
     if (Object.prototype.toString.call(vars) === '[object String]')
         arr = JSON.parse(vars)
-    return JSON.stringify(arr?.filter(({ name, val }: any) => name && val))
+    const list = arr?.filter(({ name, val }: any) => name && val)
+    if (list.length > 0)
+        return JSON.stringify(list)
+    return undefined
 }
 
 const ConfEditDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = ({ onOk, selectedRowKeys }: any, ref: any) => {
@@ -86,17 +89,19 @@ const ConfEditDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = ({ onOk
                     id,
                     test_suite_id,
                     domain_list_str: rest.domain_list_str ? rest.domain_list_str.join() : undefined,
-                    var: varConf ?? undefined
                 }
                 if (data.batch) {
                     const params = {
                         ...param,
                         case_id_list: selectedRowKeys.join(','),
+                        var: varConf
                     }
                     await editBentch(params)
                 }
                 else {
                     if (!varConf) throw formatMessage({ id: 'TestSuite.data.format.error' })
+                    param.var = varConf || JSON.stringify([])
+                    param.repeat = param.repeat || 0
                     const { code, msg } = id ? await editCase(id, param) : await addCase(param)
                     if (code === 201) throw formatMessage({ id: 'TestSuite.repeated.suite.name' })
                     if (code !== 200) throw msg
@@ -147,6 +152,25 @@ const ConfEditDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = ({ onOk
         setHandle(!handle)
     }
 
+    const validator = async (field: any) => {
+        const name = form.getFieldValue(['var', field.name, 'name'])
+        const val = form.getFieldValue(['var', field.name, 'val'])
+        if ((!name && val) || (name && !val)) {
+            form.setFields([{
+                name: ['var', field.name, 'error'],
+                errors: [formatMessage({ id: 'TestSuite.data.format.error' })]
+            }])
+            return Promise.reject()
+        }
+
+        form.setFields([
+            { name: ['var', field.name, 'error'], errors: [] },
+            { name: ['var', field.name, 'name'], errors: [] },
+            { name: ['var', field.name, 'val'], errors: [] }
+        ])
+        return Promise.resolve()
+    }
+
     return (
         <Drawer
             maskClosable={false}
@@ -192,7 +216,7 @@ const ConfEditDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = ({ onOk
                 layout="vertical"
                 form={form}
                 initialValues={{
-                    var: [{ name: '', val: '', des: '' }]
+                    var: [{ name: '', val: '', des: '' }],
                 }}
                 scrollToFirstError
                 preserve
@@ -280,25 +304,18 @@ const ConfEditDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = ({ onOk
                                                     <Form.Item
                                                         name={[field.name, 'name']}
                                                         rules={[{
-                                                            async validator() {
-                                                                const name = form.getFieldValue(['var', field.name, 'name'])
-                                                                const val = form.getFieldValue(['var', field.name, 'val'])
-                                                                if ((!name && val) || (name && !val)) {
-                                                                    form.setFields([{
-                                                                        name: ['var', field.name, 'error'],
-                                                                        errors: [formatMessage({ id: 'TestSuite.data.format.error' })]
-                                                                    }])
-                                                                    return Promise.reject()
-                                                                }
-
-                                                                return Promise.resolve()
-                                                            },
+                                                            validator: async () => validator(field),
                                                         }]}
                                                     >
                                                         <Input autoComplete="off" placeholder={formatMessage({ id: 'TestSuite.variable.name' })} />
                                                     </Form.Item>
                                                     <Typography.Text >=</Typography.Text>
-                                                    <Form.Item name={[field.name, 'val']} >
+                                                    <Form.Item
+                                                        name={[field.name, 'val']}
+                                                        rules={[{
+                                                            validator: async () => validator(field),
+                                                        }]}
+                                                    >
                                                         <Input autoComplete="off" placeholder={formatMessage({ id: 'TestSuite.default' })} />
                                                     </Form.Item>
                                                     <Typography.Text >,</Typography.Text>
