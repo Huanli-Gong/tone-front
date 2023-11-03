@@ -235,6 +235,7 @@ const text = {
   'server.configuration.name': '机器配置名称：{data}',
   'cluster.name': '集群名称',
 
+  'breadcrumb.button.upload.message': '提示',
   'breadcrumb.button.upload.ok': '上传任务已创建。',
   'breadcrumb.button.upload.ok.view': '查看'
 };

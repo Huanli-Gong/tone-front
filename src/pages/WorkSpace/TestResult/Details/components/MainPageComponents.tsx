@@ -98,7 +98,9 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
             return message.error(msg)
 
         notification.success({
-            message: (
+            duration: null,
+            message: <FormattedMessage id={'ws.result.details.breadcrumb.button.message'} />,
+            description: (
                 <Space>
                     <FormattedMessage id={'ws.result.details.breadcrumb.button.upload.ok'} />
                     <Typography.Link target='_blank' href={`/ws/${ws_id}/offline_test`}>

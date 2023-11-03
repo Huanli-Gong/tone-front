@@ -236,6 +236,7 @@ const text = {
   'server.configuration.name': 'Server Config Name：{data}',
   'cluster.name': 'Cluster Name',
 
+  'breadcrumb.button.upload.message': 'Tips',
   'breadcrumb.button.upload.ok': 'The upload task has been created.',
   'breadcrumb.button.upload.ok.view': 'View'
 };
