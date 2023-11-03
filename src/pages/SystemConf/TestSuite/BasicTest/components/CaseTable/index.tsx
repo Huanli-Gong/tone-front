@@ -19,6 +19,13 @@ import DeleteDefault from '../DeleteDefault';
 import DeleteTips from '../DeleteTips';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
+const note: any = (row: any) => {
+    const { style } = row
+    return row.var && row.var != '[]' ? JSON.parse(row.var).map(({ name, val, des }: any) => (<Typography.Text style={style}>
+        {`${name}=${val || '-'},${des || '-'};`}
+    </Typography.Text>)) : '-'
+}
+
 /**
  * Conf级列表
  * @param id 父级列表suite_id
@@ -132,15 +139,22 @@ export default forwardRef(({ id }: any, ref: any) => {
             },
             key: "var",
             width: 100,
-            render: (_: number, row: any) => (
-                <ColumnEllipsisText ellipsis={{ tooltip: true }}>
-                    {
-                        row.var && row.var != '[]' ? JSON.parse(row.var).map((item: any) => {
-                            return `${item.name}=${item.val || '-'},${item.des || '-'};`
-                        }) : '-'
-                    }
-                </ColumnEllipsisText>
-            )
+            render: (_: number, row: any) => {
+
+                return (
+                    <ColumnEllipsisText
+                        ellipsis={{
+                            tooltip: (
+                                <Space direction='vertical'>
+                                    {note({ ...row, style: { color: '#fff' } })}
+                                </Space>
+                            ),
+                        }}
+                    >
+                        {note(row)}
+                    </ColumnEllipsisText>
+                )
+            }
         },
         {
             title: <FormattedMessage id="TestSuite.desc" />,

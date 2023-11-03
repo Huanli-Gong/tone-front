@@ -36,12 +36,6 @@ const ConfEditDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = ({ onOk
     const [data, setData] = useState<any>({ batch: false })
     const [pending, setPending] = useState(false)
 
-    const varField = Form.useWatch('var', form)
-
-    React.useEffect(() => {
-        if (!varField?.length) form.setFieldValue('var', basicData.var)
-    }, [varField])
-
     const handleCancel = () => {
         setData({ batch: false })
         setHandle(true)
@@ -148,8 +142,13 @@ const ConfEditDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = ({ onOk
         if (!handle) {
             testVarFn(content, message.error)
         }
-        form.setFieldsValue({ var: handle ? JSON.stringify(content, null, 4) : JSON.parse(content) })
         setHandle(!handle)
+
+        form.setFieldsValue({
+            var: handle ?
+                JSON.stringify(content.map((i: any) => Object.fromEntries(Object.entries(i).filter(([name, val]) => name !== 'error'))), null, 4) :
+                JSON.parse(content)
+        })
     }
 
     const validator = async (field: any) => {
@@ -289,7 +288,7 @@ const ConfEditDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = ({ onOk
                             name="var"
                             rules={[{ validator: validFunction }]}
                         >
-                            <Input.TextArea rows={4} style={{ width: '100%' }} placeholder="格式：key=value, description，多个换行" />
+                            <Input.TextArea autoSize={{ minRows: 4 }} style={{ width: '100%' }} placeholder="格式：key=value, description，多个换行" />
                         </Form.Item> :
                         <Form.List name="var" >
                             {(fields, { add, remove }) => {
@@ -325,7 +324,11 @@ const ConfEditDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = ({ onOk
                                                     <DeleteOutlined
                                                         className="dynamic-delete-button"
                                                         style={{ margin: '8px 0' }}
-                                                        onClick={() => remove(field.name)}
+                                                        onClick={() => {
+                                                            remove(field.name)
+                                                            if (fields.length === 1)
+                                                                form.setFieldValue('var', basicData.var)
+                                                        }}
                                                     />
                                                 </Space>
                                             </Form.Item>
