@@ -63,17 +63,19 @@ type CaseStateProps = {
 
 const CaseStateBLock: React.FC<CaseStateProps> = ({ glen, state, tp, desc }) => (
     <SubCaseText gLen={glen} btnState={state}>
-        <Typography.Text style={{ color: handleCaseColor(tp) }}>
-            {tp || '-'}
-        </Typography.Text>
-        {
-            desc &&
-            <Tooltip
-                title={desc}
-            >
-                <ExclamationCircleOutlined style={{ color: 'rgba(0,0,0,.45)', cursor: 'pointer' }} />
-            </Tooltip>
-        }
+        <Space>
+            <Typography.Text style={{ color: handleCaseColor(tp) }}>
+                {tp || '-'}
+            </Typography.Text>
+            {
+                desc &&
+                <Tooltip
+                    title={desc}
+                >
+                    <ExclamationCircleOutlined style={{ color: 'rgba(0,0,0,.45)', cursor: 'pointer' }} />
+                </Tooltip>
+            }
+        </Space>
     </SubCaseText>
 )
 // 单个展开
