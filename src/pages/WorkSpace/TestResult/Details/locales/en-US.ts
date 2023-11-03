@@ -235,6 +235,9 @@ const text = {
   'server.instance.name': 'Server Instance Name：{data}',
   'server.configuration.name': 'Server Config Name：{data}',
   'cluster.name': 'Cluster Name',
+
+  'breadcrumb.button.upload.ok': 'The upload task has been created.',
+  'breadcrumb.button.upload.ok.view': 'View'
 };
 
 export default Object.keys(text).reduce((p, key) => {

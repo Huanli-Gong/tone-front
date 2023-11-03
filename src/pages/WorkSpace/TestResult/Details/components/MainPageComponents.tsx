@@ -3,7 +3,7 @@ import React, { ChangeEvent } from "react"
 
 import { useCopyText } from '@/utils/hooks'
 import styled from 'styled-components'
-import { Breadcrumb, Typography, message, Row, Tooltip, Space, Col } from "antd"
+import { Breadcrumb, Typography, message, Row, Tooltip, Space, Col, notification } from "antd"
 import { useParams, useAccess, useIntl, FormattedMessage, Access, history, getLocale } from 'umi'
 import { DownloadOutlined, ShareAltOutlined, EditOutlined, CloudUploadOutlined } from '@ant-design/icons'
 
@@ -96,7 +96,17 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
         const { code, msg } = await createProject({ job_id, ws_id, file: target?.files?.[0] })
         if (code !== 200)
             return message.error(msg)
-        message.success(intl.formatMessage({ id: 'operation.success' }))
+
+        notification.success({
+            message: (
+                <Space>
+                    <FormattedMessage id={'ws.result.details.breadcrumb.button.upload.ok'} />
+                    <Typography.Link target='_blank' href={`/ws/${ws_id}/offline_test`}>
+                        <FormattedMessage id={'ws.result.details.breadcrumb.button.upload.ok.view'} />
+                    </Typography.Link>
+                </Space>
+            )
+        })
     }
 
     const { origin, pathname } = window.location

@@ -234,6 +234,9 @@ const text = {
   'server.instance.name': '机器实例名称：{data}',
   'server.configuration.name': '机器配置名称：{data}',
   'cluster.name': '集群名称',
+
+  'breadcrumb.button.upload.ok': '上传任务已创建。',
+  'breadcrumb.button.upload.ok.view': '查看'
 };
 
 export default Object.keys(text).reduce((p, key) => {
