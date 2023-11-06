@@ -56,28 +56,30 @@ const DelBtnEmpty: React.FC<any> = ({ btnState }) => {
 
 type CaseStateProps = {
     glen: number;
-    state: any;
+    state?: any;
     tp: any;
     desc: string;
 }
 
-const CaseStateBLock: React.FC<CaseStateProps> = ({ glen, state, tp, desc }) => (
-    <SubCaseText gLen={glen} btnState={state}>
-        <Space>
-            <Typography.Text style={{ color: handleCaseColor(tp) }}>
-                {tp || '-'}
-            </Typography.Text>
-            {
-                desc &&
-                <Tooltip
-                    title={desc}
-                >
-                    <ExclamationCircleOutlined style={{ color: 'rgba(0,0,0,.45)', cursor: 'pointer' }} />
-                </Tooltip>
-            }
-        </Space>
-    </SubCaseText>
-)
+export const CaseStateBLock: React.FC<CaseStateProps> = ({ glen, state, tp, desc }) => {
+    return (
+        <SubCaseText gLen={glen} btnState={state}>
+            <Space>
+                <Typography.Text style={{ color: handleCaseColor(tp) }}>
+                    {tp || '-'}
+                </Typography.Text>
+                {
+                    (!!~tp.toLowerCase().indexOf('fail') && desc) &&
+                    <Tooltip
+                        title={desc}
+                    >
+                        <ExclamationCircleOutlined style={{ color: 'rgba(0,0,0,.45)', cursor: 'pointer' }} />
+                    </Tooltip>
+                }
+            </Space>
+        </SubCaseText>
+    )
+}
 // 单个展开
 const ExpandSubcases: React.FC<any> = (props) => {
     const { sub_case_list, conf_id, expandKeys, isOldReport, baseIndex, groupLen, btnState } = props
@@ -102,7 +104,6 @@ const ExpandSubcases: React.FC<any> = (props) => {
         <>
             {
                 result?.map((item: any) => {
-                    console.log(item)
                     if (isOldReport) {
                         item.compare_data.splice(baseIndex, 0, item.result)
                     }
