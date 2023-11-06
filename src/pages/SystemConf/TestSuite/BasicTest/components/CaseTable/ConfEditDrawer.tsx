@@ -93,7 +93,7 @@ const ConfEditDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = ({ onOk
                     await editBentch(params)
                 }
                 else {
-                    if (!varConf) throw formatMessage({ id: 'TestSuite.data.format.error' })
+                    // if (!varConf) throw formatMessage({ id: 'TestSuite.data.format.error' })
                     param.var = varConf || JSON.stringify([])
                     param.repeat = param.repeat || 0
                     const { code, msg } = id ? await editCase(id, param) : await addCase(param)
