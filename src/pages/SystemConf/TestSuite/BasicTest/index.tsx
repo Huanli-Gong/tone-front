@@ -504,8 +504,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             }}
         >
             <Spin spinning={loading}>
-                {
-                    BUILD_APP_ENV !== "opensource" &&
+                {/* {
                     <Alert type="success"
                         showIcon
                         style={{ marginBottom: 16, height: 32 }}
@@ -523,7 +522,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                             </span>
                         }
                     />
-                }
+                } */}
 
                 <Table
                     className={styles.suiteTable}
