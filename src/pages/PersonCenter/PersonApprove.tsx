@@ -9,19 +9,88 @@ import _ from 'lodash'
 import EmptyData from './EmptyData'
 import EllipsisRect from './EllipsisRect'
 import { jumpWorkspace } from '@/utils/utils'
-import { useMemo } from 'react'
+import React, { useMemo } from 'react'
+import { queryApprove, } from './services'
 
-export default (props: any) => {
+const ellipsisText = (name: string) => {
+    if (!name) return ''
+    return name.slice(0, 1)
+}
+
+const valueFn = (obj: any) => {
+    if (obj.id === 'logo') {
+        const logo = obj.value
+        if (logo) {
+            return (<Avatar size="small" src={logo} alt="avatar" className={styles.avatar} shape="square" />)
+        }
+        return (
+            <Avatar
+                size="small"
+                shape="square"
+                className={styles.avatar}
+                style={{ backgroundColor: obj.theme_color, fontSize: 14, fontWeight: 'bold' }}
+            >
+                {ellipsisText(obj.show_name)}
+            </Avatar>
+        )
+    }
+    if (obj.id === 'is_public') {
+        const text = obj.value ? <FormattedMessage id="workspace.public" /> : <FormattedMessage id="person.center.not.public" />
+        return (
+            <>
+                <span className={styles.is_public}>{obj.value ? <PublicIcon /> : <NPublicIcon />}</span>
+                {text}
+            </>
+        )
+    }
+    return <EllipsisRect text={obj.value} />
+}
+
+
+const secondRowFn = (item: any) => {
+    const obj = { value: item.ws_info.logo, id: 'logo', theme_color: item.ws_info.theme_color, show_name: item.ws_info.show_name }
+    return (
+        <div className={styles.second_row}>
+
+            {valueFn(obj)}
+            <span className={styles.text_label}> {obj.show_name} </span>
+        </div>
+    )
+}
+
+const thirdRowFn = (item: any) => {
+    return (
+        <>
+            <Space>
+                <span className={styles.is_public}>{item.ws_info.is_public ? <PublicIcon /> : <NPublicIcon />}</span>
+                <span className={styles.second_part}>
+                    {
+                        item.ws_info.is_public ?
+                            <FormattedMessage id="workspace.public" /> :
+                            <FormattedMessage id="workspace.private" />
+                    }
+                </span>
+            </Space>
+            <Space>
+                <span className={styles.text_label}><FormattedMessage id="workspace.ws.name" />：</span>
+                <span className={styles.second_part}>{item.ws_info.show_name || '-'}</span>
+            </Space>
+        </>
+    )
+}
+
+export default () => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
 
-    const { approveData, loading, handleTabClick } = props
     const { height: layoutHeight } = useClientSize()
+    const [loading, setLoading] = React.useState(true)
+    const [data, setData] = React.useState([])
 
     const dataSource = useMemo(() => {
-        if(_.isArray(approveData) && !!approveData.length) return approveData.filter(item => _.get(item, 'ws_info'))
+        if (_.isArray(data) && !!data.length) return data.filter(item => _.get(item, 'ws_info'))
         else return []
-    }, [approveData, loading])
+    }, [data, loading])
 
     const statusColorFn = (status: any) => {
         switch (status) {
@@ -31,6 +100,7 @@ export default (props: any) => {
             default: return <></>
         }
     }
+
     const firstRowFn = (item: any) => {
         let actionType = ''
         if (item.action === 'create') actionType = formatMessage({ id: 'right.content.wait.create' })
@@ -47,40 +117,6 @@ export default (props: any) => {
         )
     }
 
-    const ellipsisText = (name: string) => {
-        if (!name) return ''
-        return name.slice(0, 1)
-    }
-    const valueFn = (obj: any) => {
-        if (obj.id === 'logo') {
-            // return (<Avatar size="small" src={obj.value || ''} alt="avatar" className={styles.avatar} />)
-            const logo = obj.value
-            if (logo) {
-                return (<Avatar size="small" src={logo} alt="avatar" className={styles.avatar} shape="square" />)
-            }
-            return <Avatar size="small" shape="square" className={styles.avatar} style={{ backgroundColor: obj.theme_color, fontSize: 14, fontWeight: 'bold' }} >{ellipsisText(obj.show_name)}</Avatar>
-        }
-        if (obj.id === 'is_public') {
-            const text = obj.value ? <FormattedMessage id="workspace.public" /> : <FormattedMessage id="person.center.not.public" />
-            return (
-                <>
-                    <span className={styles.is_public}>{obj.value ? <PublicIcon /> : <NPublicIcon />}</span>
-                    {text}
-                </>
-            )
-        }
-        return <EllipsisRect text={obj.value} />
-    }
-    const secondRowFn = (item: any) => {
-        const obj = { value: item.ws_info.logo, id: 'logo', theme_color: item.ws_info.theme_color, show_name: item.ws_info.show_name }
-        return (
-            <div className={styles.second_row}>
-
-                {valueFn(obj)}
-                <span className={styles.text_label}> {obj.show_name} </span>
-            </div>
-        )
-    }
     const descriptionFn = (label: any, value: any) => {
         return (
             <div className={styles.description_box}>
@@ -90,6 +126,23 @@ export default (props: any) => {
             </div>
         )
     }
+
+    const init = async () => {
+        setLoading(true)
+        const { data, code } = await queryApprove()
+        setLoading(false)
+        if (code !== 200) return
+        setData(data)
+    }
+
+    React.useEffect(() => {
+        init()
+        return () => {
+            setData([])
+        }
+    }, [])
+
+
     const approveUsersFn = (text: string, users: any) => {
         let arr = _.isArray(users) ? users : []
         arr = arr.map((item: any) => {
@@ -107,20 +160,6 @@ export default (props: any) => {
             <ul className={`${styles.approve_users}`}>
                 {arr}
             </ul>
-        )
-    }
-    const thirdRowFn = (item: any) => {
-        return (
-            <>
-                <Space>
-                    <span className={styles.is_public}>{item.ws_info.is_public ? <PublicIcon /> : <NPublicIcon />}</span>
-                    <span className={styles.second_part}>{item.ws_info.is_public ? <FormattedMessage id="workspace.public" /> : <FormattedMessage id="workspace.private" />}</span>
-                </Space>
-                <Space>
-                    <span className={styles.text_label}><FormattedMessage id="workspace.ws.name" />：</span>
-                    <span className={styles.second_part}>{item.ws_info.show_name || '-'}</span>
-                </Space>
-            </>
         )
     }
 
@@ -146,11 +185,21 @@ export default (props: any) => {
                 <div style={{ display: type ? 'block' : 'none' }}>{descriptionFn('description', item.ws_info.description)}</div>
                 <div style={{ display: type ? 'block' : 'none' }}>{thirdRowFn(item)}</div>
                 <div>{descriptionFn('reason', item.reason)}</div>
-                <div className={`${styles.approve_info_colum} ${styles.approve_refuse_reason}`} style={{ display: refuseReason ? 'block' : 'none' }}>{descriptionFn('refuse_reason', item.refuse_reason)}</div>
+                <div
+                    className={`${styles.approve_info_colum} ${styles.approve_refuse_reason}`}
+                    style={{ display: refuseReason ? 'block' : 'none' }}
+                >
+                    {descriptionFn('refuse_reason', item.refuse_reason)}
+                </div>
                 <div style={{ display: approveTime ? 'block' : 'none' }}>{descriptionFn('gmt_modified', item.gmt_modified)}</div>
                 <div>{approveUsersFn(formatMessage({ id: 'person.center.approver' }), item.approve_users)}</div>
-                {item.status === 'refused' && <JoinPopover handleTabClick={handleTabClick} wsInfo={item} />}
-                {item.status === 'passed' && item.action !== 'delete' && <Button onClick={_.partial(handleClick, item.ws_info.id, item.ws_info.creator)}><FormattedMessage id="workspace.enter" />{enLocale ? <>&nbsp;&nbsp;</> : ''}Workspace</Button>}
+                {item.status === 'refused' && <JoinPopover handleTabClick={init} wsInfo={item} />}
+                {
+                    item.status === 'passed' && item.action !== 'delete' &&
+                    <Button onClick={_.partial(handleClick, item.ws_info.id, item.ws_info.creator)}>
+                        <FormattedMessage id="workspace.enter" />{enLocale ? <>&nbsp;&nbsp;</> : ''}Workspace
+                    </Button>
+                }
             </div>
         )
     }
@@ -158,7 +207,7 @@ export default (props: any) => {
     return (
         <Spin spinning={loading}>
             <div className={styles.approve_content} id="content" style={{ minHeight: layoutHeight - 270 - 40 }}>
-                {!!dataSource.length ? dataSource.map((item: any) => approveList(item)) : <EmptyData layoutHeight={layoutHeight} />}
+                {!!dataSource?.length ? dataSource.map((item: any) => approveList(item)) : <EmptyData layoutHeight={layoutHeight} />}
             </div>
         </Spin>
     )
