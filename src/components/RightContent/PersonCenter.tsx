@@ -1,8 +1,8 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin, Dropdown } from 'antd';
 import ClickParam from 'antd/es/menu';
-import { useModel, useIntl, FormattedMessage, request } from 'umi';
+import { useModel, FormattedMessage, request } from 'umi';
 import styles from './index.less';
 import AvatarCover from '../AvatarCover';
 import { OPENANOLIS_LOGOUT_URL } from '@/utils/utils';
@@ -11,15 +11,17 @@ import { OPENANOLIS_LOGOUT_URL } from '@/utils/utils';
  * 退出登录，并且将当前的 url 保存
  */
 
-const PersonCenter = () => {
+const PersonCenter: React.FC<AnyType> = (props) => {
+    const { isWs, wsId: ws_id } = props
+
     const { initialState } = useModel('@@initialState')
     const { authList } = initialState
 
-    const onMenuClick = useCallback(async (event: ClickParam) => {
+    const onMenuClick = async (event: ClickParam) => {
         const { key }: any = event;
         if (key === 'name') return;
         if (key === 'page') {
-            window.open(`${window.location.origin}/personCenter`)
+            window.open(isWs ? `${window.location.origin}/ws/${ws_id}/personCenter` : `${window.location.origin}/personCenter`)
         }
         if (key === 'logout') {
             if (BUILD_APP_ENV) {
@@ -36,7 +38,8 @@ const PersonCenter = () => {
 
             window.location.href = '/'
         }
-    }, []);
+        return
+    }
 
     const loading = (
         <span className={`${styles.action} ${styles.account}`}>
