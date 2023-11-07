@@ -41,8 +41,7 @@ const UserManagement: React.FC<{}> = () => {
 			setRolelist([])
 		}
 	}, []);
-
-
+	
 	const all = useRef<any>(null)
 	const [index, setIndex] = useState<string>('1');
 
@@ -117,7 +116,7 @@ const UserManagement: React.FC<{}> = () => {
 		>
 			{
 				index === '1' ?
-					!!select.length && <UserManagementTable
+					!!select.length && !!rolelist.length && <UserManagementTable
 						onRef={all}
 						select={select}
 						rolelist={rolelist}
