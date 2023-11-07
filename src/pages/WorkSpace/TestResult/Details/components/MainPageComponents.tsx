@@ -98,13 +98,14 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
             return message.error(msg)
 
         notification.success({
+            top: 80,
             duration: null,
-            message: <FormattedMessage id={'ws.result.details.breadcrumb.button.message'} />,
+            message: intl.formatMessage({ id: 'ws.result.details.breadcrumb.button.upload.message' }),
             description: (
                 <Space>
-                    <FormattedMessage id={'ws.result.details.breadcrumb.button.upload.ok'} />
+                    {intl.formatMessage({ id: 'ws.result.details.breadcrumb.button.upload.ok' })}
                     <Typography.Link target='_blank' href={`/ws/${ws_id}/offline_test`}>
-                        <FormattedMessage id={'ws.result.details.breadcrumb.button.upload.ok.view'} />
+                        {intl.formatMessage({ id: 'ws.result.details.breadcrumb.button.upload.ok.view' })}
                     </Typography.Link>
                 </Space>
             )
