@@ -61,6 +61,7 @@ export default {
   'operation.filter': '过滤',
   'operation.pass': '通过',
   'operation.refuse': '拒绝',
+  'operation.hidden': '隐藏',
 
   'pagination.total.strip': '共 {data} 条',
   'all': '全部',
