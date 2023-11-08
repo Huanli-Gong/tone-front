@@ -13,6 +13,8 @@ const text: any = {
   'job_type_id': 'Job Type',
   'test_type': 'Test Type',
   'project_id': 'Project',
+  'test_conf': 'Test Conf',
+
   'please.placeholder.job_id': 'Enter Job ID',
   'please.placeholder.name': 'Enter Job Name',
   'please.placeholder.fail_case': 'Enter multiple failed cases,separated by commas (,)',
@@ -24,6 +26,8 @@ const text: any = {
   'please.placeholder.job_type_id': 'Select Job Type',
   'please.placeholder.test_type': 'Select Test Type',
   'please.placeholder.project_id': 'Select Project',
+  'please.placeholder.product_version': 'Enter Product Version',
+  'please.placeholder.test_conf': 'Enter Test Conf',
   'start_time': 'Start Time',
   'completion_time': 'End Time',
 
@@ -44,8 +48,8 @@ const text: any = {
   'collection': 'Collected Jobs',
   'offline': 'Offline',
   'test_type.Tootip': 'All/Success/Fail',
-  'test_type.desc1': 'Functional: Collect statistics about TestConf results in test results.',
-  'test_type.desc2': 'Performance: Collect statistics on TestConf execution status in the execution result.',
+  'test_type.desc1': 'Functional: Collect statistics about Test Conf results in test results.',
+  'test_type.desc2': 'Performance: Collect statistics on Test Conf execution status in the execution result.',
   'selection.function': 'Select Action',
   'report.and.analysis': 'Report / Analysis',
   'batch.delete': 'Batch Delete',
@@ -69,7 +73,7 @@ const text: any = {
 
   'reRun.Modal.title': 'Import Configuration',
   'reRun.checked.suite': 'Import all cases at the same time',
-  'reRun.checked.fail_case': 'Just import failed Testcase',
+  'reRun.checked.fail_case': 'Just import failed Test Case',
   'reRun.checked.notice': 'Import notification configuration at the same time',
   'reRun.checked.inheriting_machine': 'Use the machine used by the original Job',
 };
