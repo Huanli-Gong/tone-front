@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Empty, Typography, Spin, message } from 'antd';
-import { useModel, useIntl, FormattedMessage } from 'umi';
+import { useModel, FormattedMessage } from 'umi';
 import { singleSystemRead, queryApplyMsg } from '@/services/Workspace'
 import { handleMsgType, jumpPage, NoticeItem } from './utils'
 import styles from './index.less';
@@ -54,8 +54,6 @@ const SystemInform = (props: any) => {
         let ws_id = obj.ws_info === undefined ? '' : obj.ws_info.ws_id
         jumpPage(name, action, ws_id)
     }
-
-
 
     return (
         <Spin spinning={loading}>
