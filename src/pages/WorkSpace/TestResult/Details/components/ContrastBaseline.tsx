@@ -4,6 +4,7 @@ import { Drawer, Form, Select, Space, Button, Row, Typography } from 'antd'
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
 import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
 import { contrastBaseline } from '../service'
+import { renderTitle } from "."
 
 const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { formatMessage } = useIntl()
@@ -68,10 +69,11 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
         <Drawer
             maskClosable={false}
             keyboard={false}
-            visible={visible}
+            open={visible}
             destroyOnClose
             title={<FormattedMessage id="ws.result.details.baseline" />}
             onClose={handleClose}
+            bodyStyle={{ padding: 0 }}
             width="376"
             footer={
                 <Row justify="end" >
@@ -82,7 +84,20 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
                 </Row>
             }
         >
-            <Form form={form} requiredMark={false} layout="vertical">
+            {
+                (drawerData?.suite_name || drawerData?.conf_name) &&
+                <Row style={{ marginBottom: 10, background: '#fff', padding: 20, borderBottom: '10px solid #f0f2f5' }}>
+                    {renderTitle('Test Suite', drawerData?.suite_name)}
+                    {renderTitle('Test Conf', drawerData?.conf_name)}
+                    {renderTitle('Test Case', drawerData?.case_name)}
+                </Row>
+            }
+            <Form
+                form={form}
+                requiredMark={false}
+                layout="vertical"
+                style={{ background: '#fff', padding: '10px 20px' }}
+            >
                 <Form.Item
                     label={<FormattedMessage id="ws.result.details.baseline" />}
                     name="baseline_id"
