@@ -5,7 +5,7 @@
 import React from 'react';
 import { message } from 'antd';
 import { parse } from 'querystring';
-import { getLocale, history, request } from 'umi'
+import { getLocale, history, request, useIntl } from 'umi'
 import { listRender, enumer, textRender } from './hooks';
 import _ from 'lodash';
 
@@ -88,6 +88,37 @@ export const getCompareType = ({ is_job, is_baseline }: any) => {
   if (hasJob) isBaseline = is_job === 0 ? true : false
   if (hasBaseline) isBaseline = is_baseline === 0 ? false : true
   return isBaseline
+}
+
+export const SERVER_INFO_CONFIG = ["ip/sn", "distro", "cpu_info", "memory_info", "disk", "ether", "os", "kernel", "gcc", "glibc"]
+
+export const useServerConfigArray = () => {
+  const { formatMessage } = useIntl()
+  return [
+    ["IP", "ip/sn"],
+    [
+      formatMessage({ id: "report.server.distro", defaultMessage: "机型" }),
+      "distro"
+    ],
+    ["CPU", "cpu_info"],
+    [
+      formatMessage({ id: "report.server.memory_info", defaultMessage: "内存" }),
+      "memory_info"
+    ],
+    [
+      formatMessage({ id: "report.server.disk", defaultMessage: "磁盘" }),
+      "disk"
+    ],
+    [
+      formatMessage({ id: "report.server.ether", defaultMessage: "网络" }),
+      "ether"
+    ],
+    ["OS", "os"],
+    ["Kernel", "kernel"],
+    ["GCC", "gcc"],
+    ["Glibc", "glibc"],
+    // ["RPM", "rpm"],
+  ]
 }
 
 export const switchUserRole = (name: string) => {

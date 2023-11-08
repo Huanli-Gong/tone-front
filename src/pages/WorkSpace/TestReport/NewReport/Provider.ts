@@ -1,3 +1,5 @@
-import { createContext } from 'react'
+import { createContext, useContext } from 'react'
 
-export const ReportContext = createContext<any>( null )
+export const ReportContext = createContext<any>(null)
+
+export const useReportContext = () => useContext(ReportContext)
