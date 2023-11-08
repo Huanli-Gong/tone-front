@@ -16,7 +16,7 @@ import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/DiffTootip';
-import { toShowNum, handleCaseColor } from '@/components/AnalysisMethods/index';
+import { toShowNum } from '@/components/AnalysisMethods/index';
 import { JumpResult } from '@/utils/hooks';
 import { useIntl, FormattedMessage } from 'umi'
 import { useScroll } from "ahooks"
@@ -39,6 +39,7 @@ import {
     ExpandIcon,
 } from '../AnalysisUI';
 import _ from 'lodash';
+import { CaseStateBLock } from '@/pages/WorkSpace/TestReport/NewReport/components/TestDataChild/FuncReview';
 
 const { Option } = Select
 
@@ -61,19 +62,15 @@ const ReportTestFunc: React.FC<any> = (props) => {
     }, [func_data_result])
 
     // 单个展开
-    const ExpandSubcases = (props: any) => {
+    const ExpandSubcases: React.FC<any> = (props) => {
         const { sub_case_list, conf_id } = props
         const expand = expandKeys.includes(conf_id)
         return (
             <>
                 {
-                    expand && sub_case_list?.map((item: any, idx: number) => {
-                        /* slice(0, group) */
-                        /* const len = Array.from(Array(allGroupData.length - item.compare_data.length)).map(val => ({}))
-                        console.log(len)
-                        len.forEach((i) => item.compare_data.push('-')) */
+                    expand && sub_case_list?.map((item: any) => {
                         return (
-                            <TestSubCase key={idx}>
+                            <TestSubCase key={item.sub_case_name}>
                                 <SubCaseTitle gLen={group}>
                                     <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
                                 </SubCaseTitle>
@@ -81,12 +78,14 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                     !!item.compare_data.length ?
                                         item.compare_data?.slice(0, group)?.map((cur: any, id: number) => {
                                             return (
-                                                <SubCaseText gLen={group} key={id}>
-                                                    <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
-                                                </SubCaseText>
+                                                <CaseStateBLock
+                                                    key={id}
+                                                    glen={group}
+                                                    tp={cur}
+                                                    desc={item.baseline_desc}
+                                                />
                                             )
-                                        })
-                                        :
+                                        }) :
                                         <SubCaseText gLen={group} >
                                             <Typography.Text>-</Typography.Text>
                                         </SubCaseText>
