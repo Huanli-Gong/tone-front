@@ -4,6 +4,7 @@ export default {
     'analysis.start': 'Start',
     'analysis.base': 'Base',
     'analysis.test.baseline': 'Baseline',
+    'analysis.chart.compare_result': 'Compare Result',
 
     // AnalysisCompare
     'analysis.area.to.grouped': 'To be grouped',
