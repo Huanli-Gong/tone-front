@@ -246,4 +246,4 @@ const ClusterChart: React.FC<AnyType> = (props) => {
     )
 }
 
-export default React.memo(ClusterChart, (prev, next) => prev.fetchData.key === next.fetchData.key)
+export default React.memo(ClusterChart, (prev, next) => JSON.stringify(prev?.fetchData) === JSON.stringify(next?.fetchData))
