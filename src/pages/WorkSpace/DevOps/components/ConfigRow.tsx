@@ -8,29 +8,39 @@ const RowWrapper = styled(Row)`
         margin-top:0px;
     }
 `
-const ColTitle = styled(Col)`
-    text-align:right;
-    width: 260px;
+const titleAfterCls = `
     &::after {
         content: '：';
     }
 `
 
+type TitleColProps = {
+    hasTitle: boolean;
+}
+
+const ColTitle = styled(Col) <TitleColProps>`
+    text-align:right;
+    width: 260px;
+    ${({ hasTitle }) => hasTitle ? titleAfterCls : ''}
+`
+
 type IProps = {
-    title: any;
+    title?: any;
     children: React.ReactNode | string
 }
 
-const ConfigRow = (props: IProps) => {
-    const { title, children } = props
+const ConfigRow: React.FC<IProps> = (props) => {
+    const { title } = props
 
     return (
-        <RowWrapper gutter={20}>
-            <ColTitle>
+        <RowWrapper gutter={20} >
+            <ColTitle hasTitle={!!title}>
                 {title}
             </ColTitle>
             <Col>
-                {children}
+                {
+                    React.createElement('div', props)
+                }
             </Col>
         </RowWrapper>
     )

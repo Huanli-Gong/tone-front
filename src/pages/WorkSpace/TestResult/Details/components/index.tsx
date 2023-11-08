@@ -1,6 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useRef } from 'react'
-import { Tooltip, Tag, Space, Popover, Row, Col, Breadcrumb } from 'antd'
+import { Tooltip, Tag, Space, Popover, Row, Col, Breadcrumb, Typography } from 'antd'
 import styles from './index.less'
 import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons'
 import { history, useParams, useIntl, FormattedMessage } from 'umi'
@@ -366,3 +366,13 @@ CV:  ${cv}`
         </Popover>
     )
 }
+
+export const renderTitle: React.FC<any> = (name, title) => (
+    title &&
+    <Col span={24}>
+        <Row>
+            <Typography.Text style={{ width: 70, fontWeight: 600, marginRight: 8 }}>{name}</Typography.Text>
+            <Typography.Paragraph style={{ width: "calc( 100% - 70px - 8px)" }} ellipsis>{title}</Typography.Paragraph>
+        </Row>
+    </Col>
+)

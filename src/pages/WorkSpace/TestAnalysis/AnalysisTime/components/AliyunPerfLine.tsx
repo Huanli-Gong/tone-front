@@ -67,21 +67,21 @@ const PerfLineOption: any = ({ dataSource, ws_id, formatMessage }: any) => {
                     const element = (
                         `<div style="margin-right:10px">
                             ${params[0].marker} ${params[0].name} <br />
-                            ${commitLinkTip('JobID', item.job_id, ws_id)}
-                            ${textTip('commit', item.commit)}
-                            ${textTip('Avg', item.value)}
-                            ${textTip('CV', item.cv_value)}
+                            ${commitLinkTip('JobID', item?.job_id, ws_id)}
+                            ${textTip('commit', item?.commit)}
+                            ${textTip('Avg', item?.value)}
+                            ${textTip('CV', item?.cv_value)}
                             ${textTip(formatMessage({ id: 'analysis.baseline.value' }), baseline_data.value && Number(baseline_data.value).toFixed(2))}
                             ${textTip(formatMessage({ id: 'analysis.baseline.cv' }), baseline_data.cv_value)}
-                            ${textTip('commit', item.commit)}
-                            ${serverLinkTip(item.server)}
-                            ${textTip(formatMessage({ id: 'analysis.specs' }), item.instance_type)}
-                            ${textTip('Image', item.image)}
-                            ${textTip('Bandwidth', item.bandwidth)}
-                            ${textTip('RunMode', item.run_mode)}
-                            ${textTip(formatMessage({ id: 'analysis.table.column.note' }), item.note)}
-                        </div>`
-                            .trim()
+                            ${textTip('commit', item?.commit)}
+                            ${serverLinkTip(item?.server)}
+                            ${textTip(formatMessage({ id: 'analysis.specs' }), item?.instance_type)}
+                            ${textTip('Image', item?.image)}
+                            ${textTip('Bandwidth', item?.bandwidth)}
+                            ${textTip('RunMode', item?.run_mode)}
+                            ${textTip(formatMessage({ id: 'analysis.table.column.note' }), item?.note)}
+                            ${textTip(formatMessage({ id: 'analysis.chart.compare_result' }), item?.compare_result)}
+                        </div>`.trim()
                     )
                     return `<div style="display:flex;">${element}</div>`
                 },

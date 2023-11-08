@@ -5,7 +5,7 @@
 /* eslint-disable prefer-const */
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
 import { ReportContext } from '../../Provider';
-import { Button, Space, Select, Typography, Popconfirm, Empty, Row, Col, Pagination } from 'antd';
+import { Button, Space, Select, Typography, Popconfirm, Empty, Row, Col, Pagination, Tooltip } from 'antd';
 import { useIntl, FormattedMessage, useLocation } from 'umi';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
 import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
@@ -46,6 +46,7 @@ import {
 } from '../../ReportUI';
 import _ from 'lodash';
 import { getCompareType } from '@/utils/utils';
+import { ExclamationCircleOutlined } from '@ant-design/icons'
 
 const { Option } = Select;
 
@@ -53,6 +54,32 @@ const DelBtnEmpty: React.FC<any> = ({ btnState }) => {
     return btnState && <PrefDataDel empty={true} />
 }
 
+type CaseStateProps = {
+    glen: number;
+    state?: any;
+    tp: any;
+    desc: string;
+}
+
+export const CaseStateBLock: React.FC<CaseStateProps> = ({ glen, state, tp, desc }) => {
+    return (
+        <SubCaseText gLen={glen} btnState={state}>
+            <Space>
+                <Typography.Text style={{ color: handleCaseColor(tp) }}>
+                    {tp || '-'}
+                </Typography.Text>
+                {
+                    (!!~tp.toLowerCase().indexOf('fail') && desc) &&
+                    <Tooltip
+                        title={desc}
+                    >
+                        <ExclamationCircleOutlined style={{ color: 'rgba(0,0,0,.45)', cursor: 'pointer' }} />
+                    </Tooltip>
+                }
+            </Space>
+        </SubCaseText>
+    )
+}
 // 单个展开
 const ExpandSubcases: React.FC<any> = (props) => {
     const { sub_case_list, conf_id, expandKeys, isOldReport, baseIndex, groupLen, btnState } = props
@@ -90,16 +117,21 @@ const ExpandSubcases: React.FC<any> = (props) => {
                                 !!item.compare_data.length ?
                                     item.compare_data?.slice(0, groupLen).map((cur: any, idx: number) => {
                                         return (
-                                            <SubCaseText gLen={groupLen} btnState={btnState} key={idx}>
-                                                <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
-                                            </SubCaseText>
+                                            <CaseStateBLock
+                                                key={idx}
+                                                glen={groupLen}
+                                                state={btnState}
+                                                tp={cur}
+                                                desc={item.baseline_desc}
+                                            />
                                         )
-                                    })
-                                    :
-                                    <SubCaseText gLen={groupLen} btnState={btnState}>
-                                        <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
-                                    </SubCaseText>
-
+                                    }) :
+                                    <CaseStateBLock
+                                        glen={groupLen}
+                                        state={btnState}
+                                        tp={item.result}
+                                        desc={item.baseline_desc}
+                                    />
                             }
                         </TestSubCase>
                     )

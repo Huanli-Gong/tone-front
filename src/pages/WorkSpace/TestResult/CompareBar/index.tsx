@@ -171,11 +171,12 @@ export default (props: any) => {
 
         const flag = baselineGroup.type === 'baseline'
         baseMembers.forEach((item: any) => {
+            const { server_provider } = item
             if (!flag) {
-                brr.push({ is_baseline: 0, obj_id: item.id, })
+                brr.push({ is_baseline: 0, obj_id: item.id, server_provider })
             }
             if (flag) {
-                brr.push({ is_baseline: 1, obj_id: item.id, baseline_type: item.test_type === 'functional' ? 'func' : 'perf' })
+                brr.push({ is_baseline: 1, obj_id: item.id, server_provider, baseline_type: item.test_type === 'functional' ? 'func' : 'perf' })
             }
         })
         const base_group = {

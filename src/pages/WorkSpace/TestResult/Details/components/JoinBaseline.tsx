@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { Drawer, Space, Button, Form, Input, Select, Radio, Spin, message, Divider, Typography } from 'antd'
+import { Drawer, Space, Button, Form, Input, Select, Radio, Spin, message, Divider, Typography, Row } from 'antd'
 import React, { useState, forwardRef, useImperativeHandle, useRef } from 'react'
 import { useParams, useIntl, FormattedMessage } from 'umi'
 import { queryBaselineList, perfJoinBaseline, perfJoinBaselineBatch, createFuncsDetail } from '../service'
@@ -9,6 +9,7 @@ import BaselineCreate from './BaselineCreate'
 import Highlighter from 'react-highlight-words'
 import { createBaseline } from '@/pages/WorkSpace/BaselineManage/services'
 import { requestCodeMessage } from '@/utils/utils'
+import { renderTitle } from "."
 
 const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { formatMessage } = useIntl()
@@ -177,6 +178,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             width="376"
             title={<FormattedMessage id="ws.result.details.join.baseline" />}
             open={visible}
+            bodyStyle={{ padding: 0 }}
             onClose={handleClose}
             footer={
                 <div style={{ textAlign: 'right', }} >
@@ -194,9 +196,18 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             }
         >
             <Spin spinning={loading} >
+                {
+                    (source?.suite_name || source?.conf_name) &&
+                    <Row style={{ marginBottom: 10, background: '#fff', padding: 20, borderBottom: '10px solid #f0f2f5' }}>
+                        {renderTitle('Test Suite', source?.suite_name)}
+                        {renderTitle('Test Conf', source?.conf_name)}
+                        {renderTitle('Test Case', source?.case_name)}
+                    </Row>
+                }
                 <Form
                     form={form}
                     layout="vertical"
+                    style={{ background: '#fff', padding: '10px 20px' }}
                 >
                     {
                         test_type === 'functional' &&
@@ -372,6 +383,13 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                             </Form.Item>
                         </>
                     }
+
+                    <Form.Item
+                        label={'基线说明'}
+                        name='desc'
+                    >
+                        <Input allowClear placeholder='请输入' />
+                    </Form.Item>
                 </Form>
             </Spin>
             <BaselineCreate ref={baselineCreateModal} />

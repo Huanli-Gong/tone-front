@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useState, useRef, useEffect, useMemo } from 'react'
-import { history, Access, useAccess, useIntl, FormattedMessage } from 'umi'
+import { history, Access, useAccess, useIntl, FormattedMessage, useParams } from 'umi'
 
 import { Row, Typography, Checkbox, Radio, Space, Col, Card, message, Button, Spin, Input, Divider, Modal } from 'antd'
 import { PlusOutlined, ExclamationCircleFilled } from '@ant-design/icons'
@@ -12,7 +12,7 @@ import { useClientSize } from '@/utils/hooks'
 import SuiteSelectDrawer from './components/SuiteSelectDrawer'
 import { createReportTemplate, queryReportTemplateDetails, updateReportTemplate } from './services'
 import produce from 'immer'
-import { requestCodeMessage } from '@/utils/utils'
+import { SERVER_INFO_CONFIG, requestCodeMessage, useServerConfigArray } from '@/utils/utils'
 import { ReportTemplateContext, useProvider } from './Provider'
 import Catalog from './components/TemplateCatalog'
 import TemplateBreadcrumb from './components/TemplateBreadcrumb'
@@ -269,17 +269,22 @@ const ConfigCheckbox: React.FC<any> = ({ field, name, title, text }) => {
 
 
 const RenderCheckbox: React.FC<any> = (props) => {
-
     const { formatMessage } = useIntl()
     const { name, title, desc } = props
     const { dataSource, setDataSource, contrl } = useProvider()
-    const handeleCheckboxChange = (name: string, val: boolean | string) => {
+
+    const { server_info_config } = dataSource
+    const reportServerArray = useServerConfigArray()
+    const handeleCheckboxChange = (name: string, val: boolean | string | any) => {
         setDataSource(
             produce(dataSource, (draftState: any) => {
                 draftState[name] = val
             })
         )
     }
+
+    const checkAll = SERVER_INFO_CONFIG.length === server_info_config.length;
+    const indeterminate = server_info_config.length > 0 && server_info_config.length < SERVER_INFO_CONFIG.length;
 
     return (
         <Space
@@ -308,14 +313,37 @@ const RenderCheckbox: React.FC<any> = (props) => {
                     autoSize={{ minRows: 3, maxRows: 6 }}
                 />
             }
+
+            {
+                name === 'need_test_env' &&
+                <>
+                    <Divider style={{ margin: '8px 0' }} />
+                    <Checkbox
+                        indeterminate={indeterminate}
+                        onChange={(e) => handeleCheckboxChange('server_info_config', e.target.checked ? SERVER_INFO_CONFIG : [])}
+                        checked={checkAll}
+                    >
+                        全选
+                    </Checkbox>
+                    <Checkbox.Group
+                        onChange={(ls) => handeleCheckboxChange('server_info_config', ls)}
+                        disabled={!dataSource[name]}
+                        value={server_info_config || []}
+                        options={reportServerArray.map(([label, value]) => ({
+                            label,
+                            value
+                        }))}
+                    />
+                </>
+            }
         </Space>
     )
 }
 
-const TemplatePage = (props: any) => {
+const TemplatePage: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const { route } = props
-    const { ws_id, temp_id } = props.match.params
+    const { ws_id, temp_id } = useParams() as any
     const access = useAccess()
     const [loading, setLoading] = useState(false)
     const [isPreview, setIsPreview] = React.useState(false)
@@ -338,6 +366,7 @@ const TemplatePage = (props: any) => {
         func_conf: funcDefaultConf,
         perf_item: [],
         func_item: [],
+        server_info_config: SERVER_INFO_CONFIG
     })
 
     const getTreeKeys = (data: any): any => {
@@ -376,10 +405,12 @@ const TemplatePage = (props: any) => {
 
         const {
             perf_item, func_item, perf_conf, func_conf,
+            server_info_config
         } = data
         setContrl(access.WsMemberOperateSelf(data.creator))
 
         const params: any = {
+            server_info_config: server_info_config ? JSON.parse(server_info_config?.replace(/\'/g, '"')) : SERVER_INFO_CONFIG,
             func_conf: func_conf || funcDefaultConf,
             perf_conf: perf_conf || defaultConf,
             perf_item: refreshRowkey(perf_item),

@@ -19,6 +19,7 @@ import { ReactComponent as BaseGroupIcon } from '@/assets/svg/TestReport/BaseIco
 import lodash from 'lodash'
 import produce from 'immer'
 import styled from 'styled-components'
+import { SERVER_INFO_CONFIG } from '@/utils/utils'
 interface PreviewContainerProps {
     height: number;
 }
@@ -80,7 +81,7 @@ const GroupTableRow = styled(FullRow)`
 
 const { document }: any = window
 
-const TemplatePreview = (props: any) => {
+const TemplatePreview: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const { route, dataSet, setIsPreview } = props
     const isCreatePreview = ["TemplateCreate", "TemplateEdit"].includes(route.name)
@@ -130,10 +131,11 @@ const TemplatePreview = (props: any) => {
             try {
                 setLoading(true)
                 const { data } = await queryReportTemplateDetails({ ws_id, id: temp_id })
-                const { perf_item, func_item, perf_conf, func_conf, name } = data
+                const { perf_item, func_item, perf_conf, func_conf, name, server_info_config } = data
                 document.title = `${name} - T-One`
 
                 setDataSource(produce(data, (draft: any) => {
+                    draft.server_info_config = server_info_config ? JSON.parse(server_info_config?.replace(/\'/g, '"')) : SERVER_INFO_CONFIG
                     draft.func_conf = func_conf || defaultConf
                     draft.perf_conf = perf_conf || defaultConf
                     draft.perf_item = refreshRowkey(perf_item)
@@ -241,6 +243,7 @@ const TemplatePreview = (props: any) => {
                         }
 
                         <TestEnv
+                            server_info_config={dataSource?.server_info_config}
                             env_description_desc={dataSource?.env_description_desc}
                             need_test_env={dataSource?.need_test_env}
                             need_env_description={dataSource?.need_env_description}

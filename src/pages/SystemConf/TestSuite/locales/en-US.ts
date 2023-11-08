@@ -132,6 +132,7 @@ export default {
   'confDrawer.title.new': 'Add Test Conf',
   'confDrawer.title.edit': 'Edit Test Conf',
   'confDrawer.title.batch.edit': 'Batch Edit Test Conf',
+  'confDrawer.popconfirm.title': 'Batch operation input content will overwrite the original field values. Are you sure to submit?',
   // MetricEditDrawer
   'metricEditer.title.': 'Add Metric',
   'metricEditer.title.new': 'Add Metric',

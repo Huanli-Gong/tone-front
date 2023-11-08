@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from 'react'
-import { Tooltip } from 'antd'
+import { Tooltip, Typography } from 'antd'
 import { QusetionIconTootip, ResultTdPopver, compareResultFontColor, compareResultSpan } from '../components'
 import { queryCaseResultPerformance } from '../service'
 import { useRequest, useAccess, Access, useParams, useIntl, FormattedMessage } from 'umi'
@@ -9,6 +9,7 @@ import styles from './index.less'
 import { targetJump } from '@/utils/utils'
 import { ResizeHooksTable } from '@/utils/table.hooks';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 export default ({ test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType }: any) => {
     const { formatMessage } = useIntl()
@@ -61,7 +62,7 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
             ellipsis: {
                 shwoTitle: false,
             },
-            width: 120,
+            width: 200,
             render: (_: any, row: any) => (
                 <ResultTdPopver
                     {...row}
@@ -89,11 +90,49 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
                                     }
                                 }}
                             >
-                                <EllipsisPulic title={`${_}±${row.baseline_cv_value}`}/>
+                                <EllipsisPulic title={`${_}±${row.baseline_cv_value}`} />
                             </span>
                         </Access> :
                         '-'
                 )
+            }
+        },
+        {
+            dataIndex: 'description',
+            width: 130,
+            title: (
+                <QusetionIconTootip
+                    placement="bottomLeft"
+                    title={formatMessage({ id: 'ws.result.details.baseline.description' })}
+                    desc={formatMessage({ id: 'ws.result.details.baseline.description.ps' })}
+                />
+            ),
+            ellipsis: true,
+            render: (_: any, row: any) => {
+                let context = row.description
+                const localeStr = formatMessage({ id: 'ws.result.details.match.baseline' })
+                if (row.match_baseline && row.result === 'Fail')
+                    context = _ ? `${_}(${localeStr})` : localeStr
+                if (!context) return "-"
+                if (access.IsWsSetting())
+                    return (
+                        <Tooltip placement="topLeft" title={context}>
+                            <Typography.Link
+                                className={styles.hrefUrl}
+                                onClick={
+                                    () => {
+                                        if (row.skip_baseline_info) {
+                                            const $test_type = ["performance", "性能测试"].includes(testType) ? "performance" : "functional"
+                                            targetJump(`/ws/${ws_id}/baseline/${$test_type}?${qs.stringify(row.skip_baseline_info)}`)
+                                        }
+                                    }
+                                }
+                            >
+                                {context || '-'}
+                            </Typography.Link>
+                        </Tooltip >
+                    )
+                return (<ColumnEllipsisText ellipsis={{ tooltip: true }}>{context || '-'}</ColumnEllipsisText>)
             }
         },
         {
@@ -115,7 +154,7 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
                 shwoTitle: false,
             },
             render: (_: any) => (
-                _ ? <EllipsisPulic title={_}/> : '-'
+                _ ? <EllipsisPulic title={_} /> : '-'
             )
         },
         {

@@ -8,6 +8,7 @@ import treeSvg from '@/assets/svg/tree.svg'
 
 import FailCase from './FailCase'
 import MetricList from "./Metric"
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 // 性能三级
 type Iprops = Record<string, any>
@@ -28,6 +29,7 @@ const ConfTable: React.FC<Iprops> = (props) => {
     const columns = [{
         dataIndex: 'test_case_name',
         title: 'Test Conf',
+        width: '30%',
         key: 'test_case_name',
         render: (text: any) => {
             return (
@@ -35,7 +37,19 @@ const ConfTable: React.FC<Iprops> = (props) => {
                     {text}
                 </Typography.Link>
             )
-        }
+        },
+    },
+    {
+        dataIndex: 'desc',
+        title: '说明',
+        ellipsis: {
+            showTitle: false,
+        },
+        render: (row: any) => (
+            <ColumnEllipsisText ellipsis={{ tooltip: true }}>
+                {row}
+            </ColumnEllipsisText>
+        )
     }]
 
     const openDrawer = (record: any) => {
@@ -88,7 +102,6 @@ const ConfTable: React.FC<Iprops> = (props) => {
                             rowKey={'test_case_id'}
                             pagination={false}
                             size="small"
-                            scroll={{ x: '100%' }}
                             onRow={(record: any) => {
                                 return {
                                     onClick: () => {
