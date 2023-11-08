@@ -14,4 +14,8 @@ export default {
 
   'devOps.matrix_repo.aliyun': ' Tone aliyun matrix git url',
   'devOps.matrix_repo.aligroup': 'Tone aligroup matrix git url',
+
+  'devOps.pending_job_num': 'Job warning mechanism',
+  'devOps.pedding_job_num.desc': 'Issue an alert when the number of pending items exceeds ',
+  'devOps.pedding_job_num.desc_1': ' ',
 }

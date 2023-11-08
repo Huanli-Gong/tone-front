@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
-import { Space, message, Button, Modal, Checkbox, Typography } from 'antd';
+import { Space, message, Button, Modal, Checkbox, Typography, Row } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useIntl, FormattedMessage } from 'umi'
 import moment from 'moment';
@@ -240,12 +240,12 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 		},
 		{
 			title: (
-				<Space>
+				<Row justify={'space-between'} style={{ width: '100%' }}>
 					<FormattedMessage id="Table.columns.operation" />
 					<Button type="primary" onClick={() => handelAddOrEdit({ type: 'add' })} size="small">
 						<FormattedMessage id="operation.new" />
 					</Button>
-				</Space>
+				</Row>
 			),
 			key: "operation",
 			width: 150,

@@ -4,7 +4,6 @@ import PersonWorkspace from './PersonWorkspace'
 import PersonApprove from './PersonApprove'
 import TokenConfig from './TokenConfig'
 import styles from './index.less'
-import _ from 'lodash'
 import { history, useModel, useLocation, useIntl, FormattedMessage } from 'umi'
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useClientSize } from '@/utils/hooks'
@@ -14,6 +13,7 @@ import AvatarCover from '@/components/AvatarCover'
 
 const PersonCenterPage: React.FC = () => {
     const { formatMessage } = useIntl()
+    const { pathname } = useLocation()
 
     const { initialState } = useModel('@@initialState')
     const { authList } = initialState
@@ -24,7 +24,7 @@ const PersonCenterPage: React.FC = () => {
 
     const handleTabClick = async (t: string) => {
         setTab(t)
-        history.replace(`/personCenter?person=${t}`)
+        history.replace(`${pathname}?person=${t}`)
     }
 
     const scroll = {

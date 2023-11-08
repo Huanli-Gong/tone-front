@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Row, Dropdown, Menu, Tabs, Badge, Button, Space } from 'antd';
+import { Row, Dropdown, Tabs, Badge, Button, Space, notification, Typography } from 'antd';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useModel, history, useAccess, Access, FormattedMessage } from 'umi';
 import SelectLang from './SelectLang'
@@ -25,6 +25,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     const { isWs, wsId, routes } = props;
     const { initialState, setInitialState } = useModel('@@initialState');
     const [tab, setTab] = useState('1')
+    const [loading, setLoading] = React.useState(false)
     const [dropVisible, setDropVisible] = useState(false)
     const access = useAccess()
     const handleTabClick = ($tab: string) => {
@@ -68,7 +69,10 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     }
 
     const handleAllRead = async () => {
+        if (loading) return
+        setLoading(true)
         const data = tab == '1' ? await allTagRead() : await allTagApplyRead()
+        setLoading(false)
         if (data.code === 200) {
             setTab(tab)
             increment()
@@ -76,22 +80,38 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
             requestCodeMessage(data.code, data.msg)
         }
     }
+
     const handleVisibleChange = (flag: any) => {
         setDropVisible(flag);
     };
 
-    const NoReasonJoinWorkspace: React.FC<any> = () => {
-        const handleSubmit = async () => {
-            const ws_id = wsId
-            const { code, msg } = await applyWorkspaceRole({ ws_id })
+    const handleSubmit = async () => {
+        const ws_id = wsId
+        const { code, msg } = await applyWorkspaceRole({ ws_id })
+
+        if (code !== 200) {
             requestCodeMessage(code, msg)
-            if (code === 200) {
-                const { data } = await person_auth({ ws_id })
-                const accessData = deepObject(data)
-                setInitialState({ ...initialState, authList: { ...accessData, ws_id } })
-            }
+            return
         }
-        return <Button type="primary" onClick={() => handleSubmit()}>申请加入</Button>
+
+        notification.success({
+            duration: null,
+            message: '提示',
+            description: (
+                <Space>
+                    <Typography.Text>
+                        {msg}
+                    </Typography.Text>
+                    <Typography.Link href={`/ws/${ws_id}/personCenter?person=approve`}>
+                        查看
+                    </Typography.Link>
+                </Space>
+            ),
+        })
+
+        const { data } = await person_auth({ ws_id })
+        const accessData = deepObject(data)
+        setInitialState({ ...initialState, authList: { ...accessData, ws_id } })
     }
 
     const needJoinWorkspace = React.useMemo(() => {
@@ -134,7 +154,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                     {
                         ws_need_need_approval ?
                             <ApplyJoinWorkspace ws_id={wsId} style={{ margin: 0 }} /> :
-                            <NoReasonJoinWorkspace />
+                            <Button type="primary" onClick={() => handleSubmit()}>申请加入</Button>
                     }
                 </span>
             }

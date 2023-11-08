@@ -234,16 +234,17 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
                         const element = (
                             `<div style="margin-right:10px">
                                 ${cur.marker} ${cur.seriesName} <br />
-                                ${commitLinkTip('JobID', item.job_id, ws_id)}
-                                ${textTip('commit', item.commit)}
-                                ${textTip('Avg', item.value)}
-                                ${textTip('CV', item.cv_value)}
+                                ${commitLinkTip('JobID', item?.job_id, ws_id)}
+                                ${textTip('commit', item?.commit)}
+                                ${textTip('Avg', item?.value)}
+                                ${textTip('CV', item?.cv_value)}
                                 ${textTip(formatMessage({ id: 'analysis.baseline.value' }), item?.baseline_data.value && Number(item?.baseline_data.value).toFixed(2))}
                                 ${textTip(formatMessage({ id: 'analysis.baseline.cv' }), item?.baseline_data.cv_value)}
-                                ${textTip('commit', item.commit)}
+                                ${textTip('commit', item?.commit)}
                                 ${serverLinkTip(params.seriesName)}
                                 ${renderProviderText(params, provider_env)}
-                                ${textTip(formatMessage({ id: 'analysis.table.column.note' }), item.note)}
+                                ${textTip(formatMessage({ id: 'analysis.table.column.note' }), item?.note)}
+                                ${textTip(formatMessage({ id: 'analysis.chart.compare_result' }), item?.compare_result)}
                             </div>`
                                 .trim()
                         )

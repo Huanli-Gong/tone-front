@@ -43,7 +43,7 @@ const BatchDelete = () => {
     }
 
     const onBentch = () => {
-        confDrawerShow('batch.edit', { bentch: true }) // 批量编辑Test Conf
+        confDrawerShow('batch.edit', { batch: true }) // 批量编辑Test Conf
     }
 
     const handleDetail = async () => {

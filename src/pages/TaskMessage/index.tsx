@@ -2,19 +2,22 @@
 import React, { useState } from 'react';
 import { Layout, Tabs, Badge } from 'antd';
 import styles from './msg.less'
-import { useModel } from 'umi';
+import { useModel, history, useLocation } from 'umi';
 import TaskInformIndex from './MsgDetail/TaskInformIndex'
 import SystemInformIndex from './MsgDetail/SystemInformIndex'
 import { useClientSize } from '@/utils/hooks';
 
 const Msg: React.FC = () => {
-    const state = window.location.search.substring(1)
-    const [tab, setTab] = useState(state === 'task' ? '1' : '2')
+    const { pathname, query }: any = useLocation()
+    const state = query ? Object.keys(query)?.[0] : '1'
+
+    const [tab, setTab] = useState(state !== 'sys' ? '1' : '2')
     const { TabPane } = Tabs;
     const { msgNum } = useModel('msg');
     // tab切换
     const handleTabClick = ($tab: string) => {
         setTab($tab)
+        history.replace(`${pathname}?${$tab == '1' ? 'task' : 'sys'}`)
     }
     document.title = '消息通知 T-One'
 
