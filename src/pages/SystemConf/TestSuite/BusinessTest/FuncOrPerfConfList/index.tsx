@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
-import { Button, Space, Tabs, message, Modal, Checkbox, Typography } from 'antd';
+import { Button, Space, Tabs, message, Modal, Checkbox, Typography, Row } from 'antd';
 import { CaretRightFilled, CaretDownFilled, EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { addCase, editCase, delCase, delBentch, openSuite, editBentch } from '@/pages/SystemConf/TestSuite/service';
+import { editCase, delCase, delBentch, openSuite } from '@/pages/SystemConf/TestSuite/service';
 import { useIntl, FormattedMessage } from 'umi'
 import CommonTable from '@/components/Public/CommonTable';
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
@@ -112,61 +112,9 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
 
 
     // 新增|编辑｜批量编辑，回调函数。
-    const submitCase = async (data: any, bentch: boolean) => {
-        const { test_suite_id, id } = data
-        const param = { ...data }
-        if (bentch) {
-            const params = { ...param, ...{ case_id_list: selectedRowKeys.join(',') } }
-            await editBentch(params)
-            setSelectedRowKeys([])
-            setSelectedRow([])
-        }
-        else {
-            let content = param.var
-            if (Object.prototype.toString.call(param.var) === '[object String]') {
-                try {
-                    let valid = JSON.parse(content)
-                    if (Object.prototype.toString.call(valid) === '[object Array]') {
-                        let len = valid.length
-                        for (var i = 0; i < len; i++) {
-                            if (!(Object.prototype.toString.call(valid[i]) === '[object Object]')) {
-                                message.error(formatMessage({ id: 'TestSuite.data.format.error' }));
-                                return
-                            }
-                        }
-                    } else {
-                        message.error(formatMessage({ id: 'TestSuite.data.format.error' }));
-                        return
-                    }
-                } catch (e) {
-                    message.error(formatMessage({ id: 'TestSuite.data.format.error' }));
-                    return
-                }
-            }
-            else {
-                let arr: any = []
-                content.map((item: any) => {
-                    if (item.name) {
-                        arr.push(item)
-                    }
-                })
-                content = JSON.stringify(arr)
-            }
-            param.var = content
-            // ...{ test_suite_id }
-            const params = { ...param, ...{ test_suite_id } }
-            const { code, msg } = id ? await editCase(id, params) : await addCase(params)
-            if (code == 201) {
-                message.error(formatMessage({ id: 'TestSuite.repeated.suite.name' }));
-                return
-            }
-            if (code == 202) {
-                message.error(msg);
-                return
-            }
-        }
-
-        confDrawer.current.hide()
+    const submitCase = async () => {
+        setSelectedRowKeys([])
+        setSelectedRow([])
         message.success(formatMessage({ id: 'operation.success' }));
         setConfRefresh(!confRefresh)
     }
@@ -205,7 +153,7 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
     }
     // 批量编辑
     const editAll = () => {
-        confDrawer.current.show('batch.edit', { bentch: true, test_suite_id: id })
+        confDrawer.current.show('batch.edit', { batch: true, test_suite_id: id })
     }
 
     const handleInnerTab = (key: string, id: number) => {
@@ -245,16 +193,16 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
         } */
     }
     const newCase = () => {
-        confDrawer.current.show('new', { bentch: false, test_suite_id: id })
+        confDrawer.current.show('new', { batch: false, test_suite_id: id })
     }
 
-    const rowSelection = + status === 0 ? {
+    const rowSelection = {
         selectedRowKeys,
         onChange: (selectedRowKeys: any[], selectedRows: any) => {
             setSelectedRow(selectedRows)
             setSelectedRowKeys(selectedRowKeys)
         }
-    } : undefined
+    }
 
     const onExpand = async (record: any) => {
         setExpandInnerKey([record.id])
@@ -320,12 +268,12 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
         },
         {
             title: (
-                <Space align="center">
+                <Row justify={'space-between'} style={{ width: '100%' }}>
                     <FormattedMessage id="Table.columns.operation" />
                     <Button type='primary' onClick={newCase} size="small">
                         <FormattedMessage id="operation.new" />
                     </Button>
-                </Space>
+                </Row>
             ),
             valueType: 'option',
             dataIndex: 'operation',
@@ -407,7 +355,7 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
             }
 
             {/** 新增TestConf */}
-            <ConfEditDrawer ref={confDrawer} onOk={submitCase} />
+            <ConfEditDrawer ref={confDrawer} onOk={submitCase} selectedRowKeys={selectedRowKeys} />
 
             {/** 编辑说明 */}
             <DesFastEditDrawer ref={descFastEdit} onOk={handleEditDesc} />

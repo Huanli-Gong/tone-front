@@ -132,6 +132,8 @@ export default {
   'confDrawer.title.new': '新增Test Conf',
   'confDrawer.title.edit': '编辑Test Conf',
   'confDrawer.title.batch.edit': '批量编辑Test Conf',
+
+  'confDrawer.popconfirm.title': '批量操作输入内容将覆盖原有字段值，确认提交吗？',
   // MetricEditDrawer
   'metricEditer.title.': '新增Metric',
   'metricEditer.title.new': '新增Metric',
