@@ -272,9 +272,9 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                                 </Space>
                         }
                     >
-                        <PersonCenter />
+                        <PersonCenter {...props} />
                     </Access> :
-                    <PersonCenter />
+                    <PersonCenter {...props} />
             }
         </Row >
     );

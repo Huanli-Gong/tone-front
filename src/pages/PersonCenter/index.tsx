@@ -10,7 +10,6 @@ import { useClientSize } from '@/utils/hooks'
 import { switchUserRole2 } from '@/utils/utils'
 import AvatarCover from '@/components/AvatarCover'
 
-
 const PersonCenterPage: React.FC = () => {
     const { formatMessage } = useIntl()
     const { pathname } = useLocation()
@@ -35,49 +34,51 @@ const PersonCenterPage: React.FC = () => {
 
     return (
         <Scrollbars style={scroll}>
-            <Layout.Content className={styles.content}>
+            <div className={styles.container}>
+                <Layout.Content className={styles.content}>
 
-                <div className={styles.current_user}>
-                    <Space>
-                        <div className={styles.avatar}>
-                            {
-                                authList.avatar ?
-                                    <Avatar size="small" src={authList.avatar || ''} alt="avatar" className={styles.avatar} /> :
-                                    <AvatarCover shape="circle" size={56} fontSize={28} theme_color={authList.avatar_color} show_name={authList.last_name} />
-                            }
-                        </div>
-                        <div>
-                            <div className={styles.name}>
-                                {authList.first_name || authList.last_name}
-                                <Tag
-                                    className={styles.role}
-                                    style={{ opacity: authList.sys_role_title === 'user' ? 0 : 1 }}
-                                >
-                                    {switchUserRole2(authList.sys_role_title, formatMessage)}
-                                </Tag>
+                    <div className={styles.current_user}>
+                        <Space>
+                            <div className={styles.avatar}>
+                                {
+                                    authList.avatar ?
+                                        <Avatar size="small" src={authList.avatar || ''} alt="avatar" className={styles.avatar} /> :
+                                        <AvatarCover shape="circle" size={56} fontSize={28} theme_color={authList.avatar_color} show_name={authList.last_name} />
+                                }
                             </div>
-                            <div className={styles.email}>{authList.email || ''} </div>
-                        </div>
-                    </Space>
-                </div>
+                            <div>
+                                <div className={styles.name}>
+                                    {authList.first_name || authList.last_name}
+                                    <Tag
+                                        className={styles.role}
+                                        style={{ opacity: authList.sys_role_title === 'user' ? 0 : 1 }}
+                                    >
+                                        {switchUserRole2(authList.sys_role_title, formatMessage)}
+                                    </Tag>
+                                </div>
+                                <div className={styles.email}>{authList.email || ''} </div>
+                            </div>
+                        </Space>
+                    </div>
 
-                <Tabs
-                    defaultActiveKey={tab}
-                    onTabClick={handleTabClick}
-                    className={styles.tab_title}
-                    activeKey={tab}
-                >
-                    <Tabs.TabPane tab="Workspace" key="workspace" className={styles.tab_item}>
-                        <PersonWorkspace />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab={<FormattedMessage id="person.center.approve" />} key="approve">
-                        <PersonApprove />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab={<FormattedMessage id="person.center.tokenConfig" />} key="tokenConfig">
-                        <TokenConfig />
-                    </Tabs.TabPane>
-                </Tabs>
-            </Layout.Content>
+                    <Tabs
+                        defaultActiveKey={tab}
+                        onTabClick={handleTabClick}
+                        className={styles.tab_title}
+                        activeKey={tab}
+                    >
+                        <Tabs.TabPane tab="Workspace" key="workspace" className={styles.tab_item}>
+                            <PersonWorkspace />
+                        </Tabs.TabPane>
+                        <Tabs.TabPane tab={<FormattedMessage id="person.center.approve" />} key="approve">
+                            <PersonApprove />
+                        </Tabs.TabPane>
+                        <Tabs.TabPane tab={<FormattedMessage id="person.center.tokenConfig" />} key="tokenConfig">
+                            <TokenConfig />
+                        </Tabs.TabPane>
+                    </Tabs>
+                </Layout.Content>
+            </div>
         </Scrollbars >
     )
 }
