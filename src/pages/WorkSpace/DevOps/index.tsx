@@ -60,12 +60,8 @@ const DevOpsPage: React.FC<AnyType> = (props) => {
                                 iType="aliyun"
                                 field="matrix_repo_aliyun"
                             />
+                            <JobPeddingCount field='pending_job_num' />
                         </>
-                    }
-
-                    {
-                        BUILD_APP_ENV !== 'opensource' &&
-                        <JobPeddingCount field='pending_job_num' />
                     }
                 </OperationTabCard>
             </Spin>
