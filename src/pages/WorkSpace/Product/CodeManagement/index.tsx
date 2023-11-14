@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button, Layout, Row, Col, Typography, Spin, Popconfirm, Dropdown, Menu, message } from 'antd'
+import { Button, Row, Col, Typography, Spin, Popconfirm, Dropdown, Menu, message } from 'antd'
 import { useState, useEffect, useRef } from 'react'
 import styles from './index.less'
 import { MinusCircleOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons'
@@ -10,7 +10,13 @@ import AddCodeDrawer from './AddCodeDrawer'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import CreateBranchDrawer from './CreateBranchDrawer'
 import { requestCodeMessage } from '@/utils/utils';
+import styled from 'styled-components';
 
+const Layout = styled.div`
+    height: calc(${innerHeight}px - 96px - 90px);
+    width: 100%;
+    overflow: hidden;
+`
 export default (props: any) => {
     const { formatMessage } = useIntl()
     const ws_id = window.location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
@@ -107,9 +113,9 @@ export default (props: any) => {
 
 
     return (
-        <Layout.Content>
-            <Spin spinning={loading} >
-                <Row justify="space-between">
+        <Layout>
+            {/* <Spin spinning={loading} > */}
+                <Row justify="space-between" style={{ height:'100%' }}>
                     <div className={styles.product_left}>
                         <div className={styles.create_button_wrapper}>
                             <Button type="primary" onClick={handleAddWareHouse}><FormattedMessage id="product.new.repositories" /></Button>
@@ -245,9 +251,9 @@ export default (props: any) => {
                         </Row>
                     </div>
                 </Row>
-            </Spin>
+            {/* </Spin> */}
             <AddCodeDrawer ref={addScript} onOk={handleSubmit} />
             <CreateBranchDrawer ref={createBranch} current={current} onOk={BranchRefresh} />
-        </Layout.Content>
+        </Layout>
     )
 }

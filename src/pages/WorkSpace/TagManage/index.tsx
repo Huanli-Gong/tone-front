@@ -157,7 +157,6 @@ const SuiteManagement: React.FC<any> = () => {
         {
             title: <FormattedMessage id="job.tags.tag.name" />,
             dataIndex: 'name',
-            width: 120,
             ellipsis: {
                 showTitle: false,
             },
@@ -223,7 +222,7 @@ const SuiteManagement: React.FC<any> = () => {
         {
             title: <FormattedMessage id="job.tags.gmt_created" />,
             dataIndex: 'gmt_created',
-            width: 120,
+            width: 160,
             ellipsis: {
                 shwoTitle: false,
             },
@@ -232,7 +231,7 @@ const SuiteManagement: React.FC<any> = () => {
         {
             title: <FormattedMessage id="job.tags.gmt_modified" />,
             dataIndex: 'gmt_modified',
-            width: 120,
+            width: 160,
             ellipsis: {
                 shwoTitle: false,
             },
@@ -241,7 +240,7 @@ const SuiteManagement: React.FC<any> = () => {
         {
             title: <FormattedMessage id="job.tags.remarks" />,
             dataIndex: 'description',
-            width: 100,
+            width: 160,
             ellipsis: {
                 showTitle: false,
             },
@@ -275,6 +274,7 @@ const SuiteManagement: React.FC<any> = () => {
             title: <FormattedMessage id="Table.columns.operation" />,
             valueType: 'option',
             dataIndex: 'creator',
+            width: 120,
             render: (_: any, row: any) => (
                 row.source_tag !== '系统标签' &&
                 <Space>
@@ -315,6 +315,7 @@ const SuiteManagement: React.FC<any> = () => {
                     columns={columns}
                     dataSource={data.data}
                     size="small"
+                    scroll={{ x: '100%' }}
                 />
                 <Row justify="space-between" style={{ marginTop: 20 }}>
                     <div className={data.total == 0 ? styles.hidden : ''}>
