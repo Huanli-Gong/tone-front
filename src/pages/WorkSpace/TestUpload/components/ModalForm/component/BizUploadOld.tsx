@@ -18,6 +18,7 @@ const BizUpload = forwardRef((props, ref) => {
 
   const beforeUpload = (file: any) => {
     const { type, size } = file
+    console.log('hello',file)
     // 限制文件类型
     const validType = ['application/x-tar'];
     const isValidType = validType.indexOf(type) >= 0;
