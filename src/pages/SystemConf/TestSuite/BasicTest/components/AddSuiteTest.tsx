@@ -55,7 +55,7 @@ export default forwardRef(
                         test_type: testType,
                         owner: d.owner_name,
                         certificated: d.certificated ? 1 : 0,
-                        visible_range: visible_range?.split(',')
+                        visible_range: visible_range ? visible_range?.split(',') : undefined
                     })
                 }
                 else form.setFieldsValue({
@@ -68,33 +68,52 @@ export default forwardRef(
             hide: handleCancel
         }))
 
-        const handleEditOK = () => {
+        const handleEditOK = async (val: any) => {
+            if (!val.name || val.name.replace(/\s+/g, "") == '') {
+                setValidateStatus('error')
+                setHelp(formatMessage({ id: 'please.enter' }))
+                return
+            }
+            val.name = val.name.replace(/\s+/g, "")
+            if (val.owner === dataSource.owner_name) val.owner = dataSource.owner
+            val.domain_list_str = val.domain_list_str.join()
+
+            if (!BUILD_APP_ENV) {
+                const { visible_range } = val
+                val.visible_range = visible_range?.toString()
+            }
+
+            setDisable(true)
+            const { code, msg } = dataSource?.id ?
+                await editSuite(dataSource?.id, val) :
+                await addSuite(val)
+            setDisable(false)
+
+            if (code !== 200)
+                return requestCodeMessage(code, msg);
+
+            handleCancel()
+            onOk?.()
+
+        }
+
+        const handleOk = async () => {
+            if (disable) return
             form.validateFields().then(async val => {
-                if (!val.name || val.name.replace(/\s+/g, "") == '') {
-                    setValidateStatus('error')
-                    setHelp(formatMessage({ id: 'please.enter' }))
-                    return
+                if (JSON.stringify(dataSource) !== '{}' && !BUILD_APP_ENV) {
+                    const keys = form.getFieldValue('visible_range')
+                    const nKeys = dataSource.visible_range || ''
+
+                    const s = keys.sort((a: string, b: string) => a.localeCompare(b)).toString()
+                    const t = nKeys.split(',').sort((a: string, b: string) => a.localeCompare(b)).toString()
+
+                    if (s !== t) {
+                        setDisable(true)
+                        const { code } = await queryConfirm({ flag: 'pass', suite_id: dataSource.id, visible_range: s })
+                        if (code === 200) return delTip.current?.show({ ...dataSource, path: 'visible_range', visible_range: s })
+                    }
                 }
-                val.name = val.name.replace(/\s+/g, "")
-                if (val.owner === dataSource.owner_name) val.owner = dataSource.owner
-                val.domain_list_str = val.domain_list_str.join()
-
-                if (!BUILD_APP_ENV) {
-                    const { visible_range } = val
-                    val.visible_range = visible_range?.toString()
-                }
-
-                setDisable(true)
-                const { code, msg } = dataSource?.id ?
-                    await editSuite(dataSource?.id, val) :
-                    await addSuite(val)
-                setDisable(false)
-
-                if (code !== 200)
-                    return requestCodeMessage(code, msg);
-
-                handleCancel()
-                onOk?.()
+                handleEditOK(val)
             }).catch(err => {
                 if (!err.values.name || err.values.name.replace(/\s+/g, "") == '') {
                     setValidateStatus('error')
@@ -102,24 +121,6 @@ export default forwardRef(
                 }
                 setDisable(false)
             })
-        }
-
-        const handleOk = async () => {
-            if (disable) return
-            if (JSON.stringify(dataSource) !== '{}' && !BUILD_APP_ENV) {
-                const keys = form.getFieldValue('visible_range')
-                const nKeys = dataSource.visible_range || ''
-
-                const s = keys.sort((a: string, b: string) => a.localeCompare(b)).toString()
-                const t = nKeys.split(',').sort((a: string, b: string) => a.localeCompare(b)).toString()
-
-                if (s !== t) {
-                    setDisable(true)
-                    const { code } = await queryConfirm({ flag: 'pass', suite_id: dataSource.id, visible_range: s })
-                    if (code === 200) return delTip.current?.show({ ...dataSource, path: 'visible_range', visible_range: s })
-                }
-            }
-            handleEditOK()
         }
 
         const hanldFocus = () => {

@@ -204,6 +204,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                     region: regionZone[0],
                     zone: regionZone[1],
                 }
+
                 if (is_instance) {
                     Promise.all([getSeverList(param)]).then(() => { setLoading(false), setDisabled(false) })
                 } else {
@@ -371,7 +372,8 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
             ak_id: param.ak_id,
             region: param.region[0],
             zone: param.region[1],
-            id: param.manufacturer[0]
+            id: param.manufacturer[0],
+            instance_type: param.instance_type
         }
         if (param.ak_name == 'aliyun_eci') {
             const t = param.instance_type
@@ -589,7 +591,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                     label={<FormattedMessage id="device.name" />}
                                     validateTrigger='onBlur'
                                     rules={[
-                                        {required: true, message: formatMessage({ id: 'device.name.message' }) },
+                                        { required: true, message: formatMessage({ id: 'device.name.message' }) },
                                         () => ({
                                             validator: async (rule, value) => {
                                                 if (value) {
@@ -604,7 +606,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                                 }
                                             }
                                         }),
-                                        {pattern: /^[A-Za-z][A-Za-z0-9\._-]{1,32}$/, message: formatMessage({ id: 'device.name.message' }) },
+                                        { pattern: /^[A-Za-z][A-Za-z0-9\._-]{1,32}$/, message: formatMessage({ id: 'device.name.message' }) },
                                     ]}
                                 >
                                     <Input autoComplete="off" placeholder={formatMessage({ id: 'please.enter' })} />

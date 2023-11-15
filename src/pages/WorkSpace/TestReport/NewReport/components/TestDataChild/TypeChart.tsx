@@ -31,10 +31,13 @@ const TypeChart = (props: any) => {
         let result = [] // 组装后数组处理的容器
         let metricLen = 0
         let len = 0
-        obj.legData.push(envData.base_group.tag)
+        let legArr = []
         for (let compare = envData.compare_groups, k = 0; k < compare.length; k++) {
-            obj.legData.push(compare[k].tag)
+            legArr.push(compare[k].tag)
         }
+        let newLegArr = legArr.splice(0)
+        newLegArr.splice(envData.base_index, 0, envData.base_group.tag)
+        obj.legData = obj.legData.concat(newLegArr)
         if (chartType == '1') {
             obj.subText.push(data.direction)
             for (let compare = data.compare_data, i = 0; i < compare.length; i++) {
@@ -198,7 +201,7 @@ const TypeChart = (props: any) => {
                     }
                     if (chartType == '1') {
                         return `
-                                <div style="width:260px;">
+                                <div style"width:auto;min-width:300px">
                                     <div style="display:flex;flex-warp:wrap">
                                         <div style="width:180px;word-break:break-all;white-space:normal;font-weight:bold;padding-right:5px">${data.metric}</div>
                                         (${`${toPercentage(data.cv_threshold)}/${toPercentage(data.cmp_threshold)}`})
@@ -216,12 +219,12 @@ const TypeChart = (props: any) => {
                                     </div>
                                 </div>`
                     } else if (chartType == '2') {
-                        return `<div style="width:260px;">
+                        return `<div style="width:auto;min-width:300px">
                                     <div style="font-weight:bold">${params[0].name}</div>
                                     ${result}
                                 </div>`
                     } else {
-                        return `<div style="width:260px;">
+                        return `<div style="width:auto;min-width:300px">
                                     <div>
                                         <span style="font-weight:bold;padding-right:5px">${params[0].name}</span>
                                         (${`${toPercentage(params[0].data.cv_threshold)}/${toPercentage(params[0].data.cmp_threshold)}`})
