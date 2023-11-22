@@ -12,7 +12,9 @@ export default forwardRef(({ disabled, template, onEnabelChange }: any, ref: any
             const { data, code } = await queryTemplateDel({ template_id: template.id })
             if(code === 200){
                 if(!!data.length){
-                    message.warn('已有测试计划关联此模板，无法禁用!')
+                    const values = data.map((item:any) => item.name);
+                    const joinedValues = values.join(',');
+                    message.warn(`已有测试计划"${joinedValues}"关联此模板，无法禁用!`)
                     form.setFieldsValue({ enable: true })
                     return;
                 } else {
