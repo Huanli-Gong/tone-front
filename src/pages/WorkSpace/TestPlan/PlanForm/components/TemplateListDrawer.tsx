@@ -24,7 +24,7 @@ const TemplateListDrawer = (props: any, ref: any) => {
 
     const initList = async () => {
         setLoading(true)
-        const { data, code } = await queryTestTemplateList({ ws_id, enable: 'True', name: search, page_size: 100 })
+        const { data, code } = await queryTestTemplateList({ ws_id, enable: 'True', name: search, page_size: 999 })
         setLoading(false)
         if (code !== 200) {
             setList([])
