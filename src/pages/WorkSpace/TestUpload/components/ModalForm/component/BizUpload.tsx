@@ -19,7 +19,7 @@ const BizUpload = forwardRef((props: any, ref: any) => {
   const beforeUpload = (file: any) => {
     const { type, size } = file
     // 限制文件类型
-    const validType = ['application/x-tar', 'application/x-gzip'];
+    const validType = ['application/x-tar', 'application/x-gzip', 'application/gzip'];
     const isValidType = validType.indexOf(type) >= 0;
     if (!isValidType) {
       message.error(formatMessage({ id: 'upload.list.Drawer.valid.type' }));
