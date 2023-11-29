@@ -3,7 +3,6 @@
         "type": "command",
         "command": {
             "cmd": [
-                "tnpm install pnpm@7 -g",
                 "pnpm install",
                 "pnpm build",
                 "mv ./dist $BUILD_DEST"

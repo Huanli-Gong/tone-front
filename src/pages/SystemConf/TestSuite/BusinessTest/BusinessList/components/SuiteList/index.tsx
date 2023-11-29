@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { useIntl, FormattedMessage } from 'umi'
-import { Space, message, Button, Modal } from 'antd';
+import { Space, message, Button, Modal, Row } from 'antd';
 import { CaretRightFilled, CaretDownFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
 import CommonTable from '@/components/Public/CommonTable';
@@ -338,7 +338,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 		},
 		{
 			title: (
-				<Space>
+				<Row justify={'space-between'} style={{ width: '100%' }}>
 					<FormattedMessage id="Table.columns.operation" />
 					<Button
 						type="primary"
@@ -348,7 +348,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 					>
 						<FormattedMessage id="operation.new" />
 					</Button>
-				</Space>
+				</Row>
 			),
 			width: 150,
 			fixed: 'right',

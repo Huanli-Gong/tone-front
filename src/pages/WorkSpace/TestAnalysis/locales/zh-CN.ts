@@ -145,6 +145,8 @@ export default {
     'analysis.wan': '万',
     'analysis.yi': '亿',
     'analysis.zhao': '兆',
+
+    'analysis.chart.compare_result': '对比结果',
     // AnalysisTable
     'analysis.chart.title.resultTrend': '功能通过率趋势图',
     'analysis.chart.title.passRate': '功能结果趋势图',

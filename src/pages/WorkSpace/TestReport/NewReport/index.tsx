@@ -302,7 +302,6 @@ const Report = (props: any) => {
                                     </Button>
                                 </Row>
                             }
-
                         </ReportWarpper>
                     </ReportBodyContainer>
                 </ReportTemplate>

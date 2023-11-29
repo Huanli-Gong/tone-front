@@ -9,6 +9,8 @@ import { Row, Tooltip, Typography } from "antd";
 import { DoubleRightOutlined } from "@ant-design/icons"
 import styled, { keyframes } from "styled-components"
 import { useIntl } from "umi";
+import { useReportContext } from "@/pages/WorkSpace/TestReport/NewReport/Provider";
+import { SERVER_INFO_CONFIG } from "@/utils/utils";
 
 const collapsedAnimate = keyframes`
     from {
@@ -39,16 +41,22 @@ interface EnvType {
     group?: number,
 }
 
-export const TestEnv: React.FC<EnvType> = ({ envData, environmentResult, group }) => {
+export const TestEnv: React.FC<EnvType> = (props) => {
+    const { envData, environmentResult, group } = props
     const { count } = environmentResult
     const intl = useIntl()
     const [collapsed, setCollapsed] = React.useState(false);
+    const source = useReportContext()
 
     React.useEffect(() => {
         return () => {
             setCollapsed(false)
         }
     }, [])
+
+    const server_info_config = React.useMemo(() => {
+        return source?.domainResult?.server_info_config || SERVER_INFO_CONFIG
+    }, [source])
 
     if (!envData)
         return <></>
@@ -86,6 +94,7 @@ export const TestEnv: React.FC<EnvType> = ({ envData, environmentResult, group }
                                     // ["RPM", "rpm"],
                                 ].map((tm: any, i: number) => {
                                     const [title, field] = tm
+                                    if (!server_info_config.includes(field)) return undefined
                                     return (
                                         <Row key={i}>
                                             <MachineGroupL style={{ background: '#fafafa' }}>
@@ -120,7 +129,7 @@ export const TestEnv: React.FC<EnvType> = ({ envData, environmentResult, group }
                                             }
                                         </Row>
                                     )
-                                })
+                                }).filter(Boolean)
                             }
                         </MachineGroup>
                     )

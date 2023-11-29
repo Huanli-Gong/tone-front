@@ -61,6 +61,7 @@ export default {
   'operation.filter': 'Filter',
   'operation.pass': 'Pass',
   'operation.refuse': 'Refuse',
+  'operation.hidden': 'Hidden',
 
   'pagination.total.strip': 'Total {data}',
   'all': 'All',

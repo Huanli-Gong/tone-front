@@ -504,6 +504,13 @@ const routes = [
 				component: './TaskMessage',
 			},
 			{
+				path: '/ws/:ws_id/personCenter',
+				name: 'PersonCenter',
+				inNav: true,
+				hideInMenu: true,
+				component: './PersonCenter',
+			},
+			{
 				path: '/ws/:ws_id/refenerce/:type',
 				//name: 'RefenerceDetail',
 				inNav: true,

@@ -214,7 +214,6 @@ export default forwardRef((props: any, ref: any) => {
 
 	const list = data.data, total = data.total, pageNum = data.page_num
 
-	console.log(expandKeys)
 	return (
 		<TestContext.Provider
 			value={{

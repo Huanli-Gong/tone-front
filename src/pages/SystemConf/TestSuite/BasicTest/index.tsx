@@ -21,7 +21,6 @@ import { TestContext } from '../Provider'
 import ConfEditDrawer from './components/CaseTable/ConfEditDrawer'
 
 import lodash from 'lodash'
-import { editBentch, editCase, addCase } from '@/pages/SystemConf/TestSuite/service'
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
 import { useSuiteProvider } from '../hooks';
 
@@ -81,60 +80,8 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         timer = setTimeout(lodash.partial(fn, pageParams), wait);
     }
 
-    const submitCase = async (data: any, bentch: boolean) => {
-        const { test_suite_id, id } = data
-        const param = { ...data }
-        if (bentch) {
-            const params = { ...param, ...{ case_id_list: selectedRowKeys.join(',') } }
-            await editBentch(params)
-            setSelectedRowKeys([])
-        }
-        else {
-            let content = param.var
-            if (Object.prototype.toString.call(param.var) === '[object String]') {
-                try {
-                    const valid = JSON.parse(content)
-                    if (Object.prototype.toString.call(valid) === '[object Array]') {
-                        const len = valid.length
-                        for (let i = 0; i < len; i++) {
-                            if (!(Object.prototype.toString.call(valid[i]) === '[object Object]')) {
-                                message.error(formatMessage({ id: 'TestSuite.data.format.error' }));
-                                return
-                            }
-                        }
-                    } else {
-                        message.error(formatMessage({ id: 'TestSuite.data.format.error' }));
-                        return
-                    }
-                } catch (e) {
-                    message.error(formatMessage({ id: 'TestSuite.data.format.error' }));
-                    return
-                }
-            }
-            else {
-                const arr: any = []
-                content.map((item: any) => {
-                    if (item.name) {
-                        arr.push(item)
-                    }
-                })
-                content = JSON.stringify(arr)
-            }
-            param.var = content
-            // ...{ test_suite_id }
-            const params = { ...param, ...{ test_suite_id } }
-            const { code, msg } = id ? await editCase(id, params) : await addCase(params)
-            if (code == 201) {
-                message.error(formatMessage({ id: 'TestSuite.repeated.suite.name' }));
-                return
-            }
-            if (code == 202) {
-                message.error(msg);
-                return
-            }
-        }
-
-        confDrawer.current.hide()
+    const submitCase = async (data: any, batch: boolean) => {
+        setSelectedRowKeys([])
         message.success(formatMessage({ id: 'operation.success' }));
         setConfRefresh(!confRefresh)
     }
@@ -504,8 +451,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             }}
         >
             <Spin spinning={loading}>
-                {
-                    BUILD_APP_ENV !== "opensource" &&
+                {/* {
                     <Alert type="success"
                         showIcon
                         style={{ marginBottom: 16, height: 32 }}
@@ -523,7 +469,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                             </span>
                         }
                     />
-                }
+                } */}
 
                 <Table
                     className={styles.suiteTable}
@@ -613,7 +559,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             />
             <DeleteDefault ref={defaultDeleteRef} onOk={remOuter} />
             <DeleteTips ref={deleteTipsRef} onOk={remOuter} />
-            <ConfEditDrawer ref={confDrawer} onOk={submitCase} />
+            <ConfEditDrawer ref={confDrawer} onOk={submitCase} selectedRowKeys={selectedRowKeys} />
         </TestContext.Provider>
     );
 };
