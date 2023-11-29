@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect, useRef } from 'react';
-import { Form, Button, Layout, Row, Col, Typography, Spin, Popconfirm, Dropdown, Menu, message, Input } from 'antd'
+import { Form, Button, Row, Col, Typography, Spin, Popconfirm, Dropdown, Menu, message, Input } from 'antd'
 import { MinusCircleOutlined, MoreOutlined, ExclamationCircleOutlined, HolderOutlined } from '@ant-design/icons'
 import { useLocation, useParams, useRequest, useIntl, FormattedMessage } from 'umi'
 import { deleteProduct, updateProject, dropProduct, dropProject, queryDropProduct, queryDropProject } from '../services'
@@ -15,7 +15,8 @@ import Example from './Container';
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { requestCodeMessage } from '@/utils/utils';
-import styles from './index.less'
+import styles from './index.less';
+import { Layout, Left, Right, CreateBtnWrap, LeftTitle, LoadingWrapper } from '../styled';
 
 export default () => {
     const { formatMessage } = useIntl()
@@ -71,7 +72,6 @@ export default () => {
         setCurrent(item)
         setClickType('menu')
         form.setFieldsValue({ server_type: undefined })
-        //projectRun({ product_id: item.id, ws_id })
     }
 
     const handleAddProduct = () => {
@@ -134,9 +134,6 @@ export default () => {
             setClickType('searchButton')
             projectRun({ product_id: current.id, name: value, ws_id })
         }
-        // if (event.target.name === '') {
-        //     projectRun({ product_id: current.id, name: value, ws_id })
-        // }
     }
 
     useEffect(() => {
@@ -157,8 +154,6 @@ export default () => {
             to: result.destination.index + 1  //后端要从1开始。。
         })
         if (code === 200) {
-            // const data = await queryDropProduct({ ws_id })
-            // console.log('data',data)
             run({ ws_id }).then(res => {
                 if (res.code === 200) {
                     projectRun({ product_id: current.id, ws_id })
@@ -192,164 +187,166 @@ export default () => {
 
 
     return (
-        <Layout.Content>
-            <Spin spinning={loading} >
-                <Row justify="space-between">
-                    <div className={styles.product_left}>
-                        <div className={styles.create_button_wrapper}>
-                            <Button onClick={handleAddProduct} type="primary"><FormattedMessage id="product.new.product" /></Button>
-                        </div>
-                        <Row justify="space-between" className={styles.left_title}>
-                            <Typography.Text><FormattedMessage id="product.all.product" /> ({data?.length && `${data?.length}`})</Typography.Text>
-                        </Row>
-                        <DragDropContext onDragEnd={onDragEnd}>
-                            <Droppable droppableId="droppable">
-                                {(provided: any) => (
-                                    //这里是拖拽容器 在这里设置容器的宽高等等...
-                                    <div
-                                        {...provided.droppableProps}
-                                        ref={provided.innerRef}
-                                        className={styles.all_product}
-                                    >
-                                        {
-                                            data?.map((item: any, index: number) => {
-                                                return (
-                                                    <Draggable
-                                                        index={index}
-                                                        key={item.key || item.name}
-                                                        draggableId={String(index + 1)}
-                                                        product={item.id}
+        <Layout>
+            <Left>
+                <CreateBtnWrap>
+                    <Button onClick={handleAddProduct} type="primary"><FormattedMessage id="product.new.product" /></Button>
+                </CreateBtnWrap>
+                <LeftTitle justify="space-between">
+                    <Typography.Text><FormattedMessage id="product.all.product" /> ({data?.length && `${data?.length}`})</Typography.Text>
+                </LeftTitle>
+                <DragDropContext onDragEnd={onDragEnd}>
+                    <Droppable droppableId="droppable">
+                        {(provided: any) => (
+                            //这里是拖拽容器 在这里设置容器的宽高等等...
+                            <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                                className={styles.all_product}
+                            >
+                                {
+                                    data?.map((item: any, index: number) => {
+                                        return (
+                                            <Draggable
+                                                index={index}
+                                                key={item.key || item.name}
+                                                draggableId={String(index + 1)}
+                                                product={item.id}
+                                            >
+                                                {(provided: any) => (
+                                                    //在这里写你的拖拽组件的样式 dom 等等...
+                                                    <Col
+                                                        span={24}
+                                                        ref={provided.innerRef}
+                                                        {...provided.draggableProps}
+                                                        {...provided.dragHandleProps}
+                                                        key={item.id}
+                                                        onClick={() => handleCurrentChange(item)}
+                                                        onMouseEnter={() => setHover(item.id)}
+                                                        onMouseLeave={() => setHover(null)}
                                                     >
-                                                        {(provided: any) => (
-                                                            //在这里写你的拖拽组件的样式 dom 等等...
-                                                            <Col
-                                                                span={24}
-                                                                ref={provided.innerRef}
-                                                                {...provided.draggableProps}
-                                                                {...provided.dragHandleProps}
-                                                                key={item.id}
-                                                                onClick={() => handleCurrentChange(item)}
-                                                                onMouseEnter={() => setHover(item.id)}
-                                                                onMouseLeave={() => setHover(null)}
-                                                            >
-                                                                <Row className={styles.product_row}>
-                                                                    <div className={hover === item.id ? styles.move_active : styles.move}><HolderOutlined /></div>
-                                                                    <div className={item.is_default ? styles.product_item_default : styles.product_item_old} />
-                                                                    <Row justify="space-between" className={+ current.id === + item.id ? styles.product_item_active : styles.product_item}>
-                                                                        <EllipsisPulic title={item.name} width={210}>
-                                                                            <Typography.Text >{item.name}</Typography.Text>
-                                                                        </EllipsisPulic>
-                                                                        {
-                                                                            item.is_default
-                                                                                ? <Popconfirm
-                                                                                    title={<div style={{ color: 'red' }}><FormattedMessage id="product.default.products.cannot.be.deleted" /></div>}
-                                                                                    onConfirm={() => handleDelete(item)}
-                                                                                    cancelText={<FormattedMessage id="operation.cancel" />}
-                                                                                    okText={<FormattedMessage id="operation.confirm.delete" />}
-                                                                                    icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-                                                                                    okButtonProps={{
-                                                                                        type: 'default',
-                                                                                        disabled: true
-                                                                                    }}
-                                                                                >
-                                                                                    <MinusCircleOutlined
-                                                                                        className={hover === item.id ? styles.remove_active : styles.remove}
-                                                                                    />
-                                                                                </Popconfirm>
-                                                                                :
-                                                                                <Popconfirm
-                                                                                    title={<div style={{ color: 'red' }}><FormattedMessage id="product.deletion.has.influence" /></div>}
-                                                                                    onCancel={() => handleDelete(item)}
-                                                                                    cancelText={<FormattedMessage id="operation.confirm.delete" />}
-                                                                                    okText={<FormattedMessage id="operation.cancel" />}
-                                                                                    icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-                                                                                >
-                                                                                    <MinusCircleOutlined
-                                                                                        className={hover === item.id ? styles.remove_active : styles.remove}
-                                                                                    />
-                                                                                </Popconfirm>
-                                                                        }
-                                                                    </Row>
-                                                                </Row>
-                                                            </Col>
-                                                        )}
-                                                    </Draggable>
-                                                )
-                                            })
-                                        }
-                                        {provided.placeholder}
-                                    </div>
-                                )}
-                            </Droppable>
-                        </DragDropContext>
-                    </div>
-                    <div className={styles.product_right}>
-                        <Row className={styles.product_right_detail} align="middle">
-                            <Col span={24}>
-                                <Row>
-                                    <Col span={8}>
-                                        <Row className={styles.detail_item_row}>
-                                            <Typography.Text strong><FormattedMessage id="product.name" />：</Typography.Text>
-                                            <EllipsisPulic title={current.name} />
-                                        </Row>
-                                    </Col>
-                                    <Col span={8}>
-                                        <Row className={styles.detail_item_row}>
-                                            <Typography.Text strong><FormattedMessage id="product.description" />：</Typography.Text>
-                                            <EllipsisPulic title={current.description} />
-                                        </Row>
-                                    </Col>
-                                    <Col span={8}>
-                                        <Row className={styles.detail_item_row}>
-                                            <Typography.Text strong><FormattedMessage id="product.version.command" />：</Typography.Text>
-                                            <EllipsisPulic title={current.command} />
-                                        </Row>
-                                    </Col>
+                                                        <Row className={styles.product_row}>
+                                                            <div className={hover === item.id ? styles.move_active : styles.move}><HolderOutlined /></div>
+                                                            <div className={item.is_default ? styles.product_item_default : styles.product_item_old} />
+                                                            <Row justify="space-between" className={+ current.id === + item.id ? styles.product_item_active : styles.product_item}>
+                                                                <EllipsisPulic title={item.name} width={210}>
+                                                                    <Typography.Text >{item.name}</Typography.Text>
+                                                                </EllipsisPulic>
+                                                                {
+                                                                    item.is_default
+                                                                        ? <Popconfirm
+                                                                            title={<div style={{ color: 'red' }}><FormattedMessage id="product.default.products.cannot.be.deleted" /></div>}
+                                                                            onConfirm={() => handleDelete(item)}
+                                                                            cancelText={<FormattedMessage id="operation.cancel" />}
+                                                                            okText={<FormattedMessage id="operation.confirm.delete" />}
+                                                                            icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                                                                            okButtonProps={{
+                                                                                type: 'default',
+                                                                                disabled: true
+                                                                            }}
+                                                                        >
+                                                                            <MinusCircleOutlined
+                                                                                className={hover === item.id ? styles.remove_active : styles.remove}
+                                                                            />
+                                                                        </Popconfirm>
+                                                                        :
+                                                                        <Popconfirm
+                                                                            title={<div style={{ color: 'red' }}><FormattedMessage id="product.deletion.has.influence" /></div>}
+                                                                            onCancel={() => handleDelete(item)}
+                                                                            cancelText={<FormattedMessage id="operation.confirm.delete" />}
+                                                                            okText={<FormattedMessage id="operation.cancel" />}
+                                                                            icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                                                                        >
+                                                                            <MinusCircleOutlined
+                                                                                className={hover === item.id ? styles.remove_active : styles.remove}
+                                                                            />
+                                                                        </Popconfirm>
+                                                                }
+                                                            </Row>
+                                                        </Row>
+                                                    </Col>
+                                                )}
+                                            </Draggable>
+                                        )
+                                    })
+                                }
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
+            </Left>
+            <Right>
+                <Row className={styles.product_right_detail} align="middle">
+                    <Col span={24}>
+                        <Row>
+                            <Col span={8}>
+                                <Row className={styles.detail_item_row}>
+                                    <Typography.Text strong><FormattedMessage id="product.name" />：</Typography.Text>
+                                    <EllipsisPulic title={current.name} />
                                 </Row>
                             </Col>
-                            <Dropdown
-                                overlayStyle={{ cursor: 'pointer' }}
-                                overlay={
-                                    <Menu>
-                                        <Menu.Item onClick={hanldeEdit}><FormattedMessage id="product.edit.info" /></Menu.Item>
-                                    </Menu>
-                                }
-                            >
-                                <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 0, top: 5 }} />
-                            </Dropdown>
+                            <Col span={8}>
+                                <Row className={styles.detail_item_row}>
+                                    <Typography.Text strong><FormattedMessage id="product.description" />：</Typography.Text>
+                                    <EllipsisPulic title={current.description} />
+                                </Row>
+                            </Col>
+                            <Col span={8}>
+                                <Row className={styles.detail_item_row}>
+                                    <Typography.Text strong><FormattedMessage id="product.version.command" />：</Typography.Text>
+                                    <EllipsisPulic title={current.command} />
+                                </Row>
+                            </Col>
                         </Row>
-                        <Row className={styles.right_project}>
-                            <Row style={{ width: '100%', height: 62 }}>
-                                <Typography.Text className={styles.product_right_all_project}><FormattedMessage id="product.all.items" /> ({projectData.data?.length && `${projectData.data?.length}`})</Typography.Text>
-                                <Form form={form}>
-                                    <Form.Item name="server_type">
-                                        <Input.Search
-                                            placeholder={formatMessage({ id: 'product.search.for.items' })}
-                                            onSearch={inputSearch}
-                                            allowClear
-                                            style={{ width: 200, height: 32, marginTop: 15 }} />
-                                    </Form.Item>
-                                </Form>
-                            </Row>
-                            <Spin spinning={projectLoading}>
-                                <DndProvider backend={HTML5Backend}>
-                                    <Example
-                                        dataSource={projectData.data}
-                                        clickType={clickType}
-                                        callBackFormTo={onDragProjectEnd}
-                                        handleProjecIcon={handleIcon}
-                                        hanldCreateProject={hanldCreateProject}
-                                        hanldeProjectDetail={hanldeProjectDetail}
-                                    />
-                                </DndProvider>
-                            </Spin>
-                        </Row>
-                    </div>
+                    </Col>
+                    <Dropdown
+                        overlayStyle={{ cursor: 'pointer' }}
+                        overlay={
+                            <Menu>
+                                <Menu.Item onClick={hanldeEdit}><FormattedMessage id="product.edit.info" /></Menu.Item>
+                            </Menu>
+                        }
+                    >
+                        <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 0, top: 5 }} />
+                    </Dropdown>
                 </Row>
-            </Spin>
+                <Row className={styles.right_project}>
+                    <Row style={{ width: '100%', height: 62 }}>
+                        <Typography.Text className={styles.product_right_all_project}><FormattedMessage id="product.all.items" /> ({projectData.data?.length && `${projectData.data?.length}`})</Typography.Text>
+                        <Form form={form}>
+                            <Form.Item name="server_type">
+                                <Input.Search
+                                    placeholder={formatMessage({ id: 'product.search.for.items' })}
+                                    onSearch={inputSearch}
+                                    allowClear
+                                    style={{ width: 200, height: 32, marginTop: 15 }} />
+                            </Form.Item>
+                        </Form>
+                    </Row>
+                    <Spin spinning={projectLoading}>
+                        <DndProvider backend={HTML5Backend}>
+                            <Example
+                                dataSource={projectData.data}
+                                clickType={clickType}
+                                callBackFormTo={onDragProjectEnd}
+                                handleProjecIcon={handleIcon}
+                                hanldCreateProject={hanldCreateProject}
+                                hanldeProjectDetail={hanldeProjectDetail}
+                            />
+                        </DndProvider>
+                    </Spin>
+                </Row>
+            </Right>
+            {
+                loading &&
+                <LoadingWrapper>
+                    <Spin spinning={loading} />
+                </LoadingWrapper>
+            }
             <AddProductDrawer ref={addProduct} current={current} onOk={handleSubmit} />
             <ShowProjectDrawer ref={showProject} onOk={projectRefresh} projectData={projectData} />
             <CreateProjectDrawer ref={createProject} current={current} onOk={projectRefresh} />
-        </Layout.Content>
+        </Layout>
     )
 }

@@ -4,7 +4,31 @@ import SystemScript from './SystemScript'
 import SystemParameter from './SystemParameter'
 import { FormattedMessage } from 'umi'
 import styles from '@/pages/SystemConf/MenuLayout/style.less'
-import { TabCard } from '@/components/UpgradeUI'
+import styled from 'styled-components';
+
+const Container = styled.div`
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+`
+const Header = styled.div`
+    width: 100%;
+    height: 48px;
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #f0f0f0;
+    padding: 0 24px;
+    margin-bottom: -1px;
+`
+const ButtonWrap = styled(Button)`
+    margin-top: 8px;
+`
+const Content = styled.div`
+    width: 100%;
+    height: calc(100% - 48px - 16px);
+    padding: 24px;
+`
 
 export default (props: any) => {
     const { location } = props
@@ -18,8 +42,8 @@ export default (props: any) => {
     }
 
     return (
-        <TabCard
-            title={
+        <Container>
+            <Header>
                 <Tabs
                     defaultActiveKey={'script'}
                     onTabClick={handleTabClick}
@@ -28,19 +52,21 @@ export default (props: any) => {
                     <Tabs.TabPane tab={<FormattedMessage id="basic.script" />} key="script" />
                     <Tabs.TabPane tab={<FormattedMessage id="basic.sys" />} key="sys" />
                 </Tabs>
-            }
-            extra={
-                tab === 'sys' &&
-                <Button type="primary" onClick={() => addConfigDrawer.current.openSetting()}>
-                    <FormattedMessage id="basic.new.config" />
-                </Button>
-            }
-        >
+                {
+                    tab === 'sys' &&
+                    <ButtonWrap type="primary" onClick={() => addConfigDrawer.current.openSetting()}>
+                        <FormattedMessage id="basic.new.config" />
+                    </ButtonWrap>
+                }
+            </Header>
+            <Content>
             {
                 tab === 'sys' ?
                     <SystemParameter ref={addConfigDrawer} /> :
                     <SystemScript />
             }
-        </TabCard>
+            </Content>
+        </Container>
+        
     )
 }
