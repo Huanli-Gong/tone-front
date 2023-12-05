@@ -42,7 +42,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             requestCodeMessage(code, msg)
         }
     }
-    
+
     const pageCurrent = useStateRef(pageParams)
     const totalCurrent = useStateRef(dataSource)
 
@@ -87,6 +87,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             },
             render: (_: any, row: any) => (
                 <ServerLink
+                    {...row}
                     val={_}
                     param={row.server_id}
                     provider={provider_name}
