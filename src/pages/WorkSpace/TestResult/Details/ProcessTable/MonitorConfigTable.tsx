@@ -4,18 +4,21 @@ import { useEffect } from 'react'
 import { tooltipTd } from '../components'
 import { evnPrepareState } from '../components'
 import { queryMonitorList } from '../service'
-import { useRequest, FormattedMessage } from 'umi';
+import { useRequest, FormattedMessage, useParams } from 'umi';
 import ServerLink from '@/components/MachineWebLink/index';
 import { ResizeHooksTable } from '@/utils/table.hooks'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
-export default ({ job_id, refresh = false, provider_name }: any) => {
+export default ({ refresh = false, provider_name }: any) => {
+    const { id: job_id } = useParams() as any
+
     const { data, loading, run } = useRequest(
         () => queryMonitorList({ job_id }),
         {
             manual: true
         }
     )
+    
     useEffect(() => {
         run()
     }, [refresh])

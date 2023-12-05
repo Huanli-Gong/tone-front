@@ -15,7 +15,7 @@ const Wrapper = styled.div`
     }
 `
 // 结果详情 - 执行过程
-export default ({ job_id, onRef, test_type, provider_name }: any) => {
+export default ({ onRef, test_type, provider_name }: any) => {
     const [refresh, setRefresh] = useState<any>(new Date().getTime())
     const testType = matchTestType(test_type)
 
@@ -31,10 +31,10 @@ export default ({ job_id, onRef, test_type, provider_name }: any) => {
     return (
         <div style={{ background: '#fff' }}>
             <Wrapper >
-                <TestBuildTable job_id={job_id} refresh={refresh} />
-                <TestPrepTable job_id={job_id} refresh={refresh} provider_name={provider_name} />
-                <MonitorConfigTable job_id={job_id} refresh={refresh} provider_name={provider_name} />
-                <TestSuiteTable job_id={job_id} refresh={refresh} testType={testType} provider_name={provider_name} />
+                <TestBuildTable refresh={refresh} />
+                <TestPrepTable refresh={refresh} provider_name={provider_name} />
+                <MonitorConfigTable refresh={refresh} provider_name={provider_name} />
+                <TestSuiteTable refresh={refresh} testType={testType} provider_name={provider_name} />
             </Wrapper>
         </div>
     )

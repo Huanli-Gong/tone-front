@@ -17,31 +17,31 @@ const CustomTabs = styled(Tabs)`
     }
 `
 
+const matchResult = (params: string) => {
+    switch (params) {
+        case 'success': return <span style={{ color: '#81BF84' }}>{'Complete'}</span>
+        case 'fail': return <span style={{ color: '#C84C5A' }}>{'Fail'}</span>
+        default: return isUrl(params) ? <a href={params}>{params}</a> : <span style={{ opacity: 0.65 }}>{params}</span>
+    }
+}
+
+const RowItem: React.FC<AnyType> = ({ label, value }: any) => {
+    return (
+        <div style={{ display: 'flex' }}>
+            <div style={{ opacity: 0.85, width: 124, fontFamily: 'PingFangSC-Medium', fontSize: 14 }}>{label}</div>
+            {matchResult(value)}
+        </div>
+    )
+}
+
 const ResultInfo: React.FC<any> = (props) => {
-    const { testType = 'functional' } = props
+    const { testType } = props
     const { result_data = {} } = props
     const { ci_detail, result } = result_data
     const ciDetail = ci_detail ? JSON.parse(ci_detail) : {}
 
     const [tab, setTab] = React.useState("1")
     // console.log('ciDetail:', ci_detail);
-
-    const matchResult = (params: string) => {
-        switch (params) {
-            case 'success': return <span style={{ color: '#81BF84' }}>{'Complete'}</span>
-            case 'fail': return <span style={{ color: '#C84C5A' }}>{'Fail'}</span>
-            default: return isUrl(params) ? <a href={params}>{params}</a> : <span style={{ opacity: 0.65 }}>{params}</span>
-        }
-    }
-
-    const RowItem = ({ label, value }: any) => {
-        return (
-            <div style={{ display: 'flex' }}>
-                <div style={{ opacity: 0.85, width: 124, fontFamily: 'PingFangSC-Medium', fontSize: 14 }}>{label}</div>
-                {matchResult(value)}
-            </div>
-        )
-    }
 
     return (
         <div style={{ paddingLeft: 40, paddingRight: 0, background: '#FBFBFB', width: "100%" }}>
