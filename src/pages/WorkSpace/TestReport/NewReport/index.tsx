@@ -93,7 +93,7 @@ const BreadcrumbItem: React.FC<any> = ({ saveReportData, routeName, creator }) =
 const templDesc = ['background_desc', 'test_method_desc']
 const dataField = ['test_background', 'test_method', 'custom']
 
-const Report = (props: any) => {
+const Report: React.FC<AnyType> = (props) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any;
     const routeName = props.route.name

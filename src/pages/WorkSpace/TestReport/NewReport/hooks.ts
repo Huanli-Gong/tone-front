@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { detailTemplate, reportDetail } from '../services';
 import { message } from 'antd';
 import { redirectErrorPage, requestCodeMessage } from '@/utils/utils';
@@ -46,6 +46,8 @@ export const CreatePageData = (props: any) => {
     const [loading, setLoading] = useState<boolean>(true)
     const [envData, setEnvData] = useState<any[]>([])
     const [suiteLen, setSuiteLen] = useState(1)
+    const [tmpl, setTmpl] = React.useState<any>({})
+
     const defaultConf = {
         need_test_suite_description: true,
         need_test_env: true,
@@ -135,9 +137,9 @@ export const CreatePageData = (props: any) => {
         }
     }, [testDataParam])
 
-    const { func_data_result, perf_data_result } = compareResult
 
     const compareLen = useMemo(() => {
+        const { func_data_result, perf_data_result } = compareResult
         const perf = perf_data_result.length
         const func = func_data_result.length
         return perf + func
@@ -145,9 +147,15 @@ export const CreatePageData = (props: any) => {
 
     //自定义报告模板
     const getTemplate = async () => {
-        const data = await detailTemplate({ id: saveReportData.template, ws_id })
-        return data;
+        const { data, code } = await detailTemplate({ id: saveReportData.template, ws_id })
+        if (code !== 200) return
+        setTmpl(data)
     }
+
+    React.useEffect(() => {
+        if (saveReportData.template)
+            getTemplate()
+    }, [])
     /*
        *** 默认和自定义模版的切换
    */
@@ -158,6 +166,7 @@ export const CreatePageData = (props: any) => {
 
     useEffect(() => {
         // setLoading(true)
+        const { func_data_result, perf_data_result } = compareResult
         if (switchReport) {
             const obj: any = new Object;
             const newFunc: any = []
@@ -354,166 +363,160 @@ export const CreatePageData = (props: any) => {
             }
         } else {
             // setLoading(true)
-            getTemplate().then((data: any) => {
-                if (data.code === 200) {
-                    let perData: any = []
-                    let funData: any = []
-                    let obj = data.data
-                    if (JSON.stringify(obj) !== '{}') {
-                        if (obj.perf_item && !!obj.perf_item.length) {
-                            for (let res = obj.perf_item, m = 0; m < res.length; m++) { // 自定义domain分组
-                                if (res[m].is_group) { // 是否有组
-                                    let listParent: any = []
-                                    for (let domain = res[m].list, a = 0; a < domain.length; a++) { //遍历组下面的项
-                                        let list: any = []
-                                        let conf_list: any = []
-                                        for (let suite = domain[a].list, b = 0; b < suite.length; b++) { //遍历项下面的suite
-                                            perf_data_result?.map((item: any, idx: number) => {
-                                                if (Number(item.suite_id) == Number(suite[b].test_suite_id)) {
-                                                    list.push({
-                                                        ...item,
-                                                        test_suite_description: suite[b].test_tool,
-                                                        test_env: '',
-                                                        test_description: '',
-                                                        test_conclusion: '',
-                                                        rowKey: `${m}-${a}-${idx}`
-                                                    })
-                                                }
-                                            })
-
-                                            suite[b].case_source.map((conf: any) => {
-                                                conf_list.push(conf.test_conf_id || conf)
+            let perData: any = []
+            let funData: any = []
+            let obj = tmpl
+            if (JSON.stringify(obj) !== '{}') {
+                if (obj.perf_item && !!obj.perf_item.length) {
+                    for (let res = obj.perf_item, m = 0; m < res.length; m++) { // 自定义domain分组
+                        if (res[m].is_group) { // 是否有组
+                            let listParent: any = []
+                            for (let domain = res[m].list, a = 0; a < domain.length; a++) { //遍历组下面的项
+                                let list: any = []
+                                let conf_list: any = []
+                                for (let suite = domain[a].list, b = 0; b < suite.length; b++) { //遍历项下面的suite
+                                    perf_data_result?.map((item: any, idx: number) => {
+                                        if (Number(item.suite_id) == Number(suite[b].test_suite_id)) {
+                                            list.push({
+                                                ...item,
+                                                test_suite_description: suite[b].test_tool,
+                                                test_env: '',
+                                                test_description: '',
+                                                test_conclusion: '',
+                                                rowKey: `${m}-${a}-${idx}`
                                             })
                                         }
-                                        for (let j = 0; j < list.length; j++) {
-                                            list[j].conf_list = list[j].conf_list.filter(function (conf: any, idx: number) {
-                                                return conf_list.includes(Number(conf.conf_id))
-                                            });
-                                        }
-                                        listParent.push({
-                                            name: domain[a].name,
-                                            rowKey: `${m}-${a}`,
-                                            list
-                                        })
-                                    }
-                                    perData.push({
-                                        name: res[m].name,
-                                        rowKey: `${m}`,
-                                        is_group: true,
-                                        list: listParent
                                     })
 
-                                } else {
-                                    let list: any = []
-                                    let conf_list: any = []
-                                    for (let suite = res[m].list, b = 0; b < suite.length; b++) { //遍历项下面的suite
-                                        perf_data_result?.map((item: any, idx: number) => {
-                                            if (item.suite_id == suite[b].test_suite_id) {
-                                                list.push({
-                                                    ...item,
-                                                    test_suite_description: suite[b].test_tool,
-                                                    rowKey: `${m}-${b}`
-                                                })
-                                            }
-                                        })
-                                        suite[b].case_source.map((conf: any) => {
-                                            conf_list.push(conf.test_conf_id || conf)
-                                        })
-                                    }
-                                    for (let j = 0; j < list.length; j++) {
-                                        list[j].conf_list = list[j].conf_list.filter(function (conf: any, idx: number) {
-                                            return conf_list.includes(Number(conf.conf_id))
-                                        });
-                                    }
-                                    perData.push({
-                                        name: res[m].name,
-                                        rowKey: `${m}`,
-                                        list
+                                    suite[b].case_source.map((conf: any) => {
+                                        conf_list.push(conf.test_conf_id || conf)
                                     })
                                 }
-                            }
-                        }
-                        if (obj.func_item && !!obj.func_item.length) {
-                            for (let res = obj.func_item, m = 0; m < res.length; m++) { // 自定义domain分组
-                                if (res[m].is_group) { // 是否有组
-                                    let listParent: any = []
-                                    for (let domain = res[m].list, a = 0; a < domain.length; a++) { //遍历组下面的项
-                                        let list: any = []
-                                        let conf_list: any = []
-                                        for (let suite = domain[a].list, b = 0; b < suite.length; b++) { //遍历项下面的suite
-                                            func_data_result?.map((item: any, idx: number) => {
-                                                if (Number(item.suite_id) === Number(suite[b].test_suite_id)) {
-                                                    list.push({
-                                                        ...item,
-                                                        rowKey: `${m}-${b}`
-                                                    })
-                                                }
-                                            })
-                                            suite[b].case_source.map((conf: any) => {
-                                                conf_list.push(conf.test_conf_id || conf)
-                                            })
-                                        }
-                                        for (let j = 0; j < list.length; j++) {
-                                            list[j].conf_list = list[j].conf_list.filter(function (conf: any, idx: number) {
-                                                return conf_list.includes(Number(conf.conf_id))
-                                            });
-                                        }
-                                        listParent.push({
-                                            name: domain[a].name,
-                                            rowKey: `${m}-${a}`,
-                                            list
-                                        })
-                                    }
-                                    funData.push({
-                                        name: res[m].name,
-                                        rowKey: `${m}`,
-                                        is_group: true,
-                                        list: listParent
-                                    })
-                                } else {
-                                    let list: any = []
-                                    let conf_list: any = []
-                                    for (let suite = res[m].list, b = 0; b < suite.length; b++) { //遍历项下面的suite
-
-                                        func_data_result?.map((item: any, idx: number) => {
-                                            if (Number(item.suite_id) === Number(suite[b].test_suite_id)) {
-                                                list.push({
-                                                    ...item,
-                                                    rowKey: `${m}-${b}`
-                                                })
-                                            }
-                                        })
-                                        suite[b].case_source.map((conf: any) => {
-                                            conf_list.push(conf.test_conf_id || conf)
-                                        })
-                                    }
-                                    for (let j = 0; j < list.length; j++) {
-                                        list[j].conf_list = list[j].conf_list.filter(function (conf: any, idx: number) {
-                                            return conf_list.includes(Number(conf.conf_id))
-                                        });
-                                    }
-                                    funData.push({
-                                        name: res[m].name,
-                                        rowKey: `${m}`,
-                                        list
-                                    })
+                                for (let j = 0; j < list.length; j++) {
+                                    list[j].conf_list = list[j].conf_list.filter(function (conf: any, idx: number) {
+                                        return conf_list.includes(Number(conf.conf_id))
+                                    });
                                 }
+                                listParent.push({
+                                    name: domain[a].name,
+                                    rowKey: `${m}-${a}`,
+                                    list
+                                })
                             }
-                        }
+                            perData.push({
+                                name: res[m].name,
+                                rowKey: `${m}`,
+                                is_group: true,
+                                list: listParent
+                            })
 
-                        setDomainResult({
-                            ...obj,
-                            perf_item: perData,
-                            func_item: funData
-                        })
-                        setLoading(false)
+                        } else {
+                            let list: any = []
+                            let conf_list: any = []
+                            for (let suite = res[m].list, b = 0; b < suite.length; b++) { //遍历项下面的suite
+                                perf_data_result?.map((item: any, idx: number) => {
+                                    if (item.suite_id == suite[b].test_suite_id) {
+                                        list.push({
+                                            ...item,
+                                            test_suite_description: suite[b].test_tool,
+                                            rowKey: `${m}-${b}`
+                                        })
+                                    }
+                                })
+                                suite[b].case_source.map((conf: any) => {
+                                    conf_list.push(conf.test_conf_id || conf)
+                                })
+                            }
+                            for (let j = 0; j < list.length; j++) {
+                                list[j].conf_list = list[j].conf_list.filter(function (conf: any, idx: number) {
+                                    return conf_list.includes(Number(conf.conf_id))
+                                });
+                            }
+                            perData.push({
+                                name: res[m].name,
+                                rowKey: `${m}`,
+                                list
+                            })
+                        }
                     }
-                } else {
-                    message.error('自定义模版出错')
                 }
-            })
+                if (obj.func_item && !!obj.func_item.length) {
+                    for (let res = obj.func_item, m = 0; m < res.length; m++) { // 自定义domain分组
+                        if (res[m].is_group) { // 是否有组
+                            let listParent: any = []
+                            for (let domain = res[m].list, a = 0; a < domain.length; a++) { //遍历组下面的项
+                                let list: any = []
+                                let conf_list: any = []
+                                for (let suite = domain[a].list, b = 0; b < suite.length; b++) { //遍历项下面的suite
+                                    func_data_result?.map((item: any, idx: number) => {
+                                        if (Number(item.suite_id) === Number(suite[b].test_suite_id)) {
+                                            list.push({
+                                                ...item,
+                                                rowKey: `${m}-${b}`
+                                            })
+                                        }
+                                    })
+                                    suite[b].case_source.map((conf: any) => {
+                                        conf_list.push(conf.test_conf_id || conf)
+                                    })
+                                }
+                                for (let j = 0; j < list.length; j++) {
+                                    list[j].conf_list = list[j].conf_list.filter(function (conf: any, idx: number) {
+                                        return conf_list.includes(Number(conf.conf_id))
+                                    });
+                                }
+                                listParent.push({
+                                    name: domain[a].name,
+                                    rowKey: `${m}-${a}`,
+                                    list
+                                })
+                            }
+                            funData.push({
+                                name: res[m].name,
+                                rowKey: `${m}`,
+                                is_group: true,
+                                list: listParent
+                            })
+                        } else {
+                            let list: any = []
+                            let conf_list: any = []
+                            for (let suite = res[m].list, b = 0; b < suite.length; b++) { //遍历项下面的suite
+
+                                func_data_result?.map((item: any, idx: number) => {
+                                    if (Number(item.suite_id) === Number(suite[b].test_suite_id)) {
+                                        list.push({
+                                            ...item,
+                                            rowKey: `${m}-${b}`
+                                        })
+                                    }
+                                })
+                                suite[b].case_source.map((conf: any) => {
+                                    conf_list.push(conf.test_conf_id || conf)
+                                })
+                            }
+                            for (let j = 0; j < list.length; j++) {
+                                list[j].conf_list = list[j].conf_list.filter(function (conf: any, idx: number) {
+                                    return conf_list.includes(Number(conf.conf_id))
+                                });
+                            }
+                            funData.push({
+                                name: res[m].name,
+                                rowKey: `${m}`,
+                                list
+                            })
+                        }
+                    }
+                }
+
+                setDomainResult({
+                    ...obj,
+                    perf_item: perData,
+                    func_item: funData
+                })
+                setLoading(false)
+            }
         }
-    }, [domainGroupResult, switchReport, perf_data_result, func_data_result])
+    }, [domainGroupResult, switchReport, compareResult, tmpl])
 
     /*
         *** 统计性能测试、功能测试总数据
@@ -529,6 +532,7 @@ export const CreatePageData = (props: any) => {
 
     const summaryData = useMemo(() => {
         const { compare_groups } = environmentResult
+        const { func_data_result, perf_data_result } = compareResult
         // console.log(environmentResult)
         const groupArr = compare_groups.reduce((pre: any, cur: any, idx: number) => {
             const { tag, is_job } = cur
