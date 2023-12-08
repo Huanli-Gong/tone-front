@@ -21,8 +21,8 @@ export const wsIgnoreScriptInput = envIgnoreIds()
 
 export const OPENANOLIS_DOMAIN = "https://passport.openanolis.cn/"
 
-export const OPENANOLIS_LOGIN_URL = OPENANOLIS_DOMAIN + "login?callback=" + window.location.origin
-export const OPENANOLIS_LOGOUT_URL = OPENANOLIS_DOMAIN + "logout?callback=" + window.location.origin
+export const OPENANOLIS_LOGIN_URL = OPENANOLIS_DOMAIN + "login?callback=" + window.location.href
+export const OPENANOLIS_LOGOUT_URL = OPENANOLIS_DOMAIN + "logout?callback=" + window.location.href
 export const OPENANOLIS_REGIST_URL = OPENANOLIS_DOMAIN + "register"
 
 export const getPageWsid = () => {
