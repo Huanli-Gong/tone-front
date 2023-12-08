@@ -54,7 +54,7 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
     }, [expandedState])
 
     const hanldeChangeChildState = (id: any, s: string = '') => {
-        // setExpandedRowKeys(Array.from(new Set(expandedRowKeys.concat(id))))
+        setExpandedRowKeys(Array.from(new Set(expandedRowKeys.concat(id))))
         setRefreshId(id)
         setCurrentState(s)
     }
