@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Table, Space, Row } from 'antd'
 import React, { useRef, useState, useEffect } from 'react'
-import { useRequest, Access, useAccess, useParams, FormattedMessage, getLocale } from 'umi'
+import { useRequest, Access, useAccess, useParams, FormattedMessage } from 'umi'
 import ServerLink from '@/components/MachineWebLink/index';
 import { queryTestResultSuiteConfList } from '../service'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
@@ -26,7 +26,6 @@ const CaseTable: React.FC<Record<string, any>> = ({
     suite_id, testType, suite_name, server_provider, provider_name, creator, expandedState, expandedCaseRowKeys,
     suiteSelect = [], onCaseSelect, openAllRows = false, setIndexExpandFlag, parentTableName, columnsChange
 }) => {
-    const locale = getLocale() === 'en-US';
     const { id: job_id } = useParams() as any
     const background = `url(${treeSvg}) center center / 38.6px 32px `
     const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
@@ -186,7 +185,7 @@ const CaseTable: React.FC<Record<string, any>> = ({
         ['performance', 'business_performance'].includes(testType) &&
         {
             title: <FormattedMessage id="Table.columns.operation" />,
-            width: locale ? 180 : 145,
+            width: 180,
             fixed: 'right',
             render: (_: any) => {
 

@@ -262,7 +262,7 @@ const TestResultTable: React.FC<any> = (props) => {
         ['performance', 'business_performance'].includes(testType) &&
         {
             title: <FormattedMessage id="Table.columns.operation" />,
-            width: locale ? 180 : 145,
+            width: 180,
             fixed: 'right',
             key: "operation",
             ellipsis: {
@@ -405,7 +405,7 @@ const TestResultTable: React.FC<any> = (props) => {
     const expandBtnText = isOpenAllConf ? formatMessage({ id: `ws.result.details.folded.conf` }) : formatMessage({ id: `ws.result.details.expand.conf` })
     const expandIndexBtnText = indexExpandFlag ? formatMessage({ id: `ws.result.details.folded.${childName}` }) : formatMessage({ id: `ws.result.details.expand.${childName}` })
 
-    const RESULT_SUITE_TABLE_NAME = "ws-job-result-list"
+    const RESULT_SUITE_TABLE_NAME = "ws-job-result-list-1"
 
     const [columnsChange, setColumnsChange] = React.useState(uuid())
     const batchBtnDisabled = React.useMemo(() => {
