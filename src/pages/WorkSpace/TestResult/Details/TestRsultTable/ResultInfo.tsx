@@ -45,55 +45,63 @@ const ResultInfo: React.FC<any> = (props) => {
 
     return (
         <div style={{ paddingLeft: 40, paddingRight: 0, background: '#FBFBFB', width: "100%" }}>
-            <CustomTabs defaultActiveKey="1" onTabClick={(t: any) => setTab(t)} activeKey={tab}>
-                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.testResult" />} key="1" />
-                {
-                    ['performance', 'business_performance'].includes(testType) &&
-                    <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.monitor" />} key="2" />
+            <CustomTabs
+                defaultActiveKey="1"
+                onTabClick={(t: any) => setTab(t)}
+                activeKey={tab}
+                /* @ts-ignore */
+                items={
+                    [
+                        {
+                            key: '1',
+                            label: <FormattedMessage id="ws.result.details.tab.testResult" />,
+                            children: (
+                                <>
+                                    {['performance', 'business_performance'].includes(testType) &&
+                                        <MetricResultTable {...props} />
+                                    }
+                                    {['functional', 'business_functional'].includes(testType) &&
+                                        <TestResult {...props} />
+                                    }
+                                    {['business_business'].includes(testType) &&
+                                        <div style={{ background: '#fff', padding: '16px 24px' }}>
+                                            <RowItem label="Test Result" value={result || '-'} />
+                                        </div>
+                                    }
+                                </>
+                            )
+                        },
+                        ['performance', 'business_performance'].includes(testType) &&
+                        {
+                            key: '2',
+                            label: <FormattedMessage id="ws.result.details.tab.monitor" />,
+                            children: <MonitorData {...props} />
+                        },
+                        {
+                            key: '3',
+                            label: <FormattedMessage id="ws.result.details.tab.log" />,
+                            children: <ResultFile {...props} />
+                        },
+                        {
+                            key: '4',
+                            label: <FormattedMessage id="ws.result.details.tab.versionInfo" />,
+                            children: <VersionInfo {...props} />
+                        },
+                        ['business_business'].includes(testType) &&
+                        {
+                            key: '5',
+                            label: <FormattedMessage id="ws.result.details.tab.executionDetails" />,
+                            children: (
+                                <div style={{ background: '#fff', padding: '16px 24px' }}>
+                                    <RowItem label="CI type" value={ciDetail.ci_system || '-'} />
+                                    <RowItem label="Build ID" value={ciDetail.build_id || '-'} />
+                                    <RowItem label="CI Project" value={ciDetail.ci_project || '-'} />
+                                </div>
+                            )
+                        }
+                    ].filter(Boolean)
                 }
-                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.log" />} key="3" />
-                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.versionInfo" />} key="4" />
-                {
-                    ['business_business'].includes(testType) &&
-                    <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.executionDetails" />} key="5" />
-                }
-            </CustomTabs>
-            {
-                tab === "1" &&
-                <>
-                    {['performance', 'business_performance'].includes(testType) &&
-                        <MetricResultTable {...props} />
-                    }
-                    {['functional', 'business_functional'].includes(testType) &&
-                        <TestResult {...props} />
-                    }
-                    {['business_business'].includes(testType) &&
-                        <div style={{ background: '#fff', padding: '16px 24px' }}>
-                            <RowItem label="Test Result" value={result || '-'} />
-                        </div>
-                    }
-                </>
-            }
-            {
-                tab === "2" &&
-                <MonitorData {...props} />
-            }
-            {
-                tab === "3" &&
-                <ResultFile {...props} />
-            }
-            {
-                tab === "4" &&
-                <VersionInfo {...props} />
-            }
-            {
-                tab === "5" &&
-                <div style={{ background: '#fff', padding: '16px 24px' }}>
-                    <RowItem label="CI type" value={ciDetail.ci_system || '-'} />
-                    <RowItem label="Build ID" value={ciDetail.build_id || '-'} />
-                    <RowItem label="CI Project" value={ciDetail.ci_project || '-'} />
-                </div>
-            }
+            />
         </div>
     )
 }
