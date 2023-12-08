@@ -283,6 +283,7 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
                         expandedRowRender: (record: any) => (
                             <ResultInfo
                                 {...record}
+                                state={expandedState}
                                 testType={testType}
                                 server_provider={server_provider}
                                 creator={creator}
