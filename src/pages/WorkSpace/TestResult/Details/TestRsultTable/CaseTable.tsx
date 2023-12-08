@@ -38,6 +38,7 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
     const [refreshId, setRefreshId] = React.useState('')
     const [loading, setLoading] = React.useState(true)
     const [source, setSource] = React.useState<any[]>([])
+    const [currentState, setCurrentState] = React.useState(expandedState)
 
     const init = async () => {
         setLoading(true)
@@ -49,11 +50,13 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
 
     React.useEffect(() => {
         init()
+        setCurrentState(expandedState)
     }, [expandedState])
 
     const hanldeChangeChildState = (id: any, s: string = '') => {
-        setExpandedRowKeys(Array.from(new Set(expandedRowKeys.concat(id))))
+        // setExpandedRowKeys(Array.from(new Set(expandedRowKeys.concat(id))))
         setRefreshId(id)
+        setCurrentState(s)
     }
 
     const editRemarkDrawer: any = React.useRef(null)
@@ -283,7 +286,7 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
                         expandedRowRender: (record: any) => (
                             <ResultInfo
                                 {...record}
-                                state={expandedState}
+                                state={currentState}
                                 testType={testType}
                                 server_provider={server_provider}
                                 creator={creator}
