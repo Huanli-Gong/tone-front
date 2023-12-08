@@ -1,6 +1,7 @@
 const defaultKey = 'ws.result.details'
 
 const text = {
+  'exports': '导出',
   'test.result': '测试结果',
   'result.details': '结果详情',
   'provider_name': '机器类型',
@@ -115,6 +116,8 @@ const text = {
   'track_result': '跟踪结果',
 
   'breadcrumb.button.download': '下载',
+  'breadcrumb.button.export': '导出',
+
   'breadcrumb.button.share': '分享Job链接',
 
   "breadcrumb.button.download.running": "下载中...",

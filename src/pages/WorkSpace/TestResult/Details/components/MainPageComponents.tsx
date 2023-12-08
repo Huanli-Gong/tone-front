@@ -5,7 +5,7 @@ import { useCopyText } from '@/utils/hooks'
 import styled from 'styled-components'
 import { Breadcrumb, Typography, message, Row, Tooltip, Space, Col } from "antd"
 import { useParams, useAccess, useIntl, FormattedMessage, Access, history, getLocale } from 'umi'
-import { DownloadOutlined, ShareAltOutlined, EditOutlined } from '@ant-design/icons'
+import { DownloadOutlined, ShareAltOutlined, EditOutlined, ExportOutlined } from '@ant-design/icons'
 
 import { queryDownloadLink, startDownloadTask } from '@/pages/WorkSpace/TestResult/Details/service'
 import styles from "../index.less"
@@ -25,7 +25,8 @@ export const CAN_STOP_JOB_STATES = ['running', 'pending', 'pending_q']
 export const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time))
 
 export const BreadcrumbItem: React.FC<any> = (props) => {
-    const { state: jobState, bottomHeight } = props
+    const { state: jobState, bottomHeight, test_type } = props
+
     const { ws_id, id: job_id } = useParams() as any
     const access = useAccess()
     const intl = useIntl()
@@ -83,6 +84,10 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
         }
     }
 
+    const handleExportJob = () => {
+        window.open(`/api/job/export_results/?job_id=${job_id}&ws_id=${ws_id}`)
+    }
+
     React.useEffect(() => {
         if (downloadHerf) downloadRef.current?.click()
     }, [downloadHerf])
@@ -120,6 +125,17 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
                         >
                             <BreadcrumbIcon onClick={handleDownloadJob}>
                                 <DownloadOutlined />
+                            </BreadcrumbIcon>
+                        </Tooltip>
+                    }
+                    {
+                        (test_type === '性能测试' && !CAN_STOP_JOB_STATES.includes(jobState)) &&
+                        <Tooltip
+                            placement="bottom"
+                            title={intl.formatMessage({ id: `ws.result.details.breadcrumb.button.export` })}
+                        >
+                            <BreadcrumbIcon onClick={handleExportJob}>
+                                <ExportOutlined />
                             </BreadcrumbIcon>
                         </Tooltip>
                     }

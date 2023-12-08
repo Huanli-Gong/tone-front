@@ -179,11 +179,9 @@ const TestResultDetails: React.FC = () => {
                 key="testResult"
                 creator={details.creator}
                 test_type={details.test_type}
-                job_id={job_id}
                 cases={details.case_result}
                 caseResult={details.case_result}
                 provider_name={transProvider(details.provider_name)}
-                ws_id={ws_id}
                 refreshResult={refreshResult}
             />],
         [

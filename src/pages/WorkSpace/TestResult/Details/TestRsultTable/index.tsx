@@ -117,6 +117,11 @@ const TestResultTable: React.FC<any> = (props) => {
         setExpandedCaseRowKeys(openKeys)
     }
 
+    const handleExports = (row: any) => {
+        const { suite_name } = row
+        window.open(`/api/job/export_results/?job_id=${job_id}&ws_id=${ws_id}&suite_name=${suite_name}`)
+    }
+
     const states = ['functional', 'business_functional'].includes(testType) ? funcStates
         : (testType === 'business_business' ? businessBusinessStates : perfStates)
 
@@ -279,6 +284,10 @@ const TestResultTable: React.FC<any> = (props) => {
                             <Space>
                                 <span style={btnStyle} onClick={() => handleContrastBaseline(_)}><FormattedMessage id="ws.result.details.baseline" /></span>
                                 <span style={btnStyle} onClick={() => handleJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>
+                                {
+                                    testType === 'performance' &&
+                                    <span style={btnStyle} onClick={() => handleExports(_)}><FormattedMessage id="ws.result.details.exports" /></span>
+                                }
                             </Space>
                         </Access>
                     </Access>
@@ -406,159 +415,157 @@ const TestResultTable: React.FC<any> = (props) => {
     }, [selectedRowKeys, suiteCaseSelectKeys])
 
     return (
-        <>
-            <div style={{ padding: "4px 20px 20px 20px" }}>
-                <Row justify="space-between" >
-                    <Space>
-                        <Dropdown.Button
-                            onClick={handleOpenAll}
-                            placement="bottomLeft"
-                            icon={<DownOutlined />}
-                            overlay={
-                                <Menu>
-                                    <Menu.Item
-                                        key="1"
-                                        className={styles.expandConf}
-                                        onClick={handleOpenExpandBtn}
-                                    >
-                                        {expandBtnText}
-                                    </Menu.Item>
-                                    <Menu.Item
-                                        key="2"
-                                        className={styles.expandIndex}
-                                        onClick={indexExpandClick}
-                                    >
-                                        {expandIndexBtnText}
-                                    </Menu.Item>
-                                </Menu>
-                            }
-                        >
-                            {
-                                isOpenAllConf ?
-                                    formatMessage({ id: `ws.result.details.folded.all` }) :
-                                    formatMessage({ id: `ws.result.details.expand.all` })
-                            }
-                        </Dropdown.Button>
-                        {
-                            ['performance', 'business_performance'].includes(testType) &&
-                            <Access accessible={access.WsTourist()}>
-                                <Access
-                                    accessible={access.WsMemberOperateSelf(creator)}
-                                    fallback={
-                                        <Space>
-                                            <Button
-                                                disabled={batchBtnDisabled}
-                                                onClick={() => AccessTootip()}
-                                            >
-                                                <FormattedMessage id="ws.result.details.batch.baseline" />
-                                            </Button>
-                                            <Button
-                                                disabled={batchBtnDisabled}
-                                                onClick={() => AccessTootip()}
-                                            >
-                                                <FormattedMessage id="ws.result.details.batch.join.baseline" />
-                                            </Button>
-                                        </Space>
-                                    }
+        <div style={{ padding: "4px 20px 20px 20px" }}>
+            <Row justify="space-between" >
+                <Space>
+                    <Dropdown.Button
+                        onClick={handleOpenAll}
+                        placement="bottomLeft"
+                        icon={<DownOutlined />}
+                        overlay={
+                            <Menu>
+                                <Menu.Item
+                                    key="1"
+                                    className={styles.expandConf}
+                                    onClick={handleOpenExpandBtn}
                                 >
+                                    {expandBtnText}
+                                </Menu.Item>
+                                <Menu.Item
+                                    key="2"
+                                    className={styles.expandIndex}
+                                    onClick={indexExpandClick}
+                                >
+                                    {expandIndexBtnText}
+                                </Menu.Item>
+                            </Menu>
+                        }
+                    >
+                        {
+                            isOpenAllConf ?
+                                formatMessage({ id: `ws.result.details.folded.all` }) :
+                                formatMessage({ id: `ws.result.details.expand.all` })
+                        }
+                    </Dropdown.Button>
+                    {
+                        ['performance', 'business_performance'].includes(testType) &&
+                        <Access accessible={access.WsTourist()}>
+                            <Access
+                                accessible={access.WsMemberOperateSelf(creator)}
+                                fallback={
                                     <Space>
                                         <Button
                                             disabled={batchBtnDisabled}
-                                            onClick={() => handleBatchContrastBaseline()}
+                                            onClick={() => AccessTootip()}
                                         >
                                             <FormattedMessage id="ws.result.details.batch.baseline" />
                                         </Button>
                                         <Button
                                             disabled={batchBtnDisabled}
-                                            onClick={() => handleBatchJoinBaseline()}
+                                            onClick={() => AccessTootip()}
                                         >
                                             <FormattedMessage id="ws.result.details.batch.join.baseline" />
                                         </Button>
                                     </Space>
-                                </Access>
-                            </Access>
-                        }
-                    </Space>
-                    <Space>
-                        {
-                            states.map(
-                                ({ key, name, value }: any) => (
-                                    <span
-                                        key={key}
-                                        onClick={() => handleStateChange(value)}
-                                        style={{
-                                            cursor: 'pointer',
-                                            color: selectSuiteState === value ? '#1890FF' : 'rgba(0, 0, 0, 0.65)'
-                                        }}
+                                }
+                            >
+                                <Space>
+                                    <Button
+                                        disabled={batchBtnDisabled}
+                                        onClick={() => handleBatchContrastBaseline()}
                                     >
-                                        {name}({caseResult[key]})
-                                    </span>
-                                )
+                                        <FormattedMessage id="ws.result.details.batch.baseline" />
+                                    </Button>
+                                    <Button
+                                        disabled={batchBtnDisabled}
+                                        onClick={() => handleBatchJoinBaseline()}
+                                    >
+                                        <FormattedMessage id="ws.result.details.batch.join.baseline" />
+                                    </Button>
+                                </Space>
+                            </Access>
+                        </Access>
+                    }
+                </Space>
+                <Space>
+                    {
+                        states.map(
+                            ({ key, name, value }: any) => (
+                                <span
+                                    key={key}
+                                    onClick={() => handleStateChange(value)}
+                                    style={{
+                                        cursor: 'pointer',
+                                        color: selectSuiteState === value ? '#1890FF' : 'rgba(0, 0, 0, 0.65)'
+                                    }}
+                                >
+                                    {name}({caseResult[key]})
+                                </span>
                             )
-                        }
-                    </Space>
-                </Row>
-                <ResizeHooksTable
-                    columns={columns as any}
-                    onColumnsChange={() => setColumnsChange(uuid())}
-                    rowKey="suite_id"
-                    name={RESULT_SUITE_TABLE_NAME}
-                    dataSource={filterData}
-                    pagination={false}
-                    refreshDeps={[ws_id, access, testType, baseline, baseline_job_id, creator]}
-                    size="small"
-                    loading={loading}
-                    className={styles.result_expand_table}
-                    style={{ marginTop: 20 }}
-                    rowSelection={rowSelection}
-                    expandable={{
-                        defaultExpandAllRows: openAllRows,
-                        expandedRowKeys: expandedRowKeys,
-                        onExpand: (expanded: boolean, record: any) => {
-                            if (expanded) {
-                                const tempList = expandedRowKeys.concat([record.suite_id])
-                                setExpandedRowKeys(tempList)
-                                if (tempList?.length === filterData.length) {
-                                    // 展开的状态标志
-                                    setOpenAllRows(true)
-                                    setIndexExpandFlag(true)
-                                }
-                            }
-                            else {
-                                const tempList = expandedRowKeys.filter((i: number) => i !== record.suite_id)
-                                setExpandedRowKeys(tempList)
-                                if (!tempList.length) {
-                                    // 收起的状态标志
-                                    setOpenAllRows(false)
-                                    setIndexExpandFlag(false)
-                                }
-                            }
-                        },
-                        expandedRowRender: (record) => (
-                            <CaseTable
-                                key={refreshCaseTable}
-                                {...record}
-                                creator={creator}
-                                columnsChange={columnsChange}
-                                parentTableName={RESULT_SUITE_TABLE_NAME}
-                                server_provider={serverProvider}
-                                provider_name={serverProvider}
-                                testType={testType}
-                                setIndexExpandFlag={setIndexExpandFlag}
-                                suiteSelect={selectedRowKeys}
-                                onCaseSelect={handleCaseSelect}
-                                expandedCaseRowKeys={expandedCaseRowKeys}
-                            />
-                        ),
-                        expandIcon: ({ expanded, onExpand, record }: any) => (
-                            // expanded ? null : null
-                            expanded ?
-                                (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
-                                (<CaretRightFilled onClick={e => onExpand(record, e)} />)
                         )
-                    }}
-                />
-            </div>
+                    }
+                </Space>
+            </Row>
+            <ResizeHooksTable
+                columns={columns as any}
+                onColumnsChange={() => setColumnsChange(uuid())}
+                rowKey="suite_id"
+                name={RESULT_SUITE_TABLE_NAME}
+                dataSource={filterData}
+                pagination={false}
+                refreshDeps={[ws_id, access, testType, baseline, baseline_job_id, creator]}
+                size="small"
+                loading={loading}
+                className={styles.result_expand_table}
+                style={{ marginTop: 20 }}
+                rowSelection={rowSelection}
+                expandable={{
+                    defaultExpandAllRows: openAllRows,
+                    expandedRowKeys: expandedRowKeys,
+                    onExpand: (expanded: boolean, record: any) => {
+                        if (expanded) {
+                            const tempList = expandedRowKeys.concat([record.suite_id])
+                            setExpandedRowKeys(tempList)
+                            if (tempList?.length === filterData.length) {
+                                // 展开的状态标志
+                                setOpenAllRows(true)
+                                setIndexExpandFlag(true)
+                            }
+                        }
+                        else {
+                            const tempList = expandedRowKeys.filter((i: number) => i !== record.suite_id)
+                            setExpandedRowKeys(tempList)
+                            if (!tempList.length) {
+                                // 收起的状态标志
+                                setOpenAllRows(false)
+                                setIndexExpandFlag(false)
+                            }
+                        }
+                    },
+                    expandedRowRender: (record) => (
+                        <CaseTable
+                            key={refreshCaseTable}
+                            {...record}
+                            creator={creator}
+                            columnsChange={columnsChange}
+                            parentTableName={RESULT_SUITE_TABLE_NAME}
+                            server_provider={serverProvider}
+                            provider_name={serverProvider}
+                            testType={testType}
+                            setIndexExpandFlag={setIndexExpandFlag}
+                            suiteSelect={selectedRowKeys}
+                            onCaseSelect={handleCaseSelect}
+                            expandedCaseRowKeys={expandedCaseRowKeys}
+                        />
+                    ),
+                    expandIcon: ({ expanded, onExpand, record }: any) => (
+                        // expanded ? null : null
+                        expanded ?
+                            (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
+                            (<CaretRightFilled onClick={e => onExpand(record, e)} />)
+                    )
+                }}
+            />
             <JoinBaseline
                 ref={joinBaselineDrawer}
                 test_type={testType}
@@ -576,7 +583,7 @@ const TestResultTable: React.FC<any> = (props) => {
                 server_provider={serverProvider}
                 onOk={handleContrastBaselineOk}
             />
-        </>
+        </div>
     )
 }
 

@@ -1,6 +1,8 @@
 const defaultKey = 'ws.result.details'
 
 const text = {
+  'exports': 'Export',
+
   'test.result': 'Test Result',
   'result.details': 'Result Details',
   'provider_name': 'Sever Type',
@@ -121,6 +123,7 @@ const text = {
 
   'breadcrumb.button.download': 'Download',
   'breadcrumb.button.share': 'Share',
+  'breadcrumb.button.export': 'Export',
 
   // ProcessTable
   'build.kernel': 'Build Kernel',
