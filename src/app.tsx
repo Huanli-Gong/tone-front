@@ -22,7 +22,7 @@ const jumpLoginPage = () => {
     }
 
     if (BUILD_APP_ENV === 'openanolis')
-        window.location.href = OPENANOLIS_LOGIN_URL + window.location.href
+        window.location.href = OPENANOLIS_LOGIN_URL
 
     if (!BUILD_APP_ENV)
         return window.location.href = logoutUrl + window.location.href
