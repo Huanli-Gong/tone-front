@@ -22,8 +22,12 @@ const TouchSetting = (props: any, ref: any) => {
 
     useEffect(() => {
         if (template && JSON.stringify(template) !== '{}') {
-            const { cron_schedule } = template
+            const { cron_schedule, blocking_strategy } = template
             setTigger(cron_schedule)
+            const params = template
+            if (!blocking_strategy) {
+                params.blocking_strategy = 1
+            }
             form.setFieldsValue(template)
         }
     }, [template])
@@ -44,10 +48,18 @@ const TouchSetting = (props: any, ref: any) => {
                     blocking_strategy: 1
                 }}
             >
-                <Form.Item name="cron_schedule"
+                <Form.Item
+                    name="cron_schedule"
                     label={<FormattedMessage id="plan.timed.trigger" />}
-                    valuePropName="checked">
-                    <Switch onChange={setTigger} size="default" checked checkedChildren={<FormattedMessage id="operation.open" />} unCheckedChildren={<FormattedMessage id="operation.close" />} />
+                    valuePropName="checked"
+                >
+                    <Switch
+                        onChange={setTigger}
+                        size="default"
+                        checked
+                        checkedChildren={<FormattedMessage id="operation.open" />}
+                        unCheckedChildren={<FormattedMessage id="operation.close" />}
+                    />
                 </Form.Item>
                 {
                     tigger &&
@@ -82,9 +94,14 @@ const TouchSetting = (props: any, ref: any) => {
                             !!expression?.length && (
                                 <Form.Item label=" ">
                                     <span><FormattedMessage id="plan.next.three.trigger.times" />：</span>
-                                    {expression.map((item, index) =>
-                                        <div key={item} style={{ marginLeft: 20 }}>{index + 1}. {item}</div>
-                                    )}
+                                    {expression.map((item, index) => (
+                                        <div
+                                            key={item}
+                                            style={{ marginLeft: 20 }}
+                                        >
+                                            {index + 1}. {item}
+                                        </div>
+                                    ))}
                                 </Form.Item>
                             )
                         }
