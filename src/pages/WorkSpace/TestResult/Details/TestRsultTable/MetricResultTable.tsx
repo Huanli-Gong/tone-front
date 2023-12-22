@@ -11,8 +11,9 @@ import { ResizeHooksTable } from '@/utils/table.hooks';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
-export default ({ test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType }: any) => {
+export default (props: any) => {
     const { formatMessage } = useIntl()
+    const { test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType } = props
     const { id: job_id, ws_id } = useParams() as any
 
     const { data = [], run, loading } = useRequest(

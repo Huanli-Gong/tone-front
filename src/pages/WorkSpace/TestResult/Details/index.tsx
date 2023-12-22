@@ -179,11 +179,9 @@ const TestResultDetails: React.FC = () => {
                 key="testResult"
                 creator={details.creator}
                 test_type={details.test_type}
-                job_id={job_id}
                 cases={details.case_result}
                 caseResult={details.case_result}
                 provider_name={transProvider(details.provider_name)}
-                ws_id={ws_id}
                 refreshResult={refreshResult}
             />],
         [
@@ -446,10 +444,10 @@ const TestResultDetails: React.FC = () => {
                                     </div>
                                 }
                                 items={tabsMap.map((i: any) => ({
-                                    key: i[0],
-                                    label: formatMessage({ id: `ws.result.details.tab.${i[1]}` }),
-                                    children: i[2],
-                                    disabled: i[0] === 2 && details?.created_from === 'offline'
+                                    key: i?.[0],
+                                    label: formatMessage({ id: `ws.result.details.tab.${i?.[1]}` }),
+                                    children: i?.[2],
+                                    disabled: i?.[0] === 2 && details?.created_from === 'offline'
                                 }))}
                             />
                         </div>
