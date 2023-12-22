@@ -172,7 +172,7 @@ const StateRow: React.FC<IProps> = (props) => {
                             active={state === item.val}
                             key={item.key}
                             onClick={
-                                () => setPageQuery((p: any) => ({ ...p, state: item.val }))
+                                () => setPageQuery((p: any) => ({ ...p, state: item.val, page_num: 1 }))
                             }
                         >
                             {`${item.name}(${stateCount ? stateCount[item.key] : 0})`}

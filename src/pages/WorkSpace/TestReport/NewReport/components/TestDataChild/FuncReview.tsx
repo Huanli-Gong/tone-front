@@ -69,7 +69,7 @@ export const CaseStateBLock: React.FC<CaseStateProps> = ({ glen, state, tp, desc
                     {tp || '-'}
                 </Typography.Text>
                 {
-                    (!!~tp.toLowerCase().indexOf('fail') && desc) &&
+                    (!!~tp?.toLowerCase()?.indexOf('fail') && desc) &&
                     <Tooltip
                         title={desc}
                     >
@@ -213,7 +213,6 @@ const FuncDataIndex: React.FC<any> = (props) => {
         setBtn(!btn)
     }
     const handleArrow = (conf: any, i: any) => {
-        console.log("func review handleArrow")
         setNum(i)
         setArrowStyle(conf.suite_id)
         const conf_list = conf.conf_list.map((item: any) => {
