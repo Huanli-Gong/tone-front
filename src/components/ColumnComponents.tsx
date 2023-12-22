@@ -66,6 +66,7 @@ export const ColumnEllipsisText: React.FC<AnyType> = (props) => {
                 title={tooltip && Object.prototype.toString.call(tooltip) !== "[object Boolean]" ? tooltip : children}
                 placement={placement}
                 open={open}
+                overlayInnerStyle={{ whiteSpace: 'break-spaces' }}
             >
                 <TextCls
                     width={realWidth}

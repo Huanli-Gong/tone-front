@@ -160,6 +160,7 @@ const StateRow: React.FC<IProps> = (props) => {
         { name: 'Pending', key: 'pending_job', val: 'pending' },
         { name: 'Running', key: 'running_job', val: 'running' },
         { name: 'Complete', key: 'success_job', val: 'success' },
+        // { name: 'Pass', key: 'pass_job', val: 'pass' },
         { name: 'Fail', key: 'fail_job', val: 'fail' },
     ]
 
