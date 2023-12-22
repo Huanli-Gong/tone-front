@@ -89,6 +89,7 @@ const CaseTable: React.FC<Record<string, any>> = ({
             },
             render: (_: string, row: any) => (
                 <ServerLink
+                    {...row}
                     val={_}
                     param={row.server_id}
                     provider={provider_name}

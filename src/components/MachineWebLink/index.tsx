@@ -4,19 +4,26 @@ import { querySeverLink } from '@/pages/WorkSpace/TestResult/Details/service'
 import { useAccess } from 'umi'
 import { Tooltip } from 'antd';
 import styled from 'styled-components';
-interface ServerType {
-    val: string | number,
-    param?: string | number,
-    provider: "aligroup" | "aliyun",
-    description?: string,
-    machine_pool?: boolean,
-}
+
+type ServerType = {
+    val: string | number;
+    param?: string | number;
+    provider: "aligroup" | "aliyun";
+    description?: string;
+    machine_pool?: boolean;
+} & Record<string, any>
+
 const TextWarp = styled.div`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 `
-const ServerLink: React.FC<ServerType> = ({ val, param, provider, description, machine_pool = false }) => {
+
+const ServerLink: React.FC<ServerType> = (props) => {
+    const { val, param, provider, description, machine_pool = false, ...rest } = props
+
+    const { exists } = rest
+
     const access = useAccess();
     const ellipsis = useRef<any>(null)
     const [show, setShow] = useState<boolean>(false)
@@ -48,6 +55,7 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider, description, m
             // setTimeout(function () { win.location.href = href })
         }
     }
+
     const flag =
         (BUILD_APP_ENV && provider === "aligroup") ||
         (provider === "aliyun" && !access.IsAdmin()) ||
@@ -60,14 +68,13 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider, description, m
             </TextWarp>
         )
 
-    const machineDesc = (
-        <>
-            <div>机器IP：{val}</div>
-            <div>机器备注：{description}</div>
-        </>
-    )
-
     if (val) {
+        if (Object.prototype.toString.call(exists) === '[object Number]') {
+            if (!exists) {
+                return <>{val}</>
+            }
+        }
+
         if (!show && description) {
             return (
                 <Tooltip title={description} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
@@ -77,7 +84,16 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider, description, m
         }
         if (show && description) {
             return (
-                <Tooltip title={machineDesc} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
+                <Tooltip
+                    title={
+                        <>
+                            <div>机器IP：{val}</div>
+                            <div>机器备注：{description}</div>
+                        </>
+                    }
+                    placement="topLeft"
+                    overlayStyle={{ wordBreak: 'break-all' }}
+                >
                     {TypographyDiv}
                 </Tooltip>
             )
@@ -91,6 +107,7 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider, description, m
         }
         return TypographyDiv;
     }
+
     return <span>-</span>
 }
 export default ServerLink;
