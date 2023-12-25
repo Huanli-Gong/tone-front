@@ -170,6 +170,7 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
                 type="file"
                 style={{ width: 0, height: 0, display: 'none', position: 'absolute', zIndex: -9999 }}
                 onChange={handleUploadChange}
+                accept="application/x-tar,application/x-gzip"
             />
         </Row>
     )
