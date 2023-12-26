@@ -195,7 +195,6 @@ export default (props: any) => {
                     return (
                         <Tooltip placement="topLeft" title={context}>
                             <Typography.Link
-                                className={styles.hrefUrl}
                                 onClick={
                                     () => {
                                         if (row.skip_baseline_info) {
@@ -229,7 +228,7 @@ export default (props: any) => {
                 return (
                     context ?
                         <Tooltip placement="topLeft" title={_}>
-                            <Typography.Link href={urlHref} className={styles.hrefUrl} target='_blank'>
+                            <Typography.Link href={urlHref} target='_blank'>
                                 {context}
                             </Typography.Link>
                         </Tooltip >
@@ -315,9 +314,7 @@ export default (props: any) => {
                 ref={joinBaseline}
                 onOk={refresh}
                 test_type={testType}
-                ws_id={ws_id}
                 server_provider={server_provider}
-                accessible={access.IsWsSetting()}
             />
         </>
     )

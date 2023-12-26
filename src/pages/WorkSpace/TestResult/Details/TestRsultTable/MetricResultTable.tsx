@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Tooltip, Typography } from 'antd'
 import { QusetionIconTootip, ResultTdPopver, compareResultFontColor, compareResultSpan } from '../components'
 import { queryCaseResultPerformance } from '../service'
@@ -10,18 +10,20 @@ import { targetJump } from '@/utils/utils'
 import { ResizeHooksTable } from '@/utils/table.hooks';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
+import { MetricSelectProvider } from '.'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
     const { test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType } = props
     const { id: job_id, ws_id } = useParams() as any
-
+    const { setOSuite, oSuite } = React.useContext(MetricSelectProvider)
     const { data = [], run, loading } = useRequest(
         () => queryCaseResultPerformance({ ws_id, job_id, case_id: test_case_id, suite_id, compare_result }),
         { manual: true }
     )
 
     const access = useAccess()
+    const $test_type = ["performance", "性能测试"].includes(testType) ? "performance" : "functional"
 
     useEffect(() => {
         if (refreshId && refreshId === test_case_id) {
@@ -82,8 +84,7 @@ export default (props: any) => {
                 return (
                     (_ && row.baseline_cv_value) ?
                         <Access accessible={access.IsWsSetting()} >
-                            <span
-                                className={styles.hrefUrl}
+                            <Typography.Link
                                 onClick={() => {
                                     if (row.skip_baseline_info) {
                                         const $test_type = ["performance", "性能测试"].includes(testType) ? "performance" : "functional"
@@ -92,7 +93,7 @@ export default (props: any) => {
                                 }}
                             >
                                 <EllipsisPulic title={`${_}±${row.baseline_cv_value}`} />
-                            </span>
+                            </Typography.Link>
                         </Access> :
                         '-'
                 )
@@ -118,19 +119,15 @@ export default (props: any) => {
                 if (access.IsWsSetting())
                     return (
                         <Tooltip placement="topLeft" title={context}>
-                            <Typography.Link
-                                className={styles.hrefUrl}
-                                onClick={
-                                    () => {
-                                        if (row.skip_baseline_info) {
-                                            const $test_type = ["performance", "性能测试"].includes(testType) ? "performance" : "functional"
-                                            targetJump(`/ws/${ws_id}/baseline/${$test_type}?${qs.stringify(row.skip_baseline_info)}`)
-                                        }
-                                    }
-                                }
-                            >
-                                {context || '-'}
-                            </Typography.Link>
+                            {
+                                row.skip_baseline_info ?
+                                    <Typography.Link
+                                        href={`/ws/${ws_id}/baseline/${$test_type}?${qs.stringify(row.skip_baseline_info)}`}
+                                    >
+                                        {context || '-'}
+                                    </Typography.Link> :
+                                    context || '-'
+                            }
                         </Tooltip >
                     )
                 return (<ColumnEllipsisText ellipsis={{ tooltip: true }}>{context || '-'}</ColumnEllipsisText>)
@@ -167,12 +164,39 @@ export default (props: any) => {
         },
     ]
 
+    const rowSelection: any = testType === 'performance' ? {
+        columnWidth: 40,
+        selectedRowKeys: oSuite?.[suite_id]?.[test_case_id],
+        onChange: (keys: React.Key[]) => {
+            setOSuite({
+                ...oSuite,
+                [suite_id]: {
+                    ...(oSuite?.[suite_id] || {}),
+                    [test_case_id]: keys
+                }
+            })
+        }
+    } : undefined
+
+    React.useEffect(() => {
+        if (data && Object.prototype.toString.call(oSuite?.[suite_id]?.[test_case_id]) === '[object Null]') {
+            setOSuite({
+                ...oSuite,
+                [suite_id]: {
+                    ...(oSuite?.[suite_id] || {}),
+                    [test_case_id]: data.map((i: any) => i.id)
+                }
+            })
+        }
+    }, [oSuite, data])
+
     return (
         <ResizeHooksTable
             name="ws-result-metric-list"
             rowKey="id"
             loading={loading}
             pagination={false}
+            rowSelection={rowSelection}
             size="small"
             className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
             rowClassName={styles.result_info_table_row}

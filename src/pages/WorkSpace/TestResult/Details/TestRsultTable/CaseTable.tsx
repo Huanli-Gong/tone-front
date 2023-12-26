@@ -20,18 +20,20 @@ import ContrastBaseline from '../components/ContrastBaseline'
 import treeSvg from '@/assets/svg/tree.svg'
 import { AccessTootip } from '@/utils/utils';
 import { getStorageState } from '@/utils/table.hooks';
+import { MetricSelectProvider } from '.'
+
 // const treeSvg = require('@/assets/svg/tree.svg')
 const background = `url(${treeSvg}) center center / 38.6px 32px `
 
 const CaseTable: React.FC<Record<string, any>> = (props) => {
     const {
         suite_id, testType, suite_name, server_provider, provider_name, creator, expandedState, expandedCaseRowKeys,
-        suiteSelect = [], onCaseSelect, openAllRows = false, setIndexExpandFlag, parentTableName, columnsChange
+        openAllRows = false, setIndexExpandFlag, parentTableName, columnsChange
     } = props
 
     const locale = getLocale() === 'en-US';
+    const { setOSuite, oSuite } = React.useContext(MetricSelectProvider)
     const { id: job_id } = useParams() as any
-    const [selectedRowKeys, setSelectedRowKeys] = React.useState<any[]>([])
     const [expandedRowKeys, setExpandedRowKeys] = React.useState<any[]>([])
 
     const access = useAccess()
@@ -220,14 +222,42 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
         }
     ], [creator, access, hasBaselineColumn, hasBaselineIdColumn, columnsChange]).filter(Boolean)
 
-
     const rowSelection = ['performance', 'business_performance'].includes(testType) ? {
         columnWidth: 40,
-        selectedRowKeys,
-        onChange: ($selectedRowKeys: any[]) => {
-            setSelectedRowKeys($selectedRowKeys)
+        selectedRowKeys: oSuite?.[suite_id] ? Object.keys(oSuite?.[suite_id]).map((i: any) => + i) : [],
+        onChange: (keys: any[]) => {
+            if (keys.length > 0) {
+                setOSuite({
+                    ...oSuite,
+                    [suite_id]: keys.reduce((p: any, c: any) => {
+                        p[c] = null
+                        return p
+                    }, {})
+                })
+            }
+            else {
+                setOSuite(Object.keys(oSuite).reduce((p: any, c: any) => {
+                    if (c !== suite_id) {
+                        return p[c] = null
+                    }
+                    return p
+                }, {}))
+            }
         }
     } : undefined
+
+    useEffect(() => {
+        if (source && Object.prototype.toString.call(oSuite?.[suite_id]) === '[object Null]') {
+            setOSuite({
+                ...oSuite,
+                [suite_id]: source.reduce((p: any, c: any) => {
+                    const { test_case_id } = c
+                    p[test_case_id] = null
+                    return p
+                }, {})
+            })
+        }
+    }, [oSuite, source])
 
     const handleOnExpand = (expanded: boolean, record: any) => {
         if (expanded) {
@@ -239,20 +269,6 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
             setExpandedRowKeys(expandedRowKeys.filter((i: number) => i !== record.test_case_id))
         }
     }
-
-    useEffect(() => {
-        if (suiteSelect.length) {
-            const idx = suiteSelect.findIndex((i: any) => i === suite_id)
-            if (idx > -1)
-                setSelectedRowKeys(source?.map((i: any) => i.test_case_id))
-        }
-        else setSelectedRowKeys([])
-    }, [suiteSelect])
-
-    // 行选回调
-    useEffect(() => {
-        onCaseSelect(suite_id, selectedRowKeys)
-    }, [selectedRowKeys])
 
     // 子级表格会通过监听传入的状态：展开全部/收起。
     useEffect(() => {
@@ -310,7 +326,6 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
                 test_type={testType}
                 server_provider={server_provider}
                 onOk={init}
-                accessible={access.IsWsSetting()}
             />
             <ContrastBaseline
                 ref={contrastBaselineDrawer}
