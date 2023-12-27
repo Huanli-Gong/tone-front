@@ -95,8 +95,8 @@ const TestResultTable: React.FC<any> = (props) => {
         })
     }
 
-    const handleContrastBaseline = (_: any) => {
-        contrastBaselineDrawer.current.show({ ..._, job_id })
+    const handleContrastBaseline = (row: any) => {
+        contrastBaselineDrawer.current.show(row)
     }
 
     const handleContrastBaselineOk = () => {
@@ -105,8 +105,8 @@ const TestResultTable: React.FC<any> = (props) => {
         setRefreshCaseTable(uuid())
     }
 
-    const handleJoinBaseline = (_: any) => {
-        joinBaselineDrawer.current.show({ ..._, job_id })
+    const handleJoinBaseline = (row: any) => {
+        joinBaselineDrawer.current.show(row)
     }
 
     const suiteCaseExpandedContrl = (isExpanded: boolean) => {
@@ -287,7 +287,7 @@ const TestResultTable: React.FC<any> = (props) => {
     ]
 
     const handleBatchContrastBaseline = () => {
-        contrastBaselineDrawer.current.show()
+        contrastBaselineDrawer.current.show({ isMore: true })
     }
 
     const handleJoinBaselineOk = () => {
@@ -296,7 +296,7 @@ const TestResultTable: React.FC<any> = (props) => {
     }
 
     const handleBatchJoinBaseline = () => {
-        joinBaselineDrawer.current.show()
+        joinBaselineDrawer.current.show({ isMore: true })
     }
 
     const handleOpenAll = () => {
@@ -381,8 +381,6 @@ const TestResultTable: React.FC<any> = (props) => {
         if (oSuite && Object.keys(oSuite).length) return false
         return true
     }, [oSuite])
-
-    console.log(oSuite)
 
     return (
         <MetricSelectProvider.Provider value={{ setOSuite, oSuite }}>

@@ -69,11 +69,11 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
     const hasBaselineIdColumn = !!source.length && source?.[0]?.baseline_job_id
 
     const handleContrastBaseline = (_: any) => {
-        contrastBaselineDrawer.current.show({ ..._, suite_id, job_id })
+        contrastBaselineDrawer.current.show({ ..._, suite_id })
     }
 
     const handleJoinBaseline = (_: any) => {
-        joinBaselineDrawer.current.show({ ..._, suite_id, job_id })
+        joinBaselineDrawer.current.show({ ..._, suite_id })
     }
 
     const columns = React.useMemo(() => [

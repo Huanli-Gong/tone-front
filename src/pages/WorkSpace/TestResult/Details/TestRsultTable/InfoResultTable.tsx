@@ -142,7 +142,7 @@ export default (props: any) => {
     }
 
     const handleOpenJoinBaseline = (item: any) => {
-        joinBaseline.current.show({ ...item, suite_id, job_id, test_case_id })
+        joinBaseline.current.show({ ...item, suite_id, test_case_id })
     }
 
     const columns: TableColumnProps<AnyType>[] = [
