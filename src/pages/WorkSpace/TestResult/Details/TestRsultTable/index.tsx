@@ -96,7 +96,7 @@ const TestResultTable: React.FC<any> = (props) => {
     }
 
     const handleContrastBaseline = (row: any) => {
-        contrastBaselineDrawer.current.show(row)
+        contrastBaselineDrawer.current.show({ ...row, ids: { [row.suite_id]: null } })
     }
 
     const handleContrastBaselineOk = () => {

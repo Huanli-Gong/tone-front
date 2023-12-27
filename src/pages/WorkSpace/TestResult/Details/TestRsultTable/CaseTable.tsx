@@ -68,8 +68,8 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
     const hasBaselineColumn = !!source.length && source?.[0]?.baseline
     const hasBaselineIdColumn = !!source.length && source?.[0]?.baseline_job_id
 
-    const handleContrastBaseline = (_: any) => {
-        contrastBaselineDrawer.current.show({ ..._, suite_id })
+    const handleContrastBaseline = (row: any) => {
+        contrastBaselineDrawer.current.show({ ...row, ids: { [suite_id]: { [row.test_case_id]: null } } })
     }
 
     const handleJoinBaseline = (_: any) => {
