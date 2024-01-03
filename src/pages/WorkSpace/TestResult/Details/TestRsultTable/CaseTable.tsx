@@ -226,23 +226,22 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
         columnWidth: 40,
         selectedRowKeys: oSuite?.[suite_id] ? Object.keys(oSuite?.[suite_id]).map((i: any) => + i) : [],
         onChange: (keys: any[]) => {
-            if (keys.length > 0) {
-                setOSuite({
-                    ...oSuite,
-                    [suite_id]: keys.reduce((p: any, c: any) => {
-                        p[c] = null
+            setOSuite(
+                keys.length > 0 ?
+                    {
+                        ...oSuite,
+                        [suite_id]: keys.reduce((p: any, c: any) => {
+                            p[c] = oSuite?.[suite_id]?.[c] || null
+                            return p
+                        }, {})
+                    } :
+                    Object.keys(oSuite).reduce((p: any, c: any) => {
+                        if (+ c !== suite_id) {
+                            return p[c] = oSuite?.[suite_id]?.[c] || null
+                        }
                         return p
                     }, {})
-                })
-            }
-            else {
-                setOSuite(Object.keys(oSuite).reduce((p: any, c: any) => {
-                    if (c !== suite_id) {
-                        return p[c] = null
-                    }
-                    return p
-                }, {}))
-            }
+            )
         }
     } : undefined
 

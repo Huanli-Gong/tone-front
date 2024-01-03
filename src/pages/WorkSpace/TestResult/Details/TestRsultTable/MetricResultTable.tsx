@@ -170,10 +170,17 @@ export default (props: any) => {
         onChange: (keys: React.Key[]) => {
             setOSuite({
                 ...oSuite,
-                [suite_id]: {
-                    ...(oSuite?.[suite_id] || {}),
-                    [test_case_id]: keys
-                }
+                [suite_id]: keys.length > 0 ?
+                    {
+                        ...(oSuite?.[suite_id] || {}),
+                        [test_case_id]: keys
+                    } :
+                    Object.keys(oSuite?.[suite_id]).reduce((p: any, c: any) => {
+                        if (+ c === test_case_id)
+                            return p
+                        p[c] = oSuite?.[suite_id]?.[c]
+                        return p
+                    }, {})
             })
         }
     } : undefined
