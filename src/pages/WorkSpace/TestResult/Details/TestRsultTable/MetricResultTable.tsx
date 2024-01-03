@@ -6,7 +6,6 @@ import { queryCaseResultPerformance } from '../service'
 import { useRequest, useAccess, Access, useParams, useIntl, FormattedMessage } from 'umi'
 import qs from 'querystring'
 import styles from './index.less'
-import { targetJump } from '@/utils/utils'
 import { ResizeHooksTable } from '@/utils/table.hooks';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
@@ -84,16 +83,16 @@ export default (props: any) => {
                 return (
                     (_ && row.baseline_cv_value) ?
                         <Access accessible={access.IsWsSetting()} >
-                            <Typography.Link
-                                onClick={() => {
-                                    if (row.skip_baseline_info) {
-                                        const $test_type = ["performance", "性能测试"].includes(testType) ? "performance" : "functional"
-                                        targetJump(`/ws/${ws_id}/baseline/${$test_type}?${qs.stringify(row.skip_baseline_info)}`)
-                                    }
-                                }}
-                            >
-                                <EllipsisPulic title={`${_}±${row.baseline_cv_value}`} />
-                            </Typography.Link>
+                            {
+                                row.skip_baseline_info ?
+                                    <Typography.Link
+                                        target='_blank'
+                                        href={`/ws/${ws_id}/baseline/${$test_type}?${qs.stringify(row.skip_baseline_info)}`}
+                                    >
+                                        <EllipsisPulic title={`${_}±${row.baseline_cv_value}`} />
+                                    </Typography.Link> :
+                                    `${_}±${row.baseline_cv_value}`
+                            }
                         </Access> :
                         '-'
                 )
@@ -122,15 +121,16 @@ export default (props: any) => {
                             {
                                 row.skip_baseline_info ?
                                     <Typography.Link
+                                        target='_blank'
                                         href={`/ws/${ws_id}/baseline/${$test_type}?${qs.stringify(row.skip_baseline_info)}`}
                                     >
-                                        {context || '-'}
+                                        {context}
                                     </Typography.Link> :
-                                    context || '-'
+                                    context
                             }
                         </Tooltip >
                     )
-                return (<ColumnEllipsisText ellipsis={{ tooltip: true }}>{context || '-'}</ColumnEllipsisText>)
+                return (<ColumnEllipsisText ellipsis={{ tooltip: true }}>{context}</ColumnEllipsisText>)
             }
         },
         {
