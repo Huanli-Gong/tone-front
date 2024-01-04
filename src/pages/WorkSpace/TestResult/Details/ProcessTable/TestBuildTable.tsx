@@ -4,12 +4,12 @@ import React, { useEffect, useState } from 'react'
 
 import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons'
 import { ReactComponent as IconLink } from '@/assets/svg/icon_link.svg'
-import { Table, Card, Typography, message, Space, Row, Col } from 'antd'
+import { Table, Card, Typography, Space, Row, Col } from 'antd'
 import { evnPrepareState, tooltipTd } from '../components/index'
-import Clipboard from 'clipboard'
 import { queryBuildList } from '../service'
 import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
 import styled from 'styled-components';
+import { useCopyText } from '@/utils/hooks'
 
 const BuildTable = styled(Table)`
     .expanded-row-padding-no>td {
@@ -23,23 +23,7 @@ const BuildTable = styled(Table)`
 
 const CopyLink: React.FC<{ name: string, link: string }> = ({ name, link }) => {
     const { formatMessage } = useIntl()
-    const handleCopy = ($link: string) => {
-        const dom = document.createElement("a")
-        dom.style.width = "0px";
-        dom.style.height = "0px"
-        document.body.appendChild(dom)
-        const cp = new Clipboard(dom, {
-            text: () => $link
-        })
-
-        cp.on("success", () => {
-            message.success(formatMessage({ id: 'ws.result.details.copied' }))
-        })
-
-        dom.click()
-        cp.destroy()
-        document.body.removeChild(dom)
-    }
+    const handleCopy = useCopyText(formatMessage({ id: 'ws.result.details.copied' }))
 
     if (!link) return <></>
 

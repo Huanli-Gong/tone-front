@@ -11,6 +11,12 @@ import _ from 'lodash';
 
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
 
+export const REQUEST_NOTATION_URLS = [
+  '/api/job/state/',
+  '/api/job/download/query/',
+  '/api/job/download/'
+]
+
 export const envIgnoreIds = () => {
   if (!BUILD_APP_ENV) return ['0zn7ne0u']
   if (BUILD_APP_ENV === 'openanolis') return ['k5z7sxfu', 'qorjejwq']
