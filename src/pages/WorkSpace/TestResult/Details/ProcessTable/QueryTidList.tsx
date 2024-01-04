@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Divider, Spin, Layout, Typography, Row, Col, Tooltip } from 'antd';
 import { queryTidMessage } from '../service'
 import { requestCodeMessage } from "@/utils/utils";
@@ -10,12 +10,17 @@ const TidRow = styled(Row)`
         text-align: right;
         font-size: 14px;
         color: rgba(0,0,0,.45);
+        &::after {
+            content: ':'
+        }
     }
+    
     & div:last-child {
         font-size: 14px;
         color: #000000;
     }
 `
+
 const SegmentationMark = styled.span`
     float: left;
     width:2px;
@@ -23,6 +28,56 @@ const SegmentationMark = styled.span`
     background: #1890ff;
     margin: 5px 8px 0 0;
 `
+
+const DataRow: React.FC<any> = ({ name, field }) => {
+    return (
+        <TidRow gutter={20} >
+            <Col span={6}>{name}</Col>
+            <Col span={18}>{field || '-'}</Col>
+        </TidRow>
+    )
+}
+
+const infoRowFields = [
+    ['TID', 'tid'],
+    ['Sync', 'sync'],
+    ['Env', 'env'],
+    ['Args', 'args'],
+    ['Cwd', 'cwd'],
+    ['Timeout', 'timeout'],
+    ['IP', 'ip'],
+    ['SN', 'sn'],
+    ['TSN', 'tsn'],
+]
+
+const stateRowFields = [
+    ['Status', 'status'],
+    ['Delivery time', 'delivery_time'],
+    ['Start time', 'start_time'],
+    ['Finish time', 'finish_time'],
+    ['Exit code', 'exit_code'],
+    ['Error code', 'error_code'],
+    ['Error msg', 'error_msg'],
+    ['Pid', 'pid'],
+]
+
+const BlockContent: React.FC<any> = ({ title, list, source }) => {
+    return (
+        <Layout.Content style={{ marginBottom: 20 }}>
+            <Divider orientation="left" plain>
+                <Typography.Text strong><SegmentationMark />{title}</Typography.Text>
+            </Divider>
+            {
+                list.map((i: any) => {
+                    const [name, field] = i
+                    return (
+                        <DataRow key={name} name={name} field={source?.[field]} />
+                    )
+                })
+            }
+        </Layout.Content>
+    )
+}
 
 const TidDetail: React.FC<any> = ({ tid }) => {
     const [loading, setLoading] = useState<boolean>(false)
@@ -33,120 +88,21 @@ const TidDetail: React.FC<any> = ({ tid }) => {
         if ($visible) {
             setLoading(true)
             const { data, code, msg } = await queryTidMessage({ tid })
-            if (code === 200) {
-                setDetails(data)
-            } else {
-                requestCodeMessage(code, msg)
-            }
             setLoading(false)
+            setVisible($visible)
+            if (code !== 200) {
+                requestCodeMessage(code, msg)
+                return
+            }
+            setDetails(data)
         }
         setVisible($visible)
     }
 
-    const TidContainer = useMemo(()=> {
-        return (
-            <Spin spinning={loading}>
-                <Layout.Content style={{ marginBottom: 20 }}>
-                    <Divider orientation="left" plain>
-                        <Typography.Text strong><SegmentationMark/>任务信息</Typography.Text>
-                    </Divider>
-                    <TidRow gutter={20} >
-                        <Col span={6}>TID:</Col>
-                        <Col span={18}>{details?.tid || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>Sync:</Col>
-                        <Col span={18}>{details?.sync || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>Env:</Col>
-                        <Col span={18}>{details?.env || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>Args:</Col>
-                        <Col span={18}>{details?.args || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>Cwd:</Col>
-                        <Col span={18}>{details?.cwd || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>Timeout:</Col>
-                        <Col span={18}>{details?.timeout || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>IP:</Col>
-                        <Col span={18}>{details?.ip || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>SN:</Col>
-                        <Col span={18}>{details?.sn || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>TSN:</Col>
-                        <Col span={18}>{details?.tsn || '-'}</Col>
-                    </TidRow>
-                </Layout.Content>
-                <Layout.Content style={{ marginBottom: 20 }}>
-                    <Divider orientation="left" plain>
-                        <Typography.Text strong><SegmentationMark/>任务状态</Typography.Text>
-                    </Divider>
-                    <TidRow gutter={20} >
-                        <Col span={6}>Status:</Col>
-                        <Col span={18}>{details?.status || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>Delivery time:</Col>
-                        <Col span={18}>{details?.delivery_time || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>Start time:</Col>
-                        <Col span={18}>{details?.start_time || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>Finish time:</Col>
-                        <Col span={18}>{details?.finish_time || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>Exit code:</Col>
-                        <Col span={18}>{details?.exit_code || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>Error code:</Col>
-                        <Col span={18}>{details?.error_code || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>Error msg:</Col>
-                        <Col span={18}>{details?.error_msg || '-'}</Col>
-                    </TidRow>
-                    <TidRow gutter={20} >
-                        <Col span={6}>Pid:</Col>
-                        <Col span={18}>{details?.pid || '-'}</Col>
-                    </TidRow>
-                </Layout.Content>
-                {/* <Layout.Content style={{ marginBottom: 20 }}>
-                    <Divider orientation="left" plain>
-                        <Typography.Text strong><SegmentationMark/>任务脚本</Typography.Text>
-                    </Divider>
-                    <Row gutter={20} style={{ margin:'0 10px', height: 200 }}>
-                        <CodeEditer code={details.script} />
-                    </Row>
-                </Layout.Content> */}
-                <Layout.Content style={{ marginBottom: 30 }}>
-                    <Divider orientation="left" plain>
-                        <Typography.Text strong><SegmentationMark/>任务结果</Typography.Text>
-                    </Divider>
-                    <Row gutter={20} style={{ margin:'0 10px', height: 200 }}>
-                        <CodeEditer code={details?.result} />
-                    </Row>
-                </Layout.Content>
-            </Spin>
-        )
-    },[details, loading])
-   
     return (
         <Tooltip
-            visible={visible}
+            open={visible}
+            destroyTooltipOnHide
             overlayStyle={{
                 width: 510,
                 maxWidth: "unset",
@@ -157,12 +113,48 @@ const TidDetail: React.FC<any> = ({ tid }) => {
             }}
             color="#fff"
             placement="right"
-            title={TidContainer}
-            onVisibleChange={handleVisible}
+            title={
+                <Spin spinning={loading}>
+                    <BlockContent
+                        title={'任务信息'}
+                        list={infoRowFields}
+                        source={details}
+                    />
+                    <BlockContent
+                        title={'任务状态'}
+                        list={stateRowFields}
+                        source={details}
+                    />
+                    <Layout.Content style={{ marginBottom: 30 }}>
+                        <Divider orientation="left" plain>
+                            <Typography.Text strong><SegmentationMark />任务结果</Typography.Text>
+                        </Divider>
+                        <Row gutter={20} style={{ margin: '0 10px', height: 200 }}>
+                            <CodeEditer code={details?.result} />
+                        </Row>
+                    </Layout.Content>
+                </Spin>
+            }
+            onOpenChange={handleVisible}
         >
-            {tid}
+            <span style={{ cursor: loading ? 'progress' : 'default' }}>
+                {tid}
+            </span>
         </Tooltip>
     )
 }
+
 export default TidDetail;
 
+{
+    /* 
+        <Layout.Content style={{ marginBottom: 20 }}>
+            <Divider orientation="left" plain>
+                <Typography.Text strong><SegmentationMark/>任务脚本</Typography.Text>
+            </Divider>
+            <Row gutter={20} style={{ margin:'0 10px', height: 200 }}>
+                <CodeEditer code={details.script} />
+            </Row>
+        </Layout.Content> 
+    */
+}
