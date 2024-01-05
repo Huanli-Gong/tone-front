@@ -58,6 +58,7 @@ const text = {
 
   'variable.name': '变量名',
   'variable.name.empty': '变量名不能为空',
+  'variable.name.repeat': '变量名不能重复',
   'variable.value': '值',
   'variable.value.empty': '值不能为空'
 

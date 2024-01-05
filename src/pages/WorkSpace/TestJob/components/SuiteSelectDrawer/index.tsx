@@ -502,9 +502,17 @@ const SuiteDrawer: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         return { serverPool: false, selfServer: false, repeat: false, cleanup_info: false, setup_info: false, timeout: false }
     }, [caseFrom, batch, server_type, settingType, suiteForm, run_mode])
 
+    const env_info_data = Form.useWatch('env_info', form)
+
     const validator = ($name: string, field: any) => {
         const name = form.getFieldValue(['env_info', field.name, 'name'])
         const val = form.getFieldValue(['env_info', field.name, 'val'])
+
+        if ($name === 'name') {
+            for (const x in env_info_data)
+                if (+ x !== field.name && env_info_data[x].name === name)
+                    return Promise.reject(formatMessage({ id: 'ws.test.job.variable.name.repeat' }))
+        }
 
         if ($name === 'name' && name) return Promise.resolve()
         if ($name === 'val' && val) return Promise.resolve()

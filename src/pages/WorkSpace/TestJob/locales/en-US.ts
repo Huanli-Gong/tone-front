@@ -58,6 +58,7 @@ const text = {
 
   'variable.name': 'variable name',
   'variable.name.empty': 'name cannot be empty',
+  'variable.name.repeat': 'name cannot be repeat',
   'variable.value': 'value',
   'variable.value.value': 'valuecannot be empty',
 };
