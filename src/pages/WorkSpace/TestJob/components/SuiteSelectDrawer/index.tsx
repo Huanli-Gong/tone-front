@@ -510,7 +510,7 @@ const SuiteDrawer: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
 
         if ($name === 'name') {
             for (const x in env_info_data)
-                if (+ x !== field.name && env_info_data[x].name === name)
+                if (+ x !== field.name && env_info_data[x].name?.trim() === name?.trim())
                     return Promise.reject(formatMessage({ id: 'ws.test.job.variable.name.repeat' }))
         }
 
