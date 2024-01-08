@@ -110,6 +110,9 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
                 </Space>
             )
         })
+
+        /* @ts-ignore */
+        fileRef.current.value = ''
     }
 
     const { origin, pathname } = window.location
