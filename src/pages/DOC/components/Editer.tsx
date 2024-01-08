@@ -61,7 +61,7 @@ const EditorEditBtn = styled.span`
     }
 `
 
-const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
+const EditorBlock: React.FC<any> = ({ id, title, gmt_created, gmt_modified }) => {
     const { doc_type } = useParams() as any
     const access = useAccess()
 
@@ -132,9 +132,14 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
                                             </EditorEditBtn>
                                         </Access>
                                     </EditorTitle>
-                                    <Typography.Text type="secondary">
-                                        更新时间：{gmt_modified}
-                                    </Typography.Text>
+                                    <Space size={16}>
+                                        <Typography.Text type="secondary">
+                                            创建时间：{gmt_created}
+                                        </Typography.Text>
+                                        <Typography.Text type="secondary">
+                                            更新时间：{gmt_modified}
+                                        </Typography.Text>
+                                    </Space>
                                 </>
                             }
 

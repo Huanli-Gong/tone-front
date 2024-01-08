@@ -37,7 +37,7 @@ export default {
   //
   'upload.list.Drawer.upload.message': 'Please upload the file',
   'upload.list.Drawer.upload.supportText': 'Support extensions',
-  'upload.list.Drawer.valid.type': 'Upload the compressed package file containing tar suffix.',
+  'upload.list.Drawer.valid.type': 'Upload the compressed package file containing tar or tar.gz suffix.',
   'upload.list.Drawer.confirm.title': 'The file does not comply with the requirements.',
   'upload.list.Drawer.confirm.content': 'Please  upload a compressed package file less than 500M.',
 };

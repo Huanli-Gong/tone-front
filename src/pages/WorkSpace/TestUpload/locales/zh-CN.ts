@@ -36,7 +36,7 @@ export default {
   //
   'upload.list.Drawer.upload.message': '请上传文件',
   'upload.list.Drawer.upload.supportText': '支持扩展名',
-  'upload.list.Drawer.valid.type': '只能上传.tar后缀的压缩包文件',
+  'upload.list.Drawer.valid.type': '只能上传.tar或.tar.gz后缀的压缩包文件',
   'upload.list.Drawer.confirm.title': '文件不符合要求',
   'upload.list.Drawer.confirm.content': '请上传小于500M的压缩包文件',
 };

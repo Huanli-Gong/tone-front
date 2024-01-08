@@ -12,6 +12,7 @@ import { ResizeHooksTable } from '@/utils/table.hooks';
 import { v4 as uuid } from "uuid"
 import styles from "./index.less"
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
+import { QusetionIconTootip } from '@/components/Product'
 
 const pointerStyle = { color: '#1890FF', cursor: 'pointer', marginLeft: 12 };
 const disablePointer = { color: 'rgba(0,0,0,.25)', marginLeft: 12 };
@@ -122,7 +123,9 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
         {
             dataIndex: 'state',
             title: <FormattedMessage id="ws.result.details.state" />,
-            render: (_: any) => evnPrepareState(_)
+            render: (_: any,row:any) => row.suite_state_desc && !!row.suite_state_desc.length 
+            ? <QusetionIconTootip title={evnPrepareState(_)} desc={row.suite_state_desc} /> 
+            : evnPrepareState(_)
         },
         {
             dataIndex: 'start_time',

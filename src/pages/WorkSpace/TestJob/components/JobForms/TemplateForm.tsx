@@ -1,10 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { forwardRef, useImperativeHandle, useEffect } from 'react'
-import { Form, Input, Radio } from 'antd'
+import { Form, Input, Radio, message } from 'antd'
 import { useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
+import { queryTemplateDel } from '@/pages/WorkSpace/TestTemplateManage/service'
 
 export default forwardRef(({ disabled, template, onEnabelChange }: any, ref: any) => {
+    
+    const checkTemplate = async(val:any) => {
+        try {
+            const { data, code } = await queryTemplateDel({ template_id: template.id })
+            if(code === 200){
+                if(!!data.length){
+                    const values = data.map((item:any) => item.name);
+                    const joinedValues = values.join(',');
+                    message.warn(`已有测试计划"${joinedValues}"关联此模板，无法禁用!`)
+                    form.setFieldsValue({ enable: true })
+                    return;
+                } else {
+                    onEnabelChange(val);
+                }
+            }
+        } catch(e) {}
+    }
+
     const { formatMessage } = useIntl()
     const [form] = Form.useForm()
 
@@ -58,7 +77,7 @@ export default forwardRef(({ disabled, template, onEnabelChange }: any, ref: any
             <Form.Item
                 label={<FormattedMessage id="ws.test.job.enable" />}
                 name="enable">
-                <Radio.Group disabled={disabled} onChange={({ target }) => onEnabelChange(target.value)}>
+                <Radio.Group disabled={disabled} onChange={({ target }) => checkTemplate(target.value)}>
                     <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
                     <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                 </Radio.Group>
