@@ -1,10 +1,10 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Button, Select, Space, Tag } from 'antd'
 
 import { tagList as queryTagList } from '@/pages/WorkSpace/TagManage/service'
-import { useRequest, Access, useAccess, FormattedMessage } from 'umi'
+import { useRequest, Access, useAccess, FormattedMessage, useParams } from 'umi'
 import { EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { updateJobTags } from '../service'
 
@@ -24,11 +24,27 @@ export const tagRender = ({ label, closable, onClose, value }: any) => (
     </Tag>
 )
 
-export default ({ tags = [], onOk, ws_id, job_id, creator_id, accessLabel, width }: any) => {
+const editBtn = {
+    paddingTop: 5,
+    paddingRight: 8
+}
+
+
+const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, accessLabel, width }) => {
+    const { ws_id, id: job_id } = useParams() as any
+    const access = useAccess();
+
+    const DEFAULT_LIST_PARAMS = { ws_id, page_num: 1, page_size: 20 }
+
     const [state, setState] = useState(false)
     const [keys, setKeys] = useState([])
-    const access = useAccess();
-    const { data: tagList, loading, refresh, run: getTagList } = useRequest(() => queryTagList({ ws_id }), { manual: true, initialData: [] })
+    const [params, setParams] = React.useState(DEFAULT_LIST_PARAMS)
+    const [list, setList] = React.useState([])
+
+    const { data: tagList, loading, refresh, run: getTagList } = useRequest(
+        () => queryTagList(params), { manual: true, initialData: [], formatResult: (response: any) => response, }
+    )
+
     const jobTagsCreateModal: any = useRef(null)
 
     const handleCancel = () => {
@@ -47,7 +63,12 @@ export default ({ tags = [], onOk, ws_id, job_id, creator_id, accessLabel, width
 
     useEffect(() => {
         getTagList()
-    }, [ws_id])
+    }, [params])
+
+    React.useEffect(() => {
+        if (tagList?.data)
+            setList((p: any) => p.concat(tagList?.data))
+    }, [tagList])
 
     useEffect(() => {
         setKeys(tags.map((i: any) => i.id))
@@ -66,9 +87,13 @@ export default ({ tags = [], onOk, ws_id, job_id, creator_id, accessLabel, width
         jobTagsCreateModal.current?.show()
     }
 
-    const editBtn = {
-        paddingTop: 5,
-        paddingRight: 8
+    const handleTagePopupScroll = ({ target }: any) => { //tag
+        const { clientHeight, scrollHeight, scrollTop } = target
+        if (clientHeight + scrollTop === scrollHeight) {
+            const totalPage = params.page_num + 1
+            if (totalPage <= tagList?.totalPage)
+                setParams((p: any) => ({ ...p, page_num: p.page_num + 1 }))
+        }
     }
 
     return (
@@ -87,8 +112,7 @@ export default ({ tags = [], onOk, ws_id, job_id, creator_id, accessLabel, width
                                 ? tags.map((tag: any) => <Tag style={{ margin: 0 }} color={tag.color} key={tag.id}>{tag.name}</Tag>)
                                 : <span style={{ color: 'rgba(0,0,0,0.85)' }}>-</span>
                         }
-                    </Space>
-                    :
+                    </Space> :
                     <Space size={8}>
                         <Select
                             mode="multiple"
@@ -99,11 +123,13 @@ export default ({ tags = [], onOk, ws_id, job_id, creator_id, accessLabel, width
                             tagRender={tagRender}
                             onChange={handleSelectChange}
                             allowClear
+                            onPopupScroll={handleTagePopupScroll}
                             getPopupContainer={node => node.parentNode}
                             dropdownRender={menu => (
                                 <div>
                                     {menu}
-                                    {accessLabel &&
+                                    {
+                                        accessLabel &&
                                         <div style={{ maxHeight: 300, overflow: 'auto', padding: '10px', borderTop: '1px solid #eee', marginBottom: '-4px' }} onClick={newLabel}>
                                             <span className={styles.test_summary_job}><PlusOutlined style={{ marginRight: 8, color: '#1890ff' }} />
                                                 <FormattedMessage id="ws.result.details.new.tag" />
@@ -113,7 +139,7 @@ export default ({ tags = [], onOk, ws_id, job_id, creator_id, accessLabel, width
                                 </div>
                             )}
                             options={
-                                tagList.map((tag: any) => ({
+                                list.map((tag: any) => ({
                                     value: tag.id,
                                     label: <Tag color={tag.tag_color} >{tag.name}</Tag>
                                 }))
@@ -129,3 +155,5 @@ export default ({ tags = [], onOk, ws_id, job_id, creator_id, accessLabel, width
         </div>
     )
 }
+
+export default TagsEditer
