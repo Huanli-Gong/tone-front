@@ -91,7 +91,7 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, accessLabel, w
         const { clientHeight, scrollHeight, scrollTop } = target
         if (clientHeight + scrollTop === scrollHeight) {
             const totalPage = params.page_num + 1
-            if (totalPage <= tagList?.totalPage)
+            if (totalPage <= tagList?.total_page)
                 setParams((p: any) => ({ ...p, page_num: p.page_num + 1 }))
         }
     }
