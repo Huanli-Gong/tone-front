@@ -30,7 +30,7 @@ const editBtn = {
 }
 
 
-const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, accessLabel, width }) => {
+const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
     const { ws_id, id: job_id } = useParams() as any
     const access = useAccess();
 
@@ -40,16 +40,25 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, accessLabel, w
     const [keys, setKeys] = useState([])
     const [params, setParams] = React.useState(DEFAULT_LIST_PARAMS)
     const [list, setList] = React.useState([])
-
-    const { data: tagList, loading, refresh, run: getTagList } = useRequest(
-        () => queryTagList(params), { manual: true, initialData: [], formatResult: (response: any) => response, }
-    )
-
     const jobTagsCreateModal: any = useRef(null)
+
+    const { data: tagList, loading, refresh } = useRequest(
+        () => queryTagList(params),
+        { initialData: [], formatResult: (response: any) => response, refreshDeps: [params], ready: state }
+    )
 
     const handleCancel = () => {
         setState(false)
     }
+
+    React.useEffect(() => {
+        return () => {
+            if (!state) {
+                setList([])
+                setParams(DEFAULT_LIST_PARAMS)
+            }
+        }
+    }, [state])
 
     const handleOk = async () => {
         const { code, msg } = await updateJobTags({ job_id, tag_id: keys, ws_id })
@@ -61,13 +70,10 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, accessLabel, w
         handleCancel()
     }
 
-    useEffect(() => {
-        getTagList()
-    }, [params])
-
     React.useEffect(() => {
-        if (tagList?.data)
+        if (tagList?.data) {
             setList((p: any) => p.concat(tagList?.data))
+        }
     }, [tagList])
 
     useEffect(() => {
@@ -75,7 +81,6 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, accessLabel, w
     }, [tags])
 
     const handleSetTags = () => {
-        getTagList()
         setState(true)
     }
 
@@ -129,7 +134,7 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, accessLabel, w
                                 <div>
                                     {menu}
                                     {
-                                        accessLabel &&
+                                        access.WsMemberOperateSelf() &&
                                         <div style={{ maxHeight: 300, overflow: 'auto', padding: '10px', borderTop: '1px solid #eee', marginBottom: '-4px' }} onClick={newLabel}>
                                             <span className={styles.test_summary_job}><PlusOutlined style={{ marginRight: 8, color: '#1890ff' }} />
                                                 <FormattedMessage id="ws.result.details.new.tag" />
