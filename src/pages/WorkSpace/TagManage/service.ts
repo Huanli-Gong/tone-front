@@ -23,13 +23,6 @@ export async function editTag(outId:number,params:any) {
     });
 }
 
-//查询成员
-export function member ( params:any ) {
-    return request('/api/auth/user/' , { 
-        params 
-    })
-}
-
 //删除Tag
 export const delSuite = async ( data : { tag_id : number, ws_id:number }) => {
     return request(`/api/job/tag/` , { method : 'DELETE' , data })

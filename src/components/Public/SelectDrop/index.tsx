@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Spin } from 'antd';
 import { FormattedMessage } from 'umi'
-import { member } from './service';
+import { queryMember } from '@/services/Workspace';
 
 const FilterRadio: React.FC<any> = ({ confirm, onConfirm, pageSize = 999, value }) => {
 	const [user, setUser] = useState<any>([])
@@ -17,13 +17,15 @@ const FilterRadio: React.FC<any> = ({ confirm, onConfirm, pageSize = 999, value 
 		if (keyword && keyword == param) return
 		setKeyword(param)
 		setFetching(true)
-		const { data } = await member({ keyword: param, page_size: pageSize })
+		const { data } = await queryMember({ keyword: param, page_size: pageSize })
 		setUser(data || [])
 		setFetching(false)
 	}
+
 	useEffect(() => {
 		handleSearch()
 	}, []);
+
 	return (
 		<div style={{ padding: 8 }}>
 			<div>
