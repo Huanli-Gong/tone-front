@@ -133,7 +133,7 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
             <Access accessible={access.IsWsSetting()}>
                 <Space size={12}>
                     <Tooltip
-                        placement="bottom"
+                        placement="left"
                         title={intl.formatMessage({ id: `ws.result.details.breadcrumb.button.fail_case_upload` })}
                     >
                         <BreadcrumbIcon onClick={() => fileRef.current?.click()}>
@@ -141,7 +141,7 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
                         </BreadcrumbIcon>
                     </Tooltip>
                     <Tooltip
-                        placement="bottom"
+                        placement="left"
                         title={intl.formatMessage({ id: `ws.result.details.breadcrumb.button.share` })}
                     >
                         <BreadcrumbIcon onClick={() => handleCopy(origin + pathname)}>
@@ -151,7 +151,7 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
                     {
                         !CAN_STOP_JOB_STATES.includes(jobState) &&
                         <Tooltip
-                            placement="bottom"
+                            placement="left"
                             title={intl.formatMessage({ id: `ws.result.details.breadcrumb.button.download` })}
                         >
                             <BreadcrumbIcon onClick={handleDownloadJob}>
