@@ -41,8 +41,6 @@ const Standalone = (props: any, ref: any) => {
     const [loading, setLoading] = useState(true)
     const [defaultExpandRowKeys, setDefaultExpandRowKeys] = useState([])
     const [syncLoading, setSyncLoading] = useState(false)
-    const [total, setTotal] = useState(0)
-    // const [page, setPage] = useState(0)
     const [selectRowKeys, setSelectRowKeys] = useState([])
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
@@ -72,13 +70,12 @@ const Standalone = (props: any, ref: any) => {
     const getTestServerList = async () => {
         history.replace(`/ws/${ws_id}/device/group?${stringify(urlParmas)}`)
         setLoading(true)
-        const res = await queryTestServerList(urlParmas) || {}
+        const { code, msg, ...rest } = await queryTestServerList(urlParmas) || {}
         setLoading(false)
-        const { data = [] } = res
-        setDataSource(data)
-        setTotal(res.total)
+        setDataSource(rest)
         //setPage(res.total_page)
-        setDefaultExpandRowKeys(data.map((item: any) => item.id))
+        setDefaultExpandRowKeys(rest?.data?.map((item: any) => item.id))
+        setSelectRowKeys([])
     }
 
     const handleTablePageChange = (page: number, size: number = 10) => {
@@ -119,7 +116,7 @@ const Standalone = (props: any, ref: any) => {
         const param = { ws_id }
         const data = await deleteTestServer(id, param)
         //let totalPage = Math.ceil(Number(total) / urlParmas?.page_size )
-        const pageNo = calcPageNo(total, urlParmas?.page_num, urlParmas?.page_size)
+        const pageNo = calcPageNo(dataSource?.total, urlParmas?.page_num, urlParmas?.page_size)
         if (data.code === 200) {
             message.success(formatMessage({ id: 'operation.success' }))
             setSelectRowKeys(selectRowKeys.filter((i: any) => i !== id))
@@ -583,7 +580,7 @@ const Standalone = (props: any, ref: any) => {
                 pagination={false}
                 size={'small'}
                 className={styles.pro_table_card}
-                dataSource={dataSource}
+                dataSource={dataSource?.data || []}
                 rowSelection={{
                     selectedRowKeys: selectRowKeys,
                     onChange: handleSelectedRowKeys
@@ -599,7 +596,7 @@ const Standalone = (props: any, ref: any) => {
             <CommonPagination
                 pageSize={urlParmas?.page_size}
                 currentPage={urlParmas?.page_num}
-                total={total}
+                total={dataSource?.total || 0}
                 onPageChange={handleTablePageChange}
             />
             {/* 集团单机 —— 日志 */}
