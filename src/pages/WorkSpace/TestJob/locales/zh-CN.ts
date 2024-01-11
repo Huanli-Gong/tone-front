@@ -1,6 +1,6 @@
 const defaultKey = 'ws.test.job'
 
-const text =  {
+const text = {
   'JobTypePreview': 'Job类型预览',
   'TemplatePreview': '模板预览',
   'TemplateEdit': '模板编辑',
@@ -32,7 +32,7 @@ const text =  {
 
   'basicForm': '基础配置',
   'envForm': '环境准备',
-  'suiteTable': '用例和机器',  
+  'suiteTable': '用例和机器',
   'moreForm': '更多配置',
   'yaml.test': '验证',
   'copy': '复制',
@@ -42,19 +42,25 @@ const text =  {
   'reset': '重 置',
   'save.as.template': '存为模板',
   'no.permission, please.refer': '无权限，请参考',
-  'help.docs': '帮助文档',  
+  'help.docs': '帮助文档',
   'submit.test': '提交测试',
   // save Template Drawer
   'template.drawer.title': '存为模板',
   'template_name': '模板名称',
   'template_name.rules1': '仅允许包含字母、数字、下划线、中划线、点，最长64个字符',
   'template_name.rules2': '模板名称不能为空',
-  
+
   // message info
   'machine.cannot.be.empty': '监控机器不能为空',
   'suite.cannot.be.empty': '用例不能为空',
   'operation.success': '操作成功！',
   'save.success': '保存成功',
+
+  'variable.name': '变量名',
+  'variable.name.empty': '变量名不能为空',
+  'variable.name.repeat': '变量名不能重复',
+  'variable.value': '值',
+  'variable.value.empty': '值不能为空'
 
 };
 

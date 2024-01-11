@@ -2,14 +2,15 @@
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Drawer, Form, Spin, Space, Input, Tooltip, Button, Alert, Radio, InputNumber } from 'antd'
-import { forwardRef, useImperativeHandle, useState, useMemo, useCallback, memo, useEffect } from 'react'
-import { useIntl, FormattedMessage, useParams } from 'umi';
+import { Drawer, Form, Spin, Space, Input, Button, Alert, Radio, InputNumber, Row } from 'antd'
+import React, { forwardRef, useImperativeHandle, useState, useMemo, useCallback, memo, useEffect } from 'react'
+import { useIntl, FormattedMessage } from 'umi';
 import styled from 'styled-components'
 import { DrawerProvider } from './Provider'
 import { QusetionIconTootip, getHasMuiltip, formatter } from '../untils'
 import lodash from 'lodash'
 import ServerFormItem from './ServerFormItem'
+import { DeleteOutlined } from '@ant-design/icons';
 // import MonitorItem from './MonitorItem'
 
 const DrawerWrapper = styled(Drawer)`
@@ -41,37 +42,113 @@ const NameContent = styled.div`
     overflow: hidden;
 `
 
-const FieldsInput = styled.div`
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-variant: tabular-nums;
-    list-style: none;
-    font-feature-settings: 'tnum', "tnum";
-    position: relative;
-    display: inline-block;
-    min-width: 0;
-    padding: 4px 11px;
-    color: rgba(0, 0, 0, 0.85);
-    font-size: 14px;
-    line-height: 1.5715;
-    background-image: none;
-    border: 1px solid #d9d9d9;
-    border-radius: 2px;
-    transition: all 0.3s;
-    color: rgba(0, 0, 0, 0.25);
-    background-color: #f5f5f5;
-    cursor: not-allowed;
-    opacity: 1;
-    width: 159px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-`
+const getType = (v: any) => Object.prototype.toString.call(v)
 
-const SuiteDrawer = (props: any, ref: any) => {
+const compact = (val: any) => {
+    const c = getType(val)
+    if (c === '[object Array]' && JSON.stringify(val) !== '[]') {
+        const x = val.reduce((pre: any, cur: any) => {
+            const t = getType(cur)
+            if (JSON.stringify(cur) !== '{}' && t === '[object Object]') {
+                const r = Object.keys(cur).reduce(
+                    (p: any, c: any) => {
+                        const i = cur[c]
+                        if (i !== null && i !== undefined && i !== '') p[c] = i
+                        return p
+                    }, {}
+                )
+                return JSON.stringify(r) !== '{}' ? pre.concat(r) : pre
+            }
+            return pre
+        }, [])
+        return x.length > 0 ? x : undefined
+    }
+
+    return undefined
+}
+
+const getMultipResultFields = (arr: any) => (
+    Object.keys(arr).reduce(
+        (pre: any, cur: any) => {
+            if (cur === 'server_tag_id' && JSON.stringify(arr[cur]) !== '[]') {
+                const s = arr[cur].reduce((p: any, c: any) => JSON.stringify(c) !== '[]' ? p.concat(c.toString()) : p, [])
+                let r = s;
+                if (s.length > 0)
+                    r = lodash.uniq(s).map((i: any) => i.split(',').map((i: any) => Number(i)))
+                pre[cur] = r
+            }
+            else
+                pre[cur] = lodash.uniq(arr[cur])
+                    .reduce(
+                        (p: any, c: any) => {
+                            if (lodash.isArray(c)) {
+                                if (JSON.stringify(c) === '[]') return p
+                                p.push(c)
+                                return p
+                            }
+                            return (c !== undefined && c !== null && c !== '') ? p.concat(c) : p
+                        }, []
+                    )
+            return pre
+        }, {}
+    )
+)
+
+const getRealParams = (multip: any) => {
+    const params = Object.keys(multip).reduce((pre: any, cur: any) => {
+        const item = multip[cur]
+        if (cur === 'env_info') {
+            pre[cur] = [{ val: '', name: '' }]
+            return pre
+        }
+        if (item && item.length === 0) return pre
+        if (item && item.length > 1) return pre
+        pre[cur] = item && item[0]
+        return pre
+    }, {})
+    if (params.custom_ip && params.custom_channel) return params
+    return { ...params, custom_ip: null, custom_channel: null }
+}
+
+const getMultipFields = (source: any[], isSuite: boolean = false) => {
+    let caseMultipFields: any = {}
+
+    const filterSourceMultip = (_: any, initial = {}) => _.reduce(
+        (pre: any, cur: any) => {
+            Object.keys(cur).forEach(
+                key => {
+                    const _item = cur[key]
+
+                    if (key === 'test_case_list')
+                        caseMultipFields = filterSourceMultip(_item, caseMultipFields)
+                    else {
+                        if (key in pre) {
+                            if (lodash.isArray(_item))
+                                pre[key].push(_item)
+                            else
+                                pre[key] = pre[key].concat(_item)
+                        }
+                        else pre[key] = [_item]
+                    }
+                }
+            )
+            return pre
+        }, initial
+    )
+
+    const multipList = filterSourceMultip(source)
+    const suiteMultip = getMultipResultFields(multipList)
+
+    if (isSuite) {
+        const caseMultip = getMultipResultFields(caseMultipFields)
+        return { suiteMultip, caseMultip }
+    }
+
+    return { suiteMultip }
+}
+
+const SuiteDrawer: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { formatMessage } = useIntl()
-    const { ws_id } = useParams() as any
     const { contrl, checked, server_type, test_type, run_mode, onDataSourceChange, testSuiteData, onOk } = props
 
     const [serverType, setServerType] = useState('pool') //pool custom
@@ -83,7 +160,6 @@ const SuiteDrawer = (props: any, ref: any) => {
     const [batch, setBatch] = useState(false)
     const [loading, setLoading] = useState(true)
     const [visible, setVisible] = useState(false)
-    const [isNullEnv, setIsNullEnv] = useState(false)
     const [mask, setMask] = useState(false)
 
     const [serverList, setServerList] = useState<any>([])
@@ -95,69 +171,6 @@ const SuiteDrawer = (props: any, ref: any) => {
     const caseHasMultip = useMemo(() => getHasMuiltip(caseFrom), [caseFrom])
     const suiteHasMultip = useMemo(() => getHasMuiltip(suiteForm), [suiteForm, caseFrom])
 
-    const getMultipFields = (source: any[], isSuite: boolean = false) => {
-        let caseMultipFields: any = {}
-
-        const filterSourceMultip = (_: any, initial = {}) => _.reduce(
-            (pre: any, cur: any) => {
-                Object.keys(cur).forEach(
-                    key => {
-                        const _item = cur[key]
-
-                        if (key === 'test_case_list')
-                            caseMultipFields = filterSourceMultip(_item, caseMultipFields)
-                        else {
-                            if (key in pre) {
-                                if (lodash.isArray(_item))
-                                    pre[key].push(_item)
-                                else
-                                    pre[key] = pre[key].concat(_item)
-                            }
-                            else pre[key] = [_item]
-                        }
-                    }
-                )
-                return pre
-            }, initial
-        )
-
-        const getMultipResultFields = (arr: any) => (
-            Object.keys(arr).reduce(
-                (pre: any, cur: any) => {
-                    if (cur === 'server_tag_id' && JSON.stringify(arr[cur]) !== '[]') {
-                        const s = arr[cur].reduce((p: any, c: any) => JSON.stringify(c) !== '[]' ? p.concat(c.toString()) : p, [])
-                        let r = s;
-                        if (s.length > 0)
-                            r = lodash.uniq(s).map((i: any) => i.split(',').map((i: any) => Number(i)))
-                        pre[cur] = r
-                    }
-                    else
-                        pre[cur] = lodash.uniq(arr[cur])
-                            .reduce(
-                                (p: any, c: any) => {
-                                    if (lodash.isArray(c)) {
-                                        if (JSON.stringify(c) === '[]') return p
-                                        p.push(c)
-                                        return p
-                                    }
-                                    return (c !== undefined && c !== null && c !== '') ? p.concat(c) : p
-                                }, []
-                            )
-                    return pre
-                }, {}
-            )
-        )
-
-        const multipList = filterSourceMultip(source)
-        const suiteMultip = getMultipResultFields(multipList)
-
-        if (isSuite) {
-            const caseMultip = getMultipResultFields(caseMultipFields)
-            return { suiteMultip, caseMultip }
-        }
-
-        return { suiteMultip }
-    }
     const changeServerSelect = (params: any) => {
         const { server_object_id, server_tag_id, ip, is_instance, customer_server } = params
         const flag = location.search.indexOf('inheriting_machine') !== -1
@@ -186,7 +199,6 @@ const SuiteDrawer = (props: any, ref: any) => {
             return
         }
 
-
         if ((Array.isArray(server_tag_id) && server_tag_id.length) || server_object_id) {
             setServerType('pool')
             if (server_object_id) {
@@ -203,22 +215,6 @@ const SuiteDrawer = (props: any, ref: any) => {
 
         // if (ip === '随机' || ip === '') setServerObjectType('ip')
         setServerObjectType('ip')
-    }
-
-    const getRealParams = (multip: any) => {
-        const params = Object.keys(multip).reduce((pre: any, cur: any) => {
-            const item = multip[cur]
-            if (cur === 'env_info' && item && item.length === 0) {
-                pre[cur] = new Array(1).fill({ val: '', name: '' })
-                return pre
-            }
-            if (item && item.length === 0) return pre
-            if (item && item.length > 1) return pre
-            pre[cur] = item && item[0]
-            return pre
-        }, {})
-        if (params.custom_ip && params.custom_channel) return params
-        return { ...params, custom_ip: null, custom_channel: null }
     }
 
     useEffect(() => {
@@ -249,10 +245,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                     setCaseForm(suiteMultip)
                     const resultParams = getRealParams(suiteMultip)
                     const { env_info } = resultParams
-                    if (!env_info || env_info.length === 0) {
-                        resultParams.env_info = new Array(1).fill({ val: '', name: '' })
-                    }
-                    setIsNullEnv(true)
+                    resultParams.env_info = !env_info || env_info.length === 0 ? [{ val: '', name: '' }] : env_info
                     form.setFieldsValue(resultParams)
                 }
             }
@@ -262,7 +255,6 @@ const SuiteDrawer = (props: any, ref: any) => {
                 const { env_info } = dataSource
                 if (env_info && env_info.length === 0) {
                     params.env_info = new Array(1).fill({ val: '', name: '' })
-                    setIsNullEnv(true)
                 }
                 changeServerSelect(params)
                 form.setFieldsValue(params)
@@ -288,7 +280,6 @@ const SuiteDrawer = (props: any, ref: any) => {
             setDataSource(null)
             setBatch(false)
             setLoading(true)
-            setIsNullEnv(false)
             setCaseForm(null)
             setSuiteForm(null)
             setServerList([])
@@ -331,33 +322,6 @@ const SuiteDrawer = (props: any, ref: any) => {
     const isTagId = () => !isCustom() && serverObjectType === 'server_tag_id'
     const isObjectId = () => !isCustom() && (serverObjectType && serverObjectType !== 'server_tag_id' && serverObjectType !== 'ip')
     const isRandom = () => !isCustom() && serverObjectType === 'ip'
-
-    const getType = (v: any) => Object.prototype.toString.call(v)
-
-    const compact = useCallback(
-        (val: any) => {
-            const c = getType(val)
-            if (c === '[object Array]' && JSON.stringify(val) !== '[]') {
-                const x = val.reduce((pre: any, cur: any) => {
-                    const t = getType(cur)
-                    if (JSON.stringify(cur) !== '{}' && t === '[object Object]') {
-                        const r = Object.keys(cur).reduce(
-                            (p: any, c: any) => {
-                                const i = cur[c]
-                                if (i !== null && i !== undefined && i !== '') p[c] = i
-                                return p
-                            }, {}
-                        )
-                        return JSON.stringify(r) !== '{}' ? pre.concat(r) : pre
-                    }
-                    return pre
-                }, [])
-                return x.length > 0 ? x : undefined
-            }
-
-            return undefined
-        }, []
-    )
 
     const rerenderParams = (params: any, values: any) => {
         const { custom_channel, custom_ip, server_object_id, server_tag_id } = values
@@ -538,6 +502,34 @@ const SuiteDrawer = (props: any, ref: any) => {
         return { serverPool: false, selfServer: false, repeat: false, cleanup_info: false, setup_info: false, timeout: false }
     }, [caseFrom, batch, server_type, settingType, suiteForm, run_mode])
 
+    const env_info_data = Form.useWatch('env_info', form)
+
+    const validator = ($name: string, field: any) => {
+        const name = form.getFieldValue(['env_info', field.name, 'name'])
+        const val = form.getFieldValue(['env_info', field.name, 'val'])
+
+        if ($name === 'name') {
+            for (const x in env_info_data)
+                if (+ x !== field.name && env_info_data[x].name?.trim() === name?.trim())
+                    return Promise.reject(formatMessage({ id: 'ws.test.job.variable.name.repeat' }))
+        }
+
+        if ($name === 'name' && name) return Promise.resolve()
+        if ($name === 'val' && val) return Promise.resolve()
+
+        if (!name && val) {
+            return Promise.reject(formatMessage({ id: 'ws.test.job.variable.name.empty' }))
+        }
+
+        if (name && !val)
+            return Promise.reject(formatMessage({ id: 'ws.test.job.variable.value.empty' }))
+
+        form.setFields([
+            { name: ['env_info', field.name, 'name'], errors: [] },
+            { name: ['env_info', field.name, 'val'], errors: [] }
+        ])
+        return Promise.resolve()
+    }
 
     return (
         <DrawerWrapper
@@ -555,8 +547,8 @@ const SuiteDrawer = (props: any, ref: any) => {
                 </div>
             }
             width={376}
-            forceRender={true}
-            destroyOnClose={true}
+            forceRender
+            destroyOnClose
             onClose={handleClose}
             open={visible}
             bodyStyle={{ paddingBottom: 80, overflowX: "hidden" }}
@@ -630,45 +622,58 @@ const SuiteDrawer = (props: any, ref: any) => {
                                 >
                                     {
                                         (fields, { add, remove }) => (
-                                            fields.map((field, index) => {
-                                                const evn = form.getFieldValue('env_info')
-                                                const RowItem = ({ label, value, width }: any) => (
-                                                    <div style={{ display: 'flex' }}>
-                                                        <div style={{ flexWrap: 'nowrap', flexShrink: 0 }}>{label}</div>
-                                                        <div style={{ flexWrap: 'wrap', width }}>{value}</div>
-                                                    </div>
-                                                )
-                                                return (
-                                                    <Space key={field.key} style={{ marginBottom: 8 }} align="start">
-                                                        <Tooltip placement="topLeft" overlayStyle={{ width: 250 }}
-                                                            title={
-                                                                (evn[index]?.name || evn[index]?.des) ?
-                                                                    <Space direction="vertical">
-                                                                        {!!evn[index]?.name && <RowItem label={formatMessage({ id: 'select.suite.variable.name' })} value={evn[index]?.name} width={180} />}
-                                                                        {!!evn[index]?.des && <RowItem label={formatMessage({ id: 'select.suite.variable.desc' })} value={evn[index]?.des} width={165} />}
+                                            <Row>
+                                                {
+                                                    fields.map((field, index) => {
+                                                        return (
+                                                            <Row key={field.key}>
+                                                                <div style={{ width: '90%', marginRight: 8 }}>
+                                                                    <Space
+                                                                        style={{ marginBottom: 8 }}
+                                                                        align="start"
+                                                                    >
+                                                                        <Form.Item
+                                                                            name={[field.name, 'name']}
+                                                                            rules={[{
+                                                                                validator: () => validator('name', field),
+                                                                            }]}
+                                                                        >
+                                                                            <Input
+                                                                                autoComplete="off"
+                                                                                placeholder={formatMessage({ id: 'ws.test.job.variable.name' })}
+                                                                            />
+                                                                        </Form.Item>
+                                                                        <span style={{ marginTop: 5, display: 'block' }}>=</span>
+                                                                        <Form.Item
+                                                                            name={[field.name, 'val']}
+                                                                            rules={[{
+                                                                                validator: () => validator('val', field),
+                                                                            }]}
+                                                                        >
+                                                                            <Input
+                                                                                autoComplete="off"
+                                                                                placeholder={formatMessage({ id: 'ws.test.job.variable.value' })}
+                                                                            />
+                                                                        </Form.Item>
                                                                     </Space>
-                                                                    :
-                                                                    null
-                                                            }>
-                                                            {/* <Form.Item
-                                                                name={[field.name, 'name']}
-                                                                fieldKey={[field.fieldKey, 'name']}
-                                                            >
-                                                                <Input disabled={true} autoComplete="off" placeholder={'key'} />
-                                                            </Form.Item> */}
-                                                            <FieldsInput>{evn[index]?.name || 'key'}</FieldsInput>
-                                                        </Tooltip>
-                                                        <span style={{ marginTop: 5, display: 'block' }}>=</span>
-                                                        <Form.Item
-                                                            name={[field.name, 'val']}
-                                                            /* @ts-ignore */
-                                                            fieldKey={[field.fieldKey, 'val']}
-                                                        >
-                                                            <Input disabled={isNullEnv} autoComplete="off" placeholder={evn[index].des || formatMessage({ id: 'select.suite.value' })} />
-                                                        </Form.Item>
-                                                    </Space>
-                                                )
-                                            })
+                                                                </div>
+                                                                {
+                                                                    fields.length > 1 &&
+                                                                    <DeleteOutlined onClick={() => remove(index)} style={{ marginTop: 10 }} />
+                                                                }
+                                                            </Row>
+                                                        )
+                                                    })
+                                                }
+                                                <Button
+                                                    type="link"
+                                                    onClick={() => add({ name: '' })}
+                                                    size="small"
+                                                    style={{ padding: 0, fontSize: 12 }}
+                                                >
+                                                    {`+ 添加变量`}
+                                                </Button>
+                                            </Row>
                                         )
                                     }
                                 </Form.List>
