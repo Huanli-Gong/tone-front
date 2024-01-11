@@ -345,11 +345,8 @@ const TestResultDetails: React.FC = () => {
                                             <TagsEditer
                                                 width={widthStyle + 16}
                                                 onOk={handleEditTagsOk}
-                                                ws_id={ws_id}
-                                                job_id={job_id}
                                                 tags={details?.tags}
                                                 creator_id={details?.creator}
-                                                accessLabel={access.WsMemberOperateSelf()}
                                             />
                                         </Row>
                                         <Row style={{ position: 'relative' }}>
