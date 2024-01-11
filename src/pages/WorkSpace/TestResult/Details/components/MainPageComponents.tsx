@@ -1,20 +1,22 @@
 
-import React from "react"
+import React, { ChangeEvent } from "react"
 
 import { useCopyText } from '@/utils/hooks'
 import styled from 'styled-components'
-import { Breadcrumb, Typography, message, Row, Tooltip, Space, Col } from "antd"
+import { Breadcrumb, Typography, message, Row, Tooltip, Space, Col, notification } from "antd"
 import { useParams, useAccess, useIntl, FormattedMessage, Access, history, getLocale } from 'umi'
-import { DownloadOutlined, ShareAltOutlined, EditOutlined } from '@ant-design/icons'
+import { DownloadOutlined, ShareAltOutlined, EditOutlined, CloudUploadOutlined } from '@ant-design/icons'
 
 import { queryDownloadLink, startDownloadTask } from '@/pages/WorkSpace/TestResult/Details/service'
 import styles from "../index.less"
 import EditRemarks from './EditRemarks'
 import { AccessTootip } from '@/utils/utils';
 
+import { createProject } from "@/pages/WorkSpace/TestUpload/services"
+
 const BreadcrumbIcon = styled(Typography.Text)`
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     &:hover {
         color: #1890ff
     }
@@ -31,6 +33,8 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
     const intl = useIntl()
 
     const downloadRef = React.useRef<HTMLAnchorElement>(null)
+    const fileRef = React.useRef<HTMLInputElement>(null)
+
     const [downloadHerf, setDownloadHref] = React.useState()
     const [fetching, setFetching] = React.useState(false)
     const [fetchingDownloadLink, setFetchingDownloadLink] = React.useState(false)
@@ -87,6 +91,30 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
         if (downloadHerf) downloadRef.current?.click()
     }, [downloadHerf])
 
+    const handleUploadChange = async ({ target }: ChangeEvent<HTMLInputElement>) => {
+        if (!target.files?.length) return
+        const { code, msg } = await createProject({ job_id, ws_id, file: target?.files?.[0] })
+        if (code !== 200)
+            return message.error(msg)
+
+        notification.success({
+            top: 80,
+            duration: null,
+            message: intl.formatMessage({ id: 'ws.result.details.breadcrumb.button.upload.message' }),
+            description: (
+                <Space>
+                    {intl.formatMessage({ id: 'ws.result.details.breadcrumb.button.upload.ok' })}
+                    <Typography.Link target='_blank' href={`/ws/${ws_id}/offline_test`}>
+                        {intl.formatMessage({ id: 'ws.result.details.breadcrumb.button.upload.ok.view' })}
+                    </Typography.Link>
+                </Space>
+            )
+        })
+
+        /* @ts-ignore */
+        fileRef.current.value = ''
+    }
+
     const { origin, pathname } = window.location
 
     return (
@@ -103,9 +131,17 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
                 <Breadcrumb.Item><FormattedMessage id="ws.result.details.result.details" /></Breadcrumb.Item>
             </Breadcrumb>
             <Access accessible={access.IsWsSetting()}>
-                <Space>
+                <Space size={12}>
                     <Tooltip
-                        placement="bottom"
+                        placement="left"
+                        title={intl.formatMessage({ id: `ws.result.details.breadcrumb.button.fail_case_upload` })}
+                    >
+                        <BreadcrumbIcon onClick={() => fileRef.current?.click()}>
+                            <CloudUploadOutlined />
+                        </BreadcrumbIcon>
+                    </Tooltip>
+                    <Tooltip
+                        placement="left"
                         title={intl.formatMessage({ id: `ws.result.details.breadcrumb.button.share` })}
                     >
                         <BreadcrumbIcon onClick={() => handleCopy(origin + pathname)}>
@@ -115,7 +151,7 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
                     {
                         !CAN_STOP_JOB_STATES.includes(jobState) &&
                         <Tooltip
-                            placement="bottom"
+                            placement="left"
                             title={intl.formatMessage({ id: `ws.result.details.breadcrumb.button.download` })}
                         >
                             <BreadcrumbIcon onClick={handleDownloadJob}>
@@ -131,6 +167,13 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
                 target="_blank"
                 style={{ display: "none" }}
                 rel="noreferrer"
+            />
+            <input
+                ref={fileRef}
+                type="file"
+                style={{ width: 0, height: 0, display: 'none', position: 'absolute', zIndex: -9999 }}
+                onChange={handleUploadChange}
+                accept="application/x-tar,application/x-gzip"
             />
         </Row>
     )
