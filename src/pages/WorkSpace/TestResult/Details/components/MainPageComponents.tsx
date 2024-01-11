@@ -46,17 +46,14 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
         const { data, code } = await queryDownloadLink({ job_id })
         setFetching(false)
 
-        if (code !== 200) return
+        if (code !== 200) {
+            message.destroy(`download_running_${ws_id}_${job_id}`)
+            setFetchingDownloadLink(false)
+            return
+        }
         if (!data) return
         const { state, job_url } = data
         if (state === "running") {
-            setFetchingDownloadLink(true)
-            if (!fetchingDownloadLink)
-                message.loading({
-                    key: `download_running_${ws_id}_${job_id}`,
-                    content: intl.formatMessage({ id: `ws.result.details.breadcrumb.button.download.running` }),
-                    duration: 0,
-                });
             await sleep(1500)
             queryJobDownloadLink()
             return
@@ -67,6 +64,8 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
         if (state === "success") {
             setDownloadHref(job_url)
             setFetchingDownloadLink(false)
+            await sleep(300)
+            downloadRef.current?.click()
         }
         if (state === "fail") {
             setFetchingDownloadLink(false)
@@ -84,12 +83,14 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
             const { code } = await startDownloadTask({ job_id })
             if (code !== 200) return message.error(intl.formatMessage({ id: `ws.result.details.breadcrumb.button.download.fail` }))
             queryJobDownloadLink()
+            setFetchingDownloadLink(true)
+            message.loading({
+                key: `download_running_${ws_id}_${job_id}`,
+                content: intl.formatMessage({ id: `ws.result.details.breadcrumb.button.download.running` }),
+                duration: 0,
+            });
         }
     }
-
-    React.useEffect(() => {
-        if (downloadHerf) downloadRef.current?.click()
-    }, [downloadHerf])
 
     const handleUploadChange = async ({ target }: ChangeEvent<HTMLInputElement>) => {
         if (!target.files?.length) return

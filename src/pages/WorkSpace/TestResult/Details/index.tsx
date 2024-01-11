@@ -23,6 +23,17 @@ import { isNull } from 'lodash'
 
 import { BreadcrumbItem, CAN_STOP_JOB_STATES, RenderDesItem, EditNoteBtn } from "./components/MainPageComponents"
 
+const TextStyle: any = {
+    // width: 'calc(100% - 104px)',
+    wordBreak: 'break-all',
+    whiteSpace: 'pre-wrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 2,
+}
+
 const TestResultDetails: React.FC = () => {
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
@@ -77,7 +88,7 @@ const TestResultDetails: React.FC = () => {
         const { data: { job_state }, code } = await queryJobState({ job_id, ws_id })
         if (code !== 200) return
         if (CAN_STOP_JOB_STATES.includes(job_state)) {
-            timer.current = setTimeout(getJobState, 5000)
+            timer.current = setTimeout(getJobState, 30000)
         }
         setDetails((p: any) => ({ ...p, state: job_state }))
     }
@@ -132,17 +143,6 @@ const TestResultDetails: React.FC = () => {
             processTableRef.current.refresh()
         }
         setFetching(false)
-    }
-
-    const TextStyle: any = {
-        // width: 'calc(100% - 104px)',
-        wordBreak: 'break-all',
-        whiteSpace: 'pre-wrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        display: '-webkit-box',
-        WebkitBoxOrient: 'vertical',
-        WebkitLineClamp: 2,
     }
 
     const handleReplay = () => {
