@@ -21,39 +21,23 @@ import { JumpResult } from '@/utils/hooks';
 import { useIntl, FormattedMessage } from 'umi'
 import { useScroll } from "ahooks"
 import {
-    TestDataTitle,
-    TestWrapper,
-    TestSuite,
-    TestItemFunc,
-    SuiteName,
-    TestConf,
-    ConfTitle,
-    ConfData,
-    TestConfWarpper,
-    TestCase,
-    CaseTitle,
-    TestSubCase,
-    SubCaseTitle,
-    CaseText,
-    SubCaseText,
-    ExpandIcon,
+    TestDataTitle, TestWrapper, TestSuite, TestItemFunc, SuiteName, TestConf, ConfTitle, ConfData, TestConfWarpper, TestCase, CaseTitle, TestSubCase, SubCaseTitle, CaseText, SubCaseText, ExpandIcon,
 } from '../AnalysisUI';
 import _ from 'lodash';
 import { CaseStateBLock } from '@/pages/WorkSpace/TestReport/NewReport/components/TestDataChild/FuncReview';
-
-const { Option } = Select
 
 const ReportTestFunc: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const { allGroupData, compareResult, baselineGroupIndex, group, wsId, containerRef } = useContext(ReportContext)
     const { scrollLeft } = props
     const { func_data_result } = compareResult
-    const [arrowStyle, setArrowStyle] = useState('')
+    const [arrowStyle, setArrowStyle] = useState<any>(null)
     const [num, setNum] = useState(0)
     const [btn, setBtn] = useState<boolean>(false)
     const [filterName, setFilterName] = useState('All')
     const [expandKeys, setExpandKeys] = useState<any>([])
     const [dataSource, setDataSource] = useState<any>([])
+    const [compareDataCopy, setCompareDataCopy] = React.useState<any>({})
 
     useEffect(() => {
         if (Array.isArray(func_data_result) && !!func_data_result.length) {
@@ -61,40 +45,42 @@ const ReportTestFunc: React.FC<any> = (props) => {
         }
     }, [func_data_result])
 
+    React.useEffect(() => {
+        return () => {
+            setCompareDataCopy({})
+        }
+    }, [])
+
     // 单个展开
     const ExpandSubcases: React.FC<any> = (props) => {
         const { sub_case_list, conf_id } = props
         const expand = expandKeys.includes(conf_id)
         return (
-            <>
-                {
-                    expand && sub_case_list?.map((item: any) => {
-                        return (
-                            <TestSubCase key={item.sub_case_name}>
-                                <SubCaseTitle gLen={group}>
-                                    <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
-                                </SubCaseTitle>
-                                {
-                                    !!item.compare_data.length ?
-                                        item.compare_data?.slice(0, group)?.map((cur: any, id: number) => {
-                                            return (
-                                                <CaseStateBLock
-                                                    key={id}
-                                                    glen={group}
-                                                    tp={cur}
-                                                    desc={item.baseline_desc}
-                                                />
-                                            )
-                                        }) :
-                                        <SubCaseText gLen={group} >
-                                            <Typography.Text>-</Typography.Text>
-                                        </SubCaseText>
-                                }
-                            </TestSubCase>
-                        )
-                    })
-                }
-            </>
+            expand && sub_case_list?.map((item: any) => {
+                return (
+                    <TestSubCase key={item.sub_case_name}>
+                        <SubCaseTitle gLen={group}>
+                            <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
+                        </SubCaseTitle>
+                        {
+                            !!item.compare_data.length ?
+                                item.compare_data?.slice(0, group)?.map((cur: any, id: number) => {
+                                    return (
+                                        <CaseStateBLock
+                                            key={id}
+                                            glen={group}
+                                            tp={cur}
+                                            desc={item.baseline_desc}
+                                        />
+                                    )
+                                }) :
+                                <SubCaseText gLen={group} >
+                                    <Typography.Text>-</Typography.Text>
+                                </SubCaseText>
+                        }
+                    </TestSubCase>
+                )
+            })
         )
     }
 
@@ -109,20 +95,38 @@ const ReportTestFunc: React.FC<any> = (props) => {
     // 差异化排序
     const handleArrow = (conf: any, i: any) => {
         console.log("func test handleArrow")
+
+        if (arrowStyle == conf.suite_id) {
+            setDataSource(
+                dataSource.map((item: any) => {
+                    if (item.suite_id == conf.suite_id) {
+                        return {
+                            ...item,
+                            conf_list: compareDataCopy?.[item.suite_id],
+                        }
+                    }
+                    return item
+                })
+            )
+            setArrowStyle(null)
+            return
+        }
+
         setNum(i)
         setArrowStyle(conf.suite_id)
-        let pre: any = []
-        for (let x = 0; x < 5; x++) pre.push([])
-        let num = i > baseIndex ? i - 1 : i
+
+        const num = i > baseIndex ? i - 1 : i
         const conf_list = conf.conf_list.map((item: any) => {
+            let pre: any = [[], [], [], [], []]
             item.sub_case_list.forEach((element: any) => {
-                if (element.result === 'Pass' && element.compare_data[num] === 'Fail') {
+                const { compare_data } = element
+                if (compare_data[baseIndex] === 'Pass' && compare_data[num] === 'Fail') {
                     pre[0].push(element)
-                } else if (element.result === 'Fail' && element.compare_data[num] === 'Pass') {
+                } else if (compare_data[baseIndex] === 'Fail' && compare_data[num] === 'Pass') {
                     pre[1].push(element)
-                } else if (element.result === 'Fail' && element.compare_data[num] === 'Fail') {
+                } else if (compare_data[baseIndex] === 'Fail' && compare_data[num] === 'Fail') {
                     pre[2].push(element)
-                } else if (element.result === 'Pass' && element.compare_data[num] === 'Pass') {
+                } else if (compare_data[baseIndex] === 'Pass' && compare_data[num] === 'Pass') {
                     pre[3].push(element)
                 } else {
                     pre[4].push(element)
@@ -133,15 +137,22 @@ const ReportTestFunc: React.FC<any> = (props) => {
                 sub_case_list: [].concat(...pre)
             }
         })
-        setDataSource(dataSource.map((item: any) => {
+
+        const d = dataSource.map((item: any) => {
             if (item.suite_id == conf.suite_id) {
+                setCompareDataCopy((res: any) => ({
+                    ...res,
+                    [item.suite_id]: item.conf_list
+                }))
                 return {
                     ...item,
-                    conf_list
+                    conf_list,
                 }
             }
             return item
-        }))
+        })
+
+        setDataSource(d)
     }
 
     const baseIndex = useMemo(() => {
@@ -198,10 +209,10 @@ const ReportTestFunc: React.FC<any> = (props) => {
                     <Space>
                         <Typography.Text><FormattedMessage id="analysis.filter" />: </Typography.Text>
                         <Select defaultValue="All" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
-                            <Option value="All"><FormattedMessage id="analysis.all" /></Option>
-                            <Option value="Pass"><FormattedMessage id="analysis.pass" /></Option>
-                            <Option value="Fail"><FormattedMessage id="analysis.fail" /></Option>
-                            <Option value="Skip"><FormattedMessage id="analysis.skip" /></Option>
+                            <Select.Option value="All"><FormattedMessage id="analysis.all" /></Select.Option>
+                            <Select.Option value="Pass"><FormattedMessage id="analysis.pass" /></Select.Option>
+                            <Select.Option value="Fail"><FormattedMessage id="analysis.fail" /></Select.Option>
+                            <Select.Option value="Skip"><FormattedMessage id="analysis.skip" /></Select.Option>
                         </Select>
                     </Space>
                 </Space>
@@ -230,30 +241,38 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                     <TestSuite>
                                         <SuiteName style={{ textIndent: containerScroll?.left }}>{item.suite_name}</SuiteName>
                                         <TestConf>
-                                            {(item.conf_list && item.conf_list.length) ?
-                                                <>
-                                                    <ConfTitle gLen={group}>Conf</ConfTitle>
-                                                    {allGroupData?.map((cont: any, i: number) => (
-                                                        <ConfData gLen={group} key={i}>
-                                                            <Row>
-                                                                <Col span={12}>
-                                                                    <FormattedMessage id="analysis.total/pass/fail" />
-                                                                </Col>
-                                                                {
-                                                                    i !== baseIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
-                                                                        <FormattedMessage id="analysis.comparison.results" />
-                                                                        <span onClick={() => handleArrow(item, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
-                                                                            {arrowStyle == item.suite_id && num == i ?
-                                                                                <IconArrowBlue /> : <IconArrow title={formatMessage({ id: 'analysis.differentiated.sorting' })} />}
-                                                                        </span>
-                                                                        <DiffTootip />
+                                            {
+                                                (item.conf_list && item.conf_list.length) ?
+                                                    <>
+                                                        <ConfTitle gLen={group}>Conf</ConfTitle>
+                                                        {allGroupData?.map((cont: any, i: number) => (
+                                                            <ConfData gLen={group} key={i}>
+                                                                <Row>
+                                                                    <Col span={12}>
+                                                                        <FormattedMessage id="analysis.total/pass/fail" />
                                                                     </Col>
-                                                                }
-                                                            </Row>
-                                                        </ConfData>
-                                                    ))
-                                                    }
-                                                </> : null
+                                                                    {
+                                                                        i !== baseIndex &&
+                                                                        <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
+                                                                            <FormattedMessage id="analysis.comparison.results" />
+                                                                            <span
+                                                                                onClick={() => handleArrow(item, i)}
+                                                                                style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}
+                                                                            >
+                                                                                {
+                                                                                    arrowStyle == item.suite_id && num == i ?
+                                                                                        <IconArrowBlue /> :
+                                                                                        <IconArrow title={formatMessage({ id: 'analysis.differentiated.sorting' })} />
+                                                                                }
+                                                                            </span>
+                                                                            <DiffTootip />
+                                                                        </Col>
+                                                                    }
+                                                                </Row>
+                                                            </ConfData>
+                                                        ))}
+                                                    </> :
+                                                    null
                                             }
                                         </TestConf>
                                         <TestConfWarpper>
