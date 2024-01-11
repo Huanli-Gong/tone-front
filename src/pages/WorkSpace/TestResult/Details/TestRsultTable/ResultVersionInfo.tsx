@@ -3,14 +3,14 @@ import { Row, Spin, Empty } from 'antd'
 import { useParams, useRequest, FormattedMessage } from 'umi'
 import { queryCaseResultVersionInfo } from '../service'
 export default ({ test_case_id, suite_id }: any) => {
-    const { id: job_id } = useParams() as any
+    const { id: job_id, share_id } = useParams() as any
     const initialData: any = {
         kernel_version: '',
         rpm_info: [],
     }
 
     const { data, loading } = useRequest(
-        () => queryCaseResultVersionInfo({ job_id, case_id: test_case_id, suite_id }),
+        () => queryCaseResultVersionInfo({ job_id, case_id: test_case_id, suite_id, share_id }),
         {
             initialData,
             formatResult: res => {

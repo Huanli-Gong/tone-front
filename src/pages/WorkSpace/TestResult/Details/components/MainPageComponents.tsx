@@ -7,7 +7,7 @@ import { Breadcrumb, Typography, message, Row, Tooltip, Space, Col, notification
 import { useParams, useAccess, useIntl, FormattedMessage, Access, history, getLocale } from 'umi'
 import { DownloadOutlined, ShareAltOutlined, EditOutlined, CloudUploadOutlined } from '@ant-design/icons'
 
-import { queryDownloadLink, startDownloadTask } from '@/pages/WorkSpace/TestResult/Details/service'
+import { getShareId, queryDownloadLink, startDownloadTask } from '@/pages/WorkSpace/TestResult/Details/service'
 import styles from "../index.less"
 import EditRemarks from './EditRemarks'
 import { AccessTootip } from '@/utils/utils';
@@ -116,7 +116,14 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
         fileRef.current.value = ''
     }
 
-    const { origin, pathname } = window.location
+    const [shareing, setShareing] = React.useState(false)
+    const handleShare = async () => {
+        if (shareing) return
+        setShareing(true)
+        const { data } = await getShareId({ ws_id, job_id })
+        setShareing(false)
+        handleCopy(`${window.location.origin}/share/job/${data}`)
+    }
 
     return (
         <Row justify={"space-between"}>
@@ -145,7 +152,7 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
                         placement="left"
                         title={intl.formatMessage({ id: `ws.result.details.breadcrumb.button.share` })}
                     >
-                        <BreadcrumbIcon onClick={() => handleCopy(origin + pathname)}>
+                        <BreadcrumbIcon onClick={() => handleShare()}>
                             <ShareAltOutlined />
                         </BreadcrumbIcon>
                     </Tooltip>
@@ -210,7 +217,9 @@ export const RenderDesItem: React.FC<any> = ({ name, dataIndex, isLink, onClick 
 export const EditNoteBtn: React.FC<any> = (props) => {
     const access = useAccess()
     const { creator_id, note, refresh } = props;
-    const { id: job_id } = useParams() as any
+    const { id: job_id, share_id } = useParams() as any
+    const isSharePage = !!share_id
+
     const ref: any = React.useRef()
 
     const handleOpenEditRemark = () => {
@@ -224,20 +233,24 @@ export const EditNoteBtn: React.FC<any> = (props) => {
 
     return (
         <>
-            <Access
-                accessible={access.WsMemberOperateSelf(creator_id)}
-                fallback={
+            {
+                !isSharePage &&
+                <Access
+                    accessible={access.WsMemberOperateSelf(creator_id)}
+                    fallback={
+                        <EditOutlined
+                            onClick={() => AccessTootip()}
+                            style={{ ...noteStyle }}
+                        />
+                    }
+                >
                     <EditOutlined
-                        onClick={() => AccessTootip()}
+                        onClick={handleOpenEditRemark}
                         style={{ ...noteStyle }}
                     />
-                }
-            >
-                <EditOutlined
-                    onClick={handleOpenEditRemark}
-                    style={{ ...noteStyle }}
-                />
-            </Access>
+                </Access>
+            }
+
             <EditRemarks ref={ref} onOk={refresh} />
         </>
     )

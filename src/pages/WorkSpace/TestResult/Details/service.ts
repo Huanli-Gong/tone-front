@@ -124,3 +124,7 @@ export const queryDownloadLink = async (params: any) => {
 export const startDownloadTask = async (params: any) => {
     return request(`/api/job/download/`, { params })
 }
+
+export const getShareId = async (data: any) => {
+    return request(`/api/auth/share/`, { method: 'post', data })
+}

@@ -15,14 +15,14 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents'
 //测试准备 ==== Table
 const TestPrepTable: React.FC<AnyType> = (props) => {
     const { refresh = false, provider_name } = props
-    const { id: job_id, ws_id } = useParams() as any
+    const { id: job_id, ws_id, share_id } = useParams() as any
     const { formatMessage } = useIntl()
     // 表格展开的行
     const [expandedKeys, setExpandedKeys] = useState<any>([])
     const [columnsChange, setColumnsChange] = React.useState(uuidv4())
 
     const { data, loading } = useRequest(
-        () => queryProcessPrepareList({ job_id, ws_id }),
+        () => queryProcessPrepareList({ job_id, ws_id, share_id }),
         {
             refreshDeps: [refresh]
         }

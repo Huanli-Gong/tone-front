@@ -14,7 +14,7 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const TestConfTable: React.FC<Record<string, any>> = (props) => {
     const { test_suite_name, test_suite_id, testType, provider_name, creator, columnsRefresh, setColumnsRefresh } = props
-    const { id: job_id } = useParams() as any
+    const { id: job_id, share_id } = useParams() as any
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
     const PAGE_DEFAULT_PARAMS: any = {
@@ -22,6 +22,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
         page_size: 10,
         job_id,
         test_suite_id,
+        share_id
     }
     const [pageParams, setPageParams] = useState<any>(PAGE_DEFAULT_PARAMS)
     const [loading, setLoading] = useState<boolean>(false)
@@ -171,6 +172,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
                 return <Typography.Text disabled>{strLocals}</Typography.Text >
             }
         },
+        !share_id &&
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             width: 80,
@@ -218,7 +220,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
                 </Access>
             )
         },
-    ]
+    ].filter(Boolean)
 
     return (
         <Space style={{ width: "100%", paddingLeft: 40, paddingBottom: 8 }} direction={"vertical"}>
@@ -238,11 +240,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
                 total={dataSource.total}
                 currentPage={pageParams.page_num}
                 pageSize={pageParams.page_size}
-                onPageChange={
-                    (page_num, page_size) => {
-                        setPageParams({ ...pageParams, page_num, page_size })
-                    }
-                }
+                onPageChange={(page_num, page_size) => setPageParams({ ...pageParams, page_num, page_size })}
             />
         </Space>
     )

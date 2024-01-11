@@ -31,7 +31,8 @@ const editBtn = {
 
 
 const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
-    const { ws_id, id: job_id } = useParams() as any
+    const { ws_id, id: job_id, share_id } = useParams() as any
+    const isSharePage = !!share_id
     const access = useAccess();
 
     const DEFAULT_LIST_PARAMS = { ws_id, page_num: 1, page_size: 20 }
@@ -106,12 +107,16 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
             {
                 !state ?
                     <Space wrap size={4}>
-                        <Access
-                            accessible={access.WsTourist() && access.WsMemberOperateSelf(creator_id)}
-                            fallback={<EditOutlined onClick={() => AccessTootip()} style={editBtn} />}
-                        >
-                            <EditOutlined onClick={handleSetTags} style={editBtn} />
-                        </Access>
+                        {
+                            !isSharePage &&
+                            <Access
+                                accessible={access.WsTourist() && access.WsMemberOperateSelf(creator_id)}
+                                fallback={<EditOutlined onClick={() => AccessTootip()} style={editBtn} />}
+                            >
+                                <EditOutlined onClick={handleSetTags} style={editBtn} />
+                            </Access>
+                        }
+
                         {
                             tags.length > 0
                                 ? tags.map((tag: any) => <Tag style={{ margin: 0 }} color={tag.color} key={tag.id}>{tag.name}</Tag>)

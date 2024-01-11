@@ -34,15 +34,16 @@ const TextStyle: any = {
     WebkitLineClamp: 2,
 }
 
-const TestResultDetails: React.FC = () => {
+const TestResultDetails: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
     const widthStyle = locale ? 120 : 58
-    const { ws_id, id: job_id } = useParams() as any
+    const { ws_id, id: job_id, share_id } = useParams() as any
     const { pathname, query } = useLocation() as any
 
+    const isSharePage = !!share_id
+
     const access = useAccess()
-    const [tab, setTab] = useState<any>(query?.tab ? +query.tab : 1)
     const rerunModalRef: any = useRef()
     const processTableRef: any = useRef()
     const [fetching, setFetching] = React.useState(false)
@@ -53,23 +54,25 @@ const TestResultDetails: React.FC = () => {
 
     const [loading, setLoading] = React.useState(true)
     const [details, setDetails] = React.useState<any>({})
+    const [tab, setTab] = useState<any>(query?.tab ? +query.tab : 1)
 
     const timer = React.useRef<any>(null)
 
     const queryJobDetails = async () => {
         setLoading(true)
-        const { data, code } = await querySummaryDetail({ job_id, ws_id })
+        const { data, code } = await querySummaryDetail({ job_id, ws_id, share_id })
         setLoading(false)
         if (code !== 200 || Object.prototype.toString.call(data) !== "[object Array]" || data.length === 0)
             return setDetails({})
 
         const [dataSource] = data
+
         if (!dataSource) return setDetails({})
         if (dataSource?.state === 'running')
             setTab(2)
         setDetails(dataSource)
         setTimeout(() => {
-            document.title = `#${job_id} ${dataSource?.name} - T-One`
+            document.title = `#${dataSource?.id} ${dataSource?.name} - T-One`
         }, 300)
     }
 
@@ -137,7 +140,7 @@ const TestResultDetails: React.FC = () => {
         message.success(formatMessage({ id: 'operation.success' }))
         queryJobDetails()
         if (tab === 1) {
-            setRefreshResult(true)
+            setRefreshResult(!refreshResult)
         }
         if (tab === 2) {
             processTableRef.current.refresh()
@@ -211,10 +214,15 @@ const TestResultDetails: React.FC = () => {
                 JSON.stringify(details) === '{}' ?
                     <NotFound /> :
                     <div style={{ background: '#F5F5F5', width: "100%", overflowX: "hidden", overflowY: "auto" }} >
+
                         <div style={{ minHeight: 270, marginBottom: 10, background: '#fff', padding: 20 }}>
-                            <BreadcrumbItem bottomHeight={4} {...details} />
+                            {
+                                !isSharePage &&
+                                <BreadcrumbItem bottomHeight={4} {...details} />
+                            }
                             <div style={{ paddingLeft: 20, position: 'relative' }}>
-                                <Access accessible={access.WsTourist()}>
+                                {/* 收藏 */}
+                                <Access accessible={!isSharePage && access.WsTourist()}>
                                     {
                                         !details?.collection ?
                                             <StarOutlined
@@ -385,14 +393,22 @@ const TestResultDetails: React.FC = () => {
                                 </Row>
                             </div>
                         </div>
-                        <RenderMachineItem job_id={job_id} />
-                        <RenderMachinePrompt {...details} />
+
+                        {
+                            !isSharePage &&
+                            <>
+                                <RenderMachineItem job_id={job_id} />
+                                <RenderMachinePrompt {...details} />
+                            </>
+                        }
+
                         <div style={{ background: '#fff' }}>
                             <Tabs
                                 defaultActiveKey={tab}
                                 onTabClick={handleTabClick}
                                 className={styles.result_tab_nav}
                                 tabBarExtraContent={
+                                    !isSharePage &&
                                     <div style={{ display: 'flex', marginRight: 12 }}>
                                         <ViewReport
                                             viewAllReport={allReport}

@@ -11,7 +11,7 @@ export default (props: any) => {
     useEffect(() => {
         if (JSON.stringify(props) !== '{}') {
             const { notice_info = [], cleanup_info = '' } = props
-            const obj = { ding: '', email: '', subject: '' }
+            const obj: any = { ding: '', email: '', subject: '' }
             let empty = 0;
 
             notice_info.map(

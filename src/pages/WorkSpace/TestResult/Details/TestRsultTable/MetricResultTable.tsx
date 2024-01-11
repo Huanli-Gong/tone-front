@@ -14,10 +14,10 @@ import { MetricSelectProvider } from '.'
 export default (props: any) => {
     const { formatMessage } = useIntl()
     const { test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType } = props
-    const { id: job_id, ws_id } = useParams() as any
+    const { id: job_id, ws_id, share_id } = useParams() as any
     const { setOSuite, oSuite } = React.useContext(MetricSelectProvider)
     const { data = [], run, loading } = useRequest(
-        () => queryCaseResultPerformance({ ws_id, job_id, case_id: test_case_id, suite_id, compare_result }),
+        () => queryCaseResultPerformance({ ws_id, job_id, case_id: test_case_id, suite_id, compare_result, share_id }),
         { manual: true }
     )
 
@@ -82,7 +82,7 @@ export default (props: any) => {
             render: (_: any, row: any) => {
                 return (
                     (_ && row.baseline_cv_value) ?
-                        <Access accessible={access.IsWsSetting()} >
+                        <Access accessible={!share_id && access.IsWsSetting()} >
                             {
                                 row.skip_baseline_info ?
                                     <Typography.Link
@@ -115,7 +115,7 @@ export default (props: any) => {
                 if (row.match_baseline && row.result === 'Fail')
                     context = _ ? `${_}(${localeStr})` : localeStr
                 if (!context) return "-"
-                if (access.IsWsSetting())
+                if (!share_id && access.IsWsSetting())
                     return (
                         <Tooltip placement="topLeft" title={context}>
                             {
@@ -164,7 +164,7 @@ export default (props: any) => {
         },
     ]
 
-    const rowSelection: any = testType === 'performance' ? {
+    const rowSelection: any = !share_id && testType === 'performance' ? {
         columnWidth: 40,
         selectedRowKeys: oSuite?.[suite_id]?.[test_case_id],
         onChange: (keys: React.Key[]) => {

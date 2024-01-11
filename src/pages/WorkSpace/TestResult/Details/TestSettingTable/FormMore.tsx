@@ -12,7 +12,7 @@ import { useParams, useIntl, FormattedMessage, getLocale } from "umi"
 const { Option } = Select;
 
 export default ({ contrl, disabled = false, onRef = null, template = {} }: any) => {
-    const { ws_id } = useParams() as any
+    const { ws_id, share_id } = useParams() as any
     if (JSON.stringify(contrl) === '{}') return <></>
 
     const { formatMessage } = useIntl()
@@ -34,13 +34,13 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
     )
 
     const queryTagList = async () => {
-        const { data } = await tagList({ ws_id })
+        const { data } = await tagList({ ws_id, share_id })
         setTags(data)
     }
 
     const getReportTemplate = async () => {
         try {
-            const { code, data } = await queryReportTemplateList({ ws_id, page_size: 99999 })
+            const { code, data } = await queryReportTemplateList({ ws_id, page_size: 99999, share_id })
             if (code === 200) {
                 const dataSource = _.isArray(data) ? data : []
 

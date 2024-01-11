@@ -3,7 +3,7 @@ import { Col, Row, Typography } from 'antd';
 import { useParams, FormattedMessage } from 'umi'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 
-const RenderMachinePrompt = (props: any) => {
+const RenderMachinePrompt: React.FC<any> = (props) => {
     const { aliyun_is_instance_release, cluster_msg, server_occupied, provider_name } = props;
     const { ws_id } = useParams<any>();
     const isEmptyStr = (str: string) => {

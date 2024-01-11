@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { requestCodeMessage } from '@/utils/utils'
 import { querySeverLink } from '@/pages/WorkSpace/TestResult/Details/service'
-import { useAccess } from 'umi'
+import { useAccess, useParams } from 'umi'
 import { Tooltip } from 'antd';
 import styled from 'styled-components';
 
@@ -21,7 +21,7 @@ const TextWarp = styled.div`
 
 const ServerLink: React.FC<ServerType> = (props) => {
     const { val, param, provider, description, machine_pool = false, ...rest } = props
-
+    const { share_id } = useParams() as any
     const { exists } = rest
 
     const access = useAccess();
@@ -69,9 +69,12 @@ const ServerLink: React.FC<ServerType> = (props) => {
         )
 
     if (val) {
+        if (share_id)
+            return <>{val || '-'}</>
+
         if (Object.prototype.toString.call(exists) === '[object Number]') {
             if (!exists) {
-                return <>{val}</>
+                return <>{val || '-'}</>
             }
         }
 
@@ -82,6 +85,7 @@ const ServerLink: React.FC<ServerType> = (props) => {
                 </Tooltip>
             )
         }
+
         if (show && description) {
             return (
                 <Tooltip
@@ -98,6 +102,7 @@ const ServerLink: React.FC<ServerType> = (props) => {
                 </Tooltip>
             )
         }
+
         if (show) {
             return (
                 <Tooltip title={val} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
@@ -105,6 +110,7 @@ const ServerLink: React.FC<ServerType> = (props) => {
                 </Tooltip>
             )
         }
+        
         return TypographyDiv;
     }
 

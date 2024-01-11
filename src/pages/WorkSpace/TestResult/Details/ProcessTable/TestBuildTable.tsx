@@ -48,12 +48,12 @@ type IProps = {
 }
 
 const BuildKernelTable: React.FC<IProps> = (props) => {
-    const { id: job_id } = useParams() as any
+    const { id: job_id, share_id } = useParams() as any
     const { refresh = false } = props
     const [dataSource, setDataSource] = useState<any[]>([])
 
     const { loading, run, data } = useRequest(
-        () => queryBuildList({ job_id }),
+        () => queryBuildList({ job_id, share_id }),
         {
             manual: true
         }

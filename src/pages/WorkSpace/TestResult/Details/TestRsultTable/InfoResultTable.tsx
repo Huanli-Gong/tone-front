@@ -28,7 +28,7 @@ const stateWordMap = (st: string) => new Map([
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
-    const { ws_id, id: job_id } = useParams() as any
+    const { ws_id, id: job_id, share_id } = useParams() as any
     const access = useAccess()
     const {
         test_case_id, suite_id, testType, creator,
@@ -49,8 +49,10 @@ export default (props: any) => {
         sub_case_name: undefined,
         sub_case_result: undefined,
         page_size: 10,
-        page_num: 1
+        page_num: 1,
+        share_id
     }
+
     const [interfaceSearchKeys, setInterfaceSearchKeys] = React.useState(defaultKeys)
 
     const { data, refresh, loading } = useRequest(
@@ -146,7 +148,7 @@ export default (props: any) => {
         joinBaseline.current.show({ ...item, suite_id, test_case_id })
     }
 
-    const columns: TableColumnProps<AnyType>[] = [
+    const columns: any[] = [
         {
             dataIndex: 'sub_case_name',
             title: 'Test Case',
@@ -192,7 +194,7 @@ export default (props: any) => {
                 if (row.match_baseline && row.result === 'Fail')
                     context = _ ? `${_}(${localeStr})` : localeStr
                 if (!context) return "-"
-                if (access.IsWsSetting())
+                if (!share_id && access.IsWsSetting())
                     return (
                         <Tooltip placement="topLeft" title={context}>
                             {
@@ -227,9 +229,13 @@ export default (props: any) => {
                 return (
                     context ?
                         <Tooltip placement="topLeft" title={_}>
-                            <Typography.Link href={urlHref} target='_blank'>
-                                {context}
-                            </Typography.Link>
+                            {
+                                !share_id ?
+                                    <Typography.Link href={urlHref} target='_blank'>
+                                        {context}
+                                    </Typography.Link> :
+                                    context
+                            }
                         </Tooltip >
                         : '-'
                 )
@@ -247,6 +253,7 @@ export default (props: any) => {
             ),
             ...tooltipTd()
         },
+        !share_id &&
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             fixed: "right",
@@ -273,41 +280,39 @@ export default (props: any) => {
                 )
             }
         }
-    ]
+    ].filter(Boolean)
 
     return (
         <>
-            {
-                <ResizeHooksTable
-                    name="wsResultTableCaseList"
-                    refreshDeps={[access, testType]}
-                    rowKey="id"
-                    size="small"
-                    loading={loading}
-                    className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
-                    pagination={{
-                        pageSize: data.page_size || 10,
-                        current: data.page_num || 1,
-                        total: data.total || 0,
-                        showQuickJumper: true,
-                        showSizeChanger: true,
-                        onChange(page_num, page_size) {
-                            /* 解决page_size切换，page_num不变的问题 */
-                            setInterfaceSearchKeys((p: any) => ({
-                                ...p,
-                                page_num: p.page_size === page_size ? page_num : 1,
-                                page_size
-                            }))
-                        },
-                        showTotal(total) {
-                            return formatMessage({ id: 'pagination.total.strip' }, { data: total })
-                        },
-                    }}
-                    columns={columns}
-                    rowClassName={styles.result_info_table_row}
-                    dataSource={data.data || []}
-                />
-            }
+            <ResizeHooksTable
+                name="wsResultTableCaseList"
+                refreshDeps={[access, testType]}
+                rowKey="id"
+                size="small"
+                loading={loading}
+                className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
+                pagination={{
+                    pageSize: data.page_size || 10,
+                    current: data.page_num || 1,
+                    total: data.total || 0,
+                    showQuickJumper: true,
+                    showSizeChanger: true,
+                    onChange(page_num, page_size) {
+                        /* 解决page_size切换，page_num不变的问题 */
+                        setInterfaceSearchKeys((p: any) => ({
+                            ...p,
+                            page_num: p.page_size === page_size ? page_num : 1,
+                            page_size
+                        }))
+                    },
+                    showTotal(total) {
+                        return formatMessage({ id: 'pagination.total.strip' }, { data: total })
+                    },
+                }}
+                columns={columns}
+                rowClassName={styles.result_info_table_row}
+                dataSource={data.data || []}
+            />
             <EditRemarks ref={editRemark} onOk={refresh} />
             <JoinBaseline
                 ref={joinBaseline}
