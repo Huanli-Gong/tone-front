@@ -15,9 +15,16 @@ import Highlighter from 'react-highlight-words'
 
 import { tooltipTd } from '../components'
 import styles from './index.less'
-import { targetJump, AccessTootip } from '@/utils/utils'
+import { AccessTootip } from '@/utils/utils'
 import { ResizeHooksTable } from '@/utils/table.hooks'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
+
+const stateWordMap = (st: string) => new Map([
+    ["success", 1],
+    ["fail", 2],
+    ["skip", 5],
+    ["warn", 6],
+]).get(st) || undefined
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
@@ -30,8 +37,9 @@ export default (props: any) => {
     } = props
     const editRemark: any = useRef(null)
     const joinBaseline: any = useRef(null)
-
     const searchInput: any = useRef(null)
+
+    const $test_type = ["performance", "性能测试"].includes(testType) ? "performance" : "functional"
 
     const defaultKeys = {
         job_id,
@@ -112,13 +120,6 @@ export default (props: any) => {
         )
     });
 
-    const stateWordMap = (st: string) => new Map([
-        ["success", 1],
-        ["fail", 2],
-        ["skip", 5],
-        ["warn", 6],
-    ]).get(st) || undefined
-
     useEffect(() => {
         if (refreshId === test_case_id) {
             setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_result: stateWordMap(state) }))
@@ -142,7 +143,7 @@ export default (props: any) => {
     }
 
     const handleOpenJoinBaseline = (item: any) => {
-        joinBaseline.current.show({ ...item, suite_id, job_id, test_case_id })
+        joinBaseline.current.show({ ...item, suite_id, test_case_id })
     }
 
     const columns: TableColumnProps<AnyType>[] = [
@@ -194,22 +195,19 @@ export default (props: any) => {
                 if (access.IsWsSetting())
                     return (
                         <Tooltip placement="topLeft" title={context}>
-                            <Typography.Link
-                                className={styles.hrefUrl}
-                                onClick={
-                                    () => {
-                                        if (row.skip_baseline_info) {
-                                            const $test_type = ["performance", "性能测试"].includes(testType) ? "performance" : "functional"
-                                            targetJump(`/ws/${ws_id}/baseline/${$test_type}?${qs.stringify(row.skip_baseline_info)}`)
-                                        }
-                                    }
-                                }
-                            >
-                                {context || '-'}
-                            </Typography.Link>
+                            {
+                                row.skip_baseline_info ?
+                                    <Typography.Link
+                                        target='_blank'
+                                        href={`/ws/${ws_id}/baseline/${$test_type}?${qs.stringify(row.skip_baseline_info)}`}
+                                    >
+                                        {context}
+                                    </Typography.Link> :
+                                    context
+                            }
                         </Tooltip >
                     )
-                return (<ColumnEllipsisText ellipsis={{ tooltip: true }}>{context || '-'}</ColumnEllipsisText>)
+                return (<ColumnEllipsisText ellipsis={{ tooltip: true }}>{context}</ColumnEllipsisText>)
             }
         },
         {
@@ -229,7 +227,7 @@ export default (props: any) => {
                 return (
                     context ?
                         <Tooltip placement="topLeft" title={_}>
-                            <Typography.Link href={urlHref} className={styles.hrefUrl} target='_blank'>
+                            <Typography.Link href={urlHref} target='_blank'>
                                 {context}
                             </Typography.Link>
                         </Tooltip >
@@ -315,9 +313,7 @@ export default (props: any) => {
                 ref={joinBaseline}
                 onOk={refresh}
                 test_type={testType}
-                ws_id={ws_id}
                 server_provider={server_provider}
-                accessible={access.IsWsSetting()}
             />
         </>
     )

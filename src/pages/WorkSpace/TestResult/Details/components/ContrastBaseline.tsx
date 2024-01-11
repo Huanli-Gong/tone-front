@@ -5,10 +5,12 @@ import React, { forwardRef, useImperativeHandle, useState } from 'react'
 import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
 import { contrastBaseline } from '../service'
 import { renderTitle } from "."
+import { MetricSelectProvider } from '../TestRsultTable'
 
 const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { formatMessage } = useIntl()
-    const { ws_id } = useParams() as any
+    const { ws_id, id: job_id } = useParams() as any
+    const { oSuite } = React.useContext(MetricSelectProvider)
     const { test_type, onOk } = props
     const [visible, setVisible] = useState(false)
     const [pedding, setPedding] = useState(false)
@@ -40,16 +42,15 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
         setPedding(true)
         form.validateFields()
             .then(async (values: any) => {
-                console.log(drawerData)
-                const { job_id, suite_id, test_case_id: case_id, suite_data, suite_list } = drawerData
-                let params = {}
+                const { isMore, test_case_id: case_id, ...rest } = drawerData
 
-                if (suite_id && case_id) params = { suite_data: [{ suite_id, case_list: [case_id] }] }
-                if (suite_id && !case_id) params = { suite_list: [suite_id] }
-                if (suite_data && suite_data.length > 0) params = { suite_data }
-                if (suite_list && suite_list.length > 0) params = { suite_list }
-
-                const { code, msg } = await contrastBaseline({ ws_id, job_id, ...params, ...values })
+                const params: any = {
+                    case_id
+                }
+                if (isMore) {
+                    params.ids = oSuite
+                }
+                const { code, msg } = await contrastBaseline({ ws_id, job_id, ...rest, ...params, ...values })
                 if (code !== 200) {
                     requestCodeMessage(code, msg)
                     setPedding(false)
