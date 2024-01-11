@@ -25,10 +25,10 @@ export default forwardRef((props: any, ref: any) => {
     const [deployType, setDeployType] = useState<any>('common');
     // Agent部署的结果提示
     const [deployResult, setDeployResult] = useState<any>({});
-    const [arch, setArch] = useState('x86_64')
     const useBuildEnv = useMemo(() => BUILD_APP_ENV && ['openanolis', 'opensource'].includes(BUILD_APP_ENV), [])
     // console.log('deployType:', deployType) 
-
+    const arch = Form.useWatch('arch', form)
+    const os = Form.useWatch('os', form)
     /**
      * 初始化状态数据
      * */
@@ -40,9 +40,9 @@ export default forwardRef((props: any, ref: any) => {
     }
 
     // 1.请求数据
-    const getVersionData = async (val: any) => {
+    const getVersionData = async () => {
         try {
-            const { code, msg, data = [] } = await queryVersionList({ arch: val }); // { page_num: 1, page_size: 100000  }
+            const { code, msg, data = [] } = await queryVersionList({ arch, os }); // { page_num: 1, page_size: 100000  }
             if (code === 200) {
                 if (isString(data)) {
                     setSource([])
@@ -125,6 +125,7 @@ export default forwardRef((props: any, ref: any) => {
             resetInitialState();
         }
     };
+
     // console.log('data', data)
     // Alert的提示内容
     const deployReactNode = () => {
@@ -144,12 +145,12 @@ export default forwardRef((props: any, ref: any) => {
             </div>
         )
     }
+
     // 关闭Alert
     const closeAlert = () => {
         // case1.重置部署失败状态数据
         setDeployResult({})
     }
-
 
     const getDeployMode = () => {
         if (useBuildEnv) return 'active'
@@ -157,149 +158,170 @@ export default forwardRef((props: any, ref: any) => {
     }
 
     useEffect(() => {
-        if (visible) {
-            getVersionData(arch)
+        if (visible && arch && os) {
+            getVersionData()
         }
-    }, [visible, arch])
+    }, [visible, arch, os])
 
     return (
-        <div>
-            <Modal className={styles.DeployModal_root}
-                title={formatMessage({ id: 'agent.deploy.btn' })}
-                open={visible}
-                maskClosable={false}
-                width={460}
-                confirmLoading={loading}
-                closable={!loading}
-                onOk={handleOk}
-                onCancel={handleCancel}
-            >
-                <Spin tip={tip} spinning={loading}>
-                    {((deployResult.success_servers?.length) || (deployResult.fail_servers?.length)) ?
+        <Modal className={styles.DeployModal_root}
+            title={formatMessage({ id: 'agent.deploy.btn' })}
+            open={visible}
+            maskClosable={false}
+            width={460}
+            confirmLoading={loading}
+            closable={!loading}
+            onOk={handleOk}
+            onCancel={handleCancel}
+        >
+            <Spin tip={tip} spinning={loading}>
+                {
+                    ((deployResult.success_servers?.length) || (deployResult.fail_servers?.length)) ?
                         <div className={styles.Alert}>
                             <Alert message={deployReactNode()} type="info" showIcon closable onClose={closeAlert} />
-                        </div>
-                        : null
-                    }
+                        </div> :
+                        null
+                }
 
-                    <Form form={form} layout="vertical"
-                        initialValues={{
-                            channel: 'common',
-                            mode: getDeployMode(),
-                            user: 'root',
-                            arch: 'x86_64'
-                        }}
-                    >
-                        {
-                            !useBuildEnv &&
-                            <Form.Item label="IP"
-                                name="ips"
-                                rules={[{
-                                    required: true,
-                                    message: formatMessage({ id: "DeployModal.ids.message" }),
-                                }]}>
-                                <ShowDeployIPList dataSource={selectedRow} delCallback={delIP} />
-                            </Form.Item>
-                        }
-
-                        {
-                            useBuildEnv &&
-                            <Form.Item
-                                label="InstanceID"
-                                name="instance_id"
-                            >
-                                <Input disabled />
-                            </Form.Item>
-                        }
-
-                        {
-                            !useBuildEnv &&
-                            <Form.Item label={<FormattedMessage id="device.deploy.mode" />}
-                                name="channel"
-                            >
-                                <Radio.Group onChange={onChangeChannel}>
-                                    <Radio value="common"><FormattedMessage id="device.deploy.mode.common" /></Radio>
-                                    {
-                                        (!useBuildEnv && radioType !== 'cloudManage') &&
-                                        <Radio value={self_agent}>{formatMessage({ id: "device.deploy.mode.self_agent" }, { data: self_agent_name })}</Radio>
-                                    }
-                                </Radio.Group>
-                            </Form.Item>
-                        }
-
-                        <Form.Item
-                            label="Mode"
-                            name="mode"
-                        >
-                            <Radio.Group>
-                                <Radio value="active">
-                                    active
-                                    <Popover placement="topLeft" content={<FormattedMessage id="device.mode.active" />}>
-                                        <QuestionCircleOutlined style={{ opacity: 0.65, marginLeft: 2 }} /></Popover>
-                                </Radio>
-                                <Radio value="passive">
-                                    passive
-                                    <Popover placement="topLeft" content={<FormattedMessage id="device.mode.passive" />}>
-                                        <QuestionCircleOutlined style={{ opacity: 0.65, marginLeft: 2 }} /></Popover>
-                                </Radio>
-                            </Radio.Group>
-                        </Form.Item>
-
-
-                        <Form.Item
-                            label="arch"
-                            name="arch"
-                            required
-                        >
-                            <Select onSelect={(val: any) => setArch(val)}>
-                                <Select.Option value="x86_64">x86_64</Select.Option>
-                                <Select.Option value="aarch64">aarch64</Select.Option>
-                            </Select>
-                        </Form.Item>
-
-                        <Form.Item label={<FormattedMessage id="agent.modal.Version" />}
-                            name="version"
+                <Form
+                    form={form}
+                    layout="vertical"
+                    initialValues={{
+                        channel: 'common',
+                        mode: getDeployMode(),
+                        user: 'root',
+                        arch: 'x86_64',
+                        os: 'Linux'
+                    }}
+                >
+                    {
+                        !useBuildEnv &&
+                        <Form.Item label="IP"
+                            name="ips"
                             rules={[{
                                 required: true,
-                                message: formatMessage({ id: 'please.select' }),
-                            }]}>
-                            <Select placeholder={formatMessage({ id: 'please.select' })}
-                                showSearch
-                                optionFilterProp="children"
-                                filterOption={(input, option: any) =>
-                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                }>
-                                {source?.map((item: any) => (
-                                    <Select.Option key={item.id} value={item.version}>{item.version}</Select.Option>
-                                ))}
-                            </Select>
+                                message: formatMessage({ id: "DeployModal.ids.message" }),
+                            }]}
+                        >
+                            <ShowDeployIPList dataSource={selectedRow} delCallback={delIP} />
                         </Form.Item>
+                    }
 
-                        {(!useBuildEnv && deployType === 'common') && (
-                            <>
-                                <Form.Item label="User"
-                                    name="user"
-                                    rules={[{
-                                        required: false,
-                                        max: 20,
-                                        message: formatMessage({ id: 'device.user.message' }),
-                                    }]}>
-                                    <Input placeholder={formatMessage({ id: 'please.enter' })} autoComplete="off" />
-                                </Form.Item>
-                                <Form.Item
-                                    label="Password"
-                                    name="password"
-                                >
-                                    <Input.Password placeholder={formatMessage({ id: 'please.enter' })} />
-                                </Form.Item>
-                            </>
-                        )}
+                    {
+                        useBuildEnv &&
+                        <Form.Item
+                            label="InstanceID"
+                            name="instance_id"
+                        >
+                            <Input disabled />
+                        </Form.Item>
+                    }
 
-                    </Form>
-                </Spin>
+                    {
+                        !useBuildEnv &&
+                        <Form.Item
+                            label={<FormattedMessage id="device.deploy.mode" />}
+                            name="channel"
+                        >
+                            <Radio.Group onChange={onChangeChannel}>
+                                <Radio value="common"><FormattedMessage id="device.deploy.mode.common" /></Radio>
+                                {
+                                    (!useBuildEnv && radioType !== 'cloudManage') &&
+                                    <Radio value={self_agent}>{formatMessage({ id: "device.deploy.mode.self_agent" }, { data: self_agent_name })}</Radio>
+                                }
+                            </Radio.Group>
+                        </Form.Item>
+                    }
 
+                    <Form.Item
+                        label="Mode"
+                        name="mode"
+                    >
+                        <Radio.Group>
+                            <Radio value="active">
+                                active
+                                <Popover placement="topLeft" content={<FormattedMessage id="device.mode.active" />}>
+                                    <QuestionCircleOutlined style={{ opacity: 0.65, marginLeft: 2 }} /></Popover>
+                            </Radio>
+                            <Radio value="passive">
+                                passive
+                                <Popover placement="topLeft" content={<FormattedMessage id="device.mode.passive" />}>
+                                    <QuestionCircleOutlined style={{ opacity: 0.65, marginLeft: 2 }} /></Popover>
+                            </Radio>
+                        </Radio.Group>
+                    </Form.Item>
 
-            </Modal>
-        </div>
+                    <Form.Item
+                        label="OS"
+                        name="os"
+                        required
+                    >
+                        <Select
+                            options={[{
+                                value: 'Linux',
+                                label: 'Linux',
+                            }, {
+                                value: 'Debian',
+                                label: 'Debian',
+                            }]}
+                        />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="arch"
+                        name="arch"
+                        required
+                    >
+                        <Select>
+                            <Select.Option value="x86_64">x86_64</Select.Option>
+                            <Select.Option value="aarch64">aarch64</Select.Option>
+                        </Select>
+                    </Form.Item>
+
+                    <Form.Item label={<FormattedMessage id="agent.modal.Version" />}
+                        name="version"
+                        rules={[{
+                            required: true,
+                            message: formatMessage({ id: 'please.select' }),
+                        }]}
+                    >
+                        <Select
+                            placeholder={formatMessage({ id: 'please.select' })}
+                            showSearch
+                            optionFilterProp="children"
+                            filterOption={(input, option: any) =>
+                                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                        >
+                            {source?.map((item: any) => (
+                                <Select.Option key={item.id} value={item.version}>{item.version}</Select.Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+
+                    {(!useBuildEnv && deployType === 'common') && (
+                        <>
+                            <Form.Item label="User"
+                                name="user"
+                                rules={[{
+                                    required: false,
+                                    max: 20,
+                                    message: formatMessage({ id: 'device.user.message' }),
+                                }]}
+                            >
+                                <Input placeholder={formatMessage({ id: 'please.enter' })} autoComplete="off" />
+                            </Form.Item>
+                            <Form.Item
+                                label="Password"
+                                name="password"
+                            >
+                                <Input.Password placeholder={formatMessage({ id: 'please.enter' })} />
+                            </Form.Item>
+                        </>
+                    )}
+
+                </Form>
+            </Spin>
+        </Modal>
     );
 });

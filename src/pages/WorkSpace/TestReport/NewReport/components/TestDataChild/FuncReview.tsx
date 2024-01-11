@@ -164,11 +164,18 @@ const FuncDataIndex: React.FC<any> = (props) => {
     const { btnState, allGroupData, baselineGroupIndex, groupLen, wsId, isOldReport, domainResult } = useContext(ReportContext)
     const [expandKeys, setExpandKeys] = useState<any>([])
     const [filterName, setFilterName] = useState('All')
-    const [arrowStyle, setArrowStyle] = useState('')
+    const [arrowStyle, setArrowStyle] = useState<any>('')
     const [btnName, setBtnName] = useState<string>('')
     const [num, setNum] = useState(0)
     const [btn, setBtn] = useState<boolean>(false)
     const [funcData, setFuncData] = useState<any>({})
+    const [compareDataCopy, setCompareDataCopy] = React.useState<any>({})
+
+    React.useEffect(() => {
+        return () => {
+            setCompareDataCopy({})
+        }
+    }, [])
 
     useEffect(() => {
         setFuncData(child)
@@ -209,23 +216,58 @@ const FuncDataIndex: React.FC<any> = (props) => {
             })
         }
     }
+
     const OpenSubCase = () => {
         setBtn(!btn)
     }
+
     const handleArrow = (conf: any, i: any) => {
+        if (arrowStyle == conf.suite_id) {
+            setFuncData(
+                (p: any) => {
+                    const { list } = p
+
+                    return {
+                        ...p,
+                        list: list.map((item: any) => {
+                            if (item.suite_id === conf.suite_id) {
+                                return {
+                                    ...item,
+                                    conf_list: compareDataCopy?.[item.suite_id]
+                                }
+                            }
+                            return item
+                        })
+                    }
+                }
+            )
+            setArrowStyle(null)
+            return
+        }
+
+        dataSource.map((item: any) => {
+            if (item.suite_id == conf.suite_id) {
+                return {
+                    ...item,
+                    conf_list: compareDataCopy?.[item.suite_id],
+                }
+            }
+            return item
+        })
+
         setNum(i)
         setArrowStyle(conf.suite_id)
         const conf_list = conf.conf_list.map((item: any) => {
-            let pre: any = []
-            for (let x = 0; x < 5; x++) pre.push([])
+            let pre: any = [[], [], [], [], []]
             item.sub_case_list.forEach((element: any) => {
-                if (element.result === 'Pass' && element.compare_data[i] === 'Fail') {
+                const { compare_data } = element
+                if (compare_data[baseIndex] === 'Pass' && compare_data[i] === 'Fail') {
                     pre[0].push(element)
-                } else if (element.result === 'Fail' && element.compare_data[i] === 'Pass') {
+                } else if (compare_data[baseIndex] === 'Fail' && compare_data[i] === 'Pass') {
                     pre[1].push(element)
-                } else if (element.result === 'Fail' && element.compare_data[i] === 'Fail') {
+                } else if (compare_data[baseIndex] === 'Fail' && compare_data[i] === 'Fail') {
                     pre[2].push(element)
-                } else if (element.result === 'Pass' && element.compare_data[i] === 'Pass') {
+                } else if (compare_data[baseIndex] === 'Pass' && compare_data[i] === 'Pass') {
                     pre[3].push(element)
                 } else {
                     pre[4].push(element)
@@ -238,13 +280,20 @@ const FuncDataIndex: React.FC<any> = (props) => {
         })
 
         const list = child.list.map((item: any) => {
-            if (item.suite_id === conf.suite_id)
+            if (item.suite_id === conf.suite_id) {
+                setCompareDataCopy((res: any) => ({
+                    ...res,
+                    [item.suite_id]: item.conf_list
+                }))
                 return {
                     ...item,
                     conf_list
                 }
+            }
+
             return item
         })
+
         setFuncData({
             ...child,
             list,
@@ -387,7 +436,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                         {
                                             i !== baseIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
                                                 <FormattedMessage id="report.comparison.results" />
-                                                <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
+                                                <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
                                                     {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
                                                 </span>
                                                 <DiffTootip />

@@ -11,7 +11,7 @@ export default {
   'workspace.number': '人数',
   'workspace.is_public': '是否公开',
   'workspace.home.recommended': '首页推荐',
-  'workspace.recommended1': '状态为“是”，展示在首页“推荐Worksapce”模块',
+  'workspace.recommended1': '状态为“是”，展示在首页“推荐Workspace”模块',
   'workspace.recommended2': '可通过上下拖动调整显示顺序，首页显示顺序同该表格',
   'workspace.configure.up.recommended': '最多配置{numb}个推荐Workspace',
   // Modal

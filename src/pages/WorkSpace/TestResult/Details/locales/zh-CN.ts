@@ -116,6 +116,7 @@ const text = {
 
   'breadcrumb.button.download': '下载',
   'breadcrumb.button.share': '分享Job链接',
+  'breadcrumb.button.fail_case_upload': '失败Case补传',
 
   "breadcrumb.button.download.running": "下载中...",
   "breadcrumb.button.download.fail": "下载失败，请稍后重试！",
@@ -233,6 +234,10 @@ const text = {
   'server.instance.name': '机器实例名称：{data}',
   'server.configuration.name': '机器配置名称：{data}',
   'cluster.name': '集群名称',
+
+  'breadcrumb.button.upload.message': '提示',
+  'breadcrumb.button.upload.ok': '上传任务已创建。',
+  'breadcrumb.button.upload.ok.view': '查看'
 };
 
 export default Object.keys(text).reduce((p, key) => {

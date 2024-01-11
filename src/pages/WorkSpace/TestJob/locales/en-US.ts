@@ -1,6 +1,6 @@
 const defaultKey = 'ws.test.job'
 
-const text =  {
+const text = {
   'JobTypePreview': 'Job Type Preview',
   'TemplatePreview': 'Template Preview',
   'TemplateEdit': 'Template Edit',
@@ -15,7 +15,7 @@ const text =  {
   'please.delete.template': 'Template error, please delete it',
   'no.template': 'No templates',
   'use.template.create': 'Create by Template',
-	'switch.form.mode': 'Switch Form Mode',
+  'switch.form.mode': 'Switch Form Mode',
   'switch.yaml.mode': 'Switch Yaml Mode',
 
   'create.job': 'Create Job',
@@ -32,7 +32,7 @@ const text =  {
 
   'basicForm': 'Basic Configuration',
   'envForm': 'Environmental Preparation Configuration',
-  'suiteTable': 'Case And Server Configuration',  
+  'suiteTable': 'Case And Server Configuration',
   'moreForm': 'More Configuration',
   'yaml.test': 'Verify',
   'copy': 'Copy',
@@ -42,19 +42,25 @@ const text =  {
   'reset': 'Reset',
   'save.as.template': 'Save As Template',
   'no.permission, please.refer': 'No permission.Please refer to',
-  'help.docs': 'help docs',  
+  'help.docs': 'help docs',
   'submit.test': 'Submit The Test',
   // save Template Drawer
   'template.drawer.title': 'Save As Template',
   'template_name': 'Template Name',
   'template_name.rules1': 'The value can contain a maximum of 64 characters, including letters, digits, underscores (_), hyphens (-), and dots (.)',
   'template_name.rules2': 'The template name cannot be empty.',
-  
+
   // message info
   'machine.cannot.be.empty': 'The monitor server cannot be empty',
   'suite.cannot.be.empty': 'The cases cannot be empty',
   'operation.success': 'Operation is successful!',
   'save.success': 'Save successful!',
+
+  'variable.name': 'variable name',
+  'variable.name.empty': 'name cannot be empty',
+  'variable.name.repeat': 'name cannot be repeat',
+  'variable.value': 'value',
+  'variable.value.value': 'valuecannot be empty',
 };
 
 export default Object.keys(text).reduce((p, key) => {

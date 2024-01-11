@@ -345,7 +345,7 @@ const TestJob: React.FC<any> = (props) => {
                         const envs: any = env_info.filter((i: any) => {
                             if (i.name && i.val) return i
                         })
-                        const evnInfoStr = envs.reduce((i: any, p: any, idx: number) => i.concat(`${idx ? '\n' : ''}${p.name}=${p.val}`), '')
+                        const evnInfoStr = envs.reduce((i: any, p: any, idx: number) => i.concat(`${idx ? '\n' : ''}${p.name?.trim()}=${p.val}`), '')
 
                         let customer_server = undefined
                         if (custom_channel && custom_ip) {
@@ -712,7 +712,7 @@ const TestJob: React.FC<any> = (props) => {
         requestTemplateRun({ job_type_id: detail.id, name: target.value })
     }
 
-    const handleTemplateEditFunction = async (data:any) => {
+    const handleTemplateEditFunction = async (data: any) => {
         const $test_config = handleServerChannel(data.test_config)
         const { code, msg } = await updateTestTemplate({
             template_id: templateDatas.id,
