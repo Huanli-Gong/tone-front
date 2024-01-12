@@ -4,6 +4,7 @@ import { queryTidMessage } from '../service'
 import { requestCodeMessage } from "@/utils/utils";
 import CodeEditer from '@/components/CodeEditer'
 import styled from 'styled-components';
+import { useParams } from "umi";
 
 const TidRow = styled(Row)`
     & div:first-child {
@@ -84,10 +85,12 @@ const TidDetail: React.FC<any> = ({ tid }) => {
     const [details, setDetails] = useState<any>({})
     const [visible, setVisible] = useState(false)
 
+    const { share_id } = useParams() as any
+
     const handleVisible = async ($visible: boolean) => {
         if ($visible) {
             setLoading(true)
-            const { data, code, msg } = await queryTidMessage({ tid })
+            const { data, code, msg } = await queryTidMessage({ tid, share_id })
             setLoading(false)
             setVisible($visible)
             if (code !== 200) {
@@ -138,7 +141,7 @@ const TidDetail: React.FC<any> = ({ tid }) => {
             onOpenChange={handleVisible}
         >
             <span style={{ cursor: loading ? 'progress' : 'default' }}>
-                {tid}
+                {tid || '-'}
             </span>
         </Tooltip>
     )

@@ -120,7 +120,7 @@ const text = {
   'track_result': 'Track Result',
 
   'breadcrumb.button.download': 'Download',
-  'breadcrumb.button.share': 'Share',
+  'breadcrumb.button.share': 'Share Job',
   'breadcrumb.button.fail_case_upload': 'Fail Case Upload',
 
   // ProcessTable

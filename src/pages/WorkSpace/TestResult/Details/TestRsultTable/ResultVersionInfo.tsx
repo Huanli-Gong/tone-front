@@ -40,9 +40,9 @@ export default ({ test_case_id, suite_id }: any) => {
                     }
                 </Row>
                 {
-                    data.rpm_info.map(
-                        (item: any, index: number) => (
-                            <Row key={index}>
+                    data?.rpm_info?.map(
+                        (item: any) => (
+                            <Row key={item?.rpm}>
                                 <b style={{ marginRight: 16 }}><FormattedMessage id="ws.result.details.installed.rpm" /></b>
                                 <span>{item.rpm}</span>
                             </Row>
@@ -50,7 +50,7 @@ export default ({ test_case_id, suite_id }: any) => {
                     )
                 }
                 {
-                    (!data.kernel_version && data.rpm_info.length === 0) &&
+                    (!data?.kernel_version && data?.rpm_info?.length === 0) &&
                     <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 }
             </Spin>

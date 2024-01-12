@@ -28,7 +28,6 @@ export const BreadcrumbItem: React.FC<any> = (d: any) => {
     )
 }
 
-
 const prepareStateColorMap = new Map([
     ['success', '#81BF84'],
     ['fail', '#C84C5A'],

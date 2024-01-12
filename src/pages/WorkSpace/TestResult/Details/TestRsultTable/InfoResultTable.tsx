@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Space, Tooltip, Input, Button, Typography } from 'antd'
-import type { TableColumnProps } from "antd"
 import { SearchOutlined } from '@ant-design/icons'
 
 import React, { useRef, useEffect } from 'react'

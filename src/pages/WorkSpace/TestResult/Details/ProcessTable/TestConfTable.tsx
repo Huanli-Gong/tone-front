@@ -158,7 +158,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             render: (_: any) => {
                 const strLocals = formatMessage({ id: 'ws.result.details.log' })
                 // success,fail,stop 可看日志
-                if (["success", "fail", "stop"].includes(_.state)) {
+                if (!share_id && ["success", "fail", "stop"].includes(_.state)) {
                     if (_.log_file)
                         return (
                             <Typography.Link

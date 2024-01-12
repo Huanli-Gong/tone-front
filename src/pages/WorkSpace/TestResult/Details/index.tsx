@@ -88,7 +88,7 @@ const TestResultDetails: React.FC<any> = (props) => {
     const getJobState = async () => {
         const { state } = details
         if (!CAN_STOP_JOB_STATES.includes(state)) return
-        const { data: { job_state }, code } = await queryJobState({ job_id, ws_id })
+        const { data: { job_state }, code } = await queryJobState({ job_id, ws_id, share_id })
         if (code !== 200) return
         if (CAN_STOP_JOB_STATES.includes(job_state)) {
             timer.current = setTimeout(getJobState, 30000)
@@ -397,7 +397,7 @@ const TestResultDetails: React.FC<any> = (props) => {
                         {
                             !isSharePage &&
                             <>
-                                <RenderMachineItem job_id={job_id} />
+                                <RenderMachineItem />
                                 <RenderMachinePrompt {...details} />
                             </>
                         }

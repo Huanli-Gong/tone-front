@@ -82,7 +82,7 @@ export default (props: any) => {
             render: (_: any, row: any) => {
                 return (
                     (_ && row.baseline_cv_value) ?
-                        <Access accessible={!share_id && access.IsWsSetting()} >
+                        <Access accessible={!share_id && access.IsWsSetting()} fallback={`${_}±${row.baseline_cv_value}` || '-'}>
                             {
                                 row.skip_baseline_info ?
                                     <Typography.Link

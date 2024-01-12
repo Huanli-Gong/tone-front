@@ -127,7 +127,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
             render: (_: any) => {
                 const strLocals = formatMessage({ id: 'ws.result.details.log' })
                 // success,fail,stop 可看日志
-                if (_.state === 'success' || _.state === 'fail' || _.state === 'stop') {
+                if (!share_id && ["success", "fail", "stop"].includes(_.state)) {
                     if (_.log_file)
                         return <Typography.Link href={_.log_file} target="_blank">{strLocals}</Typography.Link>
                 }

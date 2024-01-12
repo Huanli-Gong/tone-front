@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
-import { useIntl, FormattedMessage } from 'umi';
+import { useIntl, FormattedMessage, useParams } from 'umi';
 import { Button, Table } from 'antd';
 import type { TableColumnsType } from "antd"
 import { copyTooltipColumn, evnPrepareState } from '../components'
@@ -13,6 +13,7 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents';
 const ProcessExpandTable: React.FC<AnyType> = (props) => {
     const { dataSource, parentTableName, columnsChange } = props
     const { formatMessage } = useIntl()
+    const { share_id } = useParams() as any
 
     const columns: TableColumnsType<AnyType> = React.useMemo(() => [
         {
@@ -72,7 +73,15 @@ const ProcessExpandTable: React.FC<AnyType> = (props) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText> : <TidDetail tid={_} /> : '-'
+            render: (_: any) => {
+                if (_?.length) {
+                    if (_.indexOf('API_v2_0_') > -1)
+                        return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
+
+                    return <TidDetail tid={_} />
+                }
+                return '-'
+            },
         },
         {
             dataIndex: 'gmt_created',
@@ -101,7 +110,7 @@ const ProcessExpandTable: React.FC<AnyType> = (props) => {
             render: (_: any) => {
                 const strLocals = formatMessage({ id: 'ws.result.details.log' })
                 // success,fail,stop 可看日志
-                if (_.state === 'success' || _.state === 'fail' || _.state === 'stop') {
+                if (!share_id && ["success", "fail", "stop"].includes(_.state)) {
                     if (_.log_file)
                         return <Button size="small" type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>{strLocals}</Button>
                 }
