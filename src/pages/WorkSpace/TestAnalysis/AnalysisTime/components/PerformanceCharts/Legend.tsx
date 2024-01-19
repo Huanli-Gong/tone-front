@@ -80,7 +80,7 @@ const Legend: React.FC<any> = ({ name, chartRef, isBaseline, isStandalone, sourc
             onClick={handleClick}
             state={state}
         >
-            <Space>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Line
                     isBaseline={isBaseline ? 1 : 0}
                     borderColor={chartRef?.getModel()?.getColorFromPalette(name)}
@@ -88,7 +88,7 @@ const Legend: React.FC<any> = ({ name, chartRef, isBaseline, isStandalone, sourc
                 < Typography.Text style={{ fontSize: 10 }} ellipsis>
                     {name}
                 </Typography.Text>
-            </Space>
+            </div>
             {
                 provider_env === "aliyun" &&
                 <Space>
