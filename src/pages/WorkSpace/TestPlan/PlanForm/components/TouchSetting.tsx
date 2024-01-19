@@ -28,7 +28,7 @@ const TouchSetting = (props: any, ref: any) => {
             if (!blocking_strategy) {
                 params.blocking_strategy = 1
             }
-            form.setFieldsValue(template)
+            form.setFieldsValue(params)
         }
     }, [template])
 
