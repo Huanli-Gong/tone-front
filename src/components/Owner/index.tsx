@@ -1,13 +1,13 @@
 import React from 'react';
 import { Form, Select, Spin, Empty } from 'antd';
 import { useRequest, useParams, useIntl } from 'umi'
-import { member } from './service'
+import { queryMember } from '@/services/Workspace'
 
 const Owner: React.FC = () => {
     const { formatMessage } = useIntl()
     const { ws_id }: any = useParams();
     const { data: user, loading: fetchLoading, run: fetchUserRunner } = useRequest(
-        (keyword = '') => member({ keyword, scope: 'aligroup', ws_id, page_num: 1, page_size: 500 }),
+        (keyword = '') => queryMember({ keyword, scope: 'aligroup', ws_id, page_num: 1, page_size: 500 }),
         {
             debounceInterval: 300,
         }

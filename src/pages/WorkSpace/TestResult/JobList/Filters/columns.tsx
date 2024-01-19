@@ -3,13 +3,13 @@ import { Select, Spin, Tag, Empty } from "antd"
 import type { SelectProps } from "antd"
 import { useRequest, useParams, request, FormattedMessage } from "umi"
 import {
-    queryCreators,
     queryTag,
     queryTestSuite,
     queryJobType,
     queryProjectId,
 } from '../../services'
 import styled from "styled-components"
+import { queryMember } from "@/services/Workspace"
 
 const TagSelectStyled = styled(Select)`
     /* .ant-select-selector { padding-left: 4px!important; }; */
@@ -200,7 +200,7 @@ export const filterColumns = [
         searchKey: "keyword",
         render: (
             <BasicSelect
-                api={queryCreators}
+                api={queryMember}
                 mode="multiple"
                 labelInValue
             />

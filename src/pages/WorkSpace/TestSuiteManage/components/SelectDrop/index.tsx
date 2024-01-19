@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Spin } from 'antd';
 import { FormattedMessage } from 'umi'
-import { member } from '../../service';
 
 import styles from './index.less'
+import { queryMember } from '@/services/Workspace';
 
 const FilterRadio: React.FC<any> = ({ confirm, onConfirm }) => {
 	const [user, setUser] = useState<any>([])
@@ -23,7 +23,7 @@ const FilterRadio: React.FC<any> = ({ confirm, onConfirm }) => {
 		if (keyword && keyword == param) return
 		setKeyword(param)
 		setFetching(true)
-		const { data } = await member({ keyword: param, page_size: 50, page_num: 1 })
+		const { data } = await queryMember({ keyword: param, page_size: 50, page_num: 1 })
 		setUser(data || [])
 		setFetching(false)
 	}

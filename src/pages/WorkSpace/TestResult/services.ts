@@ -28,10 +28,6 @@ export const queryConfig = async (params: any) => {
     return request(`/api/rerun/config/`, { params })
 }
 
-export const queryCreators = async (params: any) => {
-    return request(`/api/auth/user/`, { params })
-}
-
 export const queryTag = async (params: any) => {
     return request(`/api/job/tag/`, { params })
 }

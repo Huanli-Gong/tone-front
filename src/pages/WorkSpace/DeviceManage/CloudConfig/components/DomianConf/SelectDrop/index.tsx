@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Spin } from 'antd';
 import { useIntl, FormattedMessage } from 'umi'
-import { member, queryCloudAk } from '../../../service';
+import { queryCloudAk } from '../../../service';
+import { queryMember } from '@/services/Workspace';
 import _ from 'lodash'
 import styles from './index.less'
 
@@ -22,7 +23,7 @@ const FilterRadio: React.FC<any> = ({ confirm, onConfirm, name, ws_id }) => {
 		let optionData: any[] = []
 
 		if (name === 'creator' || name === 'creator_name' || name === 'update_user') {
-			const { data } = await member({ keyword: param, page_size: 50, page_num: 1 })
+			const { data } = await queryMember({ keyword: param, page_size: 50, page_num: 1 })
 			if (_.isArray(data)) {
 				optionData = data.map(item => ({ id: item.id, name: item.last_name }))
 			}
