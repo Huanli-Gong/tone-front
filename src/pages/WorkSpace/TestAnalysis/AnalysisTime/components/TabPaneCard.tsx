@@ -124,7 +124,7 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
 
     const handleSelectMertric = () => {
         if (form.getFieldValue('project_id')) {
-            selectMetricRef.current.show(metricData)
+            selectMetricRef.current.show()
         } else {
             message.error(formatMessage({ id: 'analysis.selected.error' }))
         }
@@ -507,6 +507,7 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                 show_type={show_type}
                 provider_env={provider_env}
                 test_type={test_type}
+                metricData={metricData}
                 onOk={handleMerticSelectOk}
             />
 
