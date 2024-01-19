@@ -1,6 +1,6 @@
 import { request } from 'umi'
 
-export const queryJobState = async (params: { job_id: string, ws_id?: string }) => {
+export const queryJobState = async (params: { job_id: string, ws_id?: string, share_id?: string }) => {
     return request(`/api/job/state/`, { params })
 }
 

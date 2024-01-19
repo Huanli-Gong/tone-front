@@ -10,15 +10,15 @@ import { ResizeHooksTable } from '@/utils/table.hooks'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 export default ({ refresh = false, provider_name }: any) => {
-    const { id: job_id } = useParams() as any
+    const { id: job_id, share_id } = useParams() as any
 
     const { data, loading, run } = useRequest(
-        () => queryMonitorList({ job_id }),
+        () => queryMonitorList({ job_id, share_id }),
         {
             manual: true
         }
     )
-    
+
     useEffect(() => {
         run()
     }, [refresh])

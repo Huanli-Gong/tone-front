@@ -47,7 +47,7 @@ const TestResultTable: React.FC<any> = (props) => {
         { key: 'fail', name: formatMessage({ id: `ws.result.details.business.fail` }), value: 'fail', color: '#C84C5A' },
     ]
 
-    const { id: job_id, ws_id } = useParams() as any
+    const { id: job_id, ws_id, share_id } = useParams() as any
     const { caseResult = {}, test_type, provider_name: serverProvider = '', creator, refreshResult } = props
     const testType = React.useMemo(() => matchTestType(test_type), [test_type])
 
@@ -71,15 +71,14 @@ const TestResultTable: React.FC<any> = (props) => {
 
     const queryDefaultTestData = async () => {
         setLoading(true)
-        const { data } = await queryTestResult({ state: '', job_id })
+        const { data } = await queryTestResult({ state: '', job_id, share_id })
         setLoading(false)
         setFilterData(Object.prototype.toString.call(data) === "[object Array]" ? data : [])
     }
 
     React.useEffect(() => {
-        if (job_id || refreshResult)
-            queryDefaultTestData()
-    }, [job_id, refreshResult])
+        queryDefaultTestData()
+    }, [refreshResult])
 
     const handleSuiteStateChange = (row: any, state: string) => {
         setExpandedRowKeys((l: any[]) => l.concat(row.suite_id))
@@ -253,7 +252,7 @@ const TestResultTable: React.FC<any> = (props) => {
                 />
             )
         },
-        ['performance', 'business_performance'].includes(testType) &&
+        !share_id && ['performance', 'business_performance'].includes(testType) &&
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             width: locale ? 180 : 145,
@@ -349,7 +348,7 @@ const TestResultTable: React.FC<any> = (props) => {
         }
     }, [caseResult, filterData])
 
-    const rowSelection = testType === 'performance' ? {
+    const rowSelection = !share_id && testType === 'performance' ? {
         columnWidth: 40,
         selectedRowKeys: oSuite ? Object.keys(oSuite)?.map((i: any) => + i) : [],
         onChange: (keys: any[]) => {
@@ -417,7 +416,7 @@ const TestResultTable: React.FC<any> = (props) => {
                             }
                         </Dropdown.Button>
                         {
-                            ['performance', 'business_performance'].includes(testType) &&
+                            !share_id && ['performance', 'business_performance'].includes(testType) &&
                             <Access accessible={access.WsTourist()}>
                                 <Access
                                     accessible={access.WsMemberOperateSelf(creator)}

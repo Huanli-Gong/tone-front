@@ -8,20 +8,21 @@ import styles from './index.less';
 import { queryMachineData } from '../service';
 import { StateBadge } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components/index'
 
-const RenderMachineItem = (props: any) => {
-    const { ws_id } = useParams() as any
+const RenderMachineItem: React.FC = () => {
+    const { ws_id, share_id, job_id } = useParams() as any
+
     const [flag, setFlag] = useState<boolean>(true)
     const [loading, setLoading] = useState<boolean>(true)
     const [dataSource, setDataSource] = useState<any[]>([])
+
     const handleChange = () => {
         setFlag(!flag)
     }
-    const { job_id } = props;
 
     const queryMachine = async () => {
         setLoading(true)
         // 810测试数据
-        const { data } = await queryMachineData({ job_id })
+        const { data } = await queryMachineData({ job_id, share_id })
         setDataSource(data || [])
         setLoading(false)
     }
@@ -34,10 +35,7 @@ const RenderMachineItem = (props: any) => {
         {
             title: 'IP',
             render: (_: any, row: any) => {
-                if (row.device_type) {
-                    return <span>{row.ip || '-'}</span>
-                }
-                return <span>{row.pub_ip || '-'}</span>
+                return <span>{row.device_type ? row.ip : row.pub_ip || '-'}</span>
             },
         },
         {

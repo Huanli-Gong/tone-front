@@ -115,7 +115,7 @@ const text = {
   'track_result': '跟踪结果',
 
   'breadcrumb.button.download': '下载',
-  'breadcrumb.button.share': '分享Job链接',
+  'breadcrumb.button.share': '分享Job',
   'breadcrumb.button.fail_case_upload': '失败Case补传',
 
   "breadcrumb.button.download.running": "下载中...",

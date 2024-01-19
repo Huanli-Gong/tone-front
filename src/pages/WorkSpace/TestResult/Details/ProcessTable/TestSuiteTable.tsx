@@ -20,7 +20,7 @@ const disablePointer = { color: 'rgba(0,0,0,.25)', marginLeft: 12 };
 const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
     const { refresh = false, testType, provider_name } = props
 
-    const { id: job_id } = useParams() as any
+    const { id: job_id, share_id } = useParams() as any
     const { formatMessage } = useIntl()
     const { initialState } = useModel('@@initialState');
     const access = useAccess()
@@ -33,7 +33,7 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
     const skipLocals = formatMessage({ id: 'ws.result.details.skip.suite' })
 
     const { data, loading, run } = useRequest(
-        () => queryProcessSuiteList({ job_id }),
+        () => queryProcessSuiteList({ job_id, share_id }),
         {
             manual: true,
             initialData: []
@@ -123,9 +123,9 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
         {
             dataIndex: 'state',
             title: <FormattedMessage id="ws.result.details.state" />,
-            render: (_: any,row:any) => row.suite_state_desc && !!row.suite_state_desc.length 
-            ? <QusetionIconTootip title={evnPrepareState(_)} desc={row.suite_state_desc} /> 
-            : evnPrepareState(_)
+            render: (_: any, row: any) => row.suite_state_desc && !!row.suite_state_desc.length
+                ? <QusetionIconTootip title={evnPrepareState(_)} desc={row.suite_state_desc} />
+                : evnPrepareState(_)
         },
         {
             dataIndex: 'start_time',
@@ -143,6 +143,7 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
             },
             render: (_: any) => <>{_ || '-'}</>,
         },
+        !share_id &&
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             fixed: "right",
@@ -207,7 +208,7 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
                 return <span style={style}>{stopLocals}</span>
             }
         }
-    ]
+    ].filter(Boolean)
 
     return (
         <Card

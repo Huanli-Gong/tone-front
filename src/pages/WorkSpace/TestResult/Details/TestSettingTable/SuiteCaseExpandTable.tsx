@@ -1,11 +1,13 @@
 import { Tooltip } from 'antd'
 import { ServerTooltip } from './ServerTooltip'
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage, useParams } from 'umi'
 import { ResizeHooksTable } from '@/utils/table.hooks';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 //测试用例及机器配置 expand table
 export default ({ data = [], testType, provider_name, columnsRefresh, onColumnsChange }: any) => {
+    const { share_id } = useParams() as any;
+
     const { formatMessage } = useIntl()
     const columns: any = [
         {
@@ -32,7 +34,7 @@ export default ({ data = [], testType, provider_name, columnsRefresh, onColumnsC
                 showTitle: false
             },
             width: 150,
-            render: (text: string, row: any) => <ServerTooltip provider_name={provider_name} {...row} />
+            render: (text: string, row: any) => !share_id ? <ServerTooltip provider_name={provider_name} {...row} /> : text || '-'
         },
         {
             title: <FormattedMessage id="ws.result.details.timeout" />,

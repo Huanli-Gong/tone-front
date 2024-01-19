@@ -33,7 +33,7 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
 
     const locale = getLocale() === 'en-US';
     const { setOSuite, oSuite } = React.useContext(MetricSelectProvider)
-    const { id: job_id } = useParams() as any
+    const { id: job_id, share_id } = useParams() as any
     const [expandedRowKeys, setExpandedRowKeys] = React.useState<any[]>([])
 
     const access = useAccess()
@@ -44,7 +44,7 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
 
     const init = async () => {
         setLoading(true)
-        const { data, code } = await queryTestResultSuiteConfList({ job_id, suite_id, state: expandedState })
+        const { data, code } = await queryTestResultSuiteConfList({ job_id, suite_id, state: expandedState, share_id })
         setLoading(false)
         if (code !== 200) return
         setSource(data)
@@ -193,7 +193,7 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
                 />
             )
         },
-        ['performance', 'business_performance'].includes(testType) &&
+        !share_id && ['performance', 'business_performance'].includes(testType) &&
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             width: locale ? 180 : 145,
@@ -222,7 +222,7 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
         }
     ], [creator, access, hasBaselineColumn, hasBaselineIdColumn, columnsChange]).filter(Boolean)
 
-    const rowSelection = ['performance', 'business_performance'].includes(testType) ? {
+    const rowSelection = !share_id && ['performance', 'business_performance'].includes(testType) ? {
         columnWidth: 40,
         selectedRowKeys: oSuite?.[suite_id] ? Object.keys(oSuite?.[suite_id]).map((i: any) => + i) : [],
         onChange: (keys: any[]) => {

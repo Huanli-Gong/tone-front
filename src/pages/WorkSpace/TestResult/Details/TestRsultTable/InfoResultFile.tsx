@@ -1,34 +1,46 @@
 import React from 'react'
 import { queryCaseResultFile } from '../service'
-import { useRequest, request, useParams, useIntl } from 'umi'
+import { useRequest, request, useParams, useIntl, useModel } from 'umi'
 import { Tree, Spin, Empty, message, Space } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons';
 
 import styles from './index.less'
+import { encode } from 'js-base64'
 
 const TreeFileIcon: React.FC<any> = (props: any) => (
-    <>
-        {
-            props.items.length > 0 ?
-                <span className={styles.dir_icon} /> :
-                <span className={styles.file_icon} />
-        }
-    </>
+    props.items.length > 0 ?
+        <span className={styles.dir_icon} /> :
+        <span className={styles.file_icon} />
 )
 
 export default ({ test_case_id, suite_id }: any) => {
     const { formatMessage } = useIntl()
-    const { id: job_id } = useParams() as any
+    const { initialState } = useModel('@@initialState')
+    const { id: job_id, share_id } = useParams() as any
 
     const handlePathClick = async (ctx: any, state: string) => {
-        let obj = {}
+        const params: any = {
+            path: ctx.path,
+            job_id, share_id
+        }
+
         if (state == 'download') {
-            obj = { path: ctx.path, job_id, download: '1' }
+            params.download = '1'
         }
-        if (state == 'look') {
-            obj = { path: ctx.path, job_id }
+
+        if (BUILD_APP_ENV !== 'opensource') {
+            const username = initialState?.authList?.username;
+            const token = `${username}|${initialState?.token}|${new Date().getTime()}`;
+            const signature = encode(token);
+
+            params.username = username;
+            params.signature = signature
         }
-        const data = await request(`/api/get/oss/url/`, { params: obj })
+
+        if (state == 'download') params.download = '1';
+
+        const data = await request(`/api/get/oss/url/`, { params })
+
         if (data) {
             if (data.code === 200 && data.msg === 'ok') window.open(data.data)
             else message.warn(`${state === 'download' ? formatMessage({ id: 'ws.result.details.failed.download.file' }) : formatMessage({ id: 'ws.result.details.failed.get.file' })}`)
@@ -38,11 +50,19 @@ export default ({ test_case_id, suite_id }: any) => {
     const RenderItem = (ctx: any) => {
         return (
             <Space>
-                <span onClick={() => handlePathClick(ctx, 'look')}>{ctx.name}</span>
-                {!ctx.items.length && <DownloadOutlined onClick={() => handlePathClick(ctx, 'download')} />}
+                {
+                    share_id ?
+                        <span>{ctx.name}</span> :
+                        <span onClick={() => handlePathClick(ctx, 'look')}>{ctx.name}</span>
+                }
+                {
+                    (!share_id && !ctx.items.length) &&
+                    <DownloadOutlined onClick={() => handlePathClick(ctx, 'download')} />
+                }
             </Space>
         )
     }
+
     const treeDataMap = (item: any, index: string | number): any => (
         item.map((ctx: any, idx: number) => (
             {
@@ -56,7 +76,7 @@ export default ({ test_case_id, suite_id }: any) => {
     )
 
     const { data, loading }: any = useRequest(
-        () => queryCaseResultFile({ job_id, case_id: test_case_id, suite_id }),
+        () => queryCaseResultFile({ job_id, case_id: test_case_id, suite_id, share_id }),
         {
             initialData: [],
             formatResult: res => {
@@ -67,24 +87,6 @@ export default ({ test_case_id, suite_id }: any) => {
             },
         }
     )
-
-    /* const handleOpenOss = async (path: string) => {
-        const { data: source, code, msg } = await request(`/api/get/oss/url/`, { params: { path, job_id } })
-        if (source) {
-            if (code === 200 && msg === 'ok') window.open(source)
-            else message.warn(formatMessage({ id: 'ws.result.details.failed.get.file' }))
-        }
-    }
-
-    const mapChildKey = (arr: any, clickKey: any): any => {
-        if (!arr.length) return
-        for (let x = 0; x < arr.length; x++) {
-            let item = arr[x]
-            if ((item.key === clickKey) && item.path)
-                return handleOpenOss(item.path)
-            item.children.length > 0 && mapChildKey(item.children, clickKey)
-        }
-    } */
 
     return (
         <div style={{ minHeight: 50 }}>
