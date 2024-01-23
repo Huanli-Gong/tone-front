@@ -125,6 +125,7 @@ export default {
     'analysis.project': 'Project',
     'analysis.project.placeholder': 'Please select project',
     'analysis.tag': 'Tag',
+    'analysis.env': 'Env',
     'analysis.tag.placeholder': 'Not differentiated by labels.',
     'analysis.indistinguishable': 'Indistinguishable',
     'analysis.only.the.job.data': 'Analyze the job data with the selected tag.',

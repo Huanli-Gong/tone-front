@@ -43,7 +43,7 @@ const ClusterChart: React.FC<AnyType> = (props) => {
 
     const handleMetricChange = ($query: any) => {
         const { metric } = $query
-        setFetchData((p: any) => {
+        setFetchData?.((p: any) => {
             return p.map((x: any) => {
                 if (x.key === fetchData?.key)
                     return {

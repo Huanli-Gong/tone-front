@@ -61,7 +61,7 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
 
     const handleMetricChange = ($query: any) => {
         const { metric } = $query
-        setFetchData((p: any) => {
+        setFetchData?.((p: any) => {
             return p.map((x: any) => {
                 if (x.key === fetchData?.key)
                     return {
@@ -243,7 +243,7 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
                                 ${textTip('commit', item?.commit)}
                                 ${serverLinkTip(params.seriesName)}
                                 ${renderProviderText(params, provider_env)}
-                                ${textTip(formatMessage({ id: 'analysis.table.column.note' }), item?.note)}
+                                ${ws_id && textTip(formatMessage({ id: 'analysis.table.column.note' }), item?.note)}
                                 ${textTip(formatMessage({ id: 'analysis.chart.compare_result' }), item?.compare_result)}
                             </div>`
                                 .trim()
@@ -307,7 +307,7 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
         })
 
         myChart.on("click", 'series.line', (params: any) => {
-            if (params?.data) {
+            if (params?.data && ws_id) {
                 const { job_id } = params?.data
                 if (job_id) targetJump(`/ws/${ws_id}/test_result/${job_id}`)
             }
@@ -334,10 +334,13 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
                                 <Typography.Text key={t}>{t}</Typography.Text>
                             ))
                         }
-                        <MetricDropdown
-                            onChange={handleMetricChange}
-                            fetchData={fetchData}
-                        />
+                        {
+                            ws_id &&
+                            <MetricDropdown
+                                onChange={handleMetricChange}
+                                fetchData={fetchData}
+                            />
+                        }
                     </Space>
                 </Title>
                 <Row justify={"center"}>

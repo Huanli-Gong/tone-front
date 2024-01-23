@@ -32,11 +32,12 @@ const CardWrapper = styled(Card)`
 `
 
 type RenderChartProps = {
-    dataSource: any;
+    dataSource?: any;
     title?: string;
-    provider_env: string;
-    test_type: string;
-    show_type: string;
+    provider_env?: string;
+    test_type?: string;
+    show_type?: string;
+    [k: string]: any;
 }
 
 const RenderChart: React.FC<RenderChartProps> = (props) => {

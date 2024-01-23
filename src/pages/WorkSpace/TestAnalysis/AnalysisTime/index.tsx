@@ -1,6 +1,6 @@
 import React from 'react';
 import { writeDocumentTitle, useCopyText } from '@/utils/hooks';
-import { Layout, Tabs, Row, Radio, Col } from 'antd';
+import { Layout, Tabs, Row, Radio, Col, Dropdown, Typography } from 'antd';
 import styles from './index.less'
 import { useLocation, useIntl, FormattedMessage, useParams, useRequest } from 'umi';
 import TabPaneCard from './components/TabPaneCard'
@@ -10,6 +10,7 @@ import styled from "styled-components"
 import { getSelectSuiteConfs, queryPerfomanceMetrics } from './services'
 
 import { Analysis } from './provider';
+import { getShareId } from '../../TestResult/Details/service';
 
 const AnalysisLayout = styled(Layout.Content).attrs((props: any) => ({
     style: {
@@ -26,6 +27,7 @@ const AnalysisTime: React.FC<any> = (props) => {
     const { query, key } = useLocation() as any
     const { ws_id } = useParams() as any
     const { route } = props
+    const handleCopy = useCopyText(formatMessage({ id: "request.copy.success" }))
 
     const [metrics, setMetrics] = React.useState<any[]>([])
     const tabPaneRef = React.useRef<AnyType>(null)
@@ -69,7 +71,6 @@ const AnalysisTime: React.FC<any> = (props) => {
     )
 
     React.useEffect(() => {
-        console.log(info)
         const { test_type, provider_env, project_id } = info
         if (test_type && provider_env && project_id)
             run({ ws_id, test_type, provider_env, project_id })
@@ -106,15 +107,32 @@ const AnalysisTime: React.FC<any> = (props) => {
 
     const handleCopyUri = useCopyText(formatMessage({ id: 'analysis.copy.to.clipboard' }))
 
-    const copy = () => {
+    const copy = async ($key: any) => {
         const { origin, pathname } = window.location
-        const { test_type, show_type, provider_env, ...rest } = info
+        const { test_type, show_type, provider_env, metric, ...rest } = info
         const isFunc = test_type === "functional"
-        const text = origin + pathname + '?' + stringify({
+        const params = {
+            ...rest,
             test_type,
+            provider_env,
+            show_type,
             [isFunc ? "show_type" : "provider_env"]: isFunc ? show_type : provider_env,
-            ...rest
-        })
+            ws_id,
+        }
+
+        if (+ $key !== 1 && test_type !== "functional") {
+            const metricList = metric?.split(',')
+            params.metricList = metricList
+            params.fetchData = metricList?.map((i: any) => ({ metric: info?.[i]?.split(',') }))
+        }
+
+        if (+ $key !== 1) {
+            const { data } = await getShareId(params)
+            handleCopy(`${origin}/share/analysis/${data}`)
+            return
+        }
+
+        const text = origin + pathname + '?' + stringify(params)
         handleCopyUri(text)
     }
 
@@ -133,11 +151,30 @@ const AnalysisTime: React.FC<any> = (props) => {
                             onTabClick={handleTabClick}
                             tabBarExtraContent={
                                 <Row justify="center" align="middle">
-                                    <CopyLink
-                                        className="test_analysis_copy_link"
-                                        style={{ cursor: 'pointer', marginRight: 20 }}
-                                        onClick={copy}
-                                    />
+                                    <Dropdown
+                                        menu={{
+                                            onClick(evt) {
+                                                copy(evt?.key)
+                                            },
+                                            items: [{
+                                                key: 1,
+                                                label: <Typography.Text>
+                                                    分享可配置链接
+                                                </Typography.Text>
+                                            }, {
+                                                key: 2,
+                                                label: <Typography.Text>
+                                                    分享
+                                                </Typography.Text>
+                                            }]
+                                        }}
+                                    >
+                                        <CopyLink
+                                            className="test_analysis_copy_link"
+                                            style={{ cursor: 'pointer', marginRight: 20 }}
+                                        />
+                                    </Dropdown>
+
                                     {
                                         info?.test_type === 'performance' ?
                                             <Radio.Group

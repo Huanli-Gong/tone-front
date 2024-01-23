@@ -123,6 +123,7 @@ export default {
     'analysis.project': '项目',
     'analysis.project.placeholder': '请选择项目',
     'analysis.tag': '标签',
+    'analysis.env': '环境',
     'analysis.tag.placeholder': '不按标签区分',
     'analysis.indistinguishable': '不区分',
     'analysis.only.the.job.data': '仅分析含有所选标签的Job数据，不区分标签。',
