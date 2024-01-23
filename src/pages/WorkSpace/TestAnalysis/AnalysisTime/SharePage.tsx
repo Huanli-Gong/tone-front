@@ -1,4 +1,4 @@
-import { Divider, Row, Space, Spin, Tooltip, Typography } from "antd"
+import { Divider, Row, Space, Tooltip, Typography } from "antd"
 import React from "react"
 import { useIntl, useParams } from "umi"
 import { getShareInfo, queryFuncAnalysisList } from "./services"
@@ -8,6 +8,7 @@ import ChartRender from '@/pages/WorkSpace/TestAnalysis/AnalysisTime/components/
 import AnalysisTable from '@/pages/WorkSpace/TestAnalysis/AnalysisTime/components/Table'
 import { MinusOutlined } from "@ant-design/icons"
 import LoadingComp from "./components/Loading"
+import EmptyComp from "./components/EmptyComp"
 
 const PAGE_FIELD_MAP: any = [
     ['test_type', 'ws.result.details.test_type'],
@@ -103,7 +104,7 @@ const SharePage: React.FC = () => {
         })
     }
 
-    if (loading || cLoading)
+    if (loading)
         return <LoadingComp />
 
     return (
@@ -114,6 +115,7 @@ const SharePage: React.FC = () => {
                         时序分析<MinusOutlined />{source?.test_type_name}
                     </Space>
                 </h4>
+
                 <div>
                     <FieldTooltip hasDivider name='test_type' content={source?.test_type_name} />
                     <FieldTooltip hasDivider name='env' content={source?.provider_name} />
@@ -121,23 +123,28 @@ const SharePage: React.FC = () => {
                     <FieldTooltip hasDivider name='tag' content={source?.tag || formatMessage({ id: `analysis.indistinguishable` })} />
                     <FieldTooltip name='date' content={`${source?.start_time} —— ${source?.end_time}`} />
                 </div>
-                <Row style={{ gap: 16 }}>
-                    <Space>
-                        <span >Test Suite: </span>
-                        {source?.suite_name}
-                    </Space>
-                </Row>
-                <Row>
-                    <Space>
-                        <span >Test Conf: </span>
-                        {source?.case_name}
-                    </Space>
-                </Row>
+
+                <Space>
+                    <span >Test Suite: </span>
+                    {source?.suite_name}
+                </Space>
 
                 {
-                    source?.metric &&
+                    source?.test_type === 'performance' ?
+                        <Space>
+                            <span >Test Case: </span>
+                            {source?.case_name}
+                        </Space> :
+                        <Space>
+                            <span >Test Conf: </span>
+                            {source?.case_name}
+                        </Space>
+                }
+
+                {
+                    (source?.test_type === 'performance' && source?.metric) &&
                     <Space align="start">
-                        <span >指标: </span>
+                        <span>Metric: </span>
                         <Typography.Paragraph ellipsis={{ rows: 2, tooltip: true }}>
                             {
                                 source?.metric?.map((i: any) => (<div key={i}>{i}</div>))
@@ -146,18 +153,31 @@ const SharePage: React.FC = () => {
                     </Space>
                 }
 
+                {
+                    source?.test_type !== 'performance' && source?.show_type !== 'pass_rate' &&
+                    <Space>
+                        <span >Test Subcase: </span>
+                        {source?.sub_case_name}
+                    </Space>
+                }
+
             </div>
+
+            {
+                cLoading &&
+                <LoadingComp />
+            }
 
             <div>
                 {
-                    source?.test_type === 'performance' &&
+                    (source?.test_type === 'performance' && source?.fetchData?.length > 0) &&
                     <Space style={{ width: "100%", background: "rgba(0, 0, 0, 0.04)" }} direction="vertical">
                         {
                             source?.fetchData?.map((i: any) => {
                                 const _props = {
                                     key: i.metric,
                                     fetchData: { ...i, share_id, },
-                                    setCLoading,
+                                    setLoading: setCLoading,
                                     provider_env: source?.provider_env,
                                     valueChange: handleValueChange
                                 }
@@ -175,7 +195,6 @@ const SharePage: React.FC = () => {
                         }
                     </Space>
                 }
-
             </div>
 
             <div style={{ marginTop: 10 }}>
@@ -200,6 +219,11 @@ const SharePage: React.FC = () => {
                     />
                 }
             </div>
+
+            {
+                tableData?.length === 0 &&
+                <EmptyComp />
+            }
         </div >
     )
 }

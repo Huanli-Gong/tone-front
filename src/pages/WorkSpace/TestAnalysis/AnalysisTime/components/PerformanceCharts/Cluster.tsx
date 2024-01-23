@@ -224,10 +224,13 @@ const ClusterChart: React.FC<AnyType> = (props) => {
                             <Typography.Text key={t}>{t}</Typography.Text>
                         ))
                     }
-                    <MetricDropdown
-                        onChange={handleMetricChange}
-                        fetchData={fetchData}
-                    />
+                    {
+                        ws_id &&
+                        <MetricDropdown
+                            onChange={handleMetricChange}
+                            fetchData={fetchData}
+                        />
+                    }
                 </Space>
             </Title>
 
