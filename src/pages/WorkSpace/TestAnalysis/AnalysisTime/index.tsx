@@ -1,6 +1,6 @@
 import React from 'react';
 import { writeDocumentTitle, useCopyText } from '@/utils/hooks';
-import { Layout, Tabs, Row, Radio, Col, Dropdown, Typography } from 'antd';
+import { Layout, Tabs, Row, Radio, Col, Dropdown, Typography, message } from 'antd';
 import styles from './index.less'
 import { useLocation, useIntl, FormattedMessage, useParams, useRequest } from 'umi';
 import TabPaneCard from './components/TabPaneCard'
@@ -66,7 +66,8 @@ const AnalysisTime: React.FC<any> = (props) => {
     const { data: suiteList, loading, run } = useRequest(
         getSelectSuiteConfs,
         {
-            manual: true
+            manual: true,
+            debounceInterval: 500,
         }
     )
 
@@ -110,6 +111,9 @@ const AnalysisTime: React.FC<any> = (props) => {
     const copy = async ($key: any) => {
         const { origin, pathname } = window.location
         const { test_type, show_type, provider_env, metric, ...rest } = info
+
+        if (!info.project_id) return message.error(formatMessage({ id: 'analysis.selected.error' }))
+
         const isFunc = test_type === "functional"
         const params = {
             ...rest,
@@ -124,6 +128,10 @@ const AnalysisTime: React.FC<any> = (props) => {
             const metricList = metric?.split(',')
             params.metricList = metricList
             params.fetchData = metricList?.map((i: any) => ({ metric: info?.[i]?.split(',') }))
+        }
+
+        if ($key === '1' && test_type === 'performance') {
+            params.metric = metric
         }
 
         if (+ $key !== 1) {
