@@ -124,7 +124,7 @@ const AnalysisTime: React.FC<any> = (props) => {
             ws_id,
         }
 
-        if (+ $key !== 1 && test_type !== "functional") {
+        if ($key !== '1' && test_type !== "functional" && metric) {
             const metricList = metric?.split(',')
             params.metricList = metricList
             params.fetchData = metricList?.map((i: any) => ({ metric: info?.[i]?.split(',') }))
@@ -134,7 +134,7 @@ const AnalysisTime: React.FC<any> = (props) => {
             params.metric = metric
         }
 
-        if (+ $key !== 1) {
+        if ($key !== '1') {
             const { data } = await getShareId(params)
             handleCopy(`${origin}/share/analysis/${data}`)
             return
@@ -165,12 +165,12 @@ const AnalysisTime: React.FC<any> = (props) => {
                                                 copy(evt?.key)
                                             },
                                             items: [{
-                                                key: 1,
+                                                key: '1',
                                                 label: <Typography.Text>
                                                     分享可配置链接
                                                 </Typography.Text>
                                             }, {
-                                                key: 2,
+                                                key: '2',
                                                 label: <Typography.Text>
                                                     分享
                                                 </Typography.Text>

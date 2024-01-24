@@ -54,6 +54,16 @@ const FieldTooltip: React.FC<{ name: string, content: any, hasDivider?: boolean 
     )
 }
 
+const SpaceTitle: React.FC<{ name: string; context: any }> = ({ name, context }) => {
+    if (!context) return <></>
+    return (
+        <Space>
+            <span >{name}</span>
+            {context}
+        </Space>
+    )
+}
+
 const SharePage: React.FC = () => {
     const { share_id } = useParams() as any
     const { formatMessage } = useIntl()
@@ -88,7 +98,21 @@ const SharePage: React.FC = () => {
             metric: metricList
         })
 
+        if (test_type !== 'functional' && !data?.fetchData) {
+            setCLoading(false)
+        }
+
         if (test_type === 'functional') {
+            if (data?.show_type === 'pass_rate' && !data?.test_case_id) {
+                setCLoading(false)
+                return
+            }
+
+            if (data?.show_type === 'result_trend' && !data?.sub_case_name) {
+                setCLoading(false)
+                return
+            }
+
             getFuncChartData(data)
         }
     }
@@ -112,34 +136,28 @@ const SharePage: React.FC = () => {
             <div style={{ background: '#fff', padding: '24px 24px 12px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <h4 style={{ fontSize: 24 }}>
                     <Space>
-                        时序分析<MinusOutlined />{source?.test_type_name}
+                        时序分析分享<MinusOutlined />{source?.test_type_name}
                     </Space>
                 </h4>
 
                 <div>
-                    <FieldTooltip hasDivider name='test_type' content={source?.test_type_name} />
                     <FieldTooltip hasDivider name='env' content={source?.provider_name} />
                     <FieldTooltip hasDivider name='project' content={source?.project} />
                     <FieldTooltip hasDivider name='tag' content={source?.tag || formatMessage({ id: `analysis.indistinguishable` })} />
-                    <FieldTooltip name='date' content={`${source?.start_time} —— ${source?.end_time}`} />
+                    <FieldTooltip
+                        name='date'
+                        content={
+                            <Space>
+                                {source?.start_time}
+                                <MinusOutlined />
+                                {source?.end_time}
+                            </Space>
+                        }
+                    />
                 </div>
 
-                <Space>
-                    <span >Test Suite: </span>
-                    {source?.suite_name}
-                </Space>
-
-                {
-                    source?.test_type === 'performance' ?
-                        <Space>
-                            <span >Test Case: </span>
-                            {source?.case_name}
-                        </Space> :
-                        <Space>
-                            <span >Test Conf: </span>
-                            {source?.case_name}
-                        </Space>
-                }
+                <SpaceTitle name={'Test Suite: '} context={source?.suite_name} />
+                <SpaceTitle name={source?.test_type === 'performance' ? 'Test Case:' : 'Test Conf: '} context={source?.case_name} />
 
                 {
                     (source?.test_type === 'performance' && source?.metric) &&
@@ -155,10 +173,7 @@ const SharePage: React.FC = () => {
 
                 {
                     source?.test_type !== 'performance' && source?.show_type !== 'pass_rate' &&
-                    <Space>
-                        <span >Test Subcase: </span>
-                        {source?.sub_case_name}
-                    </Space>
+                    <SpaceTitle name="Test Subcase: " context={source?.sub_case_name} />
                 }
 
             </div>
@@ -199,7 +214,7 @@ const SharePage: React.FC = () => {
 
             <div style={{ marginTop: 10 }}>
                 {
-                    source?.test_type === 'functional' &&
+                    (source?.test_type === 'functional' && source?.case_map) &&
                     <ChartRender
                         share_id={share_id}
                         dataSource={source?.case_map}
