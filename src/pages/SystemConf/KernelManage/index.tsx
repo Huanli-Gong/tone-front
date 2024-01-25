@@ -36,7 +36,7 @@ export default () => {
     const handleDelete = async (_: any) => {
         const { code, msg } = await deleteKernel({ kernel_id: _.id })
         if (code === 200) {
-            setPageParams({ ...pageParams, page_num: Math.round((total - 1) / pageParams.page_size) || 1 })
+            setPageParams({ ...pageParams, page_num: Math.ceil((total - 1) / pageParams.page_size) || 1 })
             setRefresh(new Date().getTime())
             message.success(formatMessage({ id: 'operation.success' }))
         }

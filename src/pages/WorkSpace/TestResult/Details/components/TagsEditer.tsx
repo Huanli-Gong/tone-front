@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react'
-import { Button, Select, Space, Tag } from 'antd'
+import { Button, Empty, Select, Space, Spin, Tag } from 'antd'
 
 import { tagList as queryTagList } from '@/pages/WorkSpace/TagManage/service'
 import { useRequest, Access, useAccess, FormattedMessage, useParams } from 'umi'
@@ -12,6 +12,8 @@ import JobTagsCreate from './JobTagsCreate'
 
 import styles from './index.less'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils'
+
+import lodash from 'lodash'
 
 export const tagRender = ({ label, closable, onClose, value }: any) => (
     <Tag
@@ -39,7 +41,7 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
 
     const [state, setState] = useState(false)
     const [keys, setKeys] = useState([])
-    const [params, setParams] = React.useState(DEFAULT_LIST_PARAMS)
+    const [params, setParams] = React.useState<any>(DEFAULT_LIST_PARAMS)
     const [list, setList] = React.useState([])
     const jobTagsCreateModal: any = useRef(null)
 
@@ -135,6 +137,13 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
                             allowClear
                             onPopupScroll={handleTagePopupScroll}
                             getPopupContainer={node => node.parentNode}
+                            onSearch={lodash.debounce((name) => setParams({ ...DEFAULT_LIST_PARAMS, name }), 300)}
+                            filterOption={false}
+                            defaultActiveFirstOption={false}
+                            notFoundContent={
+                                loading ? <Spin /> :
+                                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                            }
                             dropdownRender={menu => (
                                 <div>
                                     {menu}
