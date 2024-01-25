@@ -136,7 +136,7 @@ const text = {
   'test.server': '测试机器',
   'stage': '步骤',
   'output.results': '输出结果',
-  'timeout': '最大运行时长（秒）',
+  'timeout': '最大运行时长0-864000（秒）',
 
   'test.case': '测试用例',
   'put.away.all': '全部收起',

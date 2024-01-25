@@ -35,7 +35,7 @@ const text = {
   'priority': '执行优先级',
   'config': '配置',
   'variable': '变量',
-  'timeout': "最大运行时长（秒）",
+  'timeout': "最大运行时长0-864000（秒）",
 
   // Suite Select Drawer
   'vertical.message': '显示多个数值，输入新值覆盖所有，不输入则保留原值',
