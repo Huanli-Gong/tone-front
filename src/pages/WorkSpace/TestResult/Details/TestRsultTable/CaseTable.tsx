@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Table, Space, Row } from 'antd'
-import React, { useRef, useState, useEffect } from 'react'
-import { useRequest, Access, useAccess, useParams, FormattedMessage, getLocale } from 'umi'
+import React, { useEffect } from 'react'
+import { Access, useAccess, useParams, FormattedMessage, getLocale } from 'umi'
 import ServerLink from '@/components/MachineWebLink/index';
 import { queryTestResultSuiteConfList } from '../service'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
@@ -21,43 +21,50 @@ import treeSvg from '@/assets/svg/tree.svg'
 import { AccessTootip } from '@/utils/utils';
 import { getStorageState } from '@/utils/table.hooks';
 // const treeSvg = require('@/assets/svg/tree.svg')
+const background = `url(${treeSvg}) center center / 38.6px 32px `
 
-const CaseTable: React.FC<Record<string, any>> = ({
-    suite_id, testType, suite_name, server_provider, provider_name, creator, expandedState, expandedCaseRowKeys,
-    suiteSelect = [], onCaseSelect, openAllRows = false, setIndexExpandFlag, parentTableName, columnsChange
-}) => {
+const CaseTable: React.FC<Record<string, any>> = (props) => {
+    const {
+        suite_id, testType, suite_name, server_provider, provider_name, creator, expandedState, expandedCaseRowKeys,
+        suiteSelect = [], onCaseSelect, openAllRows = false, setIndexExpandFlag, parentTableName, columnsChange
+    } = props
+
     const locale = getLocale() === 'en-US';
     const { id: job_id } = useParams() as any
-    const background = `url(${treeSvg}) center center / 38.6px 32px `
-    const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
-    const [expandedRowKeys, setExpandedRowKeys] = useState<any[]>([])
+    const [selectedRowKeys, setSelectedRowKeys] = React.useState<any[]>([])
+    const [expandedRowKeys, setExpandedRowKeys] = React.useState<any[]>([])
 
     const access = useAccess()
-    const [childState, setChildState] = useState(expandedState)
-    const [refreshId, setRefreshId] = useState(null)
+    const [refreshId, setRefreshId] = React.useState('')
+    const [loading, setLoading] = React.useState(true)
+    const [source, setSource] = React.useState<any[]>([])
+    const [currentState, setCurrentState] = React.useState(expandedState)
 
-    const { data, loading, refresh, run } = useRequest(
-        () => queryTestResultSuiteConfList({ job_id, suite_id, state: expandedState }),
-        { initialData: [], manual: true }
-    )
+    const init = async () => {
+        setLoading(true)
+        const { data, code } = await queryTestResultSuiteConfList({ job_id, suite_id, state: expandedState })
+        setLoading(false)
+        if (code !== 200) return
+        setSource(data)
+    }
 
-    useEffect(() => {
-        run()
-        setChildState(expandedState)
+    React.useEffect(() => {
+        init()
+        setCurrentState(expandedState)
     }, [expandedState])
 
     const hanldeChangeChildState = (id: any, s: string = '') => {
         setExpandedRowKeys(Array.from(new Set(expandedRowKeys.concat(id))))
         setRefreshId(id)
-        setChildState(s)
+        setCurrentState(s)
     }
 
-    const editRemarkDrawer: any = useRef(null)
-    const joinBaselineDrawer: any = useRef(null)
-    const contrastBaselineDrawer: any = useRef(null)
+    const editRemarkDrawer: any = React.useRef(null)
+    const joinBaselineDrawer: any = React.useRef(null)
+    const contrastBaselineDrawer: any = React.useRef(null)
 
-    const hasBaselineColumn = !!data.length && data[0].baseline
-    const hasBaselineIdColumn = !!data.length && data[0].baseline_job_id
+    const hasBaselineColumn = !!source.length && source?.[0]?.baseline
+    const hasBaselineIdColumn = !!source.length && source?.[0]?.baseline_job_id
 
     const handleContrastBaseline = (_: any) => {
         contrastBaselineDrawer.current.show({ ..._, suite_id, job_id })
@@ -89,6 +96,7 @@ const CaseTable: React.FC<Record<string, any>> = ({
             },
             render: (_: string, row: any) => (
                 <ServerLink
+                    {...row}
                     val={_}
                     param={row.server_id}
                     provider={provider_name}
@@ -187,9 +195,8 @@ const CaseTable: React.FC<Record<string, any>> = ({
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             width: locale ? 180 : 145,
-            fixed: 'right',
+            // fixed: 'right',
             render: (_: any) => {
-
                 return (
                     <Access accessible={access.WsTourist()}>
                         <Access accessible={access.WsMemberOperateSelf(creator)}
@@ -211,7 +218,7 @@ const CaseTable: React.FC<Record<string, any>> = ({
                 )
             }
         }
-    ], [testType, creator, access, hasBaselineColumn, hasBaselineIdColumn, columnsChange]).filter(Boolean)
+    ], [creator, access, hasBaselineColumn, hasBaselineIdColumn, columnsChange]).filter(Boolean)
 
 
     const rowSelection = ['performance', 'business_performance'].includes(testType) ? {
@@ -221,15 +228,6 @@ const CaseTable: React.FC<Record<string, any>> = ({
             setSelectedRowKeys($selectedRowKeys)
         }
     } : undefined
-
-    useEffect(() => {
-        if (suiteSelect.length) {
-            const idx = suiteSelect.findIndex((i: any) => i === suite_id)
-            if (idx > -1)
-                setSelectedRowKeys(data.map((i: any) => i.test_case_id))
-        }
-        else setSelectedRowKeys([])
-    }, [suiteSelect])
 
     const handleOnExpand = (expanded: boolean, record: any) => {
         if (expanded) {
@@ -241,6 +239,16 @@ const CaseTable: React.FC<Record<string, any>> = ({
             setExpandedRowKeys(expandedRowKeys.filter((i: number) => i !== record.test_case_id))
         }
     }
+
+    useEffect(() => {
+        if (suiteSelect.length) {
+            const idx = suiteSelect.findIndex((i: any) => i === suite_id)
+            if (idx > -1)
+                setSelectedRowKeys(source?.map((i: any) => i.test_case_id))
+        }
+        else setSelectedRowKeys([])
+    }, [suiteSelect])
+
     // 行选回调
     useEffect(() => {
         onCaseSelect(suite_id, selectedRowKeys)
@@ -248,26 +256,23 @@ const CaseTable: React.FC<Record<string, any>> = ({
 
     // 子级表格会通过监听传入的状态：展开全部/收起。
     useEffect(() => {
-        if (data.length && expandedCaseRowKeys.includes(suite_id)) {
-            setExpandedRowKeys(data.map((i: any) => i.test_case_id))
+        if (source?.length && expandedCaseRowKeys.includes(suite_id)) {
+            setExpandedRowKeys(source?.map((i: any) => i.test_case_id))
         } else {
             setExpandedRowKeys([])
         }
-    }, [data, expandedCaseRowKeys])
+    }, [source, expandedCaseRowKeys])
 
     return (
         <div style={{ width: '100%' }}>
             <Row justify="start">
-                {
-                    !loading &&
-                    <div style={{ width: 32, background }} />
-                }
+                <div style={{ width: 32, background }} />
                 <Table
                     rowKey={'test_case_id'}
                     columns={columns as any}
                     loading={loading}
                     showHeader={false}
-                    dataSource={data}
+                    dataSource={source}
                     pagination={false}
                     scroll={{ x: '100%' }}
                     size="small"
@@ -282,11 +287,11 @@ const CaseTable: React.FC<Record<string, any>> = ({
                         expandedRowRender: (record: any) => (
                             <ResultInfo
                                 {...record}
+                                state={currentState}
                                 testType={testType}
                                 server_provider={server_provider}
                                 creator={creator}
                                 suite_id={suite_id}
-                                state={childState}
                                 suite_name={suite_name}
                                 refreshId={refreshId}
                                 setRefreshId={setRefreshId}
@@ -304,16 +309,16 @@ const CaseTable: React.FC<Record<string, any>> = ({
                 ref={joinBaselineDrawer}
                 test_type={testType}
                 server_provider={server_provider}
-                onOk={refresh}
+                onOk={init}
                 accessible={access.IsWsSetting()}
             />
             <ContrastBaseline
                 ref={contrastBaselineDrawer}
                 test_type={testType}
                 server_provider={server_provider}
-                onOk={refresh}
+                onOk={init}
             />
-            <EditRemarks ref={editRemarkDrawer} onOk={refresh} />
+            <EditRemarks ref={editRemarkDrawer} onOk={init} />
         </div>
     )
 }

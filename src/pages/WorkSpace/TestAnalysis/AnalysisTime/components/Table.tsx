@@ -39,6 +39,7 @@ export default memo(
                 dataIndex: 'server',
                 render: (_: any, row: any) => (
                     <ServerLink
+                        {...row}
                         val={_}
                         param={row.server_id}
                         provider={row.server_provider}

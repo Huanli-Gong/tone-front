@@ -17,7 +17,7 @@ export default () => {
 
   const notLoginToLogin = () => {
     if (BUILD_APP_ENV === 'openanolis') {
-      return window.location.href = OPENANOLIS_LOGIN_URL + location.pathname + location.search
+      return window.location.href = OPENANOLIS_LOGIN_URL
     }
     return history.push(`/login?redirect_url=${window.location.pathname}`)
   }

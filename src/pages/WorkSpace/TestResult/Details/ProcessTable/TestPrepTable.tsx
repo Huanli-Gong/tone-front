@@ -55,6 +55,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                 }
                 return (
                     <ServerLink
+                        {...row}
                         val={_}
                         param={row.server_id}
                         provider={provider_name}
@@ -144,6 +145,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
             render: (_: any, row: any) => (
                 _ ?
                     <ServerLink
+                        {...row}
                         val={_}
                         param={row.server_id}
                         provider={provider_name}
