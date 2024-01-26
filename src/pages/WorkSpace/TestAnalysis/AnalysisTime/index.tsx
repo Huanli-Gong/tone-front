@@ -1,16 +1,16 @@
 import React from 'react';
 import { writeDocumentTitle, useCopyText } from '@/utils/hooks';
-import { Layout, Tabs, Row, Radio, Col, Dropdown, Typography, message } from 'antd';
+import { Layout, Tabs, Row, Radio, Col, message, Button, Popover, Typography } from 'antd';
 import styles from './index.less'
 import { useLocation, useIntl, FormattedMessage, useParams, useRequest } from 'umi';
 import TabPaneCard from './components/TabPaneCard'
-import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import { stringify } from 'querystring';
 import styled from "styled-components"
 import { getSelectSuiteConfs, queryPerfomanceMetrics } from './services'
 
 import { Analysis } from './provider';
 import { getShareId } from '../../TestResult/Details/service';
+import { LinkOutlined } from '@ant-design/icons';
 
 const AnalysisLayout = styled(Layout.Content).attrs((props: any) => ({
     style: {
@@ -22,17 +22,24 @@ const AnalysisLayout = styled(Layout.Content).attrs((props: any) => ({
     background: #fff;
 `;
 
+const FlexColGap = styled.div<{ gap?: string }>`
+    display: flex;
+    flex-direction: column;
+    gap: ${({ gap }) => gap || 10}px;
+`
+
 const AnalysisTime: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const { query, key } = useLocation() as any
     const { ws_id } = useParams() as any
     const { route } = props
-    const handleCopy = useCopyText(formatMessage({ id: "request.copy.success" }))
 
     const [metrics, setMetrics] = React.useState<any[]>([])
     const tabPaneRef = React.useRef<AnyType>(null)
     const tabName = BUILD_APP_ENV === 'openanolis' ? 'aliyun' : 'aligroup'
     const routeIntlName = `Workspace.TestAnalysis.${route.name}`
+
+    const [shareRadioVal, setShareRadioVal] = React.useState<any>(1)
 
     const queryMetricList = async (params: any) => {
         const { data, code, msg } = await queryPerfomanceMetrics(params)
@@ -124,19 +131,19 @@ const AnalysisTime: React.FC<any> = (props) => {
             ws_id,
         }
 
-        if ($key !== '1' && test_type !== "functional" && metric) {
+        if ($key !== 1 && test_type !== "functional" && metric) {
             const metricList = metric?.split(',')
             params.metricList = metricList
             params.fetchData = metricList?.map((i: any) => ({ metric: info?.[i]?.split(',') }))
         }
 
-        if ($key === '1' && test_type === 'performance') {
+        if ($key === 1 && test_type === 'performance') {
             params.metric = metric
         }
 
-        if ($key !== '1') {
+        if ($key !== 1) {
             const { data } = await getShareId(params)
-            handleCopy(`${origin}/share/analysis/${data}`)
+            handleCopyUri(`${origin}/share/analysis/${data}`)
             return
         }
 
@@ -159,29 +166,55 @@ const AnalysisTime: React.FC<any> = (props) => {
                             onTabClick={handleTabClick}
                             tabBarExtraContent={
                                 <Row justify="center" align="middle">
-                                    <Dropdown
-                                        menu={{
-                                            onClick(evt) {
-                                                copy(evt?.key)
-                                            },
-                                            items: [{
-                                                key: '1',
-                                                label: <Typography.Text>
-                                                    分享可配置链接
+                                    <Popover
+                                        placement='bottomRight'
+                                        title={
+                                            <FormattedMessage id='analysis.share_link' />
+                                        }
+                                        content={
+                                            <FlexColGap>
+                                                <Typography.Text strong>
+                                                    <FormattedMessage id="analysis.share_link.desc" />
                                                 </Typography.Text>
-                                            }, {
-                                                key: '2',
-                                                label: <Typography.Text>
-                                                    分享
-                                                </Typography.Text>
-                                            }]
-                                        }}
+                                                <Radio.Group
+                                                    value={shareRadioVal}
+                                                    defaultValue={1}
+                                                    onChange={(evt: any) => setShareRadioVal(evt?.target?.value)}
+                                                >
+                                                    <FlexColGap>
+                                                        {
+                                                            [
+                                                                {
+                                                                    value: 1,
+                                                                    label: formatMessage({ id: 'analysis.share_link.radio1' })
+                                                                },
+                                                                {
+                                                                    value: 2,
+                                                                    label: formatMessage({ id: 'analysis.share_link.radio2' })
+                                                                },
+                                                            ].map((i: any) => (
+                                                                <div key={i.value}>
+                                                                    <Radio value={i.value}>{i.label}</Radio>
+                                                                </div>
+                                                            ))
+                                                        }
+                                                    </FlexColGap>
+                                                </Radio.Group>
+                                                <Button onClick={() => copy(shareRadioVal)}>
+                                                    <FormattedMessage id='ws.test.job.copy.link' />
+                                                </Button>
+                                            </FlexColGap>
+                                        }
                                     >
-                                        <CopyLink
-                                            className="test_analysis_copy_link"
-                                            style={{ cursor: 'pointer', marginRight: 20 }}
-                                        />
-                                    </Dropdown>
+                                        <Button
+                                            style={{ marginRight: 24 }}
+                                        >
+                                            <span style={{ marginRight: 10 }}>
+                                                <LinkOutlined />
+                                            </span>
+                                            <FormattedMessage id='analysis.share' />
+                                        </Button>
+                                    </Popover>
 
                                     {
                                         info?.test_type === 'performance' ?

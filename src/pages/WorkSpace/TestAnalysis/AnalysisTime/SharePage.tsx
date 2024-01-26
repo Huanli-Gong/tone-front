@@ -1,4 +1,4 @@
-import { Divider, Row, Space, Tooltip, Typography } from "antd"
+import { Divider, Space, Tooltip, Typography } from "antd"
 import React from "react"
 import { useIntl, useParams } from "umi"
 import { getShareInfo, queryFuncAnalysisList } from "./services"
@@ -132,7 +132,7 @@ const SharePage: React.FC = () => {
         return <LoadingComp />
 
     return (
-        <div >
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ background: '#fff', padding: '24px 24px 12px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <h4 style={{ fontSize: 24 }}>
                     <Space>
@@ -183,9 +183,9 @@ const SharePage: React.FC = () => {
                 <LoadingComp />
             }
 
-            <div>
-                {
-                    (source?.test_type === 'performance' && source?.fetchData?.length > 0) &&
+            {
+                (source?.test_type === 'performance' && source?.fetchData?.length > 0) &&
+                <div style={{ display: 'flex', marginTop: 10 }}>
                     <Space style={{ width: "100%", background: "rgba(0, 0, 0, 0.04)" }} direction="vertical">
                         {
                             source?.fetchData?.map((i: any) => {
@@ -209,35 +209,37 @@ const SharePage: React.FC = () => {
                             })
                         }
                     </Space>
-                }
-            </div>
+                </div>
+            }
 
-            <div style={{ marginTop: 10 }}>
-                {
-                    (source?.test_type === 'functional' && source?.case_map) &&
+            {
+                (source?.test_type === 'functional' && source?.case_map) &&
+                <div>
                     <ChartRender
                         share_id={share_id}
                         dataSource={source?.case_map}
                         {...source}
                     />
-                }
-            </div>
+                </div>
+            }
 
-            <div>
-                {
-                    tableData?.length > 0 &&
+            {
+                tableData?.length > 0 &&
+                <div>
                     <AnalysisTable
                         refresh={() => { }}
                         dataSource={tableData}
                         test_type={source?.test_type}
                         show_type={source?.show_type}
                     />
-                }
-            </div>
+                </div>
+            }
 
             {
                 tableData?.length === 0 &&
-                <EmptyComp />
+                <div style={{ marginTop: 10, minHeight: 480, background: '#fff' }}>
+                    <EmptyComp />
+                </div>
             }
         </div >
     )
