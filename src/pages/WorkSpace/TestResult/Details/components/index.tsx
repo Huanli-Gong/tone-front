@@ -28,14 +28,35 @@ export const BreadcrumbItem: React.FC<any> = (d: any) => {
     )
 }
 
+
+const prepareStateColorMap = new Map([
+    ['success', '#81BF84'],
+    ['fail', '#C84C5A'],
+    ['running', '#649FF6'],
+    ['stop', '#1D1D1D'],
+    ['pending', '#1D1D1D'],
+    ['skip', '#1D1D1D'],
+    ['warning', '#faad14'],
+])
+
+const getStateColorFun = (state: any) => prepareStateColorMap.get(state) || ''
+
+const PrepareStateSpan = styled.span<{ color: any }>`
+    color: ${({ color }) => color};
+    fontWeight: 500;
+    text-transform: capitalize;
+`
+
 export const evnPrepareState = (state: string | boolean) => {
-    if (state === 'success' || state === true) return <span style={{ fontWeight: 500, color: '#81BF84' }}>Success</span>
-    if (state === 'fail' || state === false) return <span style={{ fontWeight: 500, color: '#C84C5A' }}>Fail</span>
-    if (state === 'running') return <span style={{ fontWeight: 500, color: '#649FF6' }}>Running</span>
-    if (state === 'stop') return <span style={{ fontWeight: 500, color: '#1D1D1D' }}>Stop</span>
-    if (state === 'pending') return <span style={{ fontWeight: 500, color: '#1D1D1D' }}>Pending</span>
-    if (state === 'skip') return <span style={{ fontWeight: 500, color: '#1D1D1D' }}>Skip</span>
-    return <></>
+    let $state = state
+    if (Object.prototype.toString.call(state) === '[object Boolean]') {
+        $state = state ? 'success' : 'fail'
+    }
+    return (
+        <PrepareStateSpan color={getStateColorFun($state)} >
+            {$state}
+        </PrepareStateSpan>
+    )
 }
 
 export const tooltipTd = (defaultText: string = '-') => ({
@@ -109,7 +130,7 @@ export const copyTooltipColumn = (defaultText: string = '-') => ({
                     placement='topLeft'
                     title={
                         <Row>
-                            <Col span={24}>{_}</Col>
+                            <Col span={24} style={{ whiteSpace: 'break-spaces' }}>{_}</Col>
                             <Col span={24}>
                                 <Row justify="center">
                                     <CopyTextBtn text={_} />
