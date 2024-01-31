@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Drawer, Row, Col, Form, Input, message } from 'antd';
 import Owner from '@/components/Owner/index';
 import MachineTags from '@/components/MachineTags';
@@ -73,11 +73,21 @@ const AddCluster = (props: any) => {
         form.validateFields().then(val => submit(val))
     }
 
+    const title = React.useMemo(() => {
+        const isEdit = JSON.stringify(outParam) !== '{}'
+        const $instance = !!is_instance
+
+        if ($instance) {
+            return isEdit ? "device.cluster.edit" : "device.cluster.btn"
+        }
+        return isEdit ? "device.edit.cluster.config" : "device.add.cluster.config"
+    }, [outParam, is_instance])
+
     return (
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title={JSON.stringify(outParam) !== '{}' ? <FormattedMessage id="device.cluster.edit" /> : <FormattedMessage id="device.cluster.btn" />}
+            title={<FormattedMessage id={title} />}
             width={376}
             onClose={() => setVisible(false)}
             open={visible}

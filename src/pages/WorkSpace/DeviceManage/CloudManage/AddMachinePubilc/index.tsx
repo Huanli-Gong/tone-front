@@ -43,7 +43,9 @@ const getInitialExtra = (obj: any) => {
  * 
  * 云上单机 - 机器配置/机器实例 - 添加机器
  */
-const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
+const NewMachine: React.FC<any> = (props) => {
+    const { onRef, is_instance, onSuccess, type } = props
+    // console.log(props)
     const { formatMessage } = useIntl();
     const { openModal, handleDisclaimerOpen } = useModel('disclaimer');
     const { ws_id }: any = useParams();
@@ -483,7 +485,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
             } else {
                 onSuccess(param.is_instance || is_instance, id)
             }
-            setVisible(false)
+            onClose()
         } else if (res.code === 201) {
             const msg = res.msg
             const link_msg = res.link_msg
@@ -530,6 +532,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
         setEditData({})
         setVisible(false)
         setBtnLoading(false)
+        form.resetFields()
     }
 
     const disabledState = useMemo(() => {
@@ -540,13 +543,14 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title={<FormattedMessage id=
-                {
-                    editData.id
-                        ? !is_instance ? 'device.config.edit' : 'device.device.edit'
-                        : !is_instance ? 'device.config.btn' : 'device.add.btn'
-                }
-            />
+            title={
+                <FormattedMessage
+                    id={
+                        editData.id
+                            ? !is_instance ? 'device.config.edit' : 'device.device.edit'
+                            : !is_instance ? 'device.config.btn' : 'device.add.btn'
+                    }
+                />
             }
             width={724}
             onClose={onClose}
@@ -580,7 +584,9 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                         kernel_install: 1,
                         bandwidth: 10,
                         storage_type: 'cloud_efficiency',
-                        extra_param: [{ param_key: '', param_value: '' }]
+                        extra_param: [{ param_key: '', param_value: '' }],
+                        channel_type: 'toneagent',
+                        state: 'Available'
                     }}
                 >
                     <Row gutter={16}>
@@ -1047,7 +1053,6 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                         <Col span={12}>
                             <Form.Item label={<FormattedMessage id="device.channel_type" />}
                                 name="channel_type"
-                                initialValue={'toneagent'}
                                 rules={[{ required: true, message: formatMessage({ id: 'device.channel_type.message' }) }]}>
                                 <AgentSelect disabled={BUILD_APP_ENV} />
                             </Form.Item>
@@ -1059,7 +1064,6 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                     name="state"
                                     hasFeedback
                                     rules={[{ required: true, message: formatMessage({ id: 'device.usage.state.message' }) }]}
-                                    initialValue={'Available'}
                                 >
                                     <Select placeholder={formatMessage({ id: 'device.usage.state.message' })}
                                         disabled={disabledState}>
