@@ -137,7 +137,10 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
                             allowClear
                             onPopupScroll={handleTagePopupScroll}
                             getPopupContainer={node => node.parentNode}
-                            onSearch={lodash.debounce((name) => setParams({ ...DEFAULT_LIST_PARAMS, name }), 300)}
+                            onSearch={lodash.debounce((name) => {
+                                setList([])
+                                setParams({ ...DEFAULT_LIST_PARAMS, name })
+                            }, 300)}
                             filterOption={false}
                             defaultActiveFirstOption={false}
                             notFoundContent={
