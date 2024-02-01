@@ -75,7 +75,9 @@ export default {
   'TestSuite.direction': '期望方向',
 
   'TestSuite.alias': '别名',
-  'TestSuite.timeout': '最大运行时长0-864000（秒）',
+  'TestSuite.table.timeout': '最大运行时长',
+  'TestSuite.timeout': '最大运行时长（秒）',
+  'TestSuite.timeout.tooltip': '最大运行时长 0-86400（秒）',
   'TestSuite.timeout.message': '请输入测试时长(秒)',
   'TestSuite.default.repeat': '默认运行次数',
   'TestSuite.var': '变量',

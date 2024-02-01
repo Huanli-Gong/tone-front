@@ -76,6 +76,7 @@ export default {
 
   'TestSuite.alias': 'Alias',
   'TestSuite.timeout': 'Timeout (s)',
+  'TestSuite.timeout.tooltip': 'Timeout 0-86400(s)',
   'TestSuite.timeout.message': 'Enter test time(seconds)',
   'TestSuite.default.repeat': 'Repeat',
   'TestSuite.var': 'Variable',

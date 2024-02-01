@@ -133,7 +133,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 			},
 		},
 		{
-			title: <FormattedMessage id="select.suite.timeout" />,
+			title: <FormattedMessage id="select.suite.table.timeout" />,
 			dataIndex: 'timeout',
 			width: 130,
 		},
