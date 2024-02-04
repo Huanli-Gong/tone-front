@@ -141,7 +141,10 @@ const SharePage: React.FC = () => {
                 </h4>
 
                 <div>
-                    <FieldTooltip hasDivider name='env' content={source?.provider_name} />
+                    {
+                        source?.test_type === 'performance' &&
+                        <FieldTooltip hasDivider name='env' content={source?.provider_name} />
+                    }
                     <FieldTooltip hasDivider name='project' content={source?.project} />
                     <FieldTooltip hasDivider name='tag' content={source?.tag || formatMessage({ id: `analysis.indistinguishable` })} />
                     <FieldTooltip
