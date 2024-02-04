@@ -103,7 +103,7 @@ const SharePage: React.FC = () => {
         }
 
         if (test_type === 'functional') {
-            if (data?.show_type === 'pass_rate' && !data?.test_case_id) {
+            if (data?.show_type === 'pass_rate' && !data?.case_name) {
                 setCLoading(false)
                 return
             }
@@ -214,7 +214,7 @@ const SharePage: React.FC = () => {
 
             {
                 (source?.test_type === 'functional' && source?.case_map) &&
-                <div>
+                <div style={{ marginTop: 10 }}>
                     <ChartRender
                         share_id={share_id}
                         dataSource={source?.case_map}
