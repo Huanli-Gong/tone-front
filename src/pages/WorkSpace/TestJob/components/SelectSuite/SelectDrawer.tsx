@@ -110,7 +110,12 @@ const SelectDrawer: React.FC<any> = ({
                     el.priority = 10
                     el.server_object_id = undefined
                     el.ip = el.ip || '随机'; // 此处的中文不能翻译，不破坏数据，在render的时候去匹配中英文。
-                    el.env_info = el.var ? (JSON.parse(el.var).length > 0 ? JSON.parse(el.var) : []) : []
+                    /*  */
+                    el.env_info = []
+                    if (el.var) {
+                        const $var = JSON.parse(el.var).map((i: any) => ({ ...i, is_sys: true }))
+                        el.env_info = $var
+                    }
                     return el
                 }
             })

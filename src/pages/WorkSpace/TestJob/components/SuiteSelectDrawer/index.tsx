@@ -625,6 +625,7 @@ const SuiteDrawer: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                             <Row>
                                                 {
                                                     fields.map((field, index) => {
+                                                        const { is_sys } = env_info_data?.[field.key]
                                                         return (
                                                             <Row key={field.key}>
                                                                 <div style={{ width: '90%', marginRight: 8 }}>
@@ -639,6 +640,7 @@ const SuiteDrawer: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                                                             }]}
                                                                         >
                                                                             <Input
+                                                                                disabled={!!is_sys}
                                                                                 autoComplete="off"
                                                                                 placeholder={formatMessage({ id: 'ws.test.job.variable.name' })}
                                                                             />
@@ -658,7 +660,7 @@ const SuiteDrawer: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                                                     </Space>
                                                                 </div>
                                                                 {
-                                                                    fields.length > 1 &&
+                                                                    !!!is_sys && fields.length > 1 &&
                                                                     <DeleteOutlined onClick={() => remove(index)} style={{ marginTop: 10 }} />
                                                                 }
                                                             </Row>
