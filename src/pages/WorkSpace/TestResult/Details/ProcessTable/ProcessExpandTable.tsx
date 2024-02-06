@@ -124,7 +124,7 @@ const ProcessExpandTable: React.FC<AnyType> = (props) => {
             columns={columns as any}
             dataSource={dataSource}
             showHeader={false}
-            rowKey="rowKey" // "id"
+            rowKey="id" // "id"
             size="small"
             scroll={{
                 x: columns.reduce((p: any, c: any) => {
