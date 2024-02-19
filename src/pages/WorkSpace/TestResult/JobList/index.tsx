@@ -145,7 +145,7 @@ const BaseTab: React.FC<IProps> = () => {
     React.useEffect(() => {
         if (ws_id !== pageQuery.ws_id)
             setPageQuery(({ ...DEFAULT_PAGE_QUERY, tab: "all", ws_id }))
-        setTab('all')
+        setTab(query.tab ?? 'all')
     }, [pageQuery.ws_id, ws_id])
 
     const defaultTabKeys = [
