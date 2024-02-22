@@ -59,7 +59,7 @@ const NewMachine: React.FC<any> = (props) => {
     const [sever, setSever] = useState<any>([])
     const [showZone, setShowZone] = useState<boolean>(false)
     const [region, setRegion] = useState<any>([])
-    const [categories, setCategories] = useState<any>([])
+    const [categories, setCategories] = useState<any>({})
     const [disabled, setDisabled] = useState<boolean>(true)
     const [editData, setEditData] = useState<any>({})
     const [validateAK, setValidateAK] = useState<any>({ validate: true, meg: '' }) // 校验AK
@@ -114,13 +114,14 @@ const NewMachine: React.FC<any> = (props) => {
     const getCategoriesList = async (param: any) => {
         const { data } = await queryCategories(param)
         /**  重组数据适配数据盘的默认值 */
-        let newData = data.slice(0)
+        /* let newData = data.slice(0)
         let result = newData.some((v: any) => {
             return v.value === 'cloud_efficiency'
         })
         const params = [{ title: '高效云盘', value: 'cloud_efficiency' }]
         if (!result) newData = newData.concat(params)
-        setCategories(newData || [])
+        setCategories(newData || []) */
+        setCategories(data)
     }
     const getSeverList = async (param: any) => {
         const { data } = await querysServer(param)
@@ -217,7 +218,7 @@ const NewMachine: React.FC<any> = (props) => {
                 setInstance([])
                 setSever([])
                 setImage([])
-                setCategories([])
+                setCategories({})
             }
         } else {
             // 第一次添加机器时，"云厂商/AK"和"地域"两个选框有联动关系
@@ -304,7 +305,7 @@ const NewMachine: React.FC<any> = (props) => {
             setSever([])
             setImage([])
             setInstance([])
-            setCategories([])
+            setCategories({})
             form.setFieldsValue({
                 image: undefined,
                 instance_id: undefined,
@@ -343,7 +344,7 @@ const NewMachine: React.FC<any> = (props) => {
         setImage([])
         setInstance([])
         setRegion([])
-        setCategories([])
+        setCategories({})
         setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
         form.resetFields()
     }
@@ -802,19 +803,25 @@ const NewMachine: React.FC<any> = (props) => {
                         }
                         {!showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={8}>
-                                <Form.Item label={<FormattedMessage id="device.system.disk" />}
+                                <Form.Item
+                                    label={<FormattedMessage id="device.system.disk" />}
                                     name="system_disk_category"
                                     rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                 >
-                                    {categories.length == 0 ?
-                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} />
-                                        :
-                                        <Select placeholder={formatMessage({ id: 'please.select' })} disabled={disabled} >
-                                            {categories.map((item: any, index: number) => {
-                                                return <Option value={item.value} key={index}>{item.title}</Option>
-                                            })
-                                            }
-                                        </Select>
+                                    {
+                                        categories?.sys_cat?.length === 0 ?
+                                            <Select
+                                                placeholder={formatMessage({ id: 'device.resource.shortage' })}
+                                                disabled={true}
+                                            /> :
+                                            <Select
+                                                placeholder={formatMessage({ id: 'please.select' })}
+                                                disabled={disabled}
+                                                options={categories?.sys_cat?.map((i: any) => ({
+                                                    label: i.title,
+                                                    value: i.value,
+                                                }))}
+                                            />
                                     }
                                 </Form.Item>
                             </Col> :
@@ -842,17 +849,24 @@ const NewMachine: React.FC<any> = (props) => {
                         }
                         {!showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={4}>
-                                <Form.Item label={<FormattedMessage id="device.storage_type" />}
+                                <Form.Item
+                                    label={<FormattedMessage id="device.storage_type" />}
                                     name="storage_type"
                                 >
-                                    {categories.length == 0 ?
-                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} />
-                                        :
-                                        <Select placeholder={formatMessage({ id: 'please.select' })} disabled={disabled} >
-                                            {categories.map((item: any, index: number) => {
-                                                return <Option value={item.value} key={index}>{item.title}</Option>
-                                            })}
-                                        </Select>
+                                    {
+                                        categories?.data_cat?.length == 0 ?
+                                            <Select
+                                                placeholder={formatMessage({ id: 'device.resource.shortage' })}
+                                                disabled={true}
+                                            /> :
+                                            <Select
+                                                placeholder={formatMessage({ id: 'please.select' })}
+                                                disabled={disabled}
+                                                options={categories?.data_cat?.map((i: any) => ({
+                                                    label: i.title,
+                                                    value: i.value,
+                                                }))}
+                                            />
                                     }
                                 </Form.Item>
                             </Col> :
