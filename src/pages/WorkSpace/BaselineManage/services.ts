@@ -61,3 +61,7 @@ export const importBaseline = async (data: { name?: string, file: File[], ws_id:
 export const baselineNameCheck = async (params: { ws_id: string, name: string, test_type?: string }) => {
     return request(`/api/baseline/list_by_name/`, { params })
 }
+
+export const postBaselineCopy = async (data: any) => {
+    return request(`/api/baseline/copy/`, { method: 'post', data })
+}

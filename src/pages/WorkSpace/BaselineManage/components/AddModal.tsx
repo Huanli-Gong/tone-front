@@ -103,7 +103,8 @@ const AddModal: React.ForwardRefRenderFunction<IProps, IRefs> = (props, ref) => 
                     name="name"
                     rules={[{ required: true, message: NAME_NULL }]}
                 >
-                    <Input
+                    <Input.TextArea
+                        autoSize
                         autoComplete="off"
                         placeholder={intl.formatMessage({ id: 'pages.workspace.baseline.addScript.label.name.placeholder' })}
                     />

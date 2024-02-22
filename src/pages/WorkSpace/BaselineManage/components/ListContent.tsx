@@ -3,9 +3,9 @@ import styled from "styled-components"
 import { ReactComponent as BaselineSvg } from '@/assets/svg/baseline.svg'
 import { Typography, Popconfirm } from "antd"
 import { Access, useAccess, useIntl, useParams, history } from "umi"
-import { MinusCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
-import { AccessTootip } from '@/utils/utils';
-import { deleteBaseline } from '../services'
+import { MinusCircleOutlined, ExclamationCircleOutlined, CopyOutlined } from "@ant-design/icons"
+import { AccessTootip, randomStrings } from '@/utils/utils';
+import { deleteBaseline, postBaselineCopy } from '../services'
 import cls from "classnames"
 
 const ListContentCls = styled.div`
@@ -37,20 +37,22 @@ const ListItem = styled.div`
     padding-right: 10px;
     align-items: center;
     cursor: pointer;
-    gap: 4px;
+    gap: 8px;
 
     &.is-active-baseline {
         ${activeCss};
     }
 
-    .anticon.anticon-minus-circle {
+    .anticon.anticon-minus-circle,
+    .anticon.anticon-copy {
         visibility: hidden;
         width: 14px;
     }
     
     &:hover {
         ${activeCss};
-        .anticon.anticon-minus-circle {
+        .anticon.anticon-minus-circle,
+        .anticon.anticon-copy {
             visibility: visible;
         }
     }
@@ -73,6 +75,8 @@ const ListContent: React.FC<IProps> = (props) => {
     const intl = useIntl()
     const access = useAccess()
 
+    const [fetching, setFetching] = React.useState<boolean>(false)
+
     const handleDelete = async (item: any) => {
         const { code } = await deleteBaseline({ baseline_id: item.id, ws_id })
         if (code !== 200)
@@ -90,6 +94,19 @@ const ListContent: React.FC<IProps> = (props) => {
             setCurrent?.(item)
             history.replace(`/ws/${ws_id}/baseline/${test_type}?baseline_id=${item?.id}`)
         }, 10)
+    }
+
+    const handleBaselineCopy = async (item: any) => {
+        const { name: baseline_name, id: baseline_id } = item
+        if (fetching) return
+        setFetching(true)
+        const { code, msg } = await postBaselineCopy({ baseline_name: `${baseline_name}-${randomStrings()}`, baseline_id })
+        setFetching(false)
+        if (code !== 200) {
+            console.log(msg)
+            return
+        }
+        refresh?.(page_num)
     }
 
     return (
@@ -110,10 +127,17 @@ const ListContent: React.FC<IProps> = (props) => {
                             </Title>
                             <Access
                                 accessible={access.WsMemberOperateSelf(item?.creator)}
-                                fallback={
-                                    <MinusCircleOutlined onClick={() => AccessTootip()} />
-                                }
+                                fallback={<MinusCircleOutlined onClick={() => AccessTootip()} />}
                             >
+                                <Popconfirm
+                                    title={intl.formatMessage({ id: 'operation.confirm.copy.title' }, { data: <Typography.Text strong>{item.name}</Typography.Text> })}
+                                    onConfirm={() => handleBaselineCopy(item)}
+                                    okText={intl.formatMessage({ id: "operation.confirm.copy" })}
+                                    cancelText={intl.formatMessage({ id: "operation.cancel" })}
+                                    overlayInnerStyle={{ maxWidth: 320 }}
+                                >
+                                    <CopyOutlined style={{ cursor: 'pointer' }} />
+                                </Popconfirm>
                                 <Popconfirm
                                     title={
                                         <Typography.Text type="danger">
@@ -127,7 +151,7 @@ const ListContent: React.FC<IProps> = (props) => {
                                     okText={intl.formatMessage({ id: "operation.cancel" })}
                                     icon={<ExclamationCircleOutlined style={{ color: "red" }} />}
                                 >
-                                    <MinusCircleOutlined style={{ color: "red" }} />
+                                    <MinusCircleOutlined style={{ color: "red", cursor: 'pointer' }} />
                                 </Popconfirm>
                             </Access>
                         </ListItem>

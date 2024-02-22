@@ -57,6 +57,8 @@ export default {
   'operation.open': 'Open',
   'operation.close': 'Close',
   'operation.confirm.delete': 'Determine to delete',
+  'operation.confirm.copy': 'Determine to copy',
+  'operation.confirm.copy.title': 'Are you sure to copy baseline {data} ?',
   'operation.select.all': 'Select All',
   'operation.filter': 'Filter',
   'operation.pass': 'Pass',
