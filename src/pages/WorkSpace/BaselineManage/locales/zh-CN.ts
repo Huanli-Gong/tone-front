@@ -20,6 +20,9 @@ export default {
   'baseline.edit.info': '编辑信息',
   'baseline.delete.prompt3': '该操作将删除当前基线，请谨慎操作',
 
+  'baseline.modal.copy.title': '复制基线',
+  'baseline.modal.baseline_name.empty': '基线名称不能为空',
+
   // AddScript
   'baseline.addScript.add': '新增{title}信息',
   'baseline.addScript.edit': '编辑{title}信息',
@@ -76,5 +79,4 @@ export default {
   'pages.workspace.baseline.metric.table.expand': '收起信息',
 
   'pages.worksapce.baseline.metric.expand.title': "环境信息"
-
 };

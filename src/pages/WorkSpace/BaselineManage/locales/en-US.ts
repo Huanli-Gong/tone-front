@@ -20,6 +20,9 @@ export default {
   'baseline.edit.info': 'Edit',
   'baseline.delete.prompt3': 'This operation will delete the current baseline.Please delete it carefully.',
 
+  'baseline.modal.copy.title': 'Baseline Copy',
+  'baseline.modal.baseline_name.empty': 'Baseline name cannot be empty.',
+  
   // AddScript
   'baseline.addScript.add': 'Create Baseline Information',
   'baseline.addScript.edit': 'Edit Baseline Information',

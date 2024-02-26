@@ -1,12 +1,13 @@
 import React from "react"
 import styled from "styled-components"
 import { ReactComponent as BaselineSvg } from '@/assets/svg/baseline.svg'
-import { Typography, Popconfirm } from "antd"
+import { Typography, Popconfirm, Tooltip } from "antd"
 import { Access, useAccess, useIntl, useParams, history } from "umi"
 import { MinusCircleOutlined, ExclamationCircleOutlined, CopyOutlined } from "@ant-design/icons"
-import { AccessTootip, randomStrings } from '@/utils/utils';
-import { deleteBaseline, postBaselineCopy } from '../services'
+import { AccessTootip } from '@/utils/utils';
+import { deleteBaseline } from '../services'
 import cls from "classnames"
+import CopyBaselineModal from "./CopyBaselineModal"
 
 const ListContentCls = styled.div`
     width: 100%;
@@ -73,9 +74,8 @@ const ListContent: React.FC<IProps> = (props) => {
     const { data, refresh, current, setCurrent, test_type, page_size = 20, page_num, total = 0 } = props
     const { ws_id } = useParams() as any
     const intl = useIntl()
-    const access = useAccess()
-
-    const [fetching, setFetching] = React.useState<boolean>(false)
+    const access = useAccess() as any
+    const copyNameModalRef = React.useRef() as any
 
     const handleDelete = async (item: any) => {
         const { code } = await deleteBaseline({ baseline_id: item.id, ws_id })
@@ -94,19 +94,6 @@ const ListContent: React.FC<IProps> = (props) => {
             setCurrent?.(item)
             history.replace(`/ws/${ws_id}/baseline/${test_type}?baseline_id=${item?.id}`)
         }, 10)
-    }
-
-    const handleBaselineCopy = async (item: any) => {
-        const { name: baseline_name, id: baseline_id } = item
-        if (fetching) return
-        setFetching(true)
-        const { code, msg } = await postBaselineCopy({ baseline_name: `${baseline_name}-${randomStrings()}`, baseline_id })
-        setFetching(false)
-        if (code !== 200) {
-            console.log(msg)
-            return
-        }
-        refresh?.(page_num)
     }
 
     return (
@@ -129,15 +116,15 @@ const ListContent: React.FC<IProps> = (props) => {
                                 accessible={access.WsMemberOperateSelf(item?.creator)}
                                 fallback={<MinusCircleOutlined onClick={() => AccessTootip()} />}
                             >
-                                <Popconfirm
-                                    title={intl.formatMessage({ id: 'operation.confirm.copy.title' }, { data: <Typography.Text strong>{item.name}</Typography.Text> })}
-                                    onConfirm={() => handleBaselineCopy(item)}
-                                    okText={intl.formatMessage({ id: "operation.confirm.copy" })}
-                                    cancelText={intl.formatMessage({ id: "operation.cancel" })}
-                                    overlayInnerStyle={{ maxWidth: 320 }}
+                                <Tooltip
+                                    title={
+                                        intl.formatMessage({ id: 'baseline.modal.copy.title' })
+                                    }
+                                    placement="top"
                                 >
-                                    <CopyOutlined style={{ cursor: 'pointer' }} />
-                                </Popconfirm>
+                                    <CopyOutlined style={{ cursor: 'pointer' }} onClick={() => copyNameModalRef.current.show(item)} />
+                                </Tooltip>
+
                                 <Popconfirm
                                     title={
                                         <Typography.Text type="danger">
@@ -151,13 +138,22 @@ const ListContent: React.FC<IProps> = (props) => {
                                     okText={intl.formatMessage({ id: "operation.cancel" })}
                                     icon={<ExclamationCircleOutlined style={{ color: "red" }} />}
                                 >
-                                    <MinusCircleOutlined style={{ color: "red", cursor: 'pointer' }} />
+                                    <Tooltip
+                                        title={
+                                            intl.formatMessage({ id: 'operation.delete' })
+                                        }
+                                        placement="top"
+                                    >
+                                        <MinusCircleOutlined style={{ color: "red", cursor: 'pointer' }} />
+                                    </Tooltip>
                                 </Popconfirm>
                             </Access>
                         </ListItem>
                     )
                 })
             }
+
+            <CopyBaselineModal ref={copyNameModalRef} onOk={() => refresh?.(page_num)} />
         </ListContentCls >
     )
 }
