@@ -50,6 +50,7 @@ const passRateLineOption: any = (dataSource: any, ws_id: any, formatMessage: any
             type: 'line',
             name: formatMessage({ id: 'analysis.TestConf.pass_rate' }),
             symbol: 'circle',
+            showAllSymbol: true,
             encode: {
                 x: 'date',
                 y: 'pass_rate'
