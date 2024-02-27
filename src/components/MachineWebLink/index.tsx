@@ -73,7 +73,7 @@ const ServerLink: React.FC<ServerType> = (props) => {
             return <>{val || '-'}</>
 
         /* exists 0 失效 1 存在 */
-        if (!exists) {
+        if (!!!exists) {
             return <>{val || '-'}</>
         }
 
@@ -115,4 +115,5 @@ const ServerLink: React.FC<ServerType> = (props) => {
 
     return <span>-</span>
 }
+
 export default ServerLink;
