@@ -16,7 +16,7 @@ const symbol = 'path://M873,435C877.4182739257812,435,881,438.58172607421875,881
 const ClusterChart: React.FC<AnyType> = (props) => {
     const { fetchData = {}, setFetchData, provider_env, valueChange, setLoading } = props
     const { formatMessage } = useIntl()
-    const { ws_id } = useParams() as any
+    const { ws_id, share_id } = useParams() as any
     const ref = React.useRef<HTMLDivElement>(null)
     const [chart, setChart] = React.useState<any>(undefined)
     const numUnitLocale = (str: any) => new Map([
@@ -197,7 +197,7 @@ const ClusterChart: React.FC<AnyType> = (props) => {
                 axisTick: { show: false },
                 splitLine: { show: false, lineStyle: { type: 'dashed' }, },
                 axisLabel: {
-                    formatter: (value: any) =>axisUnitFormatter(value, numUnitLocale)
+                    formatter: (value: any) => axisUnitFormatter(value, numUnitLocale)
                 },
             },
             series: [
@@ -206,12 +206,13 @@ const ClusterChart: React.FC<AnyType> = (props) => {
             ],
         })
 
-        myChart.on("click", 'series.line', (params: any) => {
-            if (params?.data) {
-                const { job_id } = params?.data
-                if (job_id) targetJump(`/ws/${ws_id}/test_result/${job_id}`)
-            }
-        })
+        if (!share_id)
+            myChart.on("click", 'series.line', (params: any) => {
+                if (params?.data) {
+                    const { job_id } = params?.data
+                    if (job_id) targetJump(`/ws/${ws_id}/test_result/${job_id}`)
+                }
+            })
 
         myChart.hideLoading()
         setChart(myChart)

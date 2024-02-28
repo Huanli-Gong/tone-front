@@ -36,7 +36,7 @@ export const axisUnitFormatter = (value: any, unitLocale: any) => {
 
 const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valueChange, setFetchData, setLoading }) => {
     const { formatMessage } = useIntl()
-    const { ws_id } = useParams() as any
+    const { ws_id, share_id } = useParams() as any
     const ref = React.useRef<HTMLDivElement>(null)
     const [chart, setChart] = React.useState<any>(undefined)
 
@@ -310,12 +310,13 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
             ],
         })
 
-        myChart.on("click", 'series.line', (params: any) => {
-            if (params?.data && ws_id) {
-                const { job_id } = params?.data
-                if (job_id) targetJump(`/ws/${ws_id}/test_result/${job_id}`)
-            }
-        })
+        if (!share_id)
+            myChart.on("click", 'series.line', (params: any) => {
+                if (params?.data && ws_id) {
+                    const { job_id } = params?.data
+                    if (job_id) targetJump(`/ws/${ws_id}/test_result/${job_id}`)
+                }
+            })
 
         myChart.hideLoading()
         setChart(myChart)
