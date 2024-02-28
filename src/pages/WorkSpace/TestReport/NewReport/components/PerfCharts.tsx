@@ -107,8 +107,10 @@ const ChartModal = (props: any) => {
             })
         })
         arr.forEach((item: any) => {
-            jobList.push({ job_list: [].concat(item.obj_id) })
-
+            jobList.push({
+                ...item,
+                job_list: [].concat(item.obj_id)
+            })
         });
         obj.group_jobs = jobList
         obj.conf_info = conf_info
