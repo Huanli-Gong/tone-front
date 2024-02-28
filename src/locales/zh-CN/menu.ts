@@ -20,6 +20,7 @@ export default {
   'menu.Workspace.404': "页面不存在 - T-One",
 
   'menu.home': '首页',
+  'menu.share_job': '分享Job',
   "menu.PersonCenter": '个人中心',
   "menu.HelpDoc": '帮助文档',
   "menu.NoticeDoc": '公告',
