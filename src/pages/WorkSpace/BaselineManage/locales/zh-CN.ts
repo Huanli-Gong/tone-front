@@ -33,6 +33,7 @@ export default {
   'pages.workspace.baseline.addScript.error.name_null': '基线名称不能为空',
   'pages.workspace.baseline.addScript.error.name_exists': '基线名称已存在',
   'pages.workspace.baseline.addScript.label.name.placeholder': '请输入基线名称',
+  'pages.workspace.baseline.addScript.label.validator': '基线名称不得大于100个字符',
   'pages.workspace.baseline.addScript.label.description': '基线描述（选填）',
   'pages.workspace.baseline.addScript.label.description.placeholder': '请输入基线描述信息',
   'baseline.addScript.env': '环境',

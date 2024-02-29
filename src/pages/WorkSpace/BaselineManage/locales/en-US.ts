@@ -22,7 +22,7 @@ export default {
 
   'baseline.modal.copy.title': 'Baseline Copy',
   'baseline.modal.baseline_name.empty': 'Baseline name cannot be empty.',
-  
+
   // AddScript
   'baseline.addScript.add': 'Create Baseline Information',
   'baseline.addScript.edit': 'Edit Baseline Information',
@@ -31,7 +31,8 @@ export default {
   'pages.workspace.baseline.addScript.label.name': 'Baseline Name',
   'pages.workspace.baseline.addScript.error.name_null': 'Baseline name cannot be empty.',
   'pages.workspace.baseline.addScript.error.name_exists': 'Baseline name already exists.',
-  'pages.workspace.baseline.addScript.label.name.placeholder': 'Please enter the baseline name',
+  'pages.workspace.baseline.addScript.label.name.placeholder': 'Please enter the baseline name.',
+  'pages.workspace.baseline.addScript.label.validator': 'The baseline name must not exceed 100 characters.',
   'pages.workspace.baseline.addScript.label.description': 'Baseline Description（Optional）',
   'pages.workspace.baseline.addScript.label.description.placeholder': 'Please enter baseline description information',
   'baseline.addScript.env': ' ',

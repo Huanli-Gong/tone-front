@@ -73,10 +73,21 @@ const CopyBaselineModal: React.ForwardRefRenderFunction<any, any> = (props, ref)
                 <Form.Item
                     name={'baseline_name'}
                     label={formatMessage({ id: 'baseline.baseline_name' })}
-                    rules={[{
-                        required: true,
-                        message: formatMessage({ id: 'baseline.modal.baseline_name.empty' }),
-                    }]}
+                    rules={[
+                        {
+                            required: true,
+                            message: formatMessage({ id: 'baseline.modal.baseline_name.empty' }),
+                        },
+                        {
+                            validator(rule, value, callback) {
+                                if (value) {
+                                    if (value.length > 100)
+                                        return Promise.reject(intl.formatMessage({ id: 'pages.workspace.baseline.addScript.label.validator' }))
+                                }
+                                return Promise.resolve()
+                            },
+                        }
+                    ]}
                 >
                     <Input.TextArea
                         autoSize={{ minRows: 1 }}
