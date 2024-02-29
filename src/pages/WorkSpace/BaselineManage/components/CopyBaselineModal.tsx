@@ -82,7 +82,7 @@ const CopyBaselineModal: React.ForwardRefRenderFunction<any, any> = (props, ref)
                             validator(rule, value, callback) {
                                 if (value) {
                                     if (value.length > 100)
-                                        return Promise.reject(intl.formatMessage({ id: 'pages.workspace.baseline.addScript.label.validator' }))
+                                        return Promise.reject(formatMessage({ id: 'pages.workspace.baseline.addScript.label.validator' }))
                                 }
                                 return Promise.resolve()
                             },
