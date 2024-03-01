@@ -108,8 +108,11 @@ const ListTable: React.FC<IProps> = (props) => {
         setSelectedRowKeys(selectedKeys);
         setSelectRowData(selectRows);
         message.success(formatMessage({ id: 'operation.success' }))
-        setPageQuery((p: any) => ({ ...p, page_num: Math.ceil((dataSource?.total - 1) / p.page_size) || 1 }))
-        // listRefresh()
+        const $page_num = Math.ceil((dataSource?.total - 1) / pageQuery.page_size)
+        if ($page_num < pageQuery.page_num)
+            setPageQuery({ ...pageQuery, page_num: $page_num })
+        else
+            listRefresh()
         countRefresh()
     }
 
