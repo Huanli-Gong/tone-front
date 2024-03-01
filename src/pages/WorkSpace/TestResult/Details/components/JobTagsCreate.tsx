@@ -11,6 +11,7 @@ export default forwardRef(
         const [visible, setVisible] = useState(false)
         const [padding, setPadding] = useState(false)
         const [msg, setMsg] = useState<string>()
+
         useImperativeHandle(
             ref,
             () => ({
@@ -22,15 +23,16 @@ export default forwardRef(
             }),
         )
 
-
         const handleCancel = () => {
             form.resetFields()
             setVisible(false)
             setPadding(false)
         }
+
         const handleTagName = () => {
             setPadding(false)
         }
+
         const handleOk = () => {
             if (padding) return
             setPadding(true)
@@ -53,11 +55,12 @@ export default forwardRef(
                     setPadding(false)
                 })
         }
+
         return (
             <Modal
                 width={460}
                 title={<FormattedMessage id="ws.result.details.new.tag" />}
-                visible={visible}
+                open={visible}
                 centered={true}
                 onCancel={handleCancel}
                 maskClosable={false}
@@ -69,7 +72,6 @@ export default forwardRef(
                     <Form
                         form={form}
                         layout="vertical"
-                    /*hideRequiredMark*/
                     >
                         <Form.Item
                             name="tag_color"
