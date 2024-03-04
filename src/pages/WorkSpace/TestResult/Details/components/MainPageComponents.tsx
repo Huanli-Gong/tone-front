@@ -191,12 +191,13 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
 export const RenderDesItem: React.FC<any> = ({ name, dataIndex, isLink, onClick }) => {
     const locale = getLocale() === 'en-US';
     const widthStyle = locale ? 120 : 58
+    const { share_id } = useParams() as any
 
     return (
         <Col span={8} style={{ display: 'flex', alignItems: 'start' }}>
             <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}>{name}</Typography.Text>
             {
-                isLink ?
+                !share_id && isLink ?
                     <Typography.Text
                         className={styles.test_summary_item_right}
                         style={{ cursor: 'pointer', color: '#1890FF', width: `calc(100% - ${widthStyle}px - 16px)` }}
