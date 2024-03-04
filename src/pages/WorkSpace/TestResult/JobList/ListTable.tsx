@@ -108,7 +108,8 @@ const ListTable: React.FC<IProps> = (props) => {
         setSelectedRowKeys(selectedKeys);
         setSelectRowData(selectRows);
         message.success(formatMessage({ id: 'operation.success' }))
-        listRefresh()
+        setPageQuery((p: any) => ({ ...p, page_num: Math.ceil((dataSource?.total - 1) / p.page_size) || 1 }))
+        // listRefresh()
         countRefresh()
     }
 
@@ -403,8 +404,9 @@ const ListTable: React.FC<IProps> = (props) => {
         }
         handleResetSelectedKeys()
         message.success(formatMessage({ id: 'operation.success' }))
+        setPageQuery((p: any) => ({ ...p, page_num: Math.ceil((dataSource?.total - selectedRowKeys.length) / p.page_size) || 1 }))
         countRefresh()
-        listRefresh()
+        // listRefresh()
     }
 
     let basePadding = { padding: "0 16px" }
