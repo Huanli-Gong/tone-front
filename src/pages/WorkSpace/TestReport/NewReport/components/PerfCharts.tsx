@@ -107,8 +107,10 @@ const ChartModal = (props: any) => {
             })
         })
         arr.forEach((item: any) => {
-            jobList.push({ job_list: [].concat(item.obj_id) })
-
+            jobList.push({
+                ...item,
+                job_list: [].concat(item.obj_id)
+            })
         });
         obj.group_jobs = jobList
         obj.conf_info = conf_info
@@ -163,7 +165,7 @@ const ChartModal = (props: any) => {
                     </Space>
                     {
                         legData.map((i: any, idx: number) =>
-                            <Space size={28} style={{ marginRight: 16 }} key={idx}>
+                            <Space size={28} style={{ marginRight: 16 }} key={i.name}>
                                 <span onClick={() => handleToggle(i.name)}>{i.inner}</span>
                             </Space>
                         )
@@ -181,7 +183,7 @@ const ChartModal = (props: any) => {
                                 {
                                     conf_list.map(
                                         (conf: any, idx: number) => (
-                                            <span key={idx}>
+                                            <span key={conf?.conf_id}>
                                                 <ConfName><EllipsisPulic width={330} title={conf.conf_name} /></ConfName>
                                             </span>
                                         )
@@ -212,7 +214,7 @@ const ChartModal = (props: any) => {
                                     conf_list.map((conf: any, idx: any) => (
                                         <span
                                             onClick={() => handleJumpChart(conf, idx)}
-                                            key={idx}
+                                            key={conf?.conf_id}
                                         >
                                             <ConfName is_active={current === `${conf.conf_name}-${idx}` ? 1 : 0}>
                                                 <EllipsisPulic width={330} title={conf.conf_name} />

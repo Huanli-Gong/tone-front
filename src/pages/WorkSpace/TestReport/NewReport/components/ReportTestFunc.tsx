@@ -83,9 +83,8 @@ const ReportTestFunc: React.FC<any> = () => {
             <TestWrapper>
                 {/* 有组有项 */}
                 {
-                    Object.prototype.toString.call(dataSource) === '[object Array]' ?
+                    Object.prototype.toString.call(dataSource) === '[object Array]' && dataSource?.length > 0 ?
                         dataSource.map((item: any) => {
-
                             const groupDesc = getGroupDesc(item.name)
                             return (
                                 <div key={item?.rowKey}>
