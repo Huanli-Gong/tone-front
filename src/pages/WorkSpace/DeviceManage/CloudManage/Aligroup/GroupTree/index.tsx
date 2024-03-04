@@ -30,7 +30,8 @@ const GroupTree: React.FC<any> = (props) => {
     // step1.请求列表数据
     const getList = async () => {
         setLoading(true)
-        const data: any = await queryClusterMachine({ cluster_id: cluster_id }).catch(() => setLoading(false)) || {};
+        const data: any = await queryClusterMachine({ cluster_id: cluster_id }) || {};
+        setLoading(false)
         data.data = data.data?.map((item: any) => {
             item.machineId = item.id
             return { ...item, ...item.test_server }

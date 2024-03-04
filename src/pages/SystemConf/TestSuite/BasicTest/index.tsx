@@ -258,7 +258,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 return (
                     <OverflowList
                         list={
-                            row?.split(',')?.map((item: any) => {
+                            row?.split(',')?.filter(Boolean)?.map((item: any) => {
                                 if (item === '*') return <span key={item}>{item}</span>
                                 return (
                                     <Link to={`/ws/${item}/test_result`} target="_blank" key={item}>
