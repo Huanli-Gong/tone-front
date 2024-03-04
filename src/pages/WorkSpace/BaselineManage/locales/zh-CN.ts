@@ -20,6 +20,9 @@ export default {
   'baseline.edit.info': '编辑信息',
   'baseline.delete.prompt3': '该操作将删除当前基线，请谨慎操作',
 
+  'baseline.modal.copy.title': '复制基线',
+  'baseline.modal.baseline_name.empty': '基线名称不能为空',
+
   // AddScript
   'baseline.addScript.add': '新增{title}信息',
   'baseline.addScript.edit': '编辑{title}信息',
@@ -30,6 +33,7 @@ export default {
   'pages.workspace.baseline.addScript.error.name_null': '基线名称不能为空',
   'pages.workspace.baseline.addScript.error.name_exists': '基线名称已存在',
   'pages.workspace.baseline.addScript.label.name.placeholder': '请输入基线名称',
+  'pages.workspace.baseline.addScript.label.validator': '基线名称不得大于100个字符',
   'pages.workspace.baseline.addScript.label.description': '基线描述（选填）',
   'pages.workspace.baseline.addScript.label.description.placeholder': '请输入基线描述信息',
   'baseline.addScript.env': '环境',
@@ -76,5 +80,4 @@ export default {
   'pages.workspace.baseline.metric.table.expand': '收起信息',
 
   'pages.worksapce.baseline.metric.expand.title': "环境信息"
-
 };

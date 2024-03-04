@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { requestCodeMessage } from '@/utils/utils'
+import { randomStrings, requestCodeMessage } from '@/utils/utils'
 import { Drawer, Space, Button, Form, Input, Radio, message } from 'antd'
 import { forwardRef, useState, useImperativeHandle } from 'react'
 import { FormattedMessage, useIntl } from 'umi'
@@ -11,16 +11,14 @@ import styles from './index.less'
 export default forwardRef(
     ({ onOk }: any, ref: any) => {
         const { formatMessage } = useIntl()
+        
         const [visible, setVisible] = useState(false)
         const [padding, setPadding] = useState(false)
         const [name, setName] = useState('')
         const [title, setTitle] = useState('')
-
         const [data, setData] = useState<any>({})
 
         const [form] = Form.useForm()
-
-        const randomStrings = () => new Array(4).fill('').reduce((p) => p.concat(String.fromCharCode(97 + Math.ceil(Math.random() * 25))), '')
 
         useImperativeHandle(
             ref,
@@ -30,7 +28,6 @@ export default forwardRef(
                     if (tt === 'copy') {
                         setName(_.name)
                         const copyName = `${_.name}-copy-${randomStrings()}`
-                        console.log(copyName)
                         form.setFieldsValue({ name: copyName })
                     }
                     else
@@ -83,7 +80,7 @@ export default forwardRef(
                 title={<FormattedMessage id={`job.templates.${title}`} />}
                 maskClosable={false}
                 keyboard={false}
-                visible={visible}
+                open={visible}
                 width="380"
                 onClose={handleClose}
                 bodyStyle={{ paddingTop: 12 }}

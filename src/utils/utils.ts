@@ -17,6 +17,8 @@ export const REQUEST_NOTATION_URLS = [
   '/api/job/download/'
 ]
 
+export const randomStrings = () => new Array(4).fill('').reduce((p) => p.concat(String.fromCharCode(97 + Math.ceil(Math.random() * 25))), '')
+
 export const envIgnoreIds = () => {
   if (!BUILD_APP_ENV) return ['0zn7ne0u']
   if (BUILD_APP_ENV === 'openanolis') return ['k5z7sxfu', 'qorjejwq']
