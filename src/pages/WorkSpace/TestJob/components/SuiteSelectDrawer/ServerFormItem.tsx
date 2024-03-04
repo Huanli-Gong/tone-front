@@ -147,7 +147,12 @@ export default memo(
 
                 <Form.Item
                     name="timeout"
-                    label={formatMessage({ id: 'select.suite.timeout' })}
+                    label={
+                        < QusetionIconTootip
+                            title="Timeout"
+                            desc={formatMessage({ id: 'select.suite.timeout' })}
+                        />
+                    }
                     className={'drawer_padding'}
                 >
                     <InputNumber
@@ -159,7 +164,7 @@ export default memo(
                                 formatMessage({ id: 'select.suite.please.enter' })
                         }
                     />
-                </Form.Item>
+                </Form.Item >
 
                 <Form.Item
                     name="repeat"

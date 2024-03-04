@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useState, useRef, useEffect, useMemo, useImperativeHandle } from 'react';
 import { Button, Card, Empty, Badge, Typography, Space, Alert, Spin } from 'antd'
-import _ from 'lodash'
+import lodash from 'lodash'
 import BusinessTestSelectDrawer from './BusinessTestSelectDrawer'
 import SelectDrawer from './SelectDrawer'
 import { suiteList } from './service';
@@ -49,7 +49,7 @@ const SelectSuite: React.FC<any> = ({
 			setChecked: console.log,
 			reset: () => setTest_config([]),
 			setVal: (data: any[]) => {
-				const confs = handleTestConfig(_.isArray(data) ? data : [])
+				const confs = handleTestConfig(lodash.isArray(data) ? data : [])
 				setTest_config(confs)
 				return confs
 			}
@@ -59,8 +59,8 @@ const SelectSuite: React.FC<any> = ({
 	const memoizedValue = useMemo(() => {
 		let count = 0
 		test_config.map((item: any) => {
-			if (_.isArray(_.get(item, 'test_case_list'))) count += item.test_case_list.length
-			// if(_.isArray(_.get(item,'cases'))) count += item.cases.length
+			if (lodash.isArray(lodash.get(item, 'test_case_list'))) count += item.test_case_list.length
+			// if(lodash.isArray(lodash.get(item,'cases'))) count += item.cases.length
 		})
 		return count
 	}, [test_config])
@@ -106,8 +106,8 @@ const SelectSuite: React.FC<any> = ({
 			repeat, timeout, need_reboot, is_instance,
 			priority, console: $console, monitor_info
 		} = conf
-		let conf_var = [];
-		if (confVar) conf_var = JSON.parse(confVar)
+
+		const conf_var = confVar ? JSON.parse(confVar) : []
 		const { env_info } = conf
 
 		const envs: any = env_info ? Object.keys(env_info).map(
@@ -116,7 +116,15 @@ const SelectSuite: React.FC<any> = ({
 
 		const setup_info = conf.setup_info === '[]' ? '' : conf.setup_info
 		const cleanup_info = conf.cleanup_info === '[]' ? '' : conf.cleanup_info
-		const $env_info = envs.length > 0 ? envs : conf_var
+
+		/* is_sys字段用来判断是否系统级变量&只可改动不可删除 */
+		const v = conf_var.map((i: any) => i.name)
+		/* conf_var */
+		const $env_info = envs.reduce((p: any, c: any) => {
+			if (v.includes(c.name))
+				return p.concat({ ...c, is_sys: true })
+			return p.concat(c)
+		}, [])
 
 		/* conf 基本数据结构 */
 		const $data = {
@@ -165,8 +173,8 @@ const SelectSuite: React.FC<any> = ({
 		}
 
 		if (server_tag_id) {
-			if (_.isArray(server_tag_id)) {
-				obj.server_tag_id = _.filter(server_tag_id)
+			if (lodash.isArray(server_tag_id)) {
+				obj.server_tag_id = lodash.filter(server_tag_id)
 			}
 			else if (typeof server_tag_id === 'string' && server_tag_id.indexOf(',') > -1) {
 				obj.server_tag_id = server_tag_id.split(',').map((i: any) => i - 0)

@@ -9,15 +9,21 @@ import { Row, Space, Typography } from "antd";
 import Legend from "./Legend"
 import MetricDropdown from "./MetricDropdown";
 import { targetJump } from "@/utils/utils"
+import { axisUnitFormatter, } from "./Standalone";
 
 const symbol = 'path://M873,435C877.4182739257812,435,881,438.58172607421875,881,443C881,447.41827392578125,877.4182739257812,451,873,451C868.5817260742188,451,865,447.41827392578125,865,443C865,438.58172607421875,868.5817260742188,435,873,435ZM873,436C869.134033203125,436,866,439.1340026855469,866,443C866,446.8659973144531,869.134033203125,450,873,450C876.865966796875,450,880,446.8659973144531,880,443C880,439.1340026855469,876.865966796875,436,873,436ZM873,439C875.2091674804688,439,877,440.7908630371094,877,443C877,445.2091369628906,875.2091674804688,447,873,447C870.7908325195312,447,869,445.2091369628906,869,443C869,440.7908630371094,870.7908325195312,439,873,439Z'
 
 const ClusterChart: React.FC<AnyType> = (props) => {
     const { fetchData = {}, setFetchData, provider_env, valueChange, setLoading } = props
     const { formatMessage } = useIntl()
-    const { ws_id } = useParams() as any
+    const { ws_id, share_id } = useParams() as any
     const ref = React.useRef<HTMLDivElement>(null)
     const [chart, setChart] = React.useState<any>(undefined)
+    const numUnitLocale = (str: any) => new Map([
+        [1, formatMessage({ id: 'analysis.wan' })],
+        [2, formatMessage({ id: 'analysis.yi' })],
+        [3, formatMessage({ id: 'analysis.zhao' })]
+    ]).get(str)
 
     const { data, mutate } = useRequest(
         (params = fetchData) => queryPerfAnalysisList(params),
@@ -43,7 +49,7 @@ const ClusterChart: React.FC<AnyType> = (props) => {
 
     const handleMetricChange = ($query: any) => {
         const { metric } = $query
-        setFetchData((p: any) => {
+        setFetchData?.((p: any) => {
             return p.map((x: any) => {
                 if (x.key === fetchData?.key)
                     return {
@@ -190,6 +196,9 @@ const ClusterChart: React.FC<AnyType> = (props) => {
                 axisLine: { show: false },
                 axisTick: { show: false },
                 splitLine: { show: false, lineStyle: { type: 'dashed' }, },
+                axisLabel: {
+                    formatter: (value: any) => axisUnitFormatter(value, numUnitLocale)
+                },
             },
             series: [
                 ...series,
@@ -197,12 +206,13 @@ const ClusterChart: React.FC<AnyType> = (props) => {
             ],
         })
 
-        myChart.on("click", 'series.line', (params: any) => {
-            if (params?.data) {
-                const { job_id } = params?.data
-                if (job_id) targetJump(`/ws/${ws_id}/test_result/${job_id}`)
-            }
-        })
+        if (!share_id)
+            myChart.on("click", 'series.line', (params: any) => {
+                if (params?.data) {
+                    const { job_id } = params?.data
+                    if (job_id) targetJump(`/ws/${ws_id}/test_result/${job_id}`)
+                }
+            })
 
         myChart.hideLoading()
         setChart(myChart)
@@ -224,10 +234,13 @@ const ClusterChart: React.FC<AnyType> = (props) => {
                             <Typography.Text key={t}>{t}</Typography.Text>
                         ))
                     }
-                    <MetricDropdown
-                        onChange={handleMetricChange}
-                        fetchData={fetchData}
-                    />
+                    {
+                        ws_id &&
+                        <MetricDropdown
+                            onChange={handleMetricChange}
+                            fetchData={fetchData}
+                        />
+                    }
                 </Space>
             </Title>
 

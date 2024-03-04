@@ -10,6 +10,7 @@ import {
 } from '../../services'
 import styled from "styled-components"
 import { queryMember } from "@/services/Workspace"
+import lodash from 'lodash'
 
 const TagSelectStyled = styled(Select)`
     /* .ant-select-selector { padding-left: 4px!important; }; */
@@ -123,20 +124,58 @@ const StateSelect: React.FC<any> = (props) => {
 
 const TagSelect: React.FC<any> = (props) => {
     const { ws_id } = useParams() as any
-    const { data, loading } = useRequest(() => queryTag({ ws_id }), { debounceInterval: 300 })
+    const DEFAULT_LIST_PARAMS = { ws_id, page_num: 1, page_size: 20 }
+    const [params, setParams] = React.useState(DEFAULT_LIST_PARAMS)
+
+    const [dataSource, setDateSource] = React.useState<any>(undefined)
+
+    const { data, loading, run } = useRequest((queryData: any = params) => queryTag(queryData), {
+        debounceInterval: 300,
+        formatResult: (response: any) => response
+    })
+
+    React.useEffect(() => {
+        setDateSource(data)
+    }, [data])
+
+    const handleTagePopupScroll = ({ target }: any) => { //tag
+        const { clientHeight, scrollHeight, scrollTop } = target
+        if (clientHeight + scrollTop === scrollHeight) {
+            const totalPage = params.page_num + 1
+            if (totalPage <= dataSource?.total_page) {
+                const t = { ...params, page_num: params.page_num + 1 }
+                setParams(t)
+                queryTag(t).then((r) => {
+                    setDateSource(({ ...r, data: dataSource?.data?.concat(r.data) }))
+                })
+            }
+        }
+    }
 
     const { placeholder, value, ...rest } = props
-    if (!data) return <Select loading={loading} placeholder={placeholder} {...rest} />
+    if (!dataSource?.data) return <Select loading={loading} placeholder={placeholder} {...rest} />
 
     return (
         <TagSelectStyled
             {...props}
             tagRender={tagRender}
             labelInValue
-            filterOption={(input, option) => (option?.name ?? '').toLowerCase().includes(input.toLowerCase())}
+            onSearch={lodash.debounce((name) => {
+                const r = { ...DEFAULT_LIST_PARAMS, name }
+                setParams(r)
+                run(r)
+            }, 300)}
+            // filterOption={(input, option) => (option?.name ?? '').toLowerCase().includes(input.toLowerCase())}
+            onPopupScroll={handleTagePopupScroll}
             mode="multiple"
+            notFoundContent={
+                loading ? <Spin /> :
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            }
+            filterOption={false}
+            defaultActiveFirstOption={false}
             options={
-                data.map((i: any) => ({
+                dataSource?.data?.map((i: any) => ({
                     value: i.id,
                     label: (
                         <Tag

@@ -25,13 +25,15 @@ export default memo(
                 title: <FormattedMessage id="analysis.table.column.name" />,
                 dataIndex: 'job_name',
                 render: (_: any, row: any) => (
-                    <a
-                        target="_blank"
-                        rel="noreferrer"
-                        href={`${location.origin}/ws/${ws_id}/test_result/${row.job_id}`}
-                    >
-                        {_}
-                    </a>
+                    ws_id ?
+                        <a
+                            target="_blank"
+                            rel="noreferrer"
+                            href={`${location.origin}/ws/${ws_id}/test_result/${row.job_id}`}
+                        >
+                            {_}
+                        </a> :
+                        _
                 )
             },
             {
@@ -58,7 +60,7 @@ export default memo(
                 title: <FormattedMessage id="analysis.table.column.emdTime" />,
                 dataIndex: 'end_time'
             },
-            access.WsTourist() &&
+            (ws_id && access.WsTourist()) &&
             {
                 title: <FormattedMessage id="analysis.table.column.note" />,
                 dataIndex: 'note',

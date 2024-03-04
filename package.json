@@ -1,6 +1,6 @@
 {
   "name": "tone-front",
-  "version": "5.0.0",
+  "version": "1.14.1",
   "private": true,
   "description": "Tone front",
   "scripts": {

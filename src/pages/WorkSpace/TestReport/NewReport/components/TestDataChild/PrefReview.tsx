@@ -176,7 +176,7 @@ const Performance = (props: any) => {
     const handleArrow = (suite: any, conf: any, i: number) => {
         sortRef.current = i
 
-        let arr:Array<[]> = []
+        let arr: Array<[]> = []
         setSortKeys(arr.concat(conf.conf_id))
 
         // if (sortKeys.includes(conf.conf_id)) {
@@ -248,7 +248,7 @@ const Performance = (props: any) => {
             arr.map((item: any, idx: number) => {
                 if (!item) return <></>
                 return (
-                    <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
+                    <PrefDataText gLen={groupLen} btnState={btnState} key={item?.obj_id}>
                         {
                             !getCompareType(item) ?
                                 <JumpResult ws_id={wsId} job_id={item?.obj_id || item} /> :
@@ -324,12 +324,12 @@ const Performance = (props: any) => {
                             btn ?
                                 (suite.conf_list && !!suite.conf_list.length) ?
                                     suite.conf_list.map((conf: any, cid: number) => (
-                                        <div key={conf.conf_id}>
+                                        <div key={conf?.conf_id}>
                                             <TestConf>
                                                 <ConfTitle gLen={groupLen} style={{ marginLeft: btnState ? 39 : 0 }}><FormattedMessage id="report.conf/metric" /></ConfTitle>
                                                 {
                                                     allGroupData?.map((cont: any, i: number) => (
-                                                        <ConfData gLen={groupLen} key={i} btnState={btnState}>
+                                                        <ConfData gLen={groupLen} key={cont?.tag} btnState={btnState}>
                                                             {
                                                                 i !== baselineGroupIndex ?
                                                                     <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>

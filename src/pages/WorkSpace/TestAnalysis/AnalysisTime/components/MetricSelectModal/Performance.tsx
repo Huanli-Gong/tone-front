@@ -1,59 +1,50 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from "react"
-import { useIntl, useLocation } from "umi"
+import { useIntl } from "umi"
 import { Table, Row, Col, Select } from "antd"
 import styles from '../index.less'
 import { useAnalysisProvider } from "../../provider"
 
-const transMetric = (query: any) => {
-    if (Object.prototype.toString.call(query?.metric) === "[object Array]") return query?.metric
-    if (Object.prototype.toString.call(query?.metric) === "[object String]") return query?.metric?.split(",")
-    return []
-}
-
 const Performance: React.FC<AnyType> = (props) => {
-    const { suiteList, provider_env, onChange, basicValues, metrics, runGetMetrics, visible } = props
-    const { query }: any = useLocation()
+    const { suiteList, onChange, runGetMetrics, visible, basicValues } = props
     const { formatMessage } = useIntl()
-    const { setMetrics } = useAnalysisProvider()
+    const { metrics = [] } = useAnalysisProvider()
 
-    const getQueryValue = (queryName: any) => {
-        if (basicValues) return basicValues[queryName]
-        if (JSON.stringify(query) !== '{}' && (query?.test_type !== "performance")) return undefined
-        if (provider_env === query?.provider_env && query[queryName]) {
-            if (queryName === 'metric')
-                return transMetric(query)
-            return query[queryName]
+    const [activeSuite, setActiveSuite] = React.useState<any>()
+    const [activeConf, setActiveConf] = React.useState<any>()
+    const [selectMetric, setSelectMetric] = React.useState<any>()
+
+    React.useEffect(() => {
+        if (suiteList?.length > 0) {
+            if (basicValues) {
+                const { test_suite_id, test_case_id } = basicValues
+                if (test_suite_id && test_case_id) {
+                    setActiveSuite(+ test_suite_id)
+                    setActiveConf(+ test_case_id)
+                    setSelectMetric(basicValues?.metric)
+                }
+            }
+            else {
+                const firstSuite = suiteList?.[0]
+                if (firstSuite) {
+                    setActiveSuite(firstSuite?.test_suite_id)
+                    setActiveConf(firstSuite?.test_case_list?.[0]?.test_case_id)
+                }
+            }
         }
-        return undefined
-    }
 
-    const [activeSuite, setActiveSuite] = React.useState<any>(+ getQueryValue("test_suite_id") || undefined)
-    const [activeConf, setActiveConf] = React.useState<any>(+ getQueryValue("test_case_id") || undefined)
-    const [selectMetric, setSelectMetric] = React.useState<any>(getQueryValue("metric") || transMetric(query))
+        return () => {
+            setActiveConf(undefined)
+            setActiveSuite(undefined)
+            setSelectMetric([])
+        }
+    }, [basicValues, suiteList])
 
     React.useEffect(() => {
         if (!visible) {
             setSelectMetric([])
         }
     }, [visible])
-
-    React.useEffect(() => {
-        setMetrics(metrics)
-    }, [metrics])
-
-    React.useEffect(() => {
-        if (suiteList?.length > 0) {
-            const tsi = getQueryValue("test_suite_id")
-            const tci = getQueryValue("test_case_id")
-            setActiveSuite(tsi ? + tsi : suiteList[0].test_suite_id)
-            setActiveConf(tci ? + tci : undefined)
-        }
-        return () => {
-            setActiveSuite(undefined)
-            setActiveConf(undefined)
-        }
-    }, [suiteList])
 
     const currentSuite = React.useMemo(() => {
         if (!suiteList) return

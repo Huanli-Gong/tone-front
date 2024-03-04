@@ -21,6 +21,8 @@ export default {
   'menu.Workspace.404': "Not Found - T-One",
 
   "menu.home": 'Home',
+  'menu.share_job': 'Share Job',
+
   "menu.PersonCenter": 'Person Center',
   "menu.HelpDoc": 'Help',
   "menu.NoticeDoc": 'Announcements',

@@ -76,7 +76,11 @@ export default {
 
     // AnalysisResult
     'analysis.comparison.result': 'Comparative analysis results',
-    'analysis.share': 'Share',
+    'analysis.share': 'Share Link',
+    'analysis.share_link': 'Share Link',
+    'analysis.share_link.desc': 'Select the feature to share the link with',
+    'analysis.share_link.radio1': 'The link can obtain editing permission (login required)',
+    'analysis.share_link.radio2': 'The link can obtain reading permission (no need to login)',
     'analysis.test.env': 'Test Evnironment',
     'analysis.model': 'Model',
     'analysis.job.data': 'Test Data',
@@ -125,8 +129,9 @@ export default {
     'analysis.project': 'Project',
     'analysis.project.placeholder': 'Please select project',
     'analysis.tag': 'Tag',
+    'analysis.env': 'Env',
     'analysis.tag.placeholder': 'Not differentiated by labels.',
-    'analysis.indistinguishable': 'Indistinguishable',
+    'analysis.indistinguishable': 'ALL',
     'analysis.only.the.job.data': 'Analyze the job data with the selected tag.',
     'analysis.date': 'Date',
     'analysis.7days': 'Late 7 days',
