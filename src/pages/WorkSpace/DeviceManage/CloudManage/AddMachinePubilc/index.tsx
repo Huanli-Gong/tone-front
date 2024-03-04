@@ -43,7 +43,9 @@ const getInitialExtra = (obj: any) => {
  * 
  * 云上单机 - 机器配置/机器实例 - 添加机器
  */
-const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
+const NewMachine: React.FC<any> = (props) => {
+    const { onRef, is_instance, onSuccess, type } = props
+    // console.log(props)
     const { formatMessage } = useIntl();
     const { openModal, handleDisclaimerOpen } = useModel('disclaimer');
     const { ws_id }: any = useParams();
@@ -57,7 +59,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
     const [sever, setSever] = useState<any>([])
     const [showZone, setShowZone] = useState<boolean>(false)
     const [region, setRegion] = useState<any>([])
-    const [categories, setCategories] = useState<any>([])
+    const [categories, setCategories] = useState<any>({})
     const [disabled, setDisabled] = useState<boolean>(true)
     const [editData, setEditData] = useState<any>({})
     const [validateAK, setValidateAK] = useState<any>({ validate: true, meg: '' }) // 校验AK
@@ -112,13 +114,14 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
     const getCategoriesList = async (param: any) => {
         const { data } = await queryCategories(param)
         /**  重组数据适配数据盘的默认值 */
-        let newData = data.slice(0)
+        /* let newData = data.slice(0)
         let result = newData.some((v: any) => {
             return v.value === 'cloud_efficiency'
         })
         const params = [{ title: '高效云盘', value: 'cloud_efficiency' }]
         if (!result) newData = newData.concat(params)
-        setCategories(newData || [])
+        setCategories(newData || []) */
+        setCategories(data)
     }
     const getSeverList = async (param: any) => {
         const { data } = await querysServer(param)
@@ -215,7 +218,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                 setInstance([])
                 setSever([])
                 setImage([])
-                setCategories([])
+                setCategories({})
             }
         } else {
             // 第一次添加机器时，"云厂商/AK"和"地域"两个选框有联动关系
@@ -302,7 +305,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
             setSever([])
             setImage([])
             setInstance([])
-            setCategories([])
+            setCategories({})
             form.setFieldsValue({
                 image: undefined,
                 instance_id: undefined,
@@ -341,7 +344,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
         setImage([])
         setInstance([])
         setRegion([])
-        setCategories([])
+        setCategories({})
         setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
         form.resetFields()
     }
@@ -483,7 +486,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
             } else {
                 onSuccess(param.is_instance || is_instance, id)
             }
-            setVisible(false)
+            onClose()
         } else if (res.code === 201) {
             const msg = res.msg
             const link_msg = res.link_msg
@@ -530,6 +533,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
         setEditData({})
         setVisible(false)
         setBtnLoading(false)
+        form.resetFields()
     }
 
     const disabledState = useMemo(() => {
@@ -540,13 +544,14 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title={<FormattedMessage id=
-                {
-                    editData.id
-                        ? !is_instance ? 'device.config.edit' : 'device.device.edit'
-                        : !is_instance ? 'device.config.btn' : 'device.add.btn'
-                }
-            />
+            title={
+                <FormattedMessage
+                    id={
+                        editData.id
+                            ? !is_instance ? 'device.config.edit' : 'device.device.edit'
+                            : !is_instance ? 'device.config.btn' : 'device.add.btn'
+                    }
+                />
             }
             width={724}
             onClose={onClose}
@@ -580,7 +585,9 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                         kernel_install: 1,
                         bandwidth: 10,
                         storage_type: 'cloud_efficiency',
-                        extra_param: [{ param_key: '', param_value: '' }]
+                        extra_param: [{ param_key: '', param_value: '' }],
+                        channel_type: 'toneagent',
+                        state: 'Available'
                     }}
                 >
                     <Row gutter={16}>
@@ -796,19 +803,25 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                         }
                         {!showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={8}>
-                                <Form.Item label={<FormattedMessage id="device.system.disk" />}
+                                <Form.Item
+                                    label={<FormattedMessage id="device.system.disk" />}
                                     name="system_disk_category"
                                     rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                 >
-                                    {categories.length == 0 ?
-                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} />
-                                        :
-                                        <Select placeholder={formatMessage({ id: 'please.select' })} disabled={disabled} >
-                                            {categories.map((item: any, index: number) => {
-                                                return <Option value={item.value} key={index}>{item.title}</Option>
-                                            })
-                                            }
-                                        </Select>
+                                    {
+                                        categories?.sys_cat?.length === 0 ?
+                                            <Select
+                                                placeholder={formatMessage({ id: 'device.resource.shortage' })}
+                                                disabled={true}
+                                            /> :
+                                            <Select
+                                                placeholder={formatMessage({ id: 'please.select' })}
+                                                disabled={disabled}
+                                                options={categories?.sys_cat?.map((i: any) => ({
+                                                    label: i.title,
+                                                    value: i.value,
+                                                }))}
+                                            />
                                     }
                                 </Form.Item>
                             </Col> :
@@ -836,17 +849,24 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                         }
                         {!showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={4}>
-                                <Form.Item label={<FormattedMessage id="device.storage_type" />}
+                                <Form.Item
+                                    label={<FormattedMessage id="device.storage_type" />}
                                     name="storage_type"
                                 >
-                                    {categories.length == 0 ?
-                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} />
-                                        :
-                                        <Select placeholder={formatMessage({ id: 'please.select' })} disabled={disabled} >
-                                            {categories.map((item: any, index: number) => {
-                                                return <Option value={item.value} key={index}>{item.title}</Option>
-                                            })}
-                                        </Select>
+                                    {
+                                        categories?.data_cat?.length == 0 ?
+                                            <Select
+                                                placeholder={formatMessage({ id: 'device.resource.shortage' })}
+                                                disabled={true}
+                                            /> :
+                                            <Select
+                                                placeholder={formatMessage({ id: 'please.select' })}
+                                                disabled={disabled}
+                                                options={categories?.data_cat?.map((i: any) => ({
+                                                    label: i.title,
+                                                    value: i.value,
+                                                }))}
+                                            />
                                     }
                                 </Form.Item>
                             </Col> :
@@ -1047,7 +1067,6 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                         <Col span={12}>
                             <Form.Item label={<FormattedMessage id="device.channel_type" />}
                                 name="channel_type"
-                                initialValue={'toneagent'}
                                 rules={[{ required: true, message: formatMessage({ id: 'device.channel_type.message' }) }]}>
                                 <AgentSelect disabled={BUILD_APP_ENV} />
                             </Form.Item>
@@ -1059,7 +1078,6 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                     name="state"
                                     hasFeedback
                                     rules={[{ required: true, message: formatMessage({ id: 'device.usage.state.message' }) }]}
-                                    initialValue={'Available'}
                                 >
                                     <Select placeholder={formatMessage({ id: 'device.usage.state.message' })}
                                         disabled={disabledState}>

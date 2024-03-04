@@ -109,6 +109,11 @@ const routes = [
 		component: '@/pages/WorkSpace/TestAnalysis/AnalysisResult'
 	},
 	{
+		path: '/share/analysis/:share_id',
+		hideInMenu: true,
+		component: '@/pages/WorkSpace/TestAnalysis/AnalysisTime/SharePage'
+	},
+	{
 		path: '/ws/:ws_id',
 		name: 'Workspace',
 		component: '@/pages/WorkSpace',

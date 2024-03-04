@@ -57,6 +57,7 @@ export default {
   'operation.open': '开启',
   'operation.close': '关闭',
   'operation.confirm.delete': '确定删除',
+  'operation.confirm.copy': '确定复制',
   'operation.select.all': '全选',
   'operation.filter': '过滤',
   'operation.pass': '通过',

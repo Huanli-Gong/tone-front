@@ -135,7 +135,7 @@ const ReportSummary = () => {
                                                 <BaseLine
                                                     style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
                                                 />
-                                                <Typography.Text>（<FormattedMessage id="report.test.baseline" />）</Typography.Text>
+                                                <Typography.Text><FormattedMessage id="report.test.baseline" /></Typography.Text>
                                             </Tooltip> : null
                                         }
                                     </Space>

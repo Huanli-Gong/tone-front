@@ -57,3 +57,7 @@ export const getSelectSuiteConfs = function (data: SuiteConfsServiceProps) {
 export const getSelectMetricOrSubcase = function (data: any) {
     return request(`/api/job/result/analysis/metric/list/`, { method: "post", data })
 }
+
+export const getShareInfo = function (data: any) {
+    return request(`/api/job/result/share/analysis/`, { method: 'post', data })
+}

@@ -346,7 +346,7 @@ const SuiteDrawer: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 const v = resultValues[key]
                 if (key === 'env_info') {
                     const r = compact(v)
-                    p[key] = r ? r : params[key]
+                    p[key] = r // params[key]
                     return p
                 }
                 p[key] = v !== undefined && v !== null ? v : params[key]
@@ -391,8 +391,7 @@ const SuiteDrawer: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const hanldeOk = () => {
         form.validateFields()
             .then((values: any) => {
-                let params: any = { ...values }
-                const { custom_channel, custom_ip, server_object_id, server_tag_id, repeat, timeout, ...rest } = params
+                const { custom_channel, custom_ip, server_object_id, server_tag_id, repeat, timeout, ...rest } = values
 
                 const caseParam = { custom_channel, custom_ip, server_object_id, server_tag_id, repeat, timeout }
 
@@ -429,15 +428,18 @@ const SuiteDrawer: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     resultSuiteList = testSuiteData.reduce((pre: any, cur: any) => pre.concat({
                         ...cur,
                         test_case_list: cur.test_case_list.reduce(
-                            (p: any, c: any) => p.concat(
-                                selectIds.includes(c.id) ?
-                                    rerenderParams(c, values)
-                                    : c
-                            )
+                            (p: any, c: any) => {
+                                if (selectIds.includes(c.id)) {
+                                    const newVal = rerenderParams(c, values)
+                                    return p.concat(newVal)
+                                }
+                                return p.concat(c)
+                            }
                             , []
                         )
                     }), [])
                 }
+
                 onDataSourceChange(resultSuiteList, run_mode)
                 handleClose()
                 onOk()
@@ -625,6 +627,7 @@ const SuiteDrawer: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                             <Row>
                                                 {
                                                     fields.map((field, index) => {
+                                                        const { is_sys } = env_info_data?.[field.key]
                                                         return (
                                                             <Row key={field.key}>
                                                                 <div style={{ width: '90%', marginRight: 8 }}>
@@ -639,8 +642,10 @@ const SuiteDrawer: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                                                             }]}
                                                                         >
                                                                             <Input
+                                                                                disabled={!!is_sys}
                                                                                 autoComplete="off"
                                                                                 placeholder={formatMessage({ id: 'ws.test.job.variable.name' })}
+                                                                                allowClear
                                                                             />
                                                                         </Form.Item>
                                                                         <span style={{ marginTop: 5, display: 'block' }}>=</span>
@@ -653,12 +658,13 @@ const SuiteDrawer: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                                                             <Input
                                                                                 autoComplete="off"
                                                                                 placeholder={formatMessage({ id: 'ws.test.job.variable.value' })}
+                                                                                allowClear
                                                                             />
                                                                         </Form.Item>
                                                                     </Space>
                                                                 </div>
                                                                 {
-                                                                    fields.length > 1 &&
+                                                                    !!!is_sys && fields.length > 1 &&
                                                                     <DeleteOutlined onClick={() => remove(index)} style={{ marginTop: 10 }} />
                                                                 }
                                                             </Row>

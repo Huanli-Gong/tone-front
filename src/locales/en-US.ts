@@ -57,6 +57,7 @@ export default {
   'operation.open': 'Open',
   'operation.close': 'Close',
   'operation.confirm.delete': 'Determine to delete',
+  'operation.confirm.copy': 'Determine to copy',
   'operation.select.all': 'Select All',
   'operation.filter': 'Filter',
   'operation.pass': 'Pass',

@@ -5,9 +5,9 @@ import { useParams, useIntl, FormattedMessage } from 'umi'
 
 import customChartOption from './customChartOption'
 import styled from 'styled-components'
-import PerfLineOption from './PerfLineOption'
+// import PerfLineOption from './PerfLineOption'
 import passRateLineOption from './passRateLineOption'
-import AliyunPerfLine from './AliyunPerfLine'
+// import AliyunPerfLine from './AliyunPerfLine'
 import { targetJump } from '@/utils/utils'
 
 const Title = styled.div`
@@ -32,11 +32,12 @@ const CardWrapper = styled(Card)`
 `
 
 type RenderChartProps = {
-    dataSource: any;
+    dataSource?: any;
     title?: string;
-    provider_env: string;
-    test_type: string;
-    show_type: string;
+    provider_env?: string;
+    test_type?: string;
+    show_type?: string;
+    [k: string]: any;
 }
 
 const RenderChart: React.FC<RenderChartProps> = (props) => {
@@ -52,14 +53,14 @@ const RenderChart: React.FC<RenderChartProps> = (props) => {
         myChart.clear()
         myChart.showLoading()
         if (dataSource && JSON.stringify(dataSource) !== '{}') {
-            if (test_type === 'performance') {
+            /* if (test_type === 'performance') {
                 if (provider_env === "aliyun") {
                     myChart.setOption(AliyunPerfLine({ dataSource, ws_id, formatMessage }))
                 }
                 else {
                     myChart.setOption(PerfLineOption({ dataSource, ws_id, formatMessage }))
                 }
-            }
+            } */
             if (test_type === 'functional') {
                 if (show_type === 'result_trend')
                     myChart.setOption(

@@ -6,6 +6,7 @@ import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { useLocation, useIntl, FormattedMessage } from 'umi'
 import { useSuiteProvider } from '../../../hooks'
 import { editBentch, editCase, addCase } from '@/pages/SystemConf/TestSuite/service'
+import { QusetionIconTootip } from '@/components/Product'
 
 const getVars = (vars: any) => {
     if (!vars) return undefined
@@ -258,7 +259,12 @@ const ConfEditDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = ({ onOk
                 </Form.Item>
                 <Form.Item
                     name="timeout"
-                    label={<FormattedMessage id="TestSuite.timeout" />}
+                    label={
+                        <QusetionIconTootip
+                            title={<FormattedMessage id="TestSuite.timeout" />}
+                            desc={<FormattedMessage id="TestSuite.timeout.tooltip" />}
+                        />
+                    }
                     rules={!data.batch ? [{ required: true, message: formatMessage({ id: 'please.enter' }) }] : []}
                 >
                     <InputNumber style={{ width: '100%' }} min={0} step={1} placeholder={formatMessage({ id: 'please.enter' })} />

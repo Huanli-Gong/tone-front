@@ -139,8 +139,9 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props) => {
 
     // 添加
     const addMachine = (id: number) => {
-        aloneMachine.current && aloneMachine.current.newMachine(id)
+        aloneMachine.current?.newMachine(id)
     }
+    
     const handleDetail = async () => {
         const pk = await saveRefenerceData({ name: deleteObj.name, id: deleteObj.id })
         if (pk)
@@ -150,6 +151,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props) => {
     // 添加成功回调
     const successCallback = (info: any) => {
         const { parentId } = info
+        console.log(info)
         // setRefreshColumn(parentId)
         if (parentId && expandKey.indexOf(parentId + '') < 0) {
             const temp = expandKey.concat([parentId + ''])

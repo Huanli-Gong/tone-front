@@ -342,10 +342,10 @@ const TestJob: React.FC<any> = (props) => {
                             custom_channel
                         } = ctx
 
-                        const envs: any = env_info.filter((i: any) => {
+                        const envs: any = env_info?.filter((i: any) => {
                             if (i.name && i.val) return i
                         })
-                        const evnInfoStr = envs.reduce((i: any, p: any, idx: number) => i.concat(`${idx ? '\n' : ''}${p.name?.trim()}=${p.val}`), '')
+                        const evnInfoStr = envs?.reduce((i: any, p: any, idx: number) => i.concat(`${idx ? '\n' : ''}${p.name?.trim()}=${p.val}`), '')
 
                         let customer_server = undefined
                         if (custom_channel && custom_ip) {
@@ -536,12 +536,15 @@ const TestJob: React.FC<any> = (props) => {
     const handleSubmit = async () => {
         if (fetching) return false
         setEnvErrorFlag(false)
-        setFetching(true)
         let resultData = {}
+        setFetching(true)
         if (isYamlFormat) {
             const { code, result } = await handleFormatChange('submit')
             resultData = result
-            if (code !== 200) return
+            if (code !== 200) {
+                setFetching(false)
+                return
+            }
         }
         let data = isYamlFormat ? await transformDate(resultData) : await transformDate()
         data = {
@@ -567,12 +570,10 @@ const TestJob: React.FC<any> = (props) => {
             }
         }
         if (isMonitorEmpty(data)) {
-            setFetching(false)
             return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
         }
 
         if (!data.test_config) {
-            setFetching(false)
             return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         }
         // console.log(data.test_config)
@@ -592,7 +593,7 @@ const TestJob: React.FC<any> = (props) => {
             }
         }
         catch (error) {
-
+            setFetching(false)
         }
         setFetching(false)
     }

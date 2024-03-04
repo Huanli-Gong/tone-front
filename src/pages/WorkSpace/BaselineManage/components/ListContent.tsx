@@ -1,12 +1,13 @@
 import React from "react"
 import styled from "styled-components"
 import { ReactComponent as BaselineSvg } from '@/assets/svg/baseline.svg'
-import { Typography, Popconfirm } from "antd"
+import { Typography, Popconfirm, Tooltip } from "antd"
 import { Access, useAccess, useIntl, useParams, history } from "umi"
-import { MinusCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
+import { MinusCircleOutlined, ExclamationCircleOutlined, CopyOutlined } from "@ant-design/icons"
 import { AccessTootip } from '@/utils/utils';
 import { deleteBaseline } from '../services'
 import cls from "classnames"
+import CopyBaselineModal from "./CopyBaselineModal"
 
 const ListContentCls = styled.div`
     width: 100%;
@@ -37,20 +38,22 @@ const ListItem = styled.div`
     padding-right: 10px;
     align-items: center;
     cursor: pointer;
-    gap: 4px;
+    gap: 8px;
 
     &.is-active-baseline {
         ${activeCss};
     }
 
-    .anticon.anticon-minus-circle {
+    .anticon.anticon-minus-circle,
+    .anticon.anticon-copy {
         visibility: hidden;
         width: 14px;
     }
     
     &:hover {
         ${activeCss};
-        .anticon.anticon-minus-circle {
+        .anticon.anticon-minus-circle,
+        .anticon.anticon-copy {
             visibility: visible;
         }
     }
@@ -71,7 +74,8 @@ const ListContent: React.FC<IProps> = (props) => {
     const { data, refresh, current, setCurrent, test_type, page_size = 20, page_num, total = 0 } = props
     const { ws_id } = useParams() as any
     const intl = useIntl()
-    const access = useAccess()
+    const access = useAccess() as any
+    const copyNameModalRef = React.useRef() as any
 
     const handleDelete = async (item: any) => {
         const { code } = await deleteBaseline({ baseline_id: item.id, ws_id })
@@ -110,10 +114,17 @@ const ListContent: React.FC<IProps> = (props) => {
                             </Title>
                             <Access
                                 accessible={access.WsMemberOperateSelf(item?.creator)}
-                                fallback={
-                                    <MinusCircleOutlined onClick={() => AccessTootip()} />
-                                }
+                                fallback={<MinusCircleOutlined onClick={() => AccessTootip()} />}
                             >
+                                <Tooltip
+                                    title={
+                                        intl.formatMessage({ id: 'baseline.modal.copy.title' })
+                                    }
+                                    placement="top"
+                                >
+                                    <CopyOutlined style={{ cursor: 'pointer' }} onClick={() => copyNameModalRef.current.show(item)} />
+                                </Tooltip>
+
                                 <Popconfirm
                                     title={
                                         <Typography.Text type="danger">
@@ -127,13 +138,22 @@ const ListContent: React.FC<IProps> = (props) => {
                                     okText={intl.formatMessage({ id: "operation.cancel" })}
                                     icon={<ExclamationCircleOutlined style={{ color: "red" }} />}
                                 >
-                                    <MinusCircleOutlined style={{ color: "red" }} />
+                                    <Tooltip
+                                        title={
+                                            intl.formatMessage({ id: 'operation.delete' })
+                                        }
+                                        placement="top"
+                                    >
+                                        <MinusCircleOutlined style={{ color: "red", cursor: 'pointer' }} />
+                                    </Tooltip>
                                 </Popconfirm>
                             </Access>
                         </ListItem>
                     )
                 })
             }
+
+            <CopyBaselineModal ref={copyNameModalRef} onOk={() => refresh?.(page_num)} />
         </ListContentCls >
     )
 }
