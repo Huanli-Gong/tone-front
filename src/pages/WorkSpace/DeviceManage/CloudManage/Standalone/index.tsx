@@ -167,15 +167,15 @@ export default (props: any) => {
         }, []
     )
 
-    const handleSyncName = async(id: number) => {
-        try { 
+    const handleSyncName = async (id: number) => {
+        try {
             const { code, msg } = await cloudManageSyncName({ id })
-            if( code === 200 ) {
+            if (code === 200) {
                 message.success(formatMessage({ id: 'operation.success' }));
             } else {
                 requestCodeMessage(code, msg)
             }
-        } catch(err){
+        } catch (err) {
             console.log(err)
         }
     }
@@ -279,6 +279,7 @@ export default (props: any) => {
             },
             render: (text: any, row: any) => (
                 <ServerLink
+                    exists
                     val={text}
                     param={row.id}
                     provider={"aliyun"}

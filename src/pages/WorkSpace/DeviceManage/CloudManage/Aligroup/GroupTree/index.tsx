@@ -131,6 +131,7 @@ const GroupTree: React.FC<any> = (props) => {
             render: (_: any, row: any) => (
                 !!is_instance ?
                     <ServerLink
+                        exists
                         val={_}
                         param={row.id}
                         provider={"aliyun"}

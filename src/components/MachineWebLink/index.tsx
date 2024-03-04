@@ -72,10 +72,9 @@ const ServerLink: React.FC<ServerType> = (props) => {
         if (share_id)
             return <>{val || '-'}</>
 
-        if (Object.prototype.toString.call(exists) === '[object Number]') {
-            if (!exists) {
-                return <>{val || '-'}</>
-            }
+        /* exists 0 失效 1 存在 */
+        if (!!!exists) {
+            return <>{val || '-'}</>
         }
 
         if (!show && description) {
@@ -110,10 +109,11 @@ const ServerLink: React.FC<ServerType> = (props) => {
                 </Tooltip>
             )
         }
-        
+
         return TypographyDiv;
     }
 
     return <span>-</span>
 }
+
 export default ServerLink;

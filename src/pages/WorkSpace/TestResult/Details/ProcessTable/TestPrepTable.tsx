@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons'
-import { Table, Card, Typography } from 'antd'
+import { Table, Card, Typography, Empty } from 'antd'
 import type { TableColumnsType } from "antd"
 import { evnPrepareState, tooltipTd } from '../components/index'
 import ProcessExpandTable from './ProcessExpandTable'
@@ -157,6 +157,14 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
     ]
     const TABLE_NAME = "ws-job-result-process-parent"
 
+    const dataSource = data?.map((i: any, idx: number) => (
+        {
+            ...i,
+            rowkey: `${i.server_id || i.server}-${idx}`,
+            exists: i?.server_list_exists?.[i?.server]
+        })
+    )
+
     return (
         <Card
             title={<FormattedMessage id="ws.result.details.test.preparation" />}
@@ -165,7 +173,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
             style={{ marginBottom: 10, borderTop: 'none' }}
         >
             <ResizeHooksTable
-                dataSource={data?.map((i: any, idx: number) => ({ ...i, rowkey: `${i.server_id || i.server}-${idx}` }))}
+                dataSource={dataSource}
                 columns={columns}
                 name={TABLE_NAME}
                 onColumnsChange={() => setColumnsChange(uuidv4())}
@@ -183,18 +191,26 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                             setExpandedKeys(expandedKeys.filter((i: any) => i !== record.rowkey))
                     },
                     expandedRowRender: (record: any) => {
-                        if (record.server_type === 'cluster') {
+                        if (record?.server_type === 'cluster') {
+                            if (!record?.server_list) return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                             return Object.keys(record.server_list).map((item: any) => {
                                 const source = record.server_list[item]
-                                const getServerId = source[0]?.server_id
+                                const getServerId = source?.[0]?.server_id
+
                                 return (
                                     <div
                                         style={{ width: "100%", display: "flex", flexDirection: "column" }}
-                                        key={getServerId}
+                                        key={item}
                                     >
                                         <Table
-                                            key={item}
-                                            dataSource={[{ server: item, id: getServerId, server_id: getServerId }]}
+                                            dataSource={[
+                                                {
+                                                    server: item,
+                                                    id: getServerId,
+                                                    server_id: getServerId,
+                                                    exists: record?.server_list_exists?.[item]
+                                                }
+                                            ]}
                                             columns={clusterColumns}
                                             size={'small'}
                                             rowKey="id"
@@ -206,7 +222,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                                             columnsChange={columnsChange}
                                             parentTableName={TABLE_NAME}
                                             dataSource={
-                                                source.map((i: any) => ({ id: getServerId, ...i }))
+                                                source.map((i: any, dx: number) => ({ ...i, id: `${item}-${dx}` }))
                                             }
                                         />
                                     </div>
@@ -215,10 +231,10 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                         }
                         return (
                             <ProcessExpandTable
+                                {...record}
                                 parentTableName={TABLE_NAME}
                                 columnsChange={columnsChange}
-                                {...record}
-                                dataSource={record.server_list.map((i: any) => ({ id: i.server_id, ...i }))}
+                                dataSource={record?.server_list?.map((i: any, dx: number) => ({ ...i, id: `${i?.server_id}-${dx}` }))}
                             />
                         )
                     },
