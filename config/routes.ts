@@ -92,26 +92,24 @@ const routes = [
 		component: './TaskMessage',
 	},
 	{
-		path: '/share/job/:share_id',
+		path: '/share',
 		hideInMenu: true,
-		name: 'share_job',
-		component: '@/pages/WorkSpace/TestResult/Details',
-	},
-	{
-		path: '/share/report/:report_id',
-		hideInMenu: true,
-		name: 'ShareReport',
-		component: '@/pages/WorkSpace/TestReport/NewReport'
-	},
-	{
-		path: '/share/analysis_result/:form_id',
-		hideInMenu: true,
-		component: '@/pages/WorkSpace/TestAnalysis/AnalysisResult'
-	},
-	{
-		path: '/share/analysis/:share_id',
-		hideInMenu: true,
-		component: '@/pages/WorkSpace/TestAnalysis/AnalysisTime/SharePage'
+		routes: [{
+			path: '/share/job/:share_id',
+			name: 'share_job',
+			component: '@/pages/WorkSpace/TestResult/Details',
+		}, {
+			path: '/share/report/:share_id',
+			name: 'ShareReport',
+			component: '@/pages/WorkSpace/TestReport/NewReport'
+		}, {
+			path: '/share/analysis_result/:form_id',
+			component: '@/pages/WorkSpace/TestAnalysis/AnalysisResult'
+		},
+		{
+			path: '/share/analysis/:share_id',
+			component: '@/pages/WorkSpace/TestAnalysis/AnalysisTime/SharePage'
+		},]
 	},
 	{
 		path: '/ws/:ws_id',
@@ -324,6 +322,11 @@ const routes = [
 					{
 						path: '/ws/:ws_id/test_report/:report_id',
 						name: 'Report',
+						component: '@/pages/WorkSpace/TestReport/NewReport',
+					},
+					{
+						path: '/ws/:ws_id/test_report/:report_id/share',
+						name: 'ReportShare',
 						component: '@/pages/WorkSpace/TestReport/NewReport',
 					},
 					{

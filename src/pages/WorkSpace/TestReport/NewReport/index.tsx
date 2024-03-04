@@ -13,13 +13,27 @@ import ReportTestEnv from './components/ReportTestEnv';
 import ReportTestPref from './components/ReportTestPerf';
 import { useClientSize, useCopyText } from '@/utils/hooks'
 import Catalog from './components/Catalog'
-import { editReport, saveReport } from '../services';
+import { editReport, getReportShareID, saveReport } from '../services';
 import { history, useAccess, Access, useParams, useIntl, FormattedMessage, useLocation } from 'umi';
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { ReportContext } from './Provider';
 import _ from 'lodash';
 import { ReportTemplate, ReportBodyContainer, ReportWarpper, ReportBread, BreadDetailL, BreadDetailR } from './ReportUI';
 import { CreatePageData, EditPageData } from './hooks';
+import SharePopover from './components/SharePopover';
+import styled from "styled-components"
+
+const HoverSpan = styled.span`
+    &:hover {
+        .ant-space-item {
+            color: #1890FF;
+
+            path {
+                fill: #1890FF;
+            }
+        }
+    }
+`
 
 // 面包屑
 const BreadcrumbItem: React.FC<any> = ({ saveReportData, routeName, creator }) => {
@@ -29,6 +43,16 @@ const BreadcrumbItem: React.FC<any> = ({ saveReportData, routeName, creator }) =
     const { pathname } = useLocation()
     const access = useAccess();
     const handleCopyText = useCopyText(formatMessage({ id: 'report.link.copied.successfully' }))
+
+    const handleCopyOk = async (key: any) => {
+        if (key === 1) {
+            handleCopyText(location.origin + `/ws/${ws_id}/test_report/${report_id}/share`)
+        }
+        else {
+            const { share_id } = await getReportShareID(report_id)
+            handleCopyText(location.origin + `/share/report/${share_id}`)
+        }
+    }
 
     return (
         <Row justify={"space-between"} align="middle" style={{ height: 50 }}>
@@ -45,15 +69,27 @@ const BreadcrumbItem: React.FC<any> = ({ saveReportData, routeName, creator }) =
             {
                 !['EditReport', 'CreateReport'].includes(routeName) &&
                 <Space>
-                    <span
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => handleCopyText(location.origin + `/share/report/${report_id}`)}
+                    <SharePopover
+                        list={[
+                            {
+                                value: 1,
+                                label: formatMessage({ id: 'analysis.share_link.radio1' })
+                            },
+                            {
+                                value: 2,
+                                label: formatMessage({ id: 'analysis.share_link.radio2' })
+                            },
+                        ]}
+                        onCopy={handleCopyOk}
                     >
-                        <Space>
-                            <IconLink />
-                            <FormattedMessage id="operation.share" />
-                        </Space>
-                    </span>
+                        <HoverSpan>
+                            <Space size={4} style={{ cursor: 'pointer' }} align="center">
+                                <IconLink />
+                                <FormattedMessage id="operation.share" />
+                            </Space>
+                        </HoverSpan>
+                    </SharePopover>
+
                     {
                         routeName !== 'ShareReport' &&
                         <Access
@@ -62,25 +98,25 @@ const BreadcrumbItem: React.FC<any> = ({ saveReportData, routeName, creator }) =
                                 <span
                                     onClick={() => AccessTootip()}
                                 >
-                                    <Space align="center">
+                                    <Space size={4} align="center">
                                         <IconWarp />
                                         <FormattedMessage id="operation.edit" />
                                     </Space>
                                 </span>
                             }
                         >
-                            <span
+                            <HoverSpan
                                 style={{ cursor: 'pointer' }}
                                 onClick={() => {
                                     const editPath = pathname.lastIndexOf("/") === pathname.length - 1 ? 'edit' : '/edit'
                                     history.push(`${pathname}${pathname !== 'EditReport' ? editPath : ''}`)
                                 }}
                             >
-                                <Space align="center">
+                                <Space size={4} align="center">
                                     <IconEdit />
                                     <FormattedMessage id="operation.edit" />
                                 </Space>
-                            </span>
+                            </HoverSpan>
                         </Access>
                     }
                 </Space>
