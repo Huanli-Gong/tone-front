@@ -1,15 +1,16 @@
 import React from 'react';
 import { writeDocumentTitle, useCopyText } from '@/utils/hooks';
-import { Layout, Tabs, Row, Radio, Col } from 'antd';
+import { Layout, Tabs, Row, Radio, Col, message, Button, Popover, Typography } from 'antd';
 import styles from './index.less'
 import { useLocation, useIntl, FormattedMessage, useParams, useRequest } from 'umi';
 import TabPaneCard from './components/TabPaneCard'
-import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import { stringify } from 'querystring';
 import styled from "styled-components"
 import { getSelectSuiteConfs, queryPerfomanceMetrics } from './services'
 
 import { Analysis } from './provider';
+import { getShareId } from '../../TestResult/Details/service';
+import { LinkOutlined } from '@ant-design/icons';
 
 const AnalysisLayout = styled(Layout.Content).attrs((props: any) => ({
     style: {
@@ -21,6 +22,12 @@ const AnalysisLayout = styled(Layout.Content).attrs((props: any) => ({
     background: #fff;
 `;
 
+const FlexColGap = styled.div<{ gap?: string }>`
+    display: flex;
+    flex-direction: column;
+    gap: ${({ gap }) => gap || 10}px;
+`
+
 const AnalysisTime: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const { query, key } = useLocation() as any
@@ -31,6 +38,8 @@ const AnalysisTime: React.FC<any> = (props) => {
     const tabPaneRef = React.useRef<AnyType>(null)
     const tabName = BUILD_APP_ENV === 'openanolis' ? 'aliyun' : 'aligroup'
     const routeIntlName = `Workspace.TestAnalysis.${route.name}`
+
+    const [shareRadioVal, setShareRadioVal] = React.useState<any>(1)
 
     const queryMetricList = async (params: any) => {
         const { data, code, msg } = await queryPerfomanceMetrics(params)
@@ -64,7 +73,8 @@ const AnalysisTime: React.FC<any> = (props) => {
     const { data: suiteList, loading, run } = useRequest(
         getSelectSuiteConfs,
         {
-            manual: true
+            manual: true,
+            debounceInterval: 500,
         }
     )
 
@@ -105,15 +115,39 @@ const AnalysisTime: React.FC<any> = (props) => {
 
     const handleCopyUri = useCopyText(formatMessage({ id: 'analysis.copy.to.clipboard' }))
 
-    const copy = () => {
+    const copy = async ($key: any) => {
         const { origin, pathname } = window.location
-        const { test_type, show_type, provider_env, ...rest } = info
+        const { test_type, show_type, provider_env, metric, ...rest } = info
+
+        if (!info.project_id) return message.error(formatMessage({ id: 'analysis.selected.error' }))
+
         const isFunc = test_type === "functional"
-        const text = origin + pathname + '?' + stringify({
+        const params = {
+            ...rest,
             test_type,
+            provider_env,
+            show_type,
             [isFunc ? "show_type" : "provider_env"]: isFunc ? show_type : provider_env,
-            ...rest
-        })
+            ws_id,
+        }
+
+        if ($key !== 1 && test_type !== "functional" && metric) {
+            const metricList = metric?.split(',')
+            params.metricList = metricList
+            params.fetchData = metricList?.map((i: any) => ({ metric: info?.[i]?.split(',') }))
+        }
+
+        if ($key === 1 && test_type === 'performance') {
+            params.metric = metric
+        }
+
+        if ($key !== 1) {
+            const { data } = await getShareId(params)
+            handleCopyUri(`${origin}/share/analysis/${data}`)
+            return
+        }
+
+        const text = origin + pathname + '?' + stringify(params)
         handleCopyUri(text)
     }
 
@@ -132,11 +166,56 @@ const AnalysisTime: React.FC<any> = (props) => {
                             onTabClick={handleTabClick}
                             tabBarExtraContent={
                                 <Row justify="center" align="middle">
-                                    <CopyLink
-                                        className="test_analysis_copy_link"
-                                        style={{ cursor: 'pointer', marginRight: 20 }}
-                                        onClick={copy}
-                                    />
+                                    <Popover
+                                        placement='bottomRight'
+                                        title={
+                                            <FormattedMessage id='analysis.share_link' />
+                                        }
+                                        content={
+                                            <FlexColGap>
+                                                <Typography.Text strong>
+                                                    <FormattedMessage id="analysis.share_link.desc" />
+                                                </Typography.Text>
+                                                <Radio.Group
+                                                    value={shareRadioVal}
+                                                    defaultValue={1}
+                                                    onChange={(evt: any) => setShareRadioVal(evt?.target?.value)}
+                                                >
+                                                    <FlexColGap>
+                                                        {
+                                                            [
+                                                                {
+                                                                    value: 1,
+                                                                    label: formatMessage({ id: 'analysis.share_link.radio1' })
+                                                                },
+                                                                {
+                                                                    value: 2,
+                                                                    label: formatMessage({ id: 'analysis.share_link.radio2' })
+                                                                },
+                                                            ].map((i: any) => (
+                                                                <div key={i.value}>
+                                                                    <Radio value={i.value}>{i.label}</Radio>
+                                                                </div>
+                                                            ))
+                                                        }
+                                                    </FlexColGap>
+                                                </Radio.Group>
+                                                <Button onClick={() => copy(shareRadioVal)}>
+                                                    <FormattedMessage id='ws.test.job.copy.link' />
+                                                </Button>
+                                            </FlexColGap>
+                                        }
+                                    >
+                                        <Button
+                                            style={{ marginRight: 24 }}
+                                        >
+                                            <span style={{ marginRight: 10 }}>
+                                                <LinkOutlined />
+                                            </span>
+                                            <FormattedMessage id='analysis.share' />
+                                        </Button>
+                                    </Popover>
+
                                     {
                                         info?.test_type === 'performance' ?
                                             <Radio.Group

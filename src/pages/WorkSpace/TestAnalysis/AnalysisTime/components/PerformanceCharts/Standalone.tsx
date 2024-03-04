@@ -12,7 +12,7 @@ import { targetJump } from "@/utils/utils"
 
 const symbol = 'path://M873,435C877.4182739257812,435,881,438.58172607421875,881,443C881,447.41827392578125,877.4182739257812,451,873,451C868.5817260742188,451,865,447.41827392578125,865,443C865,438.58172607421875,868.5817260742188,435,873,435ZM873,436C869.134033203125,436,866,439.1340026855469,866,443C866,446.8659973144531,869.134033203125,450,873,450C876.865966796875,450,880,446.8659973144531,880,443C880,439.1340026855469,876.865966796875,436,873,436ZM873,439C875.2091674804688,439,877,440.7908630371094,877,443C877,445.2091369628906,875.2091674804688,447,873,447C870.7908325195312,447,869,445.2091369628906,869,443C869,440.7908630371094,870.7908325195312,439,873,439Z'
 
-function toFixed(number: any, precision: number) {
+export function toFixed(number: any, precision: number) {
     let str: any = number + ''
     const len = str.length
     let last = str.substring(len - 1, len)
@@ -25,11 +25,26 @@ function toFixed(number: any, precision: number) {
     }
 }
 
+export const axisUnitFormatter = (value: any, unitLocale: any) => {
+    const len = (parseInt(value) + "").length
+    const s = parseInt((len / 4) as any)
+    if (len > 6) {
+        return toFixed(value / Math.pow(10000, s), 2) + unitLocale(s)
+    }
+    return value
+}
+
 const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valueChange, setFetchData, setLoading }) => {
     const { formatMessage } = useIntl()
-    const { ws_id } = useParams() as any
+    const { ws_id, share_id } = useParams() as any
     const ref = React.useRef<HTMLDivElement>(null)
     const [chart, setChart] = React.useState<any>(undefined)
+
+    const numUnitLocale = (str: any) => new Map([
+        [1, formatMessage({ id: 'analysis.wan' })],
+        [2, formatMessage({ id: 'analysis.yi' })],
+        [3, formatMessage({ id: 'analysis.zhao' })]
+    ]).get(str)
 
     const { data, mutate, loading, run } = useRequest(
         (params = fetchData) => queryPerfAnalysisList(params),
@@ -46,6 +61,8 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
         }
     )
 
+
+
     React.useEffect(() => {
         if (fetchData.metric) {
             run()
@@ -61,7 +78,7 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
 
     const handleMetricChange = ($query: any) => {
         const { metric } = $query
-        setFetchData((p: any) => {
+        setFetchData?.((p: any) => {
             return p.map((x: any) => {
                 if (x.key === fetchData?.key)
                     return {
@@ -243,7 +260,7 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
                                 ${textTip('commit', item?.commit)}
                                 ${serverLinkTip(params.seriesName)}
                                 ${renderProviderText(params, provider_env)}
-                                ${textTip(formatMessage({ id: 'analysis.table.column.note' }), item?.note)}
+                                ${ws_id && textTip(formatMessage({ id: 'analysis.table.column.note' }), item?.note)}
                                 ${textTip(formatMessage({ id: 'analysis.chart.compare_result' }), item?.compare_result)}
                             </div>`
                                 .trim()
@@ -283,20 +300,7 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
                     }
                 },
                 axisLabel: {
-                    formatter(value: any) {
-                        const len = (parseInt(value) + "").length
-                        if (len > 6) {
-                            const q = new Map([
-                                [1, formatMessage({ id: 'analysis.wan' })],
-                                [2, formatMessage({ id: 'analysis.yi' })],
-                                [3, formatMessage({ id: 'analysis.zhao' })]
-                            ])
-
-                            const s = parseInt((len / 4) as any)
-                            return toFixed(value / Math.pow(10000, s), 2) + q.get(s)
-                        }
-                        return value
-                    }
+                    formatter: (value: any) => axisUnitFormatter(value, numUnitLocale)
                 },
                 zlevel: 100
             },
@@ -306,12 +310,13 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
             ],
         })
 
-        myChart.on("click", 'series.line', (params: any) => {
-            if (params?.data) {
-                const { job_id } = params?.data
-                if (job_id) targetJump(`/ws/${ws_id}/test_result/${job_id}`)
-            }
-        })
+        if (!share_id)
+            myChart.on("click", 'series.line', (params: any) => {
+                if (params?.data && ws_id) {
+                    const { job_id } = params?.data
+                    if (job_id) targetJump(`/ws/${ws_id}/test_result/${job_id}`)
+                }
+            })
 
         myChart.hideLoading()
         setChart(myChart)
@@ -334,10 +339,13 @@ const StandaloneChart: React.FC<AnyType> = ({ fetchData = {}, provider_env, valu
                                 <Typography.Text key={t}>{t}</Typography.Text>
                             ))
                         }
-                        <MetricDropdown
-                            onChange={handleMetricChange}
-                            fetchData={fetchData}
-                        />
+                        {
+                            ws_id &&
+                            <MetricDropdown
+                                onChange={handleMetricChange}
+                                fetchData={fetchData}
+                            />
+                        }
                     </Space>
                 </Title>
                 <Row justify={"center"}>

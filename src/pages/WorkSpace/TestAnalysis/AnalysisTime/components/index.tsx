@@ -3,6 +3,9 @@ export function textTip(title: string, data: any) {
 }
 
 export function commitLinkTip(title: string, commit: any, ws_id: any) {
+    if (!ws_id) {
+        if (commit) return `${title}: ${commit}`
+    }
     return commit ? `${title}: <a href=${`/ws/${ws_id}/test_result/${commit}`} target="_blank">#${commit}</a><br />` : ''
 }
 
