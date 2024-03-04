@@ -126,7 +126,7 @@ export default {
     'analysis.project.placeholder': 'Please select project',
     'analysis.tag': 'Tag',
     'analysis.tag.placeholder': 'Not differentiated by labels.',
-    'analysis.indistinguishable': 'Indistinguishable',
+    'analysis.indistinguishable': 'ALL',
     'analysis.only.the.job.data': 'Analyze the job data with the selected tag.',
     'analysis.date': 'Date',
     'analysis.7days': 'Late 7 days',

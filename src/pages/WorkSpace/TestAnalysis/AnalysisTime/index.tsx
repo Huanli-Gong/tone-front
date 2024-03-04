@@ -69,7 +69,6 @@ const AnalysisTime: React.FC<any> = (props) => {
     )
 
     React.useEffect(() => {
-        console.log(info)
         const { test_type, provider_env, project_id } = info
         if (test_type && provider_env && project_id)
             run({ ws_id, test_type, provider_env, project_id })
