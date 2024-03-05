@@ -97,9 +97,6 @@ const RenderFuncItem: React.FC<any> = ({ logoData, groupLen }) => (
 const ReportSummary = () => {
     const { logoData, envData, domainResult, groupLen, baselineGroupIndex } = useContext(ReportContext)
 
-    // console.log(logoData)
-    // const statisticalWidth = `${String(base_group.all).length * 20}px`  动态计算测试数据的宽度
-
     const PerfFlag = useMemo(() => {
         let baseIndex = 0
         if (logoData.length > 1) {
@@ -124,19 +121,21 @@ const ReportSummary = () => {
                                 <GroupData gLen={groupLen} key={idx}>
                                     <Space>
                                         {
-                                            item.is_group && <Tooltip title={<FormattedMessage id="report.benchmark.group" />}>
+                                            item.is_group &&
+                                            <Tooltip title={<FormattedMessage id="report.benchmark.group" />}>
                                                 <BaseIcon
                                                     style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
                                                 />
                                             </Tooltip>
                                         }
                                         {
-                                            item.is_baseline ? <Tooltip title={<FormattedMessage id="report.baseline.group" />}>
-                                                <BaseLine
-                                                    style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
-                                                />
-                                                <Typography.Text><FormattedMessage id="report.test.baseline" /></Typography.Text>
-                                            </Tooltip> : null
+                                            item.is_baseline ?
+                                                <Tooltip title={<FormattedMessage id="report.baseline.group" />}>
+                                                    <BaseLine
+                                                        style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
+                                                    />
+                                                    <Typography.Text><FormattedMessage id="report.test.baseline" /></Typography.Text>
+                                                </Tooltip> : null
                                         }
                                     </Space>
                                     <EllipsisPulic title={item.tag} />
@@ -153,4 +152,5 @@ const ReportSummary = () => {
         </ModuleWrapper>
     )
 }
+
 export default memo(ReportSummary);

@@ -88,7 +88,3 @@ type editGroupDescProps = {
 export async function editReportGroupDesc(data: editGroupDescProps) {
     return request(`/api/report/test/report/item/update_desc/`, { method: 'post', data })
 }
-
-export async function getReportShareID(data: any) {
-    return request(`/`, { method: 'post', data })
-}

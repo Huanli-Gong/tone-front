@@ -6,7 +6,7 @@
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
 import { ReportContext } from '../../Provider';
 import { Button, Space, Select, Typography, Popconfirm, Empty, Row, Col, Pagination, Tooltip } from 'antd';
-import { useIntl, FormattedMessage, useLocation } from 'umi';
+import { useIntl, FormattedMessage, useLocation, useParams } from 'umi';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
 import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
 // import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
@@ -158,6 +158,7 @@ const ExpandSubcases: React.FC<any> = (props) => {
 const FuncDataIndex: React.FC<any> = (props) => {
     const { pathname } = useLocation()
 
+    const { share_id } = useParams() as any
     const isEditPage = !!~pathname?.indexOf('/edit')
     const { formatMessage } = useIntl()
     const { child, name, id, onDelete, dataSource, setDataSource } = props
@@ -512,7 +513,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                                                 <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(item.success_case)}</Typography.Text>
                                                                 <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(item.fail_case)}</Typography.Text>
                                                                 {
-                                                                    !getCompareType(item) &&
+                                                                    !share_id && !getCompareType(item) &&
                                                                     <JumpResult ws_id={wsId} job_id={item.obj_id} style={{ paddingLeft: 10 }} />
                                                                 }
                                                             </Space>

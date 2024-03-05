@@ -100,14 +100,16 @@ const routes = [
 			component: '@/pages/WorkSpace/TestResult/Details',
 		}, {
 			path: '/share/report/:share_id',
-			name: 'ShareReport',
+			name: 'share_report',
 			component: '@/pages/WorkSpace/TestReport/NewReport'
 		}, {
 			path: '/share/analysis_result/:form_id',
+			name: 'share_result_analysis',
 			component: '@/pages/WorkSpace/TestAnalysis/AnalysisResult'
 		},
 		{
 			path: '/share/analysis/:share_id',
+			name: 'share_time_analysis',
 			component: '@/pages/WorkSpace/TestAnalysis/AnalysisTime/SharePage'
 		},]
 	},
@@ -326,7 +328,7 @@ const routes = [
 					},
 					{
 						path: '/ws/:ws_id/test_report/:report_id/share',
-						name: 'ReportShare',
+						name: 'ShareReport',
 						component: '@/pages/WorkSpace/TestReport/NewReport',
 					},
 					{
