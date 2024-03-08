@@ -63,6 +63,7 @@ export default {
   'operation.pass': '通过',
   'operation.refuse': '拒绝',
   'operation.hidden': '隐藏',
+  'operation.confirm.delete.content': '确定删除{data}吗？',
 
   'pagination.total.strip': '共 {data} 条',
   'all': '全部',

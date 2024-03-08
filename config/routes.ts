@@ -78,6 +78,12 @@ const routes = [
 				access: 'IsAdmin',
 			},
 			{
+				path: '/system/question',
+				name: 'question',
+				component: '@/pages/SystemConf/Question',
+				access: 'IsAdmin',
+			},
+			{
 				path: '*',
 				hideInMenu: true,
 				name: 'DirectRoute',

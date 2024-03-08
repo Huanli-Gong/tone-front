@@ -28,10 +28,10 @@ import CodeBlockComponent from './components/CodeBlockComponent'
 import { SmilieReplacer } from "./components/Emoji/emojiReplacer"
 import { lowlight } from 'lowlight'
 
-type IProps = Partial<EditorOptions> & { placeholder?: string }
+type IProps = Partial<EditorOptions> & { placeholder?: string; contentStyle?: React.CSSProperties; styledCss?: string; }
 
 const RichEditor: React.FC<IProps> = (props) => {
-    const { content, placeholder, editable = true } = props
+    const { content, placeholder, editable = true, contentStyle, styledCss = '' } = props
 
     const editor = useEditor({
         extensions: [
@@ -100,11 +100,11 @@ const RichEditor: React.FC<IProps> = (props) => {
         }
     }, [])
 
-
     return (
         <EditorCls
             editable={editable}
             ref={ref}
+            styledCss={styledCss}
         >
             {
                 editable &&
@@ -114,12 +114,13 @@ const RichEditor: React.FC<IProps> = (props) => {
                 editor &&
                 <EditorContent
                     editor={editor}
-                    style={{ height: `calc(100%${editable ? " - 48px" : ""})` }}
+                    style={{ height: `calc(100%${editable ? " - 48px" : ""})`, ...contentStyle }}
                 />
             }
             {
                 (!editor?.isEditable && preview?.src) &&
                 <ImagePreview
+                    style={{ display: 'none' }}
                     src={preview?.src}
                     preview={{
                         visible: preview?.visible,
@@ -129,7 +130,6 @@ const RichEditor: React.FC<IProps> = (props) => {
                     }}
                 />
             }
-
         </EditorCls>
     )
 }

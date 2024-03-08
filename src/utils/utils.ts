@@ -642,3 +642,18 @@ export const useStateRef = (state: any) => {
   }, [state])
   return stateRef
 }
+
+export const getPageNumOnDel = (
+  params: {
+    page_num: number;
+    page_size: number;
+  },
+  data: {
+    total: number;
+  },
+  list: number = 1
+): number => {
+  const $page_num = Math.ceil((data?.total - list) / params.page_size) || 1
+
+  return $page_num < params.page_num ? $page_num : params.page_num
+}

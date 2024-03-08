@@ -11,6 +11,7 @@ import { getPageWsid, redirectErrorPage, OPENANOLIS_LOGIN_URL, REQUEST_NOTATION_
 
 import 'animate.css';
 import { enterWsAndGetList } from './utils/hooks';
+import HelperChatBoot from './components/HelperChatBoot';
 
 const jumpLoginPage = () => {
     if (["opensource", "openanolis"].includes(BUILD_APP_ENV || "") && ~window.location.pathname.indexOf(`/login`))
@@ -143,6 +144,7 @@ export const layout = ({
                 input={{ autoComplete: 'off' }}
             >
                 {dom}
+                <HelperChatBoot />
             </ConfigProvider>
         ),
         disableMobile: true,
