@@ -107,7 +107,7 @@ export const ToolbarWidget = styled.span`
     margin-right: 6px;
 `
 
-export const EditorCls = styled.div<{ editable?: boolean }>`
+export const EditorCls = styled.div<{ editable?: boolean, styledCss?: string }>`
     width: 100%;
     height: 100%;
     h1 { font-size: 28px !important; }
@@ -329,8 +329,7 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
         }
 
         img {
-            /* max-width: 100%; */
-            max-width: 630px;
+            max-width: 640px;
             height: auto;
 
             &.ProseMirror-selectednode {
@@ -377,4 +376,6 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
             opacity: 1;
         }
     }
+
+    ${({ styledCss }) => styledCss};
 `

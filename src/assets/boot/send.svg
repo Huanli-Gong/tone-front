@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>发送</title>
+    <g id="切图" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-36, -24)" fill="#205CE8" fill-rule="nonzero" id="发送">
+            <g transform="translate(36, 24)">
+                <path d="M0.310417347,5.58526629 C-0.102810426,5.44733839 -0.106768547,5.22459277 0.318333588,5.08270144 L15.4288542,0.0404064712 C15.8476233,-0.0991067994 16.0874854,0.135529156 15.970325,0.546142077 L11.6528073,15.675405 C11.5340637,16.0947375 11.2926183,16.1090059 11.1152945,15.711076 L8.26940592,9.29901442 L13.0191504,2.95750213 L6.68615774,7.71363635 L0.310417347,5.58526629 Z" id="Path"></path>
+            </g>
+        </g>
+    </g>
+</svg>
