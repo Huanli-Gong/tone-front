@@ -7,7 +7,7 @@ import Headers from '@/components/Header'
 import { person_auth } from '@/services/user';
 import defaultSettings from '../config/defaultSettings';
 import { marked } from "marked"
-import { getPageWsid, redirectErrorPage, OPENANOLIS_LOGIN_URL } from "@/utils/utils"
+import { getPageWsid, redirectErrorPage, OPENANOLIS_LOGIN_URL, REQUEST_NOTATION_URLS } from "@/utils/utils"
 
 import 'animate.css';
 import { enterWsAndGetList } from './utils/hooks';
@@ -177,6 +177,18 @@ const errorHandler = (error: { response: Response }): Response | undefined => {
     // 网络状态码500报错优化
     if (response) {
         const { status, statusText, url } = response
+        const errorText = codeMessage[status] || statusText;
+
+        console.log(`${status}: ${url}`)
+
+        if (REQUEST_NOTATION_URLS.filter((i: any) => !!~url.indexOf(i))?.length > 0) {
+            notification.error({
+                message: `请求错误 ${status}: ${url}`,
+                description: errorText,
+            });
+            return
+        }
+
         if (status >= 500) {
             redirectErrorPage(500)
         }
@@ -189,7 +201,6 @@ const errorHandler = (error: { response: Response }): Response | undefined => {
             return
         }
         else {
-            const errorText = codeMessage[status] || statusText;
             notification.error({
                 message: `请求错误 ${status}: ${url}`,
                 description: errorText,

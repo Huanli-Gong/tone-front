@@ -92,6 +92,12 @@ const routes = [
 		component: './TaskMessage',
 	},
 	{
+		path: '/share/job/:share_id',
+		hideInMenu: true,
+		name: 'share_job',
+		component: '@/pages/WorkSpace/TestResult/Details',
+	},
+	{
 		path: '/share/report/:report_id',
 		hideInMenu: true,
 		name: 'ShareReport',

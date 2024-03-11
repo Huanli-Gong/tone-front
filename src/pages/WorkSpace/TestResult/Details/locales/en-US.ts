@@ -120,7 +120,8 @@ const text = {
   'track_result': 'Track Result',
 
   'breadcrumb.button.download': 'Download',
-  'breadcrumb.button.share': 'Share',
+  'breadcrumb.button.share': 'Share Job',
+  'breadcrumb.button.fail_case_upload': 'Fail Case Upload',
 
   // ProcessTable
   'build.kernel': 'Build Kernel',
@@ -234,6 +235,10 @@ const text = {
   'server.instance.name': 'Server Instance Name：{data}',
   'server.configuration.name': 'Server Config Name：{data}',
   'cluster.name': 'Cluster Name',
+
+  'breadcrumb.button.upload.message': 'Tips',
+  'breadcrumb.button.upload.ok': 'The upload task has been created.',
+  'breadcrumb.button.upload.ok.view': 'View'
 };
 
 export default Object.keys(text).reduce((p, key) => {

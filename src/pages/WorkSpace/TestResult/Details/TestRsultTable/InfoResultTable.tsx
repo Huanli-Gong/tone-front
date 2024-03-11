@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Space, Tooltip, Input, Button, Typography } from 'antd'
-import type { TableColumnProps } from "antd"
 import { SearchOutlined } from '@ant-design/icons'
 
 import React, { useRef, useEffect } from 'react'
@@ -15,13 +14,20 @@ import Highlighter from 'react-highlight-words'
 
 import { tooltipTd } from '../components'
 import styles from './index.less'
-import { targetJump, AccessTootip } from '@/utils/utils'
+import { AccessTootip } from '@/utils/utils'
 import { ResizeHooksTable } from '@/utils/table.hooks'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
+const stateWordMap = (st: string) => new Map([
+    ["success", 1],
+    ["fail", 2],
+    ["skip", 5],
+    ["warn", 6],
+]).get(st) || undefined
+
 export default (props: any) => {
     const { formatMessage } = useIntl()
-    const { ws_id, id: job_id } = useParams() as any
+    const { ws_id, id: job_id, share_id } = useParams() as any
     const access = useAccess()
     const {
         test_case_id, suite_id, testType, creator,
@@ -30,8 +36,9 @@ export default (props: any) => {
     } = props
     const editRemark: any = useRef(null)
     const joinBaseline: any = useRef(null)
-
     const searchInput: any = useRef(null)
+
+    const $test_type = ["performance", "性能测试"].includes(testType) ? "performance" : "functional"
 
     const defaultKeys = {
         job_id,
@@ -41,8 +48,10 @@ export default (props: any) => {
         sub_case_name: undefined,
         sub_case_result: undefined,
         page_size: 10,
-        page_num: 1
+        page_num: 1,
+        share_id
     }
+
     const [interfaceSearchKeys, setInterfaceSearchKeys] = React.useState(defaultKeys)
 
     const { data, refresh, loading } = useRequest(
@@ -112,13 +121,6 @@ export default (props: any) => {
         )
     });
 
-    const stateWordMap = (st: string) => new Map([
-        ["success", 1],
-        ["fail", 2],
-        ["skip", 5],
-        ["warn", 6],
-    ]).get(st) || undefined
-
     useEffect(() => {
         if (refreshId === test_case_id) {
             setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_result: stateWordMap(state) }))
@@ -142,10 +144,10 @@ export default (props: any) => {
     }
 
     const handleOpenJoinBaseline = (item: any) => {
-        joinBaseline.current.show({ ...item, suite_id, job_id, test_case_id })
+        joinBaseline.current.show({ ...item, suite_id, test_case_id })
     }
 
-    const columns: TableColumnProps<AnyType>[] = [
+    const columns: any[] = [
         {
             dataIndex: 'sub_case_name',
             title: 'Test Case',
@@ -191,25 +193,22 @@ export default (props: any) => {
                 if (row.match_baseline && row.result === 'Fail')
                     context = _ ? `${_}(${localeStr})` : localeStr
                 if (!context) return "-"
-                if (access.IsWsSetting())
+                if (!share_id && access.IsWsSetting())
                     return (
                         <Tooltip placement="topLeft" title={context}>
-                            <Typography.Link
-                                className={styles.hrefUrl}
-                                onClick={
-                                    () => {
-                                        if (row.skip_baseline_info) {
-                                            const $test_type = ["performance", "性能测试"].includes(testType) ? "performance" : "functional"
-                                            targetJump(`/ws/${ws_id}/baseline/${$test_type}?${qs.stringify(row.skip_baseline_info)}`)
-                                        }
-                                    }
-                                }
-                            >
-                                {context || '-'}
-                            </Typography.Link>
+                            {
+                                row.skip_baseline_info ?
+                                    <Typography.Link
+                                        target='_blank'
+                                        href={`/ws/${ws_id}/baseline/${$test_type}?${qs.stringify(row.skip_baseline_info)}`}
+                                    >
+                                        {context}
+                                    </Typography.Link> :
+                                    context
+                            }
                         </Tooltip >
                     )
-                return (<ColumnEllipsisText ellipsis={{ tooltip: true }}>{context || '-'}</ColumnEllipsisText>)
+                return (<ColumnEllipsisText ellipsis={{ tooltip: true }}>{context}</ColumnEllipsisText>)
             }
         },
         {
@@ -229,9 +228,13 @@ export default (props: any) => {
                 return (
                     context ?
                         <Tooltip placement="topLeft" title={_}>
-                            <Typography.Link href={urlHref} className={styles.hrefUrl} target='_blank'>
-                                {context}
-                            </Typography.Link>
+                            {
+                                !share_id ?
+                                    <Typography.Link href={urlHref} target='_blank'>
+                                        {context}
+                                    </Typography.Link> :
+                                    context
+                            }
                         </Tooltip >
                         : '-'
                 )
@@ -249,6 +252,7 @@ export default (props: any) => {
             ),
             ...tooltipTd()
         },
+        !share_id &&
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             fixed: "right",
@@ -275,49 +279,45 @@ export default (props: any) => {
                 )
             }
         }
-    ]
+    ].filter(Boolean)
 
     return (
         <>
-            {
-                <ResizeHooksTable
-                    name="wsResultTableCaseList"
-                    refreshDeps={[access, testType]}
-                    rowKey="id"
-                    size="small"
-                    loading={loading}
-                    className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
-                    pagination={{
-                        pageSize: data.page_size || 10,
-                        current: data.page_num || 1,
-                        total: data.total || 0,
-                        showQuickJumper: true,
-                        showSizeChanger: true,
-                        onChange(page_num, page_size) {
-                            /* 解决page_size切换，page_num不变的问题 */
-                            setInterfaceSearchKeys((p: any) => ({
-                                ...p,
-                                page_num: p.page_size === page_size ? page_num : 1,
-                                page_size
-                            }))
-                        },
-                        showTotal(total) {
-                            return formatMessage({ id: 'pagination.total.strip' }, { data: total })
-                        },
-                    }}
-                    columns={columns}
-                    rowClassName={styles.result_info_table_row}
-                    dataSource={data.data || []}
-                />
-            }
+            <ResizeHooksTable
+                name="wsResultTableCaseList"
+                refreshDeps={[access, testType]}
+                rowKey="id"
+                size="small"
+                loading={loading}
+                className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
+                pagination={{
+                    pageSize: data.page_size || 10,
+                    current: data.page_num || 1,
+                    total: data.total || 0,
+                    showQuickJumper: true,
+                    showSizeChanger: true,
+                    onChange(page_num, page_size) {
+                        /* 解决page_size切换，page_num不变的问题 */
+                        setInterfaceSearchKeys((p: any) => ({
+                            ...p,
+                            page_num: p.page_size === page_size ? page_num : 1,
+                            page_size
+                        }))
+                    },
+                    showTotal(total) {
+                        return formatMessage({ id: 'pagination.total.strip' }, { data: total })
+                    },
+                }}
+                columns={columns}
+                rowClassName={styles.result_info_table_row}
+                dataSource={data.data || []}
+            />
             <EditRemarks ref={editRemark} onOk={refresh} />
             <JoinBaseline
                 ref={joinBaseline}
                 onOk={refresh}
                 test_type={testType}
-                ws_id={ws_id}
                 server_provider={server_provider}
-                accessible={access.IsWsSetting()}
             />
         </>
     )

@@ -9,7 +9,7 @@ import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Spin, Badge, mess
 import { requestCodeMessage, resetImage, resetECI, enumerEnglish } from '@/utils/utils';
 import { QusetionIconTootip } from '@/components/Product/index'
 import {
-    queryClusterMachine, queryCloudType, addGroupMachine, editGroupMachine, queryMember, queryInstance,
+    queryClusterMachine, queryCloudType, addGroupMachine, editGroupMachine, queryInstance,
     querysImage, queryCategories, querysServer, querysAK, querysRegion, queryZone, queryName
 } from '../../service';
 import Owner from '@/components/Owner/index';
@@ -19,6 +19,7 @@ import { useParams, useIntl, FormattedMessage } from 'umi';
 import { AgentSelect } from '@/components/utils'
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
+import { queryMember } from '@/services/Workspace'
 
 /**
  * 

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Drawer, Space, Button, Form, Input, Select, Radio, Spin, message, Divider, Typography, Row } from 'antd'
 import React, { useState, forwardRef, useImperativeHandle, useRef } from 'react'
-import { useParams, useIntl, FormattedMessage } from 'umi'
+import { useParams, useIntl, FormattedMessage, useAccess } from 'umi'
 import { queryBaselineList, perfJoinBaseline, perfJoinBaselineBatch, createFuncsDetail } from '../service'
 import styles from './index.less'
 import { PlusOutlined } from '@ant-design/icons'
@@ -10,11 +10,14 @@ import Highlighter from 'react-highlight-words'
 import { createBaseline } from '@/pages/WorkSpace/BaselineManage/services'
 import { requestCodeMessage } from '@/utils/utils'
 import { renderTitle } from "."
+import { MetricSelectProvider } from '../TestRsultTable'
 
 const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { formatMessage } = useIntl()
-    const { ws_id } = useParams() as any
-    const { test_type, onOk, accessible } = props
+    const { ws_id, id: job_id } = useParams() as any
+    const access = useAccess()
+    const { test_type, onOk } = props
+    const { oSuite } = React.useContext(MetricSelectProvider)
 
     const [form] = Form.useForm()
     const [visible, setVisible] = useState(false)
@@ -72,7 +75,6 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 setVisible(true)
                 getBaselinePerfData()
                 if (_) {
-                    console.log(_)
                     setSource(_)
                 }
                 setPerfChangeVal(undefined)
@@ -108,22 +110,19 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 async (values: any) => {
                     const { bug } = values
                     const baseParams = { ...values, ws_id, test_type, bug: bug?.trim() }
-                    if (source?.suite_list || source?.suite_data) {
-                        if (source?.suite_list.length || source?.suite_data.length) {
-                            const { suite_list, suite_data, job_id } = source
-                            const { code, msg } = await perfJoinBaselineBatch({ ...baseParams, suite_list, suite_data, job_id })
-                            defaultOption(code, msg)
-                            return
-                        }
+                    if (source?.isMore) {
+                        const { code, msg } = await perfJoinBaselineBatch({ ...baseParams, ids: oSuite, job_id })
+                        defaultOption(code, msg)
+                        return
                     }
 
                     if (test_type === 'functional') {
-                        const { suite_id: test_suite_id, test_case_id, job_id: test_job_id, id } = source
-                        const { code, msg } = await createFuncsDetail({ ...baseParams, test_job_id, test_suite_id, test_case_id, result_id: id })
+                        const { suite_id: test_suite_id, test_case_id, id } = source
+                        const { code, msg } = await createFuncsDetail({ ...baseParams, test_job_id: job_id, test_suite_id, test_case_id, result_id: id })
                         defaultOption(code, msg)
                     }
                     else {
-                        const { suite_id, test_case_id: case_id, job_id } = source
+                        const { suite_id, test_case_id: case_id } = source
                         const { code, msg } = case_id ? await perfJoinBaseline({ ...baseParams, job_id, suite_id, case_id }) :
                             await perfJoinBaselineBatch({ ...baseParams, job_id, suite_list: [suite_id] })
                         defaultOption(code, msg)
@@ -259,7 +258,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                                     <>
                                                         <Divider style={{ margin: '8px 0' }} />
                                                         {
-                                                            accessible &&
+                                                            access.IsWsSetting() &&
                                                             <div
                                                                 style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '0 0 8px 8px' }}
                                                                 onClick={handlePerfBaselineSelectBlur}
@@ -329,7 +328,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                                 funcsSelectVal && !!funcsSelectVal.length && <>
                                                     <Divider style={{ margin: '8px 0' }} />
                                                     {
-                                                        accessible &&
+                                                        access.IsWsSetting() &&
                                                         <div
                                                             style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '0 0 8px 8px' }}
                                                             onClick={handleFuncsBaselineSelectBlur}

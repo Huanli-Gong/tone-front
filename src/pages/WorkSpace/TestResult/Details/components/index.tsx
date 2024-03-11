@@ -28,7 +28,6 @@ export const BreadcrumbItem: React.FC<any> = (d: any) => {
     )
 }
 
-
 const prepareStateColorMap = new Map([
     ['success', '#81BF84'],
     ['fail', '#C84C5A'],
@@ -75,29 +74,26 @@ export const tooltipTd = (defaultText: string = '-') => ({
 
 export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdit, access }) => {
     const boxRef: any = useRef()
+    const { share_id } = useParams() as any
 
-    const edit = (
-        access
-            ? <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit} />
-            : <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={() => AccessTootip()} />
-    )
     return (
         <div
             ref={boxRef}
             style={{ width: width }}
         >
-            {
-                <Row style={{ width }} justify="start" align="middle">
-                    <Tooltip placement="topLeft" title={title}>
-                        <span
-                            style={{ maxWidth: 54, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-                        >
-                            {title || '-'}
-                        </span>
-                    </Tooltip>
-                    {edit}
-                </Row>
-            }
+            <Row style={{ width }} justify="start" align="middle">
+                <Tooltip placement="topLeft" title={title}>
+                    <span
+                        style={{ maxWidth: 54, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                    >
+                        {title || '-'}
+                    </span>
+                </Tooltip>
+                {
+                    !share_id &&
+                    <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={() => access ? onEdit() : AccessTootip()} />
+                }
+            </Row>
         </div >
     )
 }

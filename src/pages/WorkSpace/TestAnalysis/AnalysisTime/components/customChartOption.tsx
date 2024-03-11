@@ -128,6 +128,7 @@ const customChartOption: any = (dataSource: any, ws_id: any, formatMessage: any)
             end: parseInt(baseZoomLen / data.length * 100 as any),
             left: '20%',
             right: '20%',
+            brushSelect: false,
         }] : undefined,
 
         yAxis: {

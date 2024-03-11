@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Spin, Tag, message } from 'antd';
 import { isNaN } from 'lodash'
-import { member } from './service';
+import { queryServerTag } from './service';
 import styles from './style.less';
 import { useIntl, FormattedMessage } from 'umi'
 
@@ -19,7 +19,7 @@ const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, value }) => {
 	const requestData = async (query: any, option = "concat") => {
 		setFetching(true)
 		try {
-			const res = await member(query)
+			const res = await queryServerTag(query)
 			if (res.code === 200) {
 				// 分页数据合并。
 				if (option === 'concat') {

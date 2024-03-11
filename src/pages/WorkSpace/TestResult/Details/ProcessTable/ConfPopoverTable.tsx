@@ -7,6 +7,7 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 export default ({ title = '', need_reboot, setup_info, cleanup_info, step }: any) => {
     const { formatMessage } = useIntl()
+
     const columns = [
         {
             title: <FormattedMessage id="ws.result.details.stage" />,
@@ -29,7 +30,15 @@ export default ({ title = '', need_reboot, setup_info, cleanup_info, step }: any
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText> : <TidDetail tid={_} /> : '-'
+            render: (_: any) => {
+                if (_?.length) {
+                    if (_.indexOf('API_v2_0_') > -1)
+                        return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
+
+                    return <TidDetail tid={_} />
+                }
+                return '-'
+            }
         },
         {
             title: <FormattedMessage id="ws.result.details.gmt_created" />,

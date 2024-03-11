@@ -153,6 +153,7 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
         const { project_id } = params
         if (project_id && test_suite_id && test_case_id) {
             requestAnalysisData({
+                ws_id,
                 ...params,
                 ...data,
             })
@@ -178,7 +179,7 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
         else {
             const { metric } = data
             const params = getAnalysisFormData()
-            const metrics = metric.map((i: any) => ({ ...params, ...data, metric: [i], key: uuid() }))
+            const metrics = metric.map((i: any) => ({ ...params, ...data, metric: [i], key: uuid(), ws_id }))
             setTableData([])
             setFetchData(metrics)
         }
@@ -202,11 +203,12 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
             const { project_id } = params
             if (test_suite_id && test_case_id && project_id) {
                 if (test_type === "performance") {
-                    const metrics = metric.map((i: any) => ({ ...params, ...metricData, metric: [i], key: uuid() }))
+                    const metrics = metric.map((i: any) => ({ ...params, ...metricData, metric: [i], key: uuid(), ws_id }))
                     setFetchData(metrics)
                     return
                 }
                 requestAnalysisData({
+                    ws_id,
                     ...params,
                     ...metricData
                 })
@@ -237,7 +239,8 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                     project_id, tag,
                     test_suite_id, test_case_id, sub_case_name,
                     show_type,
-                    provider_env: $provider_env
+                    provider_env: $provider_env,
+                    ws_id
                 }
 
                 let start = start_time

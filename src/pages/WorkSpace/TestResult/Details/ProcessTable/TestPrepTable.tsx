@@ -15,14 +15,14 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents'
 //测试准备 ==== Table
 const TestPrepTable: React.FC<AnyType> = (props) => {
     const { refresh = false, provider_name } = props
-    const { id: job_id, ws_id } = useParams() as any
+    const { id: job_id, ws_id, share_id } = useParams() as any
     const { formatMessage } = useIntl()
     // 表格展开的行
     const [expandedKeys, setExpandedKeys] = useState<any>([])
     const [columnsChange, setColumnsChange] = React.useState(uuidv4())
 
     const { data, loading } = useRequest(
-        () => queryProcessPrepareList({ job_id, ws_id }),
+        () => queryProcessPrepareList({ job_id, ws_id, share_id }),
         {
             refreshDeps: [refresh]
         }
@@ -127,7 +127,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
             render: (_: any) => {
                 const strLocals = formatMessage({ id: 'ws.result.details.log' })
                 // success,fail,stop 可看日志
-                if (_.state === 'success' || _.state === 'fail' || _.state === 'stop') {
+                if (!share_id && ["success", "fail", "stop"].includes(_.state)) {
                     if (_.log_file)
                         return <Typography.Link href={_.log_file} target="_blank">{strLocals}</Typography.Link>
                 }

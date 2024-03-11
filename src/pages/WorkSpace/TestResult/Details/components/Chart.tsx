@@ -50,7 +50,7 @@ export default ({ data = {}, test_type = '' }: any) => {
 
         const mychart = echarts.init(chart.current)
 
-        const rich = {}
+        const rich: any = {}
         dataSource.forEach(({ legend, key }: any) => {
             rich[key] = { color: legend }
         })

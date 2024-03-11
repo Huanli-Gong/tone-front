@@ -1,6 +1,6 @@
 import { request } from 'umi'
 
-export const queryJobState = async (params: { job_id: string, ws_id?: string }) => {
+export const queryJobState = async (params: { job_id: string, ws_id?: string, share_id?: string }) => {
     return request(`/api/job/state/`, { params })
 }
 
@@ -26,10 +26,6 @@ export const deleteMyCollection = (data: any) => {
 
 export const queryConfig = async (params: any) => {
     return request(`/api/rerun/config/`, { params })
-}
-
-export const queryCreators = async (params: any) => {
-    return request(`/api/auth/user/`, { params })
 }
 
 export const queryTag = async (params: any) => {

@@ -12,10 +12,10 @@ import { queryJobTypeItems } from '@/pages/WorkSpace/JobTypeManage/CreateJobType
 
 //测试配置 index
 export default ({ jt_id, test_type, provider_name }: any) => {
-    const { id: job_id, ws_id } = useParams() as any
+    const { id: job_id, ws_id, share_id } = useParams() as any
     const testType = matchTestType(test_type)
     const { data, loading } = useRequest(
-        () => querySettingConfig({ job_id }),
+        () => querySettingConfig({ job_id, share_id }),
         {
             initialData: {
                 test_config: []
@@ -33,7 +33,7 @@ export default ({ jt_id, test_type, provider_name }: any) => {
     const { data: items } = useRequest(() => queryJobTypeItems({ jt_id, ws_id }), { initialData: [] })
 
     const contrl = useMemo(() => {
-        const basic = {}, env = {}, suite = {}, more = {}
+        const basic: any = {}, env: any = {}, suite: any = {}, more: any = {}
         items.forEach((i: any) => {
             if (i.config_index === 1) basic[i.name] = i
             if (i.config_index === 2) env[i.name] = i
