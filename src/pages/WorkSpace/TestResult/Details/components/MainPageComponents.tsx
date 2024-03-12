@@ -238,12 +238,12 @@ export const EditNoteBtn: React.FC<any> = (props) => {
                 !isSharePage &&
                 <Access
                     accessible={access.WsMemberOperateSelf(creator_id)}
-                    fallback={
+                    /* fallback={
                         <EditOutlined
                             onClick={() => AccessTootip()}
                             style={{ ...noteStyle }}
                         />
-                    }
+                    } */
                 >
                     <EditOutlined
                         onClick={handleOpenEditRemark}
