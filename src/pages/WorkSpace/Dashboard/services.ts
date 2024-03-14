@@ -17,5 +17,5 @@ export async function queryWorkspaceJobs(params: any) {
 }
 
 export async function postChangeJobProject(data: any) {
-    return request(`/api/sys/change_job_project/`, { data, method: 'POST' })
+    return request(`/api/sys/workspace/change_job_project/`, { data, method: 'POST' })
 }
