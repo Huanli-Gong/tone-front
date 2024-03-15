@@ -66,6 +66,7 @@ const JobTable: React.FC = () => {
         setPageParams(params)
         setLoading(false)
     }
+
     const handleDelete = async (_: any) => {
         const { code, msg } = await deleteJobTest({ job_id: _.id })
         if (code !== 200) {
@@ -237,9 +238,15 @@ const JobTable: React.FC = () => {
     ]
 
     const handleChangeProjectOk = () => {
-        setSelectedRows([])
         message.success('操作成功！')
-        getProjectJobs()
+        const page_num = Math.ceil((jobs?.total - selectedRows?.length) / pageParams.page_size)
+        const params = { ...pageParams, page_num }
+
+        if (page_num < pageParams.page_num)
+            getProjectJobs(params)
+        else
+            getProjectJobs(pageParams)
+        setSelectedRows([])
     }
 
     return (

@@ -17,6 +17,7 @@ export default {
   'Workspace.JobConfig.JobTypeUpdate': 'Job类型编辑',
   'Workspace.JobConfig.CreateJobType': '新建Job类型',
   'Workspace.JobTypePreview': 'Job类型预览',
+  'Workspace.Dashboard': 'Dashboard',
 
   'Workspace.Baseline': '基线管理',
   'Workspace.Baseline.GroupBaseline': aligroupServer_baseline,

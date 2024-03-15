@@ -90,7 +90,7 @@ const SelectionRowBar: React.ForwardRefRenderFunction<any, any> = (props, ref) =
         <Drawer
             open={open}
             onClose={handleCancel}
-            width={300}
+            width={480}
             destroyOnClose
             title={'更改项目'}
             maskClosable={false}
