@@ -239,7 +239,7 @@ const JobTable: React.FC = () => {
 
     const handleChangeProjectOk = () => {
         message.success('操作成功！')
-        const page_num = Math.ceil((jobs?.total - selectedRows?.length) / pageParams.page_size)
+        const page_num = Math.ceil((jobs?.total - selectedRows?.length) / pageParams.page_size) || 1
         const params = { ...pageParams, page_num }
 
         if (page_num < pageParams.page_num)

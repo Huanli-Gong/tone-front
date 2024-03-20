@@ -1,4 +1,4 @@
-import { Drawer, Select, Space, Form, Row, Button, Spin, Empty, Typography } from 'antd'
+import { Drawer, Select, Space, Form, Row, Button, Spin, Empty, Typography, Modal } from 'antd'
 import React from 'react'
 import { useRequest } from 'ahooks'
 import { useParams } from 'umi'
@@ -70,7 +70,7 @@ const SelectionRowBar: React.ForwardRefRenderFunction<any, any> = (props, ref) =
         form.resetFields()
     }
 
-    const handleAdd = async () => {
+    const handleConfirm = async () => {
         const values = await form.validateFields()
         if (loading) return
         setLoading(true)
@@ -84,6 +84,29 @@ const SelectionRowBar: React.ForwardRefRenderFunction<any, any> = (props, ref) =
 
         onOk?.()
         handleCancel()
+    }
+
+    const handleAdd = async () => {
+        form.validateFields().then(() => {
+            Modal.confirm({
+                title: '提示',
+                content: (
+                    <Space style={{ width: '100%' }} direction='vertical'>
+                        <Typography.Text>
+                            更改项目信息后可能影响以下历史数据展示：
+                        </Typography.Text>
+                        <Typography.Paragraph>
+                            <ul>
+                                <li>计划视图</li>
+                                <li>测试报告</li>
+                                <li>时序分析</li>
+                            </ul>
+                        </Typography.Paragraph>
+                    </Space>
+                ),
+                onOk: handleConfirm,
+            })
+        })
     }
 
     return (
@@ -117,7 +140,7 @@ const SelectionRowBar: React.ForwardRefRenderFunction<any, any> = (props, ref) =
                     <Form.Item
                         name='project_id'
                         label="选择项目"
-                        required
+                        rules={[{ required: true, message: '请选择项目' }]}
                     >
                         <Select
                             onPopupScroll={handleTagePopupScroll}
@@ -158,7 +181,7 @@ const SelectionRowBar: React.ForwardRefRenderFunction<any, any> = (props, ref) =
                     </Space>
                 </Space>
             </Space>
-        </Drawer>
+        </Drawer >
     )
 }
 
