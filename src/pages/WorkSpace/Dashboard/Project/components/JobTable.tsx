@@ -3,7 +3,7 @@ import { JobListStateTag } from '@/pages/WorkSpace/TestResult/Details/components
 import lodash from 'lodash'
 import CommonPagination from '@/components/CommonPagination';
 import { deleteJobTest } from '@/pages/WorkSpace/TestResult/services'
-import { message, Space, Typography, Tooltip, Popconfirm, Row, Spin } from 'antd'
+import { message, Space, Typography, Tooltip, Popconfirm, Row, Spin, Button } from 'antd'
 import ViewReports from './ViewReports'
 import { queryTestResultList } from '@/pages/WorkSpace/TestResult/services'
 import styled from 'styled-components'
@@ -13,6 +13,7 @@ import styles from './index.less'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { ResizeHooksTable } from '@/utils/table.hooks';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
+import ChangeJobProjectDrawer from './ChangeJobProjectDrawer';
 
 const TableBody = styled(Row)`
     width : 100%;
@@ -32,7 +33,7 @@ const ColumnCircleText = styled.span`
     cursor: pointer; 
 `
 
-const JobTable = (props: any) => {
+const JobTable: React.FC = () => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
 
@@ -40,12 +41,15 @@ const JobTable = (props: any) => {
     const DEFAULT_TABLE_PARAMS = { page_num: 1, page_size: 10, ws_id, project_id }
 
     const [pageParams, setPageParams] = useState(DEFAULT_TABLE_PARAMS)
+    const changeJobProjectDrawer = useRef() as any
+
     const [jobs, setJobs] = useState<any>({
         data: [],
         total: 0,
     })
     const access = useAccess();
     const [loading, setLoading] = useState(true)
+    const [selectedRows, setSelectedRows] = useState<any>([])
 
     useEffect(() => {
         getProjectJobs()
@@ -62,6 +66,7 @@ const JobTable = (props: any) => {
         setPageParams(params)
         setLoading(false)
     }
+
     const handleDelete = async (_: any) => {
         const { code, msg } = await deleteJobTest({ job_id: _.id })
         if (code !== 200) {
@@ -86,7 +91,9 @@ const JobTable = (props: any) => {
                 <Typography.Link
                     target={"_blank"}
                     href={`/ws/${ws_id}/test_result/${_}`}
-                >{_}</Typography.Link>
+                >
+                    {_}
+                </Typography.Link>
             )
         },
         {
@@ -199,10 +206,12 @@ const JobTable = (props: any) => {
                                 <Space>
                                     {/** case.离线任务上传后，不能重跑。 */}
                                     {_.created_from === 'offline' ?
-                                        <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}><FormattedMessage id="ws.dashboard.operation.rerun" /></Typography.Text>
+                                        <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}>
+                                            <FormattedMessage id="ws.dashboard.operation.rerun" /></Typography.Text>
                                         :
                                         <span onClick={() => handleTestReRun(_)}>
-                                            <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} ><FormattedMessage id="ws.dashboard.operation.rerun" /></Typography.Text>
+                                            <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} >
+                                                <FormattedMessage id="ws.dashboard.operation.rerun" /></Typography.Text>
                                         </span>
                                     }
                                     <Popconfirm
@@ -228,9 +237,29 @@ const JobTable = (props: any) => {
         }
     ]
 
+    const handleChangeProjectOk = () => {
+        message.success('操作成功！')
+        const page_num = Math.ceil((jobs?.total - selectedRows?.length) / pageParams.page_size) || 1
+        const params = { ...pageParams, page_num }
+
+        if (page_num < pageParams.page_num)
+            getProjectJobs(params)
+        else
+            getProjectJobs(pageParams)
+        setSelectedRows([])
+    }
+
     return (
         <Spin spinning={loading}>
             <TableBody>
+                <Button
+                    style={{ marginBottom: 10 }}
+                    type='primary'
+                    disabled={selectedRows.length === 0}
+                    onClick={() => changeJobProjectDrawer.current.show(selectedRows)}
+                >
+                    更改项目
+                </Button>
                 <ResizeHooksTable
                     rowKey='id'
                     name="ws-dashboard-project-job-list"
@@ -241,6 +270,12 @@ const JobTable = (props: any) => {
                     pagination={false}
                     style={{ width: '100%' }}
                     size="small"
+                    rowSelection={{
+                        selectedRowKeys: selectedRows.map((i: any) => i.id),
+                        onChange: (rowkeys: any, selectedRows: any) => {
+                            setSelectedRows(selectedRows)
+                        }
+                    }}
                 />
                 <CommonPagination
                     total={jobs?.total}
@@ -253,6 +288,8 @@ const JobTable = (props: any) => {
             </TableBody>
 
             <RerunModal ref={rerunModal} />
+
+            <ChangeJobProjectDrawer ref={changeJobProjectDrawer} onOk={handleChangeProjectOk} />
         </Spin>
     )
 }
