@@ -9,17 +9,14 @@ import { useIntl, FormattedMessage, getLocale, useLocation, useParams } from 'um
 import { ReportContext } from '../../Provider';
 import { Typography, Space, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
 import { PerfTextArea, GroupItemText } from '../EditPerfText';
-// import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
 import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
 import { ReactComponent as TestItemIcon } from '@/assets/svg/Report/TestItem.svg';
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
-// import CodeViewer from '@/components/CodeViewer';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { reportDelete, handleDataArr } from '../ReportFunction';
 import { filterResult } from '@/components/Report/index'
-// import ChartsIndex from '../../../../AnalysisResult/components/ChartIndex';
 import ChartsIndex from '../PerfCharts';
 import ChartTypeChild from './ChartTypeChild'
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -74,6 +71,7 @@ const Performance = (props: any) => {
     const { share_id } = useParams() as any
     const { pathname } = useLocation()
     const { child, name, btn, id, onDelete, dataSource, setDataSource } = props
+
     const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
     const isEditPage = !!~pathname?.indexOf('/edit')
 
@@ -125,16 +123,17 @@ const Performance = (props: any) => {
     }
 
     const DelBtn: React.FC<any> = (props: any) => {
-        const { conf, cid } = props;
+        const { conf, cid, name } = props;
         return (
             <Popconfirm
                 title={<FormattedMessage id="delete.prompt" />}
-                onConfirm={() => handleDelete('conf', conf, cid)}
+                onConfirm={() => handleDelete(name, conf, cid)}
                 cancelText={<FormattedMessage id="operation.cancel" />}
                 okText={<FormattedMessage id="operation.delete" />}
             >
                 {
-                    btnState && <PrefDataDel empty={true}>
+                    btnState &&
+                    <PrefDataDel empty={true}>
                         <DelDefault className="remove" />
                         <DelHover className="remove_active" />
                     </PrefDataDel>
@@ -346,14 +345,14 @@ const Performance = (props: any) => {
                                             </TestConf>
                                             <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
                                                 <PrefData>
-                                                    <DelBtn conf={conf} cid={cid} />
+                                                    <DelBtn name='conf' conf={conf} cid={cid} />
                                                     <PrefDataTitle gLen={groupLen}><EllipsisPulic title={conf.conf_name} /></PrefDataTitle>
                                                     {renderShare(conf)}
                                                 </PrefData>
                                                 {
                                                     conf.metric_list.map((metric: any, idx: number) => (
                                                         <PrefMetric key={metric.metric}>
-                                                            <DelBtn conf={conf} cid={cid} />
+                                                            <DelBtn name='metric' conf={metric} cid={conf.conf_id} />
                                                             {/* <DelBtnEmpty conf={conf} cid={cid} /> */}
                                                             <MetricTitle gLen={groupLen}>
                                                                 <Row justify="space-between">
@@ -460,21 +459,5 @@ const Performance = (props: any) => {
         </div>
     )
 }
+
 export default memo(Performance);
-
-
-/* 
-    if (result?.compare_result == 'decline') {
-        metric.sortNum = 0
-    } else if (result?.compare_result == 'increase') {
-        metric.sortNum = 1
-    } else if (result?.compare_result == 'normal') {
-        metric.sortNum = 2
-    } else if (result?.compare_result == 'invalid') {
-        metric.sortNum = 3
-    } else if (result?.compare_result == 'na') {
-        metric.sortNum = 4
-    } else {
-        metric.sortNum = 5
-    }
-*/
