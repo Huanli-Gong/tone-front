@@ -109,7 +109,7 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
             {
                 !state ?
                     <Space wrap size={4}>
-                        {/* {
+                        {
                             !isSharePage &&
                             <Access
                                 accessible={access.WsTourist() && access.WsMemberOperateSelf(creator_id)}
@@ -117,7 +117,7 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
                             >
                                 <EditOutlined onClick={handleSetTags} style={editBtn} />
                             </Access>
-                        } */}
+                        }
 
                         {
                             tags.length > 0
