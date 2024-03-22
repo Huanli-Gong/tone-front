@@ -22,6 +22,9 @@ export default {
 
   "menu.home": 'Home',
   'menu.share_job': 'Share Job',
+  'menu.share_report': 'Share Report',
+  'menu.share_result_analysis': 'Share Result Analysis',
+  'menu.share_time_analysis': 'Share Time Analysis',
 
   "menu.PersonCenter": 'Person Center',
   "menu.HelpDoc": 'Help',
@@ -63,6 +66,7 @@ export default {
   'menu.Workspace.TestReport.TemplateEdit': 'Edit Report Template',
   'menu.Workspace.TestReport.Report': 'Test Report',
   'menu.Workspace.TestReport.EditReport': 'Edit Report',
+  'menu.Workspace.TestReport.ShareReport': 'Share Report',
   // "menu.Workspace.TestReport.ShareReport": '分享报告',
   'menu.Workspace.TestReport.CompareAnalysisConf': 'Result',
 

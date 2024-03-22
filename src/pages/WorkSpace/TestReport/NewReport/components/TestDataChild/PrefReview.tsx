@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useContext, useEffect, useState, memo, useMemo, useRef } from 'react';
-import { useIntl, FormattedMessage, getLocale, useLocation } from 'umi';
+import { useIntl, FormattedMessage, getLocale, useLocation, useParams } from 'umi';
 import { ReportContext } from '../../Provider';
 import { Typography, Space, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
 import { PerfTextArea, GroupItemText } from '../EditPerfText';
@@ -24,7 +24,7 @@ import ChartsIndex from '../PerfCharts';
 import ChartTypeChild from './ChartTypeChild'
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { JumpResult } from '@/utils/hooks';
-import _ from 'lodash';
+import lodash from 'lodash';
 import {
     TestGroupItem,
     TestItemText,
@@ -71,6 +71,7 @@ const compare = ($props: any) => {
 const Performance = (props: any) => {
     const { formatMessage } = useIntl()
     const sortRef = useRef<any>();
+    const { share_id } = useParams() as any
     const { pathname } = useLocation()
     const { child, name, btn, id, onDelete, dataSource, setDataSource } = props
     const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
@@ -85,7 +86,7 @@ const Performance = (props: any) => {
     }, [baselineGroupIndex])
 
     useEffect(() => {
-        const data = isOldReport ? handleDataArr(_.cloneDeep(child), baseIndex) : child
+        const data = isOldReport ? handleDataArr(lodash.cloneDeep(child), baseIndex) : child
         btn ? setPerData(data) : setPerData({
             ...child, list: child.list?.map((item: any) => {
                 return {
@@ -99,7 +100,7 @@ const Performance = (props: any) => {
     // 筛选过滤
     const handleConditions = (value: any) => {
         setFilterName(value)
-        let dataSource = isOldReport ? handleDataArr(_.cloneDeep(child), baseIndex) : _.cloneDeep(child)
+        let dataSource = isOldReport ? handleDataArr(lodash.cloneDeep(child), baseIndex) : lodash.cloneDeep(child)
         if (value === 'all') {
             setPerData(dataSource)
         } else {
@@ -156,7 +157,11 @@ const Performance = (props: any) => {
                         btn &&
                         <Space>
                             <Typography.Text><FormattedMessage id="report.filter" />: </Typography.Text>
-                            <Select defaultValue="all" style={{ width: enLocale ? 336 : 200 }} value={filterName} onSelect={handleConditions}
+                            <Select
+                                defaultValue="all"
+                                style={{ width: enLocale ? 336 : 200 }}
+                                value={filterName}
+                                onSelect={handleConditions}
                                 getPopupContainer={node => node.parentNode}
                             >
                                 <Option value="all"><FormattedMessage id="report.all.s" /></Option>
@@ -176,32 +181,9 @@ const Performance = (props: any) => {
     const handleArrow = (suite: any, conf: any, i: number) => {
         sortRef.current = i
 
-        let arr: Array<[]> = []
+        let arr: any[] = []
         setSortKeys(arr.concat(conf.conf_id))
 
-        // if (sortKeys.includes(conf.conf_id)) {
-        //     setSortKeys((p: any) => p.filter((iy: any) => iy !== conf.conf_id))
-        //     setPerData((p: any) => ({
-        //         ...p,
-        //         list: p.list.map((ix: any) => {
-        //             if (ix.suite_id === suite.suite_id) {
-        //                 return {
-        //                     ...ix,
-        //                     conf_list: ix.conf_list.map((confs: any) => {
-        //                         if (confs.conf_id === conf.conf_id) {
-        //                             const currentSuite = child.list?.filter((xy: any) => xy.suite_id === suite.suite_id)?.[0]
-        //                             const useConfList = currentSuite.conf_list?.filter((confs: any) => confs.conf_id === conf.conf_id)
-        //                             return useConfList?.[0] || confs
-        //                         }
-        //                         return confs
-        //                     })
-        //                 }
-        //             }
-        //             return ix
-        //         })
-        //     }))
-        //     return
-        // }
         const newConf = {
             ...conf,
             metric_list: conf.metric_list?.reduce((pre: any, metric: any) => {
@@ -211,11 +193,6 @@ const Performance = (props: any) => {
                 })
             }, []).sort(compare('sortNum'))
         }
-
-        // setSortKeys((p: any) => {
-        //     if (p.includes(conf.conf_id)) return p
-        //     return p.concat(conf.conf_id)
-        // })
 
         setPerData((p: any) => ({
             ...p,
@@ -250,7 +227,7 @@ const Performance = (props: any) => {
                 return (
                     <PrefDataText gLen={groupLen} btnState={btnState} key={item?.obj_id}>
                         {
-                            !getCompareType(item) ?
+                            !share_id && !getCompareType(item) ?
                                 <JumpResult ws_id={wsId} job_id={item?.obj_id || item} /> :
                                 <div style={{ height: 38 }} />
                         }
