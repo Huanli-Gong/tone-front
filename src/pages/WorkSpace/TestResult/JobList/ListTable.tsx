@@ -110,7 +110,7 @@ const ListTable: React.FC<IProps> = (props) => {
         message.success(formatMessage({ id: 'operation.success' }))
         const $page_num = Math.ceil((dataSource?.total - 1) / pageQuery.page_size)
         if ($page_num < pageQuery.page_num)
-            setPageQuery({ ...pageQuery, page_num: $page_num })
+            setPageQuery({ ...pageQuery, page_num: $page_num || 1 })
         else
             listRefresh()
         countRefresh()
