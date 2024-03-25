@@ -19,3 +19,8 @@ export const postKnowlegeAnswers = (data: any) => request(`/api/sys/chats/answer
 export const putKnowlegeAnswers = (data: any) => request(`/api/sys/chats/answer/`, { data, method: 'put' })
 
 export const deleteKnowlegeAnswers = (data: any) => request(`/api/sys/chats/answer/`, { data, method: 'delete' })
+
+/* Setting */
+
+export const getBootSetting = (params?: any) => request(`/api/sys/chats/config/`, { params })
+export const updateBootSetting = (data: any) => request(`/api/sys/chats/config/`, { data, method: 'put' })

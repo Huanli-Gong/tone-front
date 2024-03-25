@@ -1,12 +1,13 @@
-import { Empty, Input, Space, Tabs, Tag, Typography } from "antd"
-import React from "react"
-import styled from "styled-components"
-import { getSelfServices } from "./services";
-import { ReactComponent as EmptyResult } from '@/assets/boot/empty_result.svg'
-import { ReactComponent as EmptyIcon } from '@/assets/boot/empty.svg'
-import RichEditor from "@/components/RichEditor";
-import { useHelperBootContext } from "../Provider";
-import { useLocation, useParams, useRouteMatch } from "umi";
+import { Empty, Input, Space, Tabs, Tag, Typography } from 'antd';
+import React from 'react';
+import styled from 'styled-components';
+import { getSelfServices } from './services';
+import { ReactComponent as EmptyResult } from '@/assets/boot/empty_result.svg';
+import { ReactComponent as EmptyIcon } from '@/assets/boot/empty.svg';
+import RichEditor from '@/components/RichEditor';
+import { useHelperBootContext } from '../Provider';
+import { useLocation } from 'umi';
+import cls from 'classnames';
 
 const ContentStyle = styled.div`
     height: 412px;
@@ -17,7 +18,7 @@ const ContentStyle = styled.div`
     .nav {
         height: 40px;
         width: 400px;
-        background-color: #FFFFFF;
+        background-color: #ffffff;
 
         display: flex;
         justify-content: start;
@@ -39,7 +40,7 @@ const ContentStyle = styled.div`
 
         .problem_block {
             width: 368px;
-            background-color: #FFFFFF;
+            background-color: #ffffff;
             border-radius: 6px;
             margin: 0 auto;
             padding: 26px 16px 16px;
@@ -53,18 +54,25 @@ const ContentStyle = styled.div`
                 top: 0;
                 left: 0;
                 height: 18px;
-                background-color: #FF4D4F;
                 border-radius: 6px 0 6px 0;
                 font-weight: 500;
                 font-size: 12px;
-                color: #FFFFFF;
+                color: #ffffff;
                 padding: 0 6px;
+            }
+
+            .t-error {
+                background-color: #ff4d4f;
+            }
+
+            .t-info {
+                background-color: #1677ff;
             }
 
             .reason-title {
                 font-weight: 500;
                 font-size: 14px;
-                color: rgba(0,0,0,0.85);
+                color: rgba(0, 0, 0, 0.85);
             }
 
             .problem-title {
@@ -72,7 +80,7 @@ const ContentStyle = styled.div`
                 word-break: break-all;
                 font-weight: 500;
                 font-size: 16px;
-                color: rgba(0,0,0,0.85);
+                color: rgba(0, 0, 0, 0.85);
             }
 
             .influence-text {
@@ -80,15 +88,15 @@ const ContentStyle = styled.div`
                 width: 100%;
                 word-break: break-all;
                 font-size: 14px;
-                color: rgba(0,0,0,0.85);
+                color: rgba(0, 0, 0, 0.85);
             }
         }
     }
-`
+`;
 
 const ModuleTabs = styled(Tabs)`
     width: 400px;
-    background-color: #FFFFFF;
+    background-color: #ffffff;
 
     .ant-tabs-tab + .ant-tabs-tab {
         margin-left: 0px;
@@ -112,43 +120,48 @@ const ModuleTabs = styled(Tabs)`
             position: absolute;
             width: 1px;
             height: 14px;
-            background-color: #D9D9D9;
+            background-color: #d9d9d9;
             right: 0;
             top: 50%;
             transform: translateY(-50%);
         }
     }
-`
+`;
 
 const ServiceButton = styled.div`
     cursor: pointer;
     height: 22px;
     width: 56px;
     font-weight: 400;
-    color: rgba(32,92,232,0.85);
+    color: rgba(32, 92, 232, 0.85);
     position: absolute;
     right: 16px;
     top: 6px;
-`
+`;
 
 const ServiceHeader = styled.div`
     height: 102px;
-    background-color: #0052D9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    background-color: #0052d9;
+
+    .bg {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
 
     .p {
         font-weight: 400;
         font-size: 14px;
-        color: #FFFFFF;
+        color: #ffffff;
     }
 
     .input {
         height: 32px;
         width: 336px;
-        background-color: #FFFFFF;
+        background-color: #ffffff;
         border-radius: 16px;
         margin-top: 12px;
 
@@ -166,7 +179,7 @@ const ServiceHeader = styled.div`
             }
         }
     }
-`
+`;
 
 const DEFAULT_SERVICES_ITEMS = [
     {
@@ -185,165 +198,188 @@ const DEFAULT_SERVICES_ITEMS = [
         key: `test_result`,
         label: `测试结果(0)`,
     },
-]
+];
 
-const service_label_map = new Map(
-    DEFAULT_SERVICES_ITEMS.map(({ key, label }) => [key, label])
-)
+const service_label_map = new Map(DEFAULT_SERVICES_ITEMS.map(({ key, label }) => [key, label]));
 
 const SelfHelpModule: React.FC = () => {
-    const { selfHepler, setSelfHelper } = useHelperBootContext()
+    const { selfHepler, setSelfHelper, setInp, inp } = useHelperBootContext();
 
-    const { pathname } = useLocation() as any
+    const { pathname } = useLocation() as any;
 
-    const [inp, setInp] = React.useState("")
-    const [tabkey, setTabkey] = React.useState<any>("system")
-    const [list, setList] = React.useState<any>(DEFAULT_SERVICES_ITEMS)
+    const [loading, setLoading] = React.useState<any>(false);
+    const [tabkey, setTabkey] = React.useState<any>('system');
+    const [list, setList] = React.useState<any>(DEFAULT_SERVICES_ITEMS);
 
     const onChange = (key: string) => {
-        setTabkey(key)
+        setTabkey(key);
     };
 
     const init = async ($job_id: any) => {
-        const { data, code, msg } = await getSelfServices({ job_id: $job_id })
+        if (!$job_id) return;
+        setLoading(true);
+        const { data, code, msg } = await getSelfServices({ job_id: $job_id });
+        setLoading(false);
+
         if (code !== 200) {
-            setList(DEFAULT_SERVICES_ITEMS)
-            setSelfHelper({})
-            return console.log(msg)
+            setList(DEFAULT_SERVICES_ITEMS);
+            setSelfHelper({});
+            return console.log(msg);
         }
-        setSelfHelper(data)
-    }
+        setSelfHelper(data);
+    };
 
     React.useEffect(() => {
-        if (!selfHepler) return
-        const dataEntries = Object.entries(selfHepler)
+        if (!selfHepler) return;
+        const dataEntries = Object.entries(selfHepler);
         let tab: any;
-        setList(dataEntries.reduce((p: any, c: any) => {
-            const [k, v] = c
-            if (!tab && v?.length > 0) tab = k
-            return p.concat([{
-                key: k,
-                label: service_label_map.get(k)?.replace(/\(.*?\)/, `(${v.length})`)
-            }])
-        }, []))
+        setList(
+            dataEntries.reduce((p: any, c: any) => {
+                const [k, v] = c;
+                if (!tab && v?.length > 0) tab = k;
+                return p.concat([
+                    {
+                        key: k,
+                        label: service_label_map.get(k)?.replace(/\(.*?\)/, `(${v.length})`),
+                    },
+                ]);
+            }, []),
+        );
 
-        if (tab) setTabkey(tab)
-    }, [selfHepler])
+        setTabkey(tab || 'system');
+    }, [selfHepler]);
 
     React.useEffect(() => {
-        if (selfHepler) return
+        if (selfHepler) return;
         if (!!~pathname.indexOf('/test_result/')) {
-            const job_id = pathname.replace(/.*?\/test_result\/((\d)+)/, '$1')
+            const job_id = pathname.replace(/.*?\/test_result\/((\d)+)/, '$1');
 
-            if (Object.prototype.toString.call(+ job_id) === '[object Number]') {
-                setInp(job_id)
-                init(job_id)
+            if (Object.prototype.toString.call(+job_id) === '[object Number]') {
+                setInp(job_id);
+                init(job_id);
             }
         }
-    }, [pathname, selfHepler])
+    }, [pathname, selfHepler]);
+
+    const scrollChange = () => {
+        setTimeout(() => {
+            document.querySelector('.self-help-module .problem')?.scroll({
+                top: 0,
+            });
+        }, 80);
+    };
+
+    React.useEffect(() => {
+        scrollChange();
+    }, [tabkey]);
 
     return (
-        <div className="self-help-module" >
+        <div className="self-help-module">
             <ContentStyle>
                 <ServiceHeader>
-                    <div className="p">一键诊断 智能解答，让自助成为解决问题的钥匙</div>
-                    <div className="input">
-                        <Input
-                            onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-                                setInp(evt.target.value)
-                            }}
-                            value={inp}
-                            placeholder="请输入Job ID"
-                        />
-                        <ServiceButton
-                            onClick={() => {
-                                init(inp)
-                                // setInp('')
-                            }}
-                        >
-                            立即排查
-                        </ServiceButton>
+                    <div className="bg">
+                        <div className="p">一键诊断 智能解答，让自助成为解决问题的钥匙</div>
+                        <div className="input">
+                            <Input
+                                onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
+                                    setInp(evt.target.value);
+                                }}
+                                onPressEnter={() => init(inp?.trim())}
+                                value={inp}
+                                placeholder="请输入Job ID"
+                            />
+                            <ServiceButton
+                                onClick={() => {
+                                    init(inp?.trim());
+                                    // setInp('')
+                                }}
+                            >
+                                立即排查
+                            </ServiceButton>
+                        </div>
                     </div>
                 </ServiceHeader>
 
-                {
-                    selfHepler &&
-                    <ModuleTabs
-                        items={list}
-                        activeKey={tabkey}
-                        size="small"
-                        onChange={onChange}
-                    />
-                }
-
-                <div className="problem">
-                    {
-                        selfHepler?.[tabkey]?.map((i: any, idx: number) => {
+                {selfHepler && (
+                    <ModuleTabs items={list} activeKey={tabkey} size="small" onChange={onChange} />
+                )}
+                {loading ? (
+                    <div className="problem">
+                        <Empty image={<EmptyIcon />} description="正在努力排查中..." />
+                    </div>
+                ) : (
+                    <div className="problem">
+                        {selfHepler?.[tabkey]?.map((i: any, idx: number) => {
                             return (
                                 <div key={i.problem || idx} className="problem_block">
-                                    {
-                                        i.problem &&
-                                        <div className="problem-title">
-                                            {i.problem}
-                                        </div>
-                                    }
+                                    {i.problem && <div className="problem-title">{i.problem}</div>}
 
-                                    {
-                                        i.answers.map((ctx: any) => (
-                                            <Space key={ctx.reason} style={{ width: '100%' }} direction="vertical" size={12}>
-                                                {
-                                                    ctx.reason &&
-                                                    <div className="reason-title">
-                                                        <Tag color="processing">原因</Tag>
-                                                        {ctx.reason}
-                                                    </div>
-                                                }
-                                                {
-                                                    ctx.answer &&
-                                                    <RichEditor
-                                                        editable={false}
-                                                        content={ctx.answer}
-                                                        styledCss={`
+                                    {i.answers.map((ctx: any, idx: number) => (
+                                        <Space
+                                            key={ctx.reason}
+                                            style={{ width: '100%' }}
+                                            direction="vertical"
+                                            size={12}
+                                        >
+                                            {ctx.reason && (
+                                                <div className="reason-title">
+                                                    <Tag color="processing">原因{idx + 1}</Tag>
+                                                    {ctx.reason}
+                                                </div>
+                                            )}
+                                            {ctx.answer && (
+                                                <RichEditor
+                                                    editable={false}
+                                                    content={ctx.answer}
+                                                    styledCss={`
                                                             img { width: 100%; }
                                                             .tiptap.ProseMirror { padding: 0 !important;}
                                                         `}
-                                                    />
-                                                }
-                                            </Space>
-                                        ))
-                                    }
+                                                />
+                                            )}
+                                        </Space>
+                                    ))}
 
-                                    {
-                                        i.influence &&
+                                    {i.influence && (
                                         <div className="influence-text">
                                             <Typography.Paragraph
-                                                ellipsis={{ rows: 3, expandable: true, symbol: '展开' }}
+                                                ellipsis={{
+                                                    rows: 3,
+                                                    expandable: true,
+                                                    symbol: '展开',
+                                                }}
                                             >
                                                 {i.influence}
                                             </Typography.Paragraph>
                                         </div>
-                                    }
-                                    <div className="tips">异常</div>
+                                    )}
+                                    <div className={cls('tips', `t-${i.level}`)}>
+                                        {i.level === 'error' ? '异常' : '提示'}
+                                    </div>
                                 </div>
-                            )
-                        })
-                    }
-                    {
-                        JSON.stringify(selfHepler) === '{}' &&
-                        <Empty image={<EmptyResult />} description={'Job ID错误或不存在，请检查后再尝试'} />
-                    }
-                    {
-                        JSON.stringify(selfHepler) !== '{}' && selfHepler?.[tabkey]?.length === 0 &&
-                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无异常" />
-                    }
-                    {
-                        !!!selfHepler &&
-                        <Empty image={<EmptyIcon />} description="立即排查您关注的Job" />
-                    }
-                </div>
+                            );
+                        })}
+                        {JSON.stringify(selfHepler) === '{}' && (
+                            <Empty
+                                image={<EmptyResult />}
+                                description={'Job ID错误或不存在，请检查后再尝试'}
+                            />
+                        )}
+                        {JSON.stringify(selfHepler) !== '{}' &&
+                            selfHepler?.[tabkey]?.length === 0 && (
+                                <Empty
+                                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                    description="暂无异常"
+                                />
+                            )}
+                        {!!!selfHepler && (
+                            <Empty image={<EmptyIcon />} description="立即排查您关注的Job" />
+                        )}
+                    </div>
+                )}
             </ContentStyle>
-        </div >
-    )
-}
+        </div>
+    );
+};
 
-export default SelfHelpModule
+export default SelfHelpModule;

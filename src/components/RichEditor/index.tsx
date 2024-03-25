@@ -88,7 +88,7 @@ const RichEditor: React.FC<IProps> = (props) => {
     const handlePreview = (event: Event) => {
         if (editor?.isEditable) return
         const targetDom = event.target as any
-        if (!!~targetDom.className.indexOf('tiptap-image-cls')) {
+        if (!!~targetDom?.className?.indexOf('tiptap-image-cls')) {
             setPreview({ src: targetDom.getAttribute('src'), visible: true })
         }
     }

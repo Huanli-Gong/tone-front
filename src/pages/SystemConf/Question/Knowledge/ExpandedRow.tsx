@@ -60,11 +60,17 @@ const ExpandedRow: React.FC<any> = (props) => {
 
     const addRef = React.useRef<any>(null)
 
-    const init = async () => {
+    const init = async (query = params) => {
         setLoading(true)
-        const { code, msg, ...rest } = await getKnowlegeAnswers(params)
+        const { code, msg, ...rest } = await getKnowlegeAnswers(query)
         setLoading(false)
         setSource(rest)
+    }
+
+    const changeParamsAndInit = (objs: any) => {
+        const newParams = { ...params, ...objs }
+        setParams(newParams)
+        init(newParams)
     }
 
     const handleEdit = (row: any) => addRef.current?.show(row)
@@ -77,24 +83,19 @@ const ExpandedRow: React.FC<any> = (props) => {
             return
         }
         message.success(formatMessage({ id: 'operation.success' }))
-        setParams((p: any) => ({ ...p, page_num: getPageNumOnDel(params, source) }))
+        changeParamsAndInit({ page_num: getPageNumOnDel(params, source) })
     }
 
     const handleAdd = () => addRef.current?.show()
 
     React.useEffect(() => {
-        setParams((p: any) => ({
-            ...p,
+        changeParamsAndInit({
             problem_type,
             problem_attribution,
             enable,
             page_num: 1
-        }))
+        })
     }, [problem_type, problem_attribution, enable])
-
-    React.useEffect(() => {
-        init()
-    }, [params])
 
     const columns: any = [{
         dataIndex: 'reason',
@@ -209,8 +210,10 @@ const ExpandedRow: React.FC<any> = (props) => {
                         style: { marginBottom: 0 },
                         total: source?.total || 0,
                         current: params?.page_num || 1,
+                        pageSize: params?.page_size || 20,
                         onChange(page_num, page_size) {
-                            setParams((p: any) => ({ ...p, page_num, page_size }))
+                            console.log(page_num, page_size)
+                            changeParamsAndInit({ page_num, page_size })
                         },
                     }}
                 />

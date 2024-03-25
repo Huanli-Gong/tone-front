@@ -54,7 +54,7 @@ export const DropdownWrapper = `
     z-index: 100;
     overflow: hidden;
     bottom: 0;
-    left: 0;
+    right: 0;
     transform: translateY(100%);
 `
 

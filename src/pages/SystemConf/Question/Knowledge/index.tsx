@@ -4,10 +4,11 @@ import { deleteProblem, getKnowlegeProblems, putProblem } from "./services"
 import { FormattedMessage, useIntl } from "umi"
 import ExpandedRow from "./ExpandedRow"
 import AddProblem from "./AddProblem"
-import { SelectEnable, SelectProblemAttribution, SelectProblemType } from "./FieldsSet"
+import { SelectEnable, useFieldsSet } from "./FieldsSet"
 import { CaretDownFilled, CaretRightFilled } from "@ant-design/icons"
 import { getPageNumOnDel } from "@/utils/utils"
 import OverflowList from "@/components/TagOverflow"
+import lodash from 'lodash'
 
 export const locales_zh = {
     'knowlege.column.problem': '标准问题',
@@ -36,8 +37,12 @@ const DEFAULT_PARAMS = {
 }
 
 const EditLevelColumn: React.FC<any> = (props) => {
-    const [val, setVal] = React.useState(props?.level)
+    const [val, setVal] = React.useState()
     const [show, setShow] = React.useState(false)
+
+    React.useEffect(() => {
+        setVal(props.level)
+    }, [props.level])
 
     const handleLevelBlur = async () => {
         const { code, msg } = await putProblem({ ...props, problem_id: props.id, level: val })
@@ -78,6 +83,8 @@ const KnowledgePage: React.FC = () => {
     const enable = Form.useWatch('enable', form)
     const problem_type = Form.useWatch('problem_type', form)
     const problem_attribution = Form.useWatch('problem_attribution', form)
+
+    const { SelectProblemAttribution, SelectProblemType } = useFieldsSet()
 
     const init = async () => {
         setLoading(true)
@@ -159,6 +166,11 @@ const KnowledgePage: React.FC = () => {
         }
     }]
 
+    const handleFieldsChange = lodash.debounce(() => {
+        const values = form.getFieldsValue()
+        setParams((p: any) => ({ ...p, ...values, page_num: 1 }))
+    }, 500)
+    
     React.useEffect(() => {
         init()
     }, [params])
@@ -169,6 +181,7 @@ const KnowledgePage: React.FC = () => {
                 <Form
                     form={form}
                     layout='inline'
+                    onFieldsChange={handleFieldsChange}
                     initialValues={{
                         problem_type: '',
                         problem_attribution: '',
@@ -226,6 +239,7 @@ const KnowledgePage: React.FC = () => {
                 }}
                 pagination={{
                     total: source?.total || 0,
+                    pageSize: params?.page_size || 20,
                     current: params?.page_num || 1,
                     onChange(page_num, page_size) {
                         setParams((p: any) => ({ ...p, page_num, page_size }))

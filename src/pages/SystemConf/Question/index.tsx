@@ -4,6 +4,7 @@ import Knowledge from "./Knowledge"
 import Feedback from "./Feadback"
 import { history, useLocation } from "umi"
 import styled from "styled-components"
+import BootSetting from "./Setting"
 
 const TabsCls = styled(Tabs)`
     .ant-tabs-nav-list {
@@ -35,6 +36,10 @@ const SysQuestion: React.FC = () => {
                     key: 'question',
                     label: '问题收集',
                     children: <Feedback />
+                }, {
+                    key: 'setting',
+                    label: '助手配置',
+                    children: <BootSetting />
                 }]}
             />
         </div>

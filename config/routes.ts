@@ -77,6 +77,7 @@ const routes = [
 				component: '@/pages/SystemConf/TestParmSetting',
 				access: 'IsAdmin',
 			},
+			BUILD_APP_ENV !== 'opensource' &&
 			{
 				path: '/system/question',
 				name: 'question',
@@ -89,7 +90,7 @@ const routes = [
 				name: 'DirectRoute',
 				redirect: '/'
 			}
-		],
+		].filter(Boolean),
 	},
 	{
 		path: '/message',

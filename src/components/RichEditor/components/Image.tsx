@@ -12,7 +12,7 @@ const ImageInputWrap = styled.div`
 
 const ImageInputBlock = styled.div`
     position: absolute;
-    left: 0;
+    right: 0;
     bottom: -55px;
     background-color: #fff;
     padding: 8px;
@@ -68,7 +68,7 @@ const ImageMenu: React.FC<Record<string, any>> = ({ editor }) => {
     const handleConfirm = () => {
         const { value } = ref.current
         if (!value) return
-        if (!/^https?:\/\/(.+\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i.test(value)) return
+        // if (!/^https?:\/\/(.+\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i.test(value)) return 
         inpImage(value)
         ref.current.value = ""
         setModal(false)
@@ -85,6 +85,7 @@ const ImageMenu: React.FC<Record<string, any>> = ({ editor }) => {
         <ImageInputWrap>
             <DorpdownMenu
                 title=""
+                placement="rightButtom"
                 menu={
                     <ToolMenuList>
                         <ToolMenuItem onClick={() => setModal(true)} >
@@ -106,6 +107,7 @@ const ImageMenu: React.FC<Record<string, any>> = ({ editor }) => {
                 <ImageInputBlock ref={imgWrap}>
                     <span>图片地址：</span>
                     <input ref={ref} placeholder="请输入图片地" />
+                    {/* <span>{errorMessage}</span> */}
                     <span style={{ cursor: "pointer" }} onClick={handleCancel}>取消</span>
                     <a onClick={handleConfirm}>确定</a>
                 </ImageInputBlock>

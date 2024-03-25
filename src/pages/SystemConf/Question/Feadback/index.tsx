@@ -7,13 +7,14 @@ import AddFeedbackDrawer from "./AddFeedbackDrawer"
 import lodash from 'lodash'
 import { FEEDBACK_ENABLE, SelectEnable, SelectType, feedbackTypeMap } from "./FieldsSet"
 import { getPageNumOnDel } from "@/utils/utils"
+import { ColumnEllipsisText } from "@/components/ColumnComponents"
 
 export const locales_zh = {
     'feedback.column.contents': '问题描述',
+    'feedback.column.is_answered': '是否匹配',
     'feedback.column.contents_sources': '分类',
     'feedback.column.status': '状态',
     'feedback.column.gmt_created': '创建时间',
-    'feedback.column.gmt_modified': '更新时间',
     'feedback.column.creator_name': '创建人',
 
     'feedback.form.problem.placeholder': '搜索问题描述',
@@ -67,7 +68,18 @@ const FeedbackPage: React.FC = () => {
     const columns: any[] = [{
         title: formatMessage({ id: 'feedback.column.contents' }),
         dataIndex: 'contents',
-    }, {
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 560,
+        render(_: any) {
+            return (
+                <ColumnEllipsisText ellipsis={{ tooltip: true }} placement="topLeft" title={_}>
+                    {_}
+                </ColumnEllipsisText>
+            )
+        }
+    },  {
         title: formatMessage({ id: 'feedback.column.contents_sources' }),
         dataIndex: 'contents_sources',
         render(_: any) {
@@ -86,14 +98,17 @@ const FeedbackPage: React.FC = () => {
             )
         }
     }, {
+        title: formatMessage({ id: 'feedback.column.is_answered' }),
+        dataIndex: 'is_answered',
+        render(_: any) {
+            return _?'是': '否'
+        }
+    },{
         title: formatMessage({ id: 'feedback.column.creator_name' }),
         dataIndex: 'creator_name',
     }, {
         title: formatMessage({ id: 'feedback.column.gmt_created' }),
         dataIndex: 'gmt_created',
-    }, {
-        title: formatMessage({ id: 'feedback.column.gmt_modified' }),
-        dataIndex: 'gmt_modified',
     }, {
         title: formatMessage({ id: 'Table.columns.operation' }),
         render(row: any) {

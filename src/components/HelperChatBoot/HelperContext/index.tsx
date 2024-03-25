@@ -1,11 +1,14 @@
 import { CloseOutlined } from "@ant-design/icons";
-import { Space, Typography } from "antd";
+import { Space, Typography, Tooltip } from "antd";
 import React from "react";
 import styled from "styled-components"
 import AnswerContent from "./AnswerContent";
 import cls from "classnames"
 import SelfHelpModule from "./SelfHelpModule";
 import Feedback from "./Feedback";
+import { getBootSetting } from "@/pages/SystemConf/Question/Knowledge/services";
+import { useRequest } from "umi";
+import { useHelperBootContext } from "../Provider";
 
 const Container = styled.div.attrs((props: any) => ({
     style: {
@@ -99,12 +102,24 @@ const ChartWrapper = styled.div`
     wdith: 100%;
 `
 
+const GroupQrCodeCls = styled.div`
+    padding: 6px;
+    display: flex;
+    width: 180px;
+    height: 180px;
+
+    img {
+        width: 100%;
+        height: 100%;
+    }
+`
+
 const HelperContext: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { pos } = props
     const [open, setOpen] = React.useState(false)
+    const { setActive, setFeedback, active, feedback } = useHelperBootContext()
 
-    const [active, setActive] = React.useState(0)
-    const [feedback, setFeedback] = React.useState(false)
+    const { data } = useRequest(getBootSetting, { initialData: { group_link: '' } })
 
     React.useImperativeHandle(ref, () => ({
         toggle() {
@@ -136,9 +151,24 @@ const HelperContext: React.ForwardRefRenderFunction<any, any> = (props, ref) => 
                                 <Typography.Text onClick={() => setFeedback(true)}>
                                     意见反馈
                                 </Typography.Text>
-                                <Typography.Text>
-                                    加入答疑群
-                                </Typography.Text>
+
+                                {
+                                    data?.group_link &&
+                                    <Tooltip
+                                        color={'#fff'}
+                                        placement="bottom"
+                                        title={
+                                            <GroupQrCodeCls>
+                                                <img src={data?.group_link} />
+                                            </GroupQrCodeCls>
+                                        }
+                                    >
+                                        <Typography.Text>
+                                            加入答疑群
+                                        </Typography.Text>
+                                    </Tooltip>
+                                }
+
                                 <CloseOutlined style={{ color: '#BFBFBF' }} onClick={handleClose} />
                             </Space>
                         </Navbar>

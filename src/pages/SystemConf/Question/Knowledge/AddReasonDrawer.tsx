@@ -3,8 +3,9 @@ import React from "react"
 import styled from "styled-components"
 import { FormattedMessage } from "umi"
 import RichEditor from "@/components/RichEditor"
-import { SelectProblemAttribution, SelectProblemType } from "./FieldsSet"
+import { useFieldsSet } from "./FieldsSet"
 import { postKnowlegeAnswers, putKnowlegeAnswers } from "./services"
+import { replaceEmoji, tarnsformEmoji } from '@/components/RichEditor/components/Emoji/emojiReplacer';
 
 const FormCls = styled(Form)`
     .ant-form-item {
@@ -14,6 +15,8 @@ const FormCls = styled(Form)`
 
 const AddReasonDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
     const { onOk, problem_id } = props;
+
+    const { SelectProblemAttribution, SelectProblemType } = useFieldsSet()
 
     const [open, setOpen] = React.useState(false)
     const [fetching, setFetching] = React.useState(false)
@@ -28,7 +31,7 @@ const AddReasonDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             if (row) {
                 setSource(row)
                 form.setFieldsValue(row)
-                setText(row.answer)
+                setText(tarnsformEmoji(row.answer))
             }
         }
     }))
@@ -37,14 +40,17 @@ const AddReasonDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         form.resetFields()
         setOpen(false)
         setSource(undefined)
+        setFetching(false)
+        setText('')
+        setVm(undefined)
     }
 
     const handleOk = async () => {
         try {
-            const answer = vm?.getHTML()
+            const answer = replaceEmoji(vm?.getHTML() || '')
 
             if (!vm?.getText()) {
-                form.setFields([{ name: 'answer', errors: ['答案不能为空'] }])
+                form.setFields([{ name: 'answer', errors: ['答案不能为空，不能以纯图片的形式作为答案！'] }])
                 return
             }
             const values = await form.validateFields()
@@ -147,7 +153,6 @@ const AddReasonDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 <Form.Item
                     name="right_number"
                     label="满意度"
-                    required
                 >
                     <Input.TextArea
                         autoComplete="off"

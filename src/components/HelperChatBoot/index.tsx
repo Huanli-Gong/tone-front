@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components"
 import HelperContext from "./HelperContext";
-import BootIcon from "@/assets/boot/boot_icon.svg"
+import bootIcon from "@/assets/boot/boot_icon.svg"
 import { BootContext } from "./Provider";
 import moment from "moment"
 import { getUsualProblem } from "./HelperContext/services";
@@ -27,21 +27,22 @@ const IconWrapperCls = styled.div`
     background-color: #FFFFFF;
     box-shadow: 0 0 6px 0 rgba(0,0,0,0.12), 0 0 12px 5px rgba(0,0,0,0.09);
     border-radius: 18px;
-    padding-top: 4px;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    .sp {
+    .helper-sp {
         font-weight: 500;
         font-size: 12px;
         color: rgba(0,0,0,0.85);
         line-height: 16px;
     }
 
-    .con {
-        margin-bottom: 4px;
+    .helper-bg {
+        background: url(${bootIcon}) no-repeat center 4px / 28px 28px;
+        width: 100%;
+        height: 100%;
+        padding-top: 36px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 `
 
@@ -74,6 +75,9 @@ const Helper: React.FC = () => {
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const [charts, setCharts] = React.useState<any>([])
     const [selfHepler, setSelfHelper] = React.useState<any>(undefined)
+    const [inp, setInp] = React.useState("")
+    const [active, setActive] = React.useState(0)
+    const [feedback, setFeedback] = React.useState(false)
 
     const getTopAnswer = async (query: any = DEFAULT_PARAMS, rowkey?: any) => {
         const { data, code, msg, total } = await getUsualProblem(query)
@@ -163,7 +167,7 @@ const Helper: React.FC = () => {
         const arr = evt.target.className?.split(' ').map((i: any) => i.trim())
         let sum = 0
         for (let x = 0, len = arr.length; x < len; x++) {
-            if (['sp', 'con', 'helper-content', 'con-img'].includes(arr[x])) sum++
+            if (['helper-content','helper-bg','helper-sp'].includes(arr[x])) sum++
         }
         if (sum === 0) return
         setStart(true)
@@ -192,7 +196,9 @@ const Helper: React.FC = () => {
         <BootContext.Provider
             value={{
                 charts, setCharts, getChartItem, getTopAnswer,
-                selfHepler, setSelfHelper,
+                selfHepler, setSelfHelper, inp, setInp,
+                active, setActive,
+                feedback, setFeedback
             }}
         >
             <HelperContext pos={pos} ref={ref} />
@@ -205,14 +211,13 @@ const Helper: React.FC = () => {
                 <IconWrapperCls
                     className="helper-content"
                 >
-                    <div className="con" >
-                        <img className="con-img" src={BootIcon} />
+                    <div className="helper-bg">
+                        {
+                            '答疑助手'.split('').map((i: any) => (
+                                <span key={i} className="helper-sp">{i}</span>
+                            ))
+                        }
                     </div>
-                    {
-                        '答疑助手'.split('').map((i: any) => (
-                            <span key={i} className="sp">{i}</span>
-                        ))
-                    }
                 </IconWrapperCls>
             </HelperContent>
         </BootContext.Provider>

@@ -144,7 +144,10 @@ export const layout = ({
                 input={{ autoComplete: 'off' }}
             >
                 {dom}
-                <HelperChatBoot />
+                {
+                    BUILD_APP_ENV !== 'opensource' &&
+                    <HelperChatBoot />
+                }
             </ConfigProvider>
         ),
         disableMobile: true,
