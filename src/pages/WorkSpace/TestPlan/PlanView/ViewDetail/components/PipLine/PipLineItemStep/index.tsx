@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { history } from 'umi';
+import { Popover } from 'antd'
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { getColorByState, getStepColorByState } from '@/utils/utils'
 import { IconByState, ArrowSolid, TemplateItem } from '../modules'
 import {
@@ -79,6 +81,16 @@ const PipLineItemGrey = (props: any) => {
                       <span style={{ color: '#C84C5A', padding: '0 8px' }}>{fail || '-'}</span>
                     </div>
                   </ItemResult>
+                  {item.error_info &&
+                    <Popover
+                      placement="top"
+                      content={item.error_info}
+                      arrowPointAtCenter
+                      overlayStyle={{ wordBreak: 'break-all', maxWidth: '400px' }}
+                      >
+                      <QuestionCircleOutlined style={{ color:'rgba(0, 0, 0, 0.6)', marginLeft:'5px',paddingTop:'2px' }} />
+                    </Popover>
+                  }
                 </TemplateTop>
                 <TemplateBottom>
                   <TemplateName>

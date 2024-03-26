@@ -76,6 +76,7 @@ const Performance = (props: any) => {
     const isEditPage = !!~pathname?.indexOf('/edit')
 
     const [filterName, setFilterName] = useState('all')
+    const [chartType, setChartType] = useState('1')
     const [perData, setPerData] = useState<any>({})
     const [sortKeys, setSortKeys] = React.useState<any>([])
     const baseIndex = useMemo(() => {
@@ -89,7 +90,7 @@ const Performance = (props: any) => {
             ...child, list: child.list?.map((item: any) => {
                 return {
                     ...item,
-                    chartType: '1'
+                    chartType,
                 }
             })
         })
@@ -259,7 +260,8 @@ const Performance = (props: any) => {
                                 <CloseBtn />
                             </Popconfirm>
                         }
-                        <ChartTypeChild btn={btn} isReport={true} obj={perData} suiteId={suite.suite_id} setPerData={setPerData} />
+                        <ChartTypeChild btn={btn} isReport={true} obj={perData} suiteId={suite.suite_id} setPerData={setPerData} 
+                            chartType={chartType} setChartType={setChartType} />
                     </SuiteName>
                     <TestConfWarpper>
                         {!domainResult.is_default &&

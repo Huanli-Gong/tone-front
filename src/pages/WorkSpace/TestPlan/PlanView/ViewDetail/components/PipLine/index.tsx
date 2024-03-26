@@ -37,7 +37,7 @@ const PipLine = (props: any) => {
 
       {/** 测试阶段, .... */}
       {test_result?.map((item: any, index: any): any => {
-        return <PipLineItemStep key={index} data={item} ws_id={ws_id} mainStatus={mainEndFlag} />
+        return <PipLineItemStep key={index} data={item} ws_id={ws_id} mainStatus={mainEndFlag} failReason={data.error_info} />
       })}
 
       {/** 结束 */}

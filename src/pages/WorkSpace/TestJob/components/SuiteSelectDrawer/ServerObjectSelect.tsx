@@ -2,6 +2,7 @@
 import { Select, Badge, Typography, Form } from 'antd'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { standloneServerList, queryClusterServer, queryClusterStandaloneServer, queryClusterGroupServer } from './services';
+import debounce from 'lodash/debounce';
 import { DrawerProvider } from './Provider'
 import { useParams, useIntl } from 'umi'
 import DropdownRender from '../DropdownRender';
@@ -30,28 +31,33 @@ const ServerObjectSelect = (props: any) => {
     const [fetching, setFetching] = useState(true)
     const [pageNum, setPageNum] = useState(1)
     const [pageVisibleState, setPageVisibleState] = React.useState(false)
-    //内网单机
+    const [searchValue, setSearchValue] = useState(undefined)
 
+    //内网单机
     const standaloneServerRequest = async (page_num = 1) => {
-        const { data, code } = await standloneServerList({ ws_id, state: ['Available', 'Occupied', 'Reserved'], page_num, page_size: PAGE_SIZE }) //, page_size : 2
+        const search = searchValue ? { ip: searchValue }: {}
+        const { data, code } = await standloneServerList({ ws_id, state: ['Available', 'Occupied', 'Reserved'], page_num, page_size: PAGE_SIZE, ...search }) //, page_size : 2
         if (code === 200 && data) setServerList((p: any) => filterRepeat(p, data))
     }
 
     //内网集群
     const clusterServerRequest = async (page_num = 1) => {
-        const { data, code } = await queryClusterServer({ cluster_type: 'aligroup', ws_id, page_num, page_size: PAGE_SIZE })
+        const search = searchValue ? { ip: searchValue }: {}
+        const { data, code } = await queryClusterServer({ cluster_type: 'aligroup', ws_id, page_num, page_size: PAGE_SIZE, ...search })
         if (code === 200 && data) setServerList((p: any) => filterRepeat(p, data))
     }
 
     //云上单机
     const clusterStandaloneRequest = async () => {
-        const { data, code } = await queryClusterStandaloneServer({ ws_id, no_page: true, is_instance: serverObjectType === 'instance', state: ['Available', 'Occupied', 'Reserved'] })
+        const search = searchValue ? { ip: searchValue }: {}
+        const { data, code } = await queryClusterStandaloneServer({ ws_id, no_page: true, is_instance: serverObjectType === 'instance', state: ['Available', 'Occupied', 'Reserved'], ...search })
         if (code === 200 && data) setServerList((p: any) => filterRepeat(p, data))
     }
 
     //云上集群
     const clusterGroupRequest = async () => {
-        const { data, code } = await queryClusterGroupServer({ cluster_type: 'aliyun', ws_id, no_page: true })
+        const search = searchValue ? { ip: searchValue }: {}
+        const { data, code } = await queryClusterGroupServer({ cluster_type: 'aliyun', ws_id, no_page: true, ...search })
         if (code === 200 && data) setServerList((p: any) => filterRepeat(p, data))
     }
 
@@ -81,7 +87,7 @@ const ServerObjectSelect = (props: any) => {
         return () => {
             setPageVisibleState(false)
         }
-    }, [serverObjectType])
+    }, [serverObjectType, searchValue])
 
     const state = useDocumentVisibility()
 
@@ -103,6 +109,16 @@ const ServerObjectSelect = (props: any) => {
             queryServerList(num)
         }
     }
+
+  // 搜索
+  const onSearch = (word: any)=> {
+    // console.log('word:', word)
+    if (word) { 
+        setSearchValue(word) 
+    } else {
+        setSearchValue(undefined)
+    }
+  }
 
     const switchServerMessage = useMemo(
         () => {
@@ -180,6 +196,7 @@ const ServerObjectSelect = (props: any) => {
                     placeholder={switchServerMessage}
                     dropdownMatchSelectWidth={340}
                     showSearch
+                    onSearch={debounce(onSearch, 300)}
                     loading={fetching}
                     onPopupScroll={handleServerPopupScroll}
                     popupClassName="job_select_drop_cls"
