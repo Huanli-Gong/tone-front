@@ -14,6 +14,7 @@ const text: any = {
   'test_type': 'Test Type',
   'project_id': 'Project',
   'test_conf': 'Test Conf',
+  'tag_list': 'Tag',
 
   'please.placeholder.job_id': 'Enter Job ID',
   'please.placeholder.name': 'Enter Job Name',

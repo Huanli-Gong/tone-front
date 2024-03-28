@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from "react"
-import { Row, Col, Space, Typography, Popconfirm, message } from "antd"
+import { Row, Col, Space, Typography, Popconfirm, message, Tag } from "antd"
 import { useAccess, Access, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import { requestCodeMessage, targetJump, AccessTootip, matchTestType } from '@/utils/utils'
 import { StarOutlined, StarFilled } from '@ant-design/icons'
 import { JobListStateTag } from '../Details/components'
 import { QusetionIconTootip } from '@/components/Product';
+import EllipsisPopover from '@/components/Public/EllipsisPopover'
 import lodash from 'lodash'
 import CommonPagination from '@/components/CommonPagination';
 import DelBar from "./DelBar"
@@ -180,6 +181,25 @@ const ListTable: React.FC<IProps> = (props) => {
             dataIndex: 'state',
             width: 120,
             render: (_: any, row: any) => <JobListStateTag {...row} />
+        },
+        {
+            title: <FormattedMessage id="ws.result.list.tag_list" />,
+            dataIndex: 'tag_list',
+            width: 150,
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_: any, row: any) => 
+                <EllipsisPopover title={row?.tag_list?.length ?
+                    <div style={{ whiteSpace:'nowrap' }}>
+                        {row.tag_list.map((item: any)=> 
+                        <Tag key={item.id}
+                        color={item.tag_color}
+                        style={{ margin:'2px',maxWidth:130,overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{item.name}</Tag>)}
+                    </div>
+                    : '-'
+                   }
+                />
         },
         {
             title: <FormattedMessage id="ws.result.list.test_type" />,
@@ -450,6 +470,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 return col
         }
     })
+    
 
     return (
         <Row style={basePadding}>

@@ -10,10 +10,11 @@ import { querySuiteList, queryEenvironmentResultList, queryDomainGroup } from '.
 import { handleDomainList, getSelectedDataFn } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { requestCodeMessage } from '@/utils/utils';
+import BatchTagModal from './BatchTagModal'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
-    const { selectedChange, allSelectRowData } = props
+    const { selectedChange, allSelectRowData, allSelectedRowKeys } = props
     const { ws_id } = useParams() as any
     const access = useAccess()
     const scrollbarsRef: any = useRef(null)
@@ -22,6 +23,7 @@ export default (props: any) => {
     const [secondRowData, setSecondRowData] = useState([])
     const [suitData, setSuitData] = useState<any>({}) // 全量数据
     const saveReportDraw: any = useRef(null)
+    const batchTagRef: any = useRef(null) 
     const onResizeWidth = () => {
         const oli = document.querySelector('#job_group li')
         const box: any = document.getElementById('job_group')
@@ -326,9 +328,13 @@ export default (props: any) => {
                         <Button type="primary" onClick={_.partial(handleNext, 'test_analysis/compare')}>
                             <FormattedMessage id="ws.result.list.compare.analysis" />
                         </Button>
+                        <Button onClick={() => batchTagRef.current.show({ data: allSelectedRowKeys }) }>
+                            批量打标签
+                        </Button>
                     </Space>
                 </div>
                 <SaveReport ref={saveReportDraw} onOk={creatReportCallback} allGroup={[getBaselineGroup()]} />
+                <BatchTagModal ref={batchTagRef} ws_id={ws_id} />
             </div>
         </div>
     )

@@ -14,6 +14,7 @@ const text: any = {
   'project_id': '所属项目',
   'product_version': '产品版本',
   'test_conf': 'Test Conf',
+  'tag_list': '标签',
 
   'id': "ID",
   'test_type': '测试类型',

@@ -83,4 +83,6 @@ export default {
   'Workspace.TestPlan.View': '计划视图',
   'Workspace.TestPlan.Summary': '计划运行结果汇总',
   'Workspace.TestPlan.Detail': '计划详情',
+
+  'Workspace.Logging': '日志管理',
 };
