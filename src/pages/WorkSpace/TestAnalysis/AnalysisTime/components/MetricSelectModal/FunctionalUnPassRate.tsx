@@ -1,32 +1,40 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from "react"
-import { useLocation } from "umi"
 import { Table, Row, Col, Select } from "antd"
 import styles from '../index.less'
+import { useAnalysisProvider } from "../../provider"
 
 const FunctionalPassRate: React.FC<AnyType> = (props) => {
-    const { suiteList = [], test_type, isFetching, show_type, onChange, basicValues, metrics = [], runGetMetrics } = props
-    const { query }: any = useLocation()
+    const { suiteList = [], test_type, isFetching, show_type, onChange, basicValues, runGetMetrics } = props
+    const { metrics = [] } = useAnalysisProvider()
 
-    const getQueryValue = (queryName: any) => {
-        if (basicValues) return basicValues[queryName]
-        if (JSON.stringify(query) !== '{}' && (query?.test_type !== "functional")) return undefined
-        if (query[queryName]) return query[queryName]
-        return undefined
-    }
-
-    const [activeSuite, setActiveSuite] = React.useState<any>(+ getQueryValue("test_suite_id") || undefined)
-    const [activeConf, setActiveConf] = React.useState<any>(+ getQueryValue("test_case_id") || undefined)
-    const [selectSubcase, setSelectSubcase] = React.useState<any>(getQueryValue("sub_case_name") || undefined)
+    const [activeSuite, setActiveSuite] = React.useState<any>(undefined)
+    const [activeConf, setActiveConf] = React.useState<any>(undefined)
+    const [selectSubcase, setSelectSubcase] = React.useState<any>(undefined)
 
     React.useEffect(() => {
-        if (suiteList.length > 0)
-            setActiveSuite(+ getQueryValue("test_suite_id") || suiteList?.[0].test_suite_id)
+        if (suiteList?.length > 0) {
+            if (basicValues) {
+                const { test_suite_id, test_case_id } = basicValues
+                if (test_suite_id && test_case_id) {
+                    setActiveSuite(+ test_suite_id)
+                    setActiveConf(+ test_case_id)
+                }
+            }
+            else {
+                const firstSuite = suiteList?.[0]
+                if (firstSuite) {
+                    setActiveSuite(firstSuite?.test_suite_id)
+                    setActiveConf(firstSuite?.test_case_list?.[0]?.test_case_id)
+                }
+            }
+        }
         return () => {
             setActiveSuite(undefined)
             setActiveConf(undefined)
+            setSelectSubcase(undefined)
         }
-    }, [suiteList])
+    }, [suiteList, basicValues])
 
     React.useEffect(() => {
         onChange?.({ activeSuite, activeConf, selectSubcase })
@@ -54,7 +62,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
     }, [activeSuite, suiteList, test_type])
 
     return (
-        <Row >
+        <Row>
             <Col span={24} style={{ marginBottom: 10 }}>
                 <Row>
                     <Col span={12}>
@@ -99,19 +107,15 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                                 showSearch
                                 placeholder="请选择Test Conf"
                                 value={activeConf}
-                                options={
-                                    confList?.map((i: any) => (
-                                        {
-                                            value: i.test_case_id,
-                                            label: i.test_case_name
-                                        }
-                                    ))
-                                }
+                                options={confList?.map((i: any) => ({
+                                    value: i.test_case_id,
+                                    label: i.test_case_name
+                                }))}
                             />
                         </Row>
                     </Col>
                 </Row>
-            </Col >
+            </Col>
             <Col span={24}>
                 <Table
                     dataSource={metrics}
@@ -145,7 +149,7 @@ const FunctionalPassRate: React.FC<AnyType> = (props) => {
                     }}
                 />
             </Col>
-        </Row >
+        </Row>
     )
 }
 

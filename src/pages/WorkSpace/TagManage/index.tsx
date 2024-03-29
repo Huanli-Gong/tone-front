@@ -147,7 +147,7 @@ const SuiteManagement: React.FC<any> = () => {
             requestCodeMessage(res.code, res.msg)
             return
         }
-        setListParams((p: any) => ({ ...p, page_num: Math.round((data.total - 1) / listParams.page_size) || 1 }))
+        setListParams((p: any) => ({ ...p, page_num: Math.ceil((data.total - 1) / listParams.page_size) || 1 }))
         message.success(formatMessage({ id: 'operation.success' }));
         setRefresh(new Date().getTime())
     }

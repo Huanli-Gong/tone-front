@@ -9,15 +9,15 @@ import FunctionalUnPassRate from "./FunctionalUnPassRate"
 import { getSelectMetricOrSubcase } from '../../services'
 import { useAnalysisProvider } from '@/pages/WorkSpace/TestAnalysis/AnalysisTime/provider';
 
+
 const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
-    const { test_type, project_id, provider_env, onOk, show_type, tag, start_time, end_time } = props
+    const { test_type, project_id, provider_env, onOk, show_type, tag, start_time, end_time, metricData } = props
     const { ws_id } = useParams() as any
 
-    const { suiteList, suiteListLoading } = useAnalysisProvider()
+    const { suiteList, suiteListLoading, setMetrics } = useAnalysisProvider()
 
     const [visible, setVisible] = React.useState(false)
     const [info, setInfo] = React.useState<any>({})
-    const [basicValues, setBasicValues] = React.useState(undefined)
 
     const defaultParams = { ws_id, test_type, provider_env }
 
@@ -27,16 +27,20 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
         ...params,
     }), { manual: true })
 
+    React.useEffect(() => {
+        setMetrics(metrics)
+    }, [metrics])
+
     React.useImperativeHandle(ref, () => ({
         show: async (vals: any) => {
             setVisible(true)
-            setBasicValues(vals)
         },
     }))
 
     const handleClose = React.useCallback(() => {
         setVisible(false)
         setInfo({})
+        setMetrics([])
     }, [])
 
     const title = React.useMemo(() => {
@@ -110,7 +114,7 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
     const baseProps = {
         test_type,
         show_type,
-        basicValues,
+        basicValues: metricData,
         project_id,
         provider_env,
         suiteList,

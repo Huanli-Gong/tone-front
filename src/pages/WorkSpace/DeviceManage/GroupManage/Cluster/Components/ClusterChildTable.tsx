@@ -122,6 +122,7 @@ export default (props: any) => {
             key: "ip",
             render: (record: any) => (
                 <ServerLink
+                    exists
                     provider={"aligroup"}
                     val={record.test_server.ip}
                 />
@@ -136,6 +137,7 @@ export default (props: any) => {
             key: "sn",
             render: (record: any) => (
                 <ServerLink
+                    exists
                     provider={"aligroup"}
                     val={record.test_server.sn}
                 />

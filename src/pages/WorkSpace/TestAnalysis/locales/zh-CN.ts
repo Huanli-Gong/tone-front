@@ -73,6 +73,10 @@ export default {
     // AnalysisResult
     'analysis.comparison.result': '对比分析结果',
     'analysis.share': '分享',
+    'analysis.share_link': '分享链接',
+    'analysis.share_link.desc': '选择要分享链接的功能',
+    'analysis.share_link.radio1': '拿到链接的人可获得编辑权限（需要登录）',
+    'analysis.share_link.radio2': '拿到链接的人可获得阅读权限（无需登录）',
     'analysis.test.env': '测试环境',
     'analysis.model': '机型',
     'analysis.job.table': 'Job 列表',
@@ -123,6 +127,7 @@ export default {
     'analysis.project': '项目',
     'analysis.project.placeholder': '请选择项目',
     'analysis.tag': '标签',
+    'analysis.env': '环境',
     'analysis.tag.placeholder': '不按标签区分',
     'analysis.indistinguishable': '不区分',
     'analysis.only.the.job.data': '仅分析含有所选标签的Job数据，不区分标签。',

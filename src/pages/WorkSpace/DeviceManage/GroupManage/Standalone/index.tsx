@@ -197,6 +197,7 @@ const Standalone = (props: any, ref: any) => {
                 if (row.sub_server_list)
                     return (
                         <ServerLink
+                            exists
                             val={_}
                             provider={"aligroup"}
                         />
@@ -205,6 +206,7 @@ const Standalone = (props: any, ref: any) => {
                     <Row justify="start" align="middle">
                         <TreeSvg style={{ marginRight: 8, height: 40 }} />
                         <ServerLink
+                            exists
                             val={_}
                             provider={"aligroup"}
                         />
@@ -229,6 +231,7 @@ const Standalone = (props: any, ref: any) => {
             },
             render: (_: any) => (
                 <ServerLink
+                    exists
                     val={_}
                     provider={"aligroup"}
                 />

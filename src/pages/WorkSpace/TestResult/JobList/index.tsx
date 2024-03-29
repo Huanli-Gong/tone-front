@@ -1,7 +1,7 @@
 import React from "react"
 import { Space, Tabs } from "antd"
 import styled from "styled-components"
-import { useAccess, useParams, useLocation, useIntl } from "umi"
+import { useAccess, useParams, useLocation, useIntl, history } from "umi"
 import { queryTestResultList } from "../services"
 import StateRow from "./StateRow"
 import ListTable from "./ListTable"
@@ -9,6 +9,8 @@ import FilterRow from "./Filters"
 import { filterColumns } from "./Filters/columns"
 import { JobListProvider } from "./provider"
 import { useRequest } from "ahooks"
+import { transQuery } from "./utils"
+import { stringify } from "querystring"
 
 const activeCss = `
     color: #1890FF;
@@ -132,6 +134,10 @@ const BaseTab: React.FC<IProps> = () => {
     }, [])
 
     React.useEffect(() => {
+        history.replace(`/ws/${ws_id}/test_result?${stringify(transQuery(pageQuery))}`)
+    }, [pageQuery])
+
+    React.useEffect(() => {
         if (JSON.stringify(initialColumns) !== "{}")
             localStorage.setItem(REMEBER_COLUMNS_STATE_STRING_KEY, JSON.stringify(initialColumns))
     }, [initialColumns])
@@ -139,7 +145,7 @@ const BaseTab: React.FC<IProps> = () => {
     React.useEffect(() => {
         if (ws_id !== pageQuery.ws_id)
             setPageQuery(({ ...DEFAULT_PAGE_QUERY, tab: "all", ws_id }))
-            setTab('all')
+        setTab(query.tab ?? 'all')
     }, [pageQuery.ws_id, ws_id])
 
     const defaultTabKeys = [

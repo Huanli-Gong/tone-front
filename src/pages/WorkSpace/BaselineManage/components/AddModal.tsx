@@ -101,9 +101,21 @@ const AddModal: React.ForwardRefRenderFunction<IProps, IRefs> = (props, ref) => 
                 <Form.Item
                     label={intl.formatMessage({ id: `pages.workspace.baseline.addScript.label.name` })}
                     name="name"
-                    rules={[{ required: true, message: NAME_NULL }]}
+                    rules={[
+                        { required: true, message: NAME_NULL },
+                        {
+                            validator(rule, value, callback) {
+                                if (value) {
+                                    if (value.length > 100)
+                                        return Promise.reject(intl.formatMessage({ id: 'pages.workspace.baseline.addScript.label.validator' }))
+                                }
+                                return Promise.resolve()
+                            },
+                        }
+                    ]}
                 >
-                    <Input
+                    <Input.TextArea
+                        autoSize
                         autoComplete="off"
                         placeholder={intl.formatMessage({ id: 'pages.workspace.baseline.addScript.label.name.placeholder' })}
                     />

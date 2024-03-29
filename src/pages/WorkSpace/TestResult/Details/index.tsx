@@ -429,12 +429,12 @@ const TestResultDetails: React.FC<any> = (props) => {
                                         </Access>
                                         <Access
                                             accessible={access.WsMemberOperateSelf(details?.creator)}
-                                            fallback={
+                                            /* fallback={
                                                 CAN_STOP_JOB_STATES.includes(details?.state) &&
                                                 <Button onClick={() => AccessTootip()} style={{ marginRight: 8 }}>
                                                     <FormattedMessage id="ws.result.details.stop" />
                                                 </Button>
-                                            }
+                                            } */
                                         >
                                             {CAN_STOP_JOB_STATES.includes(details?.state) &&
                                                 <Popconfirm

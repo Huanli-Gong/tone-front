@@ -181,6 +181,7 @@ const TypeChart = (props: any) => {
                     color: 'rgba(0,0,0,0.65)',
                     fontSize: 14,
                 },
+                appendToBody: true,
                 extraCssText: 'box-shadow: 0 2px 8px 0 rgba(0,0,0,0.15);border-radius: 2px;padding:12px;z-index:9999',
                 formatter: function (params: any) {
                     let result = ''
@@ -210,7 +211,7 @@ const TypeChart = (props: any) => {
                                         <div style="width:8px;height:8px;border-radius:50%;background:${params.color};margin-top:5px;"></div>
                                         <div style="padding-left:9px;width:120px;word-break:break-all;white-space:normal;">${params.seriesName}</div>
                                         <div style="padding-left:16px;">${params.value || '-'}</div>
-                                        <div style="padding-left:9px;width:30px;">
+                                        <div style="padding-left:9px;">
                                             <i style="font-style:normal;color:${handleColor(params.data.compare_result) || ''}">
                                             ${params.data.compare_value || ''}
                                             ${handleIcon(params.data.compare_result) || ''}
