@@ -226,9 +226,9 @@ const ListTable: React.FC<IProps> = (props) => {
                 } else {
                     return (
                         <Row>
-                            <Col span={8} style={{ color: "#1890FF" }} >{result.total}</Col>
-                            <Col span={8} style={{ color: "#52C41A" }} >{result.pass}</Col>
-                            <Col span={8} style={{ color: "#FF4D4F" }} >{result.fail}</Col>
+                            <Col span={8} style={{ color: "#1890FF" }} >{result.total || '-'}</Col>
+                            <Col span={8} style={{ color: "#52C41A" }} >{result.pass || '-'}</Col>
+                            <Col span={8} style={{ color: "#FF4D4F" }} >{result.fail || '-'}</Col>
                         </Row>
                     )
                 }

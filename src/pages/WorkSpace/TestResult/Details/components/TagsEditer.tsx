@@ -33,14 +33,6 @@ const editBtn = {
 
 
 const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
-    // 设定任务标签清理时间间隔
-    const tag_catch = [
-        {id: 'keep_three_months', name: '保留三个月'},
-        {id: 'keep_six_months', name: '保留六个月'},
-        {id: 'keep_one_year', name: '保留一年'},
-    ]
-    const tag_catch_value = tag_catch.map((key)=> key.id)
-
     const { ws_id, id: job_id, share_id } = useParams() as any
     const isSharePage = !!share_id
     const access = useAccess();
@@ -50,7 +42,7 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
     const [state, setState] = useState(false)
     const [keys, setKeys] = useState([])
     const [params, setParams] = React.useState<any>(DEFAULT_LIST_PARAMS)
-    const [list, setList] = React.useState(tag_catch) // []
+    const [list, setList] = React.useState([])
     const jobTagsCreateModal: any = useRef(null)
 
     const { data: tagList, loading, refresh } = useRequest(
@@ -65,7 +57,7 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
     React.useEffect(() => {
         return () => {
             if (!state) {
-                setList(tag_catch)
+                setList([])
                 setParams(DEFAULT_LIST_PARAMS)
             }
         }
@@ -146,7 +138,7 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
                             onPopupScroll={handleTagePopupScroll}
                             getPopupContainer={node => node.parentNode}
                             onSearch={lodash.debounce((name) => {
-                                setList(tag_catch) // []
+                                setList([])
                                 setParams({ ...DEFAULT_LIST_PARAMS, name })
                             }, 300)}
                             filterOption={false}
@@ -170,17 +162,10 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
                                 </div>
                             )}
                             options={
-                                list.map((tag: any) => {
-                                    // 判断：标签清理时间选项,已选
-                                    const intersect = keys.filter(x => tag_catch_value.indexOf(x) > -1 );
-                                    const disabled = tag_catch_value.includes(tag.id)? (intersect.length? (tag.id !== intersect[0]): false): false
-                                    const text = disabled? <span style={{color:'#bfbfbf'}}>{tag.name}</span>: tag.name
-                                    return ({
-                                        value: tag.id,
-                                        label: <Tag color={tag.tag_color}>{text}</Tag>,
-                                        disabled,
-                                    })
-                               })
+                                list.map((tag: any) => ({
+                                    value: tag.id,
+                                    label: <Tag color={tag.tag_color} >{tag.name}</Tag>
+                                }))
                             }
                         />
                         <Space>
