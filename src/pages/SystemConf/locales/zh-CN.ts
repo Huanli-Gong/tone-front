@@ -7,7 +7,7 @@ export default {
   'menu.systemConf.suiteManagement':'Test Suite管理',
   "menu.systemConf.KernelManage"     : '内核管理',
   "menu.systemConf.BasicSetting" : '基础配置',
-  "menu.systemConf.TestParmSetting": 'Master配置',
+  "menu.systemConf.TestParmSetting": 'Testfarm配置',
   "menu.systemConf.DirectRoute" : 'DirectRoute',
 
   // 系统级菜单
@@ -17,5 +17,5 @@ export default {
   'SystemConf.menuLayout.suiteManagement':'Test Suite管理',
   "SystemConf.menuLayout.KernelManage"     : '内核管理',
   "SystemConf.menuLayout.BasicSetting" : '基础配置',
-  "SystemConf.menuLayout.TestParmSetting": 'Master配置',
+  "SystemConf.menuLayout.TestParmSetting": 'Testfarm配置',
 };
