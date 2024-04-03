@@ -24,7 +24,6 @@ import { isNull } from 'lodash'
 import { BreadcrumbItem, CAN_STOP_JOB_STATES, RenderDesItem, EditNoteBtn } from "./components/MainPageComponents"
 
 const TextStyle: any = {
-    // width: 'calc(100% - 104px)',
     wordBreak: 'break-all',
     whiteSpace: 'pre-wrap',
     overflow: 'hidden',
