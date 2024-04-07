@@ -73,13 +73,18 @@ const ListTable: React.FC<IProps> = (props) => {
         }
     }, [pageQuery.tab])
 
-    /* 重置 */
+    /** 重置 */
     React.useEffect(() => {
         return () => {
             setPageQuery((p: any) => ({ ...p, ...DEFAULT_PAGE_QUERY, ws_id }))
             setSortOrder({})
         }
     }, [setPageQuery, ws_id])
+
+    /** 重置对比栏及选中行 */
+    React.useEffect(() => {
+        if (ws_id) handleResetSelectedKeys()
+    }, [ws_id])
 
     const handleClickStar = async ({ collection, id }: any) => {
         const { msg, code } = !collection ?
@@ -191,11 +196,13 @@ const ListTable: React.FC<IProps> = (props) => {
             },
             render: (_: any, row: any) => 
                 <EllipsisPopover title={row?.tag_list?.length ?
-                    <div style={{ whiteSpace:'nowrap' }}>
+                    <div style={{ width: 350 }}>
                         {row.tag_list.map((item: any)=> 
-                        <Tag key={item.id}
-                        color={item.tag_color}
-                        style={{ margin:'2px',maxWidth:130,overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{item.name}</Tag>)}
+                            <Tag key={item.id}
+                                color={item.tag_color}
+                                style={{ margin:'2px',maxWidth:150,overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}
+                                title={item.name}
+                            >{item.name}</Tag>)}
                     </div>
                     : '-'
                    }

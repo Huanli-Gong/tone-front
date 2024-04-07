@@ -45,7 +45,7 @@ export default (props: any) => {
         onResizeWidth()
     }, [allSelectRowData])
 
-    const handleCancle = () => {
+    const handleCancel = () => {
         selectedChange()
     }
 
@@ -321,7 +321,7 @@ export default (props: any) => {
                 <div className={styles.operate}>
                     <Space>
                         <RightOutlined onClick={handleScroll} style={{ opacity: padding ? 1 : 0, marginLeft: 16, marginRight: 8 }} />
-                        <Button onClick={handleCancle}><FormattedMessage id="operation.cancel" /></Button>
+                        <Button onClick={handleCancel}><FormattedMessage id="operation.cancel" /></Button>
                         <Access accessible={access.IsWsSetting()}>
                             <Button type="primary" onClick={_.partial(handleSaveReportScript)} disabled={getDisabled()}><FormattedMessage id="ws.result.list.create.report" /></Button>
                         </Access>
@@ -329,7 +329,7 @@ export default (props: any) => {
                             <FormattedMessage id="ws.result.list.compare.analysis" />
                         </Button>
                         <Button onClick={() => batchTagRef.current.show({ data: allSelectedRowKeys }) }>
-                            批量打标签
+                            <FormattedMessage id="ws.result.list.batch.add.tag.jobs" />
                         </Button>
                     </Space>
                 </div>
