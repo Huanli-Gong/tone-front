@@ -5,13 +5,13 @@ import { tagList as queryTagList } from '@/pages/WorkSpace/TagManage/service'
 import { queryBatchTag } from '../../services'
 import lodash from 'lodash'
 
-// 设定任务标签清理时间间隔
-// const tag_catch = [
-//   {id: 'keep_three_months', name: '保留三个月'},
-//   {id: 'keep_six_months', name: '保留六个月'},
-//   {id: 'keep_one_year', name: '保留一年'},
-// ]
-// const tag_catch_value = tag_catch.map((key)=> key.id)
+// 任务标签清理时间间隔
+const tag_catch = [
+  {id: 'keep_three_months', name: '保留三个月'},
+  {id: 'keep_six_months', name: '保留六个月'},
+  {id: 'keep_one_year', name: '保留一年'},
+]
+const tag_catch_name = tag_catch.map((key)=> key.id)
 
 const App = forwardRef((props: any, ref: any) => {
   const { formatMessage } = useIntl()
@@ -20,7 +20,7 @@ const App = forwardRef((props: any, ref: any) => {
   const [jobList, setJobList] = useState([]);
   const [params, setParams] = React.useState<any>({ page_num: 1, page_size: 20 })
   const [list, setList] = React.useState([])
-  // const [selectedKey, setSelectedKey] = useState([]);
+  const [selectedTag, setSelectedTag] = useState([]);
   const [form] = Form.useForm()
 
   const initialState = ()=> {
@@ -28,7 +28,7 @@ const App = forwardRef((props: any, ref: any) => {
     setVisible(false)
     setJobList([])
     setList([])
-    // setSelectedKey([])
+    setSelectedTag([])
   }
 
   useImperativeHandle(ref, () => ({
@@ -100,7 +100,10 @@ const App = forwardRef((props: any, ref: any) => {
               mode="multiple"
               loading={loading}
               size="small"
-              // onChange={(val: any)=> setSelectedKey(val)}
+              onChange={(val: any, option: any)=> {
+                const tempList = option?.map((item: any)=> ({value: item.value, label: item.label.props.children})) || []
+                setSelectedTag(tempList)
+              }}
               tagRender={({ label, closable, onClose, value }: any)=> (
                 <Tag
                   color={label.props?.color}
@@ -125,13 +128,14 @@ const App = forwardRef((props: any, ref: any) => {
               }
               options={
                 list.map((tag: any) => {
-                  // 判断：标签清理时间选项已有选，则其他时间项不能再选
-                  // const intersect = selectedKey.filter((x: any) => tag_catch_value.indexOf(x) > -1 );
-                  // const disabled = tag_catch_value.includes(tag.id)? (intersect.length? (tag.id !== intersect[0]): false): false
-                  // const text = disabled? <span style={{color:'#bfbfbf'}}>{tag.name}</span>: tag.name
+                  // 判断：时间标签选项已有选时，则其他时间项不能再选
+                  const intersect: any = selectedTag.filter((x: any) => tag_catch_name.indexOf(x.label) > -1 );
+                  const disabled = tag_catch_name.includes(tag.name)? (intersect.length? (tag.name !== intersect[0].label): false): false
+                  const text = disabled? <span style={{color:'#bfbfbf'}}>{tag.name}</span>: tag.name
                   return ({
                       value: tag.id,
-                      label: <Tag color={tag.tag_color}>{tag.name}</Tag>,
+                      label: <Tag color={tag.tag_color}>{text}</Tag>,
+                      disabled,
                   })
                 })
               }

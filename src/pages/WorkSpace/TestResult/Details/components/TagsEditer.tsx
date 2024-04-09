@@ -31,18 +31,26 @@ const editBtn = {
     paddingRight: 8
 }
 
+// 任务标签清理时间间隔
+const tag_catch = [
+    {id: 'keep_three_months', name: '保留三个月'},
+    {id: 'keep_six_months', name: '保留六个月'},
+    {id: 'keep_one_year', name: '保留一年'},
+  ]
+const tag_catch_name = tag_catch.map((key)=> key.id)
 
 const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
     const { ws_id, id: job_id, share_id } = useParams() as any
     const isSharePage = !!share_id
     const access = useAccess();
 
-    const DEFAULT_LIST_PARAMS = { ws_id, page_num: 1, page_size: 20 }
+    const DEFAULT_LIST_PARAMS = { ws_id, page_num: 1, page_size: 100 }
 
     const [state, setState] = useState(false)
     const [keys, setKeys] = useState([])
     const [params, setParams] = React.useState<any>(DEFAULT_LIST_PARAMS)
     const [list, setList] = React.useState([])
+    const [selectedTag, setSelectedTag] = useState([]);
     const jobTagsCreateModal: any = useRef(null)
 
     const { data: tagList, loading, refresh } = useRequest(
@@ -81,14 +89,19 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
 
     useEffect(() => {
         setKeys(tags.map((i: any) => i.id))
+        const tempList = tags?.map((item: any)=> ({value: item.id, label: item.name})) || []
+        // console.log('useEffect-----tags:', tempList)
+        setSelectedTag(tempList)
     }, [tags])
 
     const handleSetTags = () => {
         setState(true)
     }
 
-    const handleSelectChange = (val: any) => {
+    const handleSelectChange = (val: any, option: any) => {
         setKeys(val)
+        const tempList = option?.map((item: any)=> ({value: item.value, label: item.label.props.children})) || []
+        setSelectedTag(tempList)
     }
 
     const newLabel = () => {
@@ -161,10 +174,17 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
                                 </div>
                             )}
                             options={
-                                list.map((tag: any) => ({
-                                    value: tag.id,
-                                    label: <Tag color={tag.tag_color} >{tag.name}</Tag>
-                                }))
+                                list.map((tag: any) => {
+                                    // 判断：时间标签选项已有选时，则其他时间项不能再选
+                                    const intersect: any = selectedTag.filter((x: any) => tag_catch_name.indexOf(x.label) > -1 );
+                                    const disabled = tag_catch_name.includes(tag.name)? (intersect.length? (tag.name !== intersect[0].label): false): false
+                                    const text = disabled? <span style={{color:'#bfbfbf'}}>{tag.name}</span>: tag.name
+                                    return ({
+                                        value: tag.id,
+                                        label: <Tag color={tag.tag_color} >{text}</Tag>,
+                                        disabled,
+                                    })
+                                })
                             }
                         />
                         <Space>

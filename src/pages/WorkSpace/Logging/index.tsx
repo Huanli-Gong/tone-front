@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Table, message, Row, Divider } from 'antd';
 import { FilterFilled } from '@ant-design/icons';
 import { FormattedMessage, useIntl, useParams, } from 'umi';
-import moment from 'moment';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import EllipsisPublic from '@/components/Public/EllipsisPulic';
-import SearchInput from '@/components/Public/SearchInput';
+import SelectCheck from '@/components/Public//SelectCheck';
 import { queryOperationLog } from './services'
 import styles from './style.less';
 
@@ -28,14 +27,18 @@ const Index = (props: any) => {
   const [pageSize, setPageSize] = useState<number>(20)
   //
 	const [autoFocus, setFocus] = useState<boolean>(true)
-	const [operation_type, setTid] = useState<string>()
-
+	const [operation_type, setTid] = useState<any>()
+  const typeList = [
+    {id:'delete',name: formatMessage({ id: 'operation.delete'}) },
+    {id:'update',name: formatMessage({ id: 'operation.update'}) },
+    {id:'create',name: formatMessage({ id: 'operation.create'}) }
+  ]
 
   // 1.请求数据
   const getTableData = async (query: any) => {
     setLoading(true)
     try {
-      const res = await queryOperationLog({ page_size: pageSize, ws_id,  ...query });
+      const res = await queryOperationLog({ operation_type, page_size: pageSize, ws_id,  ...query });
       const { code, msg } = res || {}
       if (code === 200) {
         setData(res)
@@ -112,15 +115,15 @@ const Index = (props: any) => {
 			dataIndex: 'operation_type',
 			fixed: 'left',
 			width: 'auto',
-			filterIcon: () => <FilterFilled style={{ color: operation_type ? '#1890ff' : undefined }} />,
-			filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setTid(val) }} />,
+			filterIcon: () => <FilterFilled style={{ color: operation_type ? '#1890ff': undefined }} />,
+			filterDropdown: ({ confirm }: any) => <SelectCheck list={typeList} confirm={confirm} onConfirm={(val: string) => { setTid(val?.split(",") || undefined) }} />,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
-						setFocus(!autoFocus)
+					setFocus(!autoFocus)
 				}
 		  },
       render: (text:any) => {
-				return <PopoverEllipsis title={text} width={218} />
+				return <PopoverEllipsis title={formatMessage({ id: `operation.${text}`, defaultMessage: text })} width={218} />
 			},
 		},
 		{
@@ -155,20 +158,6 @@ const Index = (props: any) => {
           },
       ]
     },
-    // {
-		// 	title: <FormattedMessage id="log.table.old_values" />,
-		// 	dataIndex: 'old_values',
-		// 	render: (text:any) => {
-		// 		return <PopoverEllipsis title={text} width={120} />
-		// 	}
-		// },
-    // {
-		// 	title: <FormattedMessage id="log.table.new_values" />,
-		// 	dataIndex: 'new_values',
-		// 	render: (text:any) => {
-		// 		return <PopoverEllipsis title={text} width={120} />
-		// 	}
-		// },
     {
 			title: <FormattedMessage id="log.table.creator" />,
 			dataIndex: 'creator',
@@ -203,7 +192,7 @@ const Index = (props: any) => {
           showTotal: (total, r)=> formatMessage({ id: 'pagination.total.strip' }, { data: total }),
         }}
         columns={columns}
-        dataSource={data.data && data.data.filter((item: any) => item.new_values !== '{}')} // 过滤掉空的行数据。
+        dataSource={data.data} // data?.data?.filter((item: any) => item.new_values !== '{}') 过滤掉空的行数据。
       />
     </div>
   )
