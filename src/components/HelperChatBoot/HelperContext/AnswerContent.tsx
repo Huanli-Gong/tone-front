@@ -135,7 +135,8 @@ const EnterButton = styled.div`
 const Server: React.FC<any> = (props) => {
     const { setCharts, getChartItem, getTopAnswer, setActive, setFeedback } =
         useHelperBootContext();
-    const { from, date, content, isTop, rowkey, getAnswer, scrollChange } = props;
+    const { from, date, content, isTop, rowkey, getAnswer, scrollChange, page_size, page_num } =
+        props;
 
     const handleRefreshAnswer = () => {
         const { page_num, page_size, total } = props;
@@ -154,7 +155,7 @@ const Server: React.FC<any> = (props) => {
     };
 
     const problemRender = React.useMemo(() => {
-        if (content?.length === 1) {
+        if (!isTop && content?.length === 1) {
             const [item] = content;
             return (
                 <div className="problem-content">
@@ -206,8 +207,12 @@ const Server: React.FC<any> = (props) => {
                     <Typography.Link
                         key={i.problem_id}
                         onClick={() => handleSelectProblem(i.problem)}
+                        style={{ display: 'flex', flexDirection: 'row', gap: 4 }}
                     >
-                        [{idx + 1}] {i.problem}
+                        <span style={{ display: 'inline-block', flexShrink: 0 }}>
+                            [{((page_num || 0) - 1) * (page_size || 0) + (idx + 1)}]
+                        </span>
+                        <span style={{ display: 'inline-block' }}>{i.problem}</span>
                     </Typography.Link>
                 ))}
             </Space>
@@ -326,7 +331,9 @@ const AnswerContent: React.FC = () => {
                 <EnterInput
                     placeholder="有什么问题问我吧！"
                     value={problem}
-                    onChange={(evt: React.ChangeEvent<HTMLInputElement>) => setProblem(evt.target?.value)}
+                    onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
+                        setProblem(evt.target?.value)
+                    }
                     onPressEnter={handleEnterProblem}
                 />
                 <EnterButton onClick={handleEnterProblem}>
