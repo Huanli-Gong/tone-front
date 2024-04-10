@@ -349,10 +349,6 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
             /* max-width: 100%; */
             max-width: 630px;
             height: auto;
-
-            &.ProseMirror-selectednode {
-                outline: 3px solid #68cef8;
-            }
         }
 
         blockquote {
@@ -380,12 +376,55 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
 
     .tiptap-image-resize-container {
         position: relative;
+
+        .inline-block {
+            display: inline-block;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .img-resize-title-container {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .input-image-title {
+            border: none;
+            outline: none;
+            color: #8a8f8d;
+
+            &:focus {
+                outline: none;
+                box-shadow: none;
+            }
+        }
+
+        .ne-image-title-content {
+            vertical-align: top;
+            min-width: 1px;
+            max-width: 100%;
+            min-height: 18px;
+            line-height: 22px;
+            font-size: 14px;
+            outline: none;
+            word-break: break-word;
+            white-space: normal;
+            color: #8a8f8d;
+            text-align: center;
+            caret-color: auto;
+        }
+
         .tiptap-image-resize-wrapper {
             position: relative;
             display: inline-block;
 
             .postimage {
                 display: inline-block;
+                border-radius: 8px;
+                max-width: 100%;
             }
 
             .tiptap-resize-left-handle,
@@ -446,22 +485,29 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
                 }
             }
         }
+
+        .image-title {
+            color: #a1a1a1;
+            border-bottom: 1px solid #e2e2e2;
+        }
     }
 `;
 
 export const ImageResizeBubble = styled.div`
     position: absolute;
     left: 0;
-    top: -40px;
+    top: -34px;
     display: flex;
     gap: 8px;
-    color: #fff;
     background: #333;
+    color: #fff;
     padding: 6px;
+    // padding-bottom: 20px;
     border-radius: 8px;
     z-index: 999;
     .image-resize-bubble-span {
         display: flex;
+        overflow: hidden;
         align-items: center;
         justify-content: center;
         transition: transform 0.15s ease, opacity 0.1s ease;

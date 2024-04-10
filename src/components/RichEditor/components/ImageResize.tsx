@@ -1,27 +1,69 @@
 import React from 'react';
 import { NodeViewWrapper } from '@tiptap/react';
-import { Image as ImagePreview } from 'antd';
+import { Image as ImagePreview, Input } from 'antd';
 import Image from '@tiptap/extension-image';
 import { ReactNodeViewRenderer } from '@tiptap/react';
 import cls from 'classnames';
 import { ReactComponent as TextLeft } from '../assets/text-left.svg';
 import { ReactComponent as TextRight } from '../assets/text-right.svg';
 import { ReactComponent as TextCenter } from '../assets/text-center.svg';
+import { ReactComponent as ImageTitle } from '../assets/image-title.svg';
 import { ImageResizeBubble } from '../styled';
 import { useClickAway } from 'ahooks';
+import { createPortal } from 'react-dom';
 
 export const inputRegex = /(!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\))$/;
 
 const RESIZE_CONTAINER_CLASS = 'tiptap-image-resize-container';
 
+const iconMap = (n: string) =>
+    new Map([
+        ['title', <ImageTitle />],
+        ['left', <TextLeft />],
+        ['center', <TextCenter />],
+        ['right', <TextRight />],
+    ]).get(n);
+
+const ResizeBubble: React.FC<any> = (props) => {
+    const { setOpenTitle, updateAttributes, parent } = props;
+    return (
+        <ImageResizeBubble
+            className="image-resize-bubble"
+            style={{
+                left: parent.getBoundingClientRect()?.left,
+                top: parent.getBoundingClientRect()?.top - 40,
+            }}
+        >
+            {['title', 'left', 'center', 'right'].map((n: any) => (
+                <span
+                    key={n}
+                    className="image-resize-bubble-span"
+                    onClick={() =>
+                        n === 'title'
+                            ? setOpenTitle(true)
+                            : updateAttributes({
+                                  align: n,
+                              })
+                    }
+                >
+                    {iconMap(n)}
+                </span>
+            ))}
+        </ImageResizeBubble>
+    );
+};
+
 const ImageResizeComponent = (props: any) => {
-    const { editor, node } = props;
+    const { editor, node, updateAttributes } = props;
     if (!editor) return;
     const [preview, setPreview] = React.useState({ src: undefined, visible: false });
     const [open, setOpen] = React.useState(false);
+    const [openTitle, setOpenTitle] = React.useState(false);
+    const [title, setTitle] = React.useState(node.attrs.title);
 
     const ref = React.useRef<any>();
     const dom = React.useRef<any>();
+    const img = React.useRef<any>();
 
     useClickAway(() => {
         setOpen(false);
@@ -49,11 +91,12 @@ const ImageResizeComponent = (props: any) => {
                     placement === 'right'
                         ? startSize.x - startPosition.x + mouseMoveEvent.pageX
                         : startSize.x + startPosition.x - mouseMoveEvent.pageX;
-                props.updateAttributes({
-                    'data-width': width,
+
+                updateAttributes({
+                    'data-width': width > 20 ? width : 20,
                     style: {
                         ...node.attrs.style,
-                        width,
+                        width: width > 20 ? width : 20,
                     },
                 });
             }
@@ -63,11 +106,12 @@ const ImageResizeComponent = (props: any) => {
                     placement === 'top'
                         ? startSize.y + startPosition.y - mouseMoveEvent.pageY
                         : startSize.y - startPosition.y + mouseMoveEvent.pageY;
-                props.updateAttributes({
-                    'data-height': height,
+
+                updateAttributes({
+                    'data-height': height > 20 ? height : 20,
                     style: {
                         ...node.attrs.style,
-                        height,
+                        height: height > 20 ? height : 20,
                     },
                 });
             }
@@ -84,9 +128,10 @@ const ImageResizeComponent = (props: any) => {
     const handleLoad = (evt: any) => {
         const ele = evt.target;
         const $width = ele.getAttribute('data-width');
+        const { height, width } = ref.current.getBoundingClientRect();
         const $height = ele.getAttribute('data-height');
         if ($width && $height) {
-            props.updateAttributes({
+            updateAttributes({
                 style: {
                     width: $width + 'px',
                     height: $height + 'px',
@@ -96,8 +141,7 @@ const ImageResizeComponent = (props: any) => {
             return;
         }
 
-        const { height, width } = ele.getBoundingClientRect();
-        props.updateAttributes({
+        updateAttributes({
             'data-width': width,
             'data-height': height,
             style: {
@@ -107,80 +151,82 @@ const ImageResizeComponent = (props: any) => {
         });
     };
 
+    const handleTitleEnterOk = () => {
+        updateAttributes({
+            title,
+        });
+        setOpenTitle(false);
+    };
+
     return (
         <NodeViewWrapper
             className={cls(RESIZE_CONTAINER_CLASS)}
             ref={ref}
-            onMouseEnter={() => setOpen(true)}
-            onMouseLeave={() => setOpen(false)}
             style={{ textAlign: node.attrs.align }}
         >
-            <div className="tiptap-image-resize-wrapper" ref={dom}>
-                <img
-                    {...props.node.attrs}
-                    className="postimage"
-                    onClick={handlePreview}
-                    onLoad={handleLoad}
-                    data-drag-handle
-                />
-                {editor?.isEditable && (
-                    <>
-                        <div
-                            data-attr="left"
-                            className="tiptap-resize-left-handle"
-                            onMouseDown={handler}
+            <div className="img-resize-title-container" ref={dom}>
+                <div
+                    className={cls('tiptap-image-resize-wrapper')}
+                    title={node.attrs.title}
+                    onClick={() => setOpen(true)}
+                >
+                    <img
+                        {...node.attrs}
+                        className="postimage"
+                        onClick={handlePreview}
+                        onLoad={handleLoad}
+                        data-drag-handle
+                        ref={img}
+                    />
+                    {editor?.isEditable && (
+                        <>
+                            <div
+                                data-attr="left"
+                                className="tiptap-resize-left-handle"
+                                onMouseDown={handler}
+                            />
+                            <div
+                                data-attr="right"
+                                className="tiptap-resize-right-handle"
+                                onMouseDown={handler}
+                            />
+                            <div
+                                data-attr="top"
+                                className="tiptap-resize-top-handle"
+                                onMouseDown={handler}
+                            />
+                            <div
+                                data-attr="bottom"
+                                className="tiptap-resize-bottom-handle"
+                                onMouseDown={handler}
+                            />
+                            {open &&
+                                createPortal(
+                                    <ResizeBubble
+                                        {...props}
+                                        setOpenTitle={setOpenTitle}
+                                        parent={dom.current}
+                                    />,
+                                    document.body,
+                                )}
+                        </>
+                    )}
+                </div>
+                <div className="text-center ne-image-title-content">
+                    {openTitle ? (
+                        <Input
+                            size="small"
+                            className="text-center input-image-title"
+                            placeholder="请输入图片描述"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            onPressEnter={handleTitleEnterOk}
+                            onBlur={handleTitleEnterOk}
                         />
-                        <div
-                            data-attr="right"
-                            className="tiptap-resize-right-handle"
-                            onMouseDown={handler}
-                        />
-                        <div
-                            data-attr="top"
-                            className="tiptap-resize-top-handle"
-                            onMouseDown={handler}
-                        />
-                        <div
-                            data-attr="bottom"
-                            className="tiptap-resize-bottom-handle"
-                            onMouseDown={handler}
-                        />
-                        {editor?.isEditable && open && (
-                            <ImageResizeBubble className="image-resize-bubble">
-                                <span
-                                    className="image-resize-bubble-span"
-                                    onClick={() =>
-                                        props.updateAttributes({
-                                            align: 'left',
-                                        })
-                                    }
-                                >
-                                    <TextLeft />
-                                </span>
-                                <span
-                                    className="image-resize-bubble-span"
-                                    onClick={() =>
-                                        props.updateAttributes({
-                                            align: 'center',
-                                        })
-                                    }
-                                >
-                                    <TextCenter />
-                                </span>
-                                <span
-                                    className="image-resize-bubble-span"
-                                    onClick={() =>
-                                        props.updateAttributes({
-                                            align: 'right',
-                                        })
-                                    }
-                                >
-                                    <TextRight />
-                                </span>
-                            </ImageResizeBubble>
-                        )}
-                    </>
-                )}
+                    ) : (
+                        <div onClick={() => setOpenTitle(true)}>{node.attrs.title}</div>
+                    )}
+                </div>
             </div>
 
             {!editor?.isEditable && (
