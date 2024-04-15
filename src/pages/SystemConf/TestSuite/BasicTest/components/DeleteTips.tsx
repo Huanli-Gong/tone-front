@@ -34,9 +34,17 @@ const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) =>
 
     const handleOpenRef = async () => {
         if (!setting) return
-        const { name, id } = setting
-        const pk = await saveRefenerceData({ name, id })
+        const pk = await saveRefenerceData(setting)
         if (pk) window.open(`${basePath || "/refenerce/suite/"}?pk=${pk}`)
+    }
+
+    const openRef = async () => {
+        if (!setting) return
+        const pk = await saveRefenerceData(setting)
+        // 编辑操作传 visible_range;
+        // 同步、删除操作不传 visible_range;
+         const { visible_range, optionType } = setting
+        if (pk) window.open(`${basePath || "/refenerce/suite/"}?pk=${pk}${optionType === 'edit'? `&visible_range=${visible_range}`: '' }`)
     }
 
     return (
@@ -47,11 +55,11 @@ const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) =>
             open={visible}
             onCancel={hanldeCancel}
             footer={[
-                <Button key="submit" onClick={handleOk} type={"danger" as any}>
-                    {
-                        okText || <FormattedMessage id="operation.confirm.delete" />
-                    }
-                </Button>,
+                // <Button key="submit" onClick={handleOk} type={"danger" as any}>
+                //     {
+                //         okText || <FormattedMessage id="operation.confirm.delete" />
+                //     }
+                // </Button>,
                 <Button key="back" type="primary" onClick={hanldeCancel}>
                     <FormattedMessage id="operation.cancel" />
                 </Button>
@@ -69,7 +77,7 @@ const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) =>
                     <FormattedMessage id="TestSuite.suite.delete.range" />
                 </Typography.Text>
                 <Typography.Link
-                    onClick={handleOpenRef}
+                    onClick={openRef}
                 >
                     <FormattedMessage id="view.reference.details" />
                 </Typography.Link>

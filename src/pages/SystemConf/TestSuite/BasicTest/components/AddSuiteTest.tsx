@@ -14,7 +14,7 @@ import DeleteTips from './DeleteTips';
 
 /**
  * @module 系统级
- * @description 新增、编辑suite级
+ * @description 新增、编辑suite
  */
 export default forwardRef(
     ({ onOk, wsList }: any, ref: any) => {
@@ -110,7 +110,7 @@ export default forwardRef(
                     if (s !== t) {
                         setDisable(true)
                         const { code } = await queryConfirm({ flag: 'pass', suite_id: dataSource.id, visible_range: s })
-                        if (code === 200) return delTip.current?.show({ ...dataSource, path: 'visible_range', visible_range: s })
+                        if (code === 200) return delTip.current?.show({ ...dataSource, path: 'visible_range', visible_range: s, optionType: 'edit' })
                     }
                 }
                 handleEditOK(val)

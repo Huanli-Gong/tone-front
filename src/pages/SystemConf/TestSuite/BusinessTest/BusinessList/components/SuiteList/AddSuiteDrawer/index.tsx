@@ -88,17 +88,17 @@ export default forwardRef((props: any, ref: any) => {
     setPadding(true)
     form.validateFields().then(async (values) => {
       const { business_id, id } = editData;
+      const domain_list_str = values.domain_list_str.join()
       if (id) {
-        const { code, msg } = await editSuite(id, { ...values, domain_list_str: values.domain_list_str.join() })
+        const { code, msg } = await editSuite(id, { ...values, domain_list_str })
         defaultOption(code, msg, 'edit')
       } else {
-        const { code, msg } = await addSuite2({ business_id, ...values, domain_list_str: values.domain_list_str.join() })
+        const { code, msg } = await addSuite2({ business_id, ...values, domain_list_str })
         defaultOption(code, msg, 'add')
       }
       setPadding(false)
     }).catch((err) => {
       setPadding(false)
-      // console.log(err)
       // 单独校验业务名称
       err?.errorFields?.forEach((item: any)=> {
         if (item.name[0] === 'name') {

@@ -172,11 +172,9 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
     }
 
     const handleDetail = async () => {
-        let newData: any = []
-        selectedRow.foreach((item: any) => newData.push(item.name))
-
         let pk
         if (!deleteObj.id) {
+            let newData: any = selectedRow.map((item: any) => item.name)
             pk = await saveRefenerceData({ name: newData.join(','), id: selectedRowKeys.join(',') })
         } else {
             const { name, id } = deleteObj
@@ -360,13 +358,13 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
             {/** 编辑说明 */}
             <DesFastEditDrawer ref={descFastEdit} onOk={handleEditDesc} />
 
-            {/** 200表示删除有引用;*/}
+            {/** 200表示有引用,不能直接删除;*/}
             <Modal
                 title={<FormattedMessage id="delete.tips" />}
                 footer={[
-                    <Button key="submit" onClick={remInnner}>
-                        <FormattedMessage id="operation.confirm.delete" />
-                    </Button>,
+                    // <Button key="submit" onClick={remInnner}>
+                    //     <FormattedMessage id="operation.confirm.delete" />
+                    // </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
                         <FormattedMessage id="operation.cancel" />
                     </Button>

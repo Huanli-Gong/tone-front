@@ -47,7 +47,7 @@ const Wapper = styled.div`
 const { Panel } = Collapse;
 const Refenerce = (props: any) => {
     const { type: $type } = useParams() as any
-    const { query: { pk } } = useLocation() as any
+    const { query: { pk, case_id_list, visible_range } } = useLocation() as any
     const [JobTotal, setJobTotal] = useState(0)
     const [JobData, setJobData] = useState<any>([])
     const [TempTotal, setTempTotal] = useState(0)
@@ -82,23 +82,34 @@ const Refenerce = (props: any) => {
         return false
     }, [JobTotal])
 
-    const init = async () => {
+    const initData = async () => {
         const { data } = await queryFormDate({ pk })
         if (!data) return
         setSource(data)
     }
 
-    const queryListData = async () => {
+    const getListData = async () => {
         const { id } = source
         setLoading(true)
         const JobObj: any = { flag: 'job', ...params }
         const TempObj: any = { flag: 'template', ...tempParams }
-        if ($type === 'suite') {
+        // 同步操作参数
+        if (case_id_list) {
+            JobObj.case_id_list = case_id_list
+            TempObj.case_id_list = case_id_list
+        } else if ($type === 'suite') {
             JobObj.suite_id = id
             TempObj.suite_id = id
         } else {
             JobObj.case_id_list = id
             TempObj.case_id_list = id
+        }
+
+        // 编辑操作传 visible_range;
+        // 同步、删除操作不传 visible_range;
+        if (visible_range) {
+            JobObj.visible_range = visible_range
+            TempObj.visible_range = visible_range
         }
         const { total, data, code, msg } = await queryConfirm(JobObj)
         if (code !== 200) {
@@ -121,12 +132,12 @@ const Refenerce = (props: any) => {
 
     React.useEffect(() => {
         if (!source) return
-        queryListData()
+        getListData()
     }, [source, params, tempParams])
 
     useEffect(() => {
         if (!pk) return
-        init()
+        initData()
     }, [pk])
 
     const JobColumns = [

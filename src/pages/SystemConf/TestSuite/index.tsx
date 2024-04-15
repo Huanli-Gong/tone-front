@@ -1,7 +1,7 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useState, useMemo, useRef } from 'react'
 
 import { TabCard } from '@/components/UpgradeUI'
-import { Tabs, Button } from 'antd'
+import { Tabs, Button, Spin } from 'antd'
 import { history, useLocation, useIntl, FormattedMessage } from 'umi'
 
 import BasicTest from './BasicTest'
@@ -14,9 +14,10 @@ import { runList } from '@/utils/utils';
 const TestSuite: React.FC = () => {
     const { formatMessage } = useIntl()
     const { query }: any = useLocation()
-
+    const [synchronizeLoading, setSynchronizeLoading] = useState<boolean>(false)
+    
     const testType = useMemo(() => {
-        return !query.test_type ? 'functional' : query.test_type
+        return query.test_type || 'functional'
     }, [query])
 
     const domainList = useDomain()
@@ -47,40 +48,43 @@ const TestSuite: React.FC = () => {
                 ]
             }}
         >
-            <TabCard
-                title={
-                    <Tabs defaultActiveKey={query.test_type || 'functional'} onChange={handleTab} activeKey={testType} >
-                        <Tabs.TabPane tab={<FormattedMessage id="functional.test" />} key="functional" />
-                        <Tabs.TabPane tab={<FormattedMessage id="performance.test" />} key="performance" />
-                        {!BUILD_APP_ENV ? <Tabs.TabPane tab={<FormattedMessage id="business.test" />} key="business" /> : null}
-                        <Tabs.TabPane tab={<FormattedMessage id="TestSuite.domain.conf" />} key="domainconf" />
-                    </Tabs>
-                }
-                extra={
-                    <Button type="primary" onClick={addClick} >
-                        <FormattedMessage id={`TestSuite.create.${testType}`} />
-                    </Button>
-                }
-            >
-                {
-                    (testType !== 'business' && testType !== 'domainconf') &&
-                    <BasicTest
-                        ref={basicTestAddRef}
-                    />
-                }
-                {
-                    testType === 'business' &&
-                    <BusinessList
-                        ref={businessTestAddRef}
-                    />
-                }
-                {
-                    testType === 'domainconf' &&
-                    <SetDomain
-                        ref={domainConfAddRef}
-                    />
-                }
-            </TabCard>
+            <Spin spinning={synchronizeLoading}>
+                <TabCard
+                    title={
+                        <Tabs defaultActiveKey={query.test_type || 'functional'} onChange={handleTab} activeKey={testType} >
+                            <Tabs.TabPane tab={<FormattedMessage id="functional.test" />} key="functional" />
+                            <Tabs.TabPane tab={<FormattedMessage id="performance.test" />} key="performance" />
+                            {!BUILD_APP_ENV ? <Tabs.TabPane tab={<FormattedMessage id="business.test" />} key="business" /> : null}
+                            <Tabs.TabPane tab={<FormattedMessage id="TestSuite.domain.conf" />} key="domainconf" />
+                        </Tabs>
+                    }
+                    extra={
+                        <Button type="primary" onClick={addClick} >
+                            <FormattedMessage id={`TestSuite.create.${testType}`} />
+                        </Button>
+                    }
+                >
+                    {
+                        ['functional', 'performance'].includes(testType) &&
+                        <BasicTest
+                            ref={basicTestAddRef}
+                            setSynchronizeLoading={setSynchronizeLoading}
+                        />
+                    }
+                    {
+                        testType === 'business' &&
+                        <BusinessList
+                            ref={businessTestAddRef}
+                        />
+                    }
+                    {
+                        testType === 'domainconf' &&
+                        <SetDomain
+                            ref={domainConfAddRef}
+                        />
+                    }
+                </TabCard>
+            </Spin>
         </ContainerContext.Provider>
     )
 }
