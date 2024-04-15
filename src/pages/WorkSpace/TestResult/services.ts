@@ -64,5 +64,5 @@ export const queryDomainGroup = (data: any) => {
 }
 //
 export const queryBatchTag = (data: any) => {
-    return request(`api/job/tag/relation/batch/`, { method: 'post', data })
+    return request(`/api/job/tag/relation/batch/`, { method: 'post', data })
 }
