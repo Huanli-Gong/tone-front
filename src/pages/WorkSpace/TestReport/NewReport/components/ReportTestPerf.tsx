@@ -228,7 +228,6 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
                                                                             onDelete={handleDelete}
                                                                         />
                                                                     </div>
-
                                                                 )
                                                             })
                                                         }

@@ -16,17 +16,17 @@ import {
     TestGroup,
     CloseBtn,
 } from '../ReportUI';
-import _ from 'lodash';
+import lodash from 'lodash';
 import { TextAreaEditBlock } from './EditPublic';
 
 const ReportTestFunc: React.FC<any> = () => {
-    const { obj, setObj, domainResult, btnState, isOldReport, saveReportData, routeName } = useContext(ReportContext)
+    const { setObj, domainResult, btnState, isOldReport, saveReportData, routeName } = useContext(ReportContext)
     const { report_id } = useParams() as any;
 
     const intl = useIntl()
     const data = useMemo(() => {
         if (Array.isArray(domainResult.func_item)) {
-            return _.cloneDeep(domainResult.func_item)
+            return lodash.cloneDeep(domainResult.func_item)
         }
     }, [domainResult])
 
@@ -136,7 +136,6 @@ const ReportTestFunc: React.FC<any> = () => {
                                                                     child={child}
                                                                     name="group"
                                                                     id={child.rowKey}
-                                                                    // subObj={subObj}
                                                                     dataSource={dataSource}
                                                                     setDataSource={setDataSource}
                                                                     onDelete={handleDelete}
@@ -145,13 +144,11 @@ const ReportTestFunc: React.FC<any> = () => {
                                                         )
                                                     })
                                                 }
-                                            </>
-                                            :
+                                            </> :
                                             <FuncIndex
                                                 child={item}
                                                 name="item"
                                                 id={item.rowKey}
-                                                // subObj={subObj}
                                                 dataSource={dataSource}
                                                 setDataSource={setDataSource}
                                                 onDelete={handleDelete}

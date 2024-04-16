@@ -11,36 +11,6 @@ import { fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonM
 import { queryCompareResultList } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/services'
 import { useParams } from 'umi';
 
-/* import { v4 as uuid } from "uuid"
-
-const t = Object.keys(perf_data).reduce((pre: any, cur: any) => {
-    const term = perf_data[cur]
-    const isList = Object.prototype.toString.call(term) === '[object Array]'
-    if (isList)
-        return pre.concat({
-            name: cur,
-            rowkey: uuid(),
-            list: perf_data[cur].map((item: any) => ({
-                ...item,
-                rowkey: uuid()
-            }))
-        })
-    return pre.concat({
-        name: cur,
-        rowkey: uuid(),
-        list: Object.keys(term).reduce((p: any, c: any) => {
-            return p.concat({
-                name: c,
-                rowkey: uuid(),
-                list: term[c].map(($ele: any) => ({
-                    ...$ele,
-                    rowkey: uuid()
-                }))
-            })
-        }, [])
-    })
-}, []) */
-
 export const CreatePageData = (props: any) => {
     const [logoData, setLogoData] = useState<any[]>([])
     const [loading, setLoading] = useState<boolean>(true)
@@ -662,31 +632,31 @@ const changeChild = (data: any, index: number) => {
     return list
 }
 
-export const EditPageData = (props: any) => {
+export const EditPageData = () => {
     const [loading, setLoading] = useState<boolean>(true)
     const [dataSource, setDataSource] = useState<any>({})
     const [allGroupData, setAllGroupData] = useState<any>([])
     const [baselineGroupIndex, setBaselineGroupIndex] = useState<number>(0)
     const [creator, setCreator] = useState<any>()
     const [template, setTemplate] = useState<any>({})
-    const { report_id } = useParams() as any
+    const { report_id, share_id, ws_id } = useParams() as any
 
     const queryReport = async () => {
         setLoading(true)
-        const { code, msg, data } = await reportDetail({ report_id })
+        const { code, msg, data } = await reportDetail({ report_id, share_id })
         if (code !== 200) {
             requestCodeMessage(code, msg)
             return redirectErrorPage(404)
         }
         setDataSource(data)
-        window.document.title = data?.name || 'T-one'
+        // window.document.title = data?.name || 'T-one'
         // console.log(data)
-        const { tmpl_id, ws_id, creator, template_detail } = data
+        const { tmpl_id, creator, template_detail } = data
         setCreator(creator)
         let templateSource = template_detail
         if (!templateSource || JSON.stringify(templateSource) === "{}") {
             if (Object.prototype.toString.call(tmpl_id) === "[object Number]") {
-                const { data, code } = await detailTemplate({ id: tmpl_id, ws_id })
+                const { data, code } = await detailTemplate({ id: tmpl_id, ws_id, share_id })
                 if (code === 200)
                     templateSource = data
             }
@@ -766,18 +736,8 @@ export const EditPageData = (props: any) => {
     }
 
     const saveReportData = {
-        func_desc: dataSource?.func_desc,
-        perf_desc: dataSource?.perf_desc,
-        creator_name: dataSource?.creator_name,
-        description: dataSource?.description,
-        gmt_created: dataSource?.gmt_created,
-        id: dataSource?.id,
-        name: dataSource?.name,
+        ...dataSource,
         template: dataSource?.tmpl_id,
-        old_report: dataSource?.old_report,
-        report_source: dataSource?.report_source,
-        test_background: dataSource?.test_background,
-        test_method: dataSource?.test_method,
         test_conclusion,
         test_env,
     }

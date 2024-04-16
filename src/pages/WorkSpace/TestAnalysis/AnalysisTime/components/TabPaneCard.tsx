@@ -18,6 +18,7 @@ import StandaloneChart from './PerformanceCharts/Standalone'
 import EmptyComp from "./EmptyComp"
 import LoadingComp from './Loading'
 import { v4 as uuid } from 'uuid'
+import { useAnalysisProvider } from '../provider'
 
 const TootipTipRow = styled(Row)`
     position:relative;
@@ -71,6 +72,7 @@ const SuiteConfMetric = (props: any) => {
 const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
+    const { setMetrics } = useAnalysisProvider()
     const { query }: any = useLocation()
     const { info, setInfo } = props
     const { show_type, provider_env, test_type } = info
@@ -186,6 +188,7 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
     }
 
     const handleFormChange = (_: any) => {
+        setMetrics([])
         if (_?.[0].name?.[0] === 'project_id') {
             setMetricData(null)
             setTableData([])

@@ -14,6 +14,7 @@ export default {
   'Workspace.JobConfig.JobTypeUpdate': 'Edit Job Type',
   'Workspace.JobConfig.CreateJobType': 'Create Job Type',
   'Workspace.JobTypePreview': 'Preview Job Type',
+  'Workspace.Dashboard': 'Dashboard',
 
   'Workspace.Baseline': 'Baseline',
   'Workspace.Baseline.GroupBaseline': aligroupServer_baseline_en, //这是引用变量不用翻译

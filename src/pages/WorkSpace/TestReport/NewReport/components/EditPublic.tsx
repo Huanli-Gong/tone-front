@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Input, notification, message, Row } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-import { useIntl, FormattedMessage, Access, useAccess } from 'umi';
+import { useIntl, FormattedMessage, Access, useAccess, useParams } from 'umi';
 import { AccessTootip } from '@/utils/utils';
 import styled from 'styled-components';
 import _ from 'lodash';
@@ -119,6 +119,7 @@ export const SettingRegUpdate = ({
     }) => {
     const access = useAccess();
     const { formatMessage } = useIntl()
+    const { share_id } = useParams() as any
     const [btn, setBtn] = useState(false)
     const [title, setTitle] = useState('')
 
@@ -197,14 +198,17 @@ export const SettingRegUpdate = ({
     return (
         <div style={{ width: '100%', ...style }}>
             <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
-            <Access
-                accessible={access.WsTourist() && access.WsMemberOperateSelf(creator)}
-                fallback={
-                    <EditOutlined onClick={() => AccessTootip()} style={{ paddingLeft: 10 }} />
-                }
-            >
-                <EditOutlined style={{ paddingLeft: 10 }} onClick={() => setBtn(true)} />
-            </Access>
+            {
+                !share_id &&
+                <Access
+                    accessible={access.WsTourist() && access.WsMemberOperateSelf(creator)}
+                    fallback={
+                        <EditOutlined onClick={() => AccessTootip()} style={{ paddingLeft: 10 }} />
+                    }
+                >
+                    <EditOutlined style={{ paddingLeft: 10 }} onClick={() => setBtn(true)} />
+                </Access>
+            }
         </div>
     )
 }
@@ -221,9 +225,9 @@ type TextAreaEditBlockProps = {
 }
 
 export const TextAreaEditBlock: React.FC<TextAreaEditBlockProps> = (props) => {
-    const { placeholder, creator, value, report_id, item_name, item_id, default_state = false, title } = props
-    const access = useAccess()
+    const { placeholder, value, report_id, item_name, item_id, default_state = false, title } = props
     const intl = useIntl()
+    const { share_id } = useParams() as any
 
     const [state, setState] = React.useState(default_state)
     const [val, setVal] = React.useState<string | undefined>(value)
@@ -266,17 +270,12 @@ export const TextAreaEditBlock: React.FC<TextAreaEditBlockProps> = (props) => {
     return (
         <Row style={{ paddingLeft: 16, paddingRight: 16, marginTop: 10 }} align={'middle'}>
             <span style={{ display: 'inline-block', marginRight: 10 }}>{val || '-'}</span>
-            <Access
-                accessible={
-                    access.WsTourist() && access.WsMemberOperateSelf(creator)
-                }
-                fallback={
-                    <></>
-                }
-            />
-            <EditOutlined
-                onClick={() => setState(true)}
-            />
+            {
+                !share_id &&
+                <EditOutlined
+                    onClick={() => setState(true)}
+                />
+            }
         </Row>
     )
 }
