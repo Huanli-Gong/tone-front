@@ -7,24 +7,31 @@ import styles from './index.less'
 const FailReasonPopover = ({ text, placement = 'left' }: any) => {
     const [loading, setLoading] = useState<boolean>(false)
     const [info, setInfo] = useState<any>([])
-    const getData = async(params: string)=> {
-        setLoading(true)
-        const res = await queryFailReason({ problem: params}).catch(()=> setLoading(false))
-        setLoading(false)
-        if (res.code === 200) {
-            setInfo(res.data)
+    const [visible, setVisible] = useState(false)
+    const getData = async($visible: boolean)=> {
+        if ($visible && text && !info.length) {
+            setLoading(true)
+            const res = await queryFailReason({ problem: text}).catch(()=> setLoading(false))
+            setLoading(false)
+            setVisible($visible)
+            if (res.code === 200) {
+                setInfo(res.data)
+            }
         }
+        setVisible($visible)
     }
 
     useEffect(()=> {
-        if (text) getData(text)
+        return ()=> {
+            setInfo([])
+        }
     }, [text])
 
     const style = { maxWidth: 400 }
     return (
-        <Spin spinning={loading}>
-            <Popover
-                content={
+        <Popover
+            content={text ?
+                <Spin spinning={loading}>
                     <div className={styles.answers_warp}>
                         <h3 style={style}>{text}</h3>
                         {info[0]?.answers?.map((item: any, i: string)=> {
@@ -37,16 +44,19 @@ const FailReasonPopover = ({ text, placement = 'left' }: any) => {
                             )
                         })}
                     </div>
-                }
-                // visible
-                placement={placement}
-                overlayClassName={styles.popover_warp}
-                overlayStyle={{ wordBreak: 'break-all' }}
-            >
-                <div className={styles.text_warp}>{text}</div>
-            </Popover>
-        </Spin>
-
+                </Spin>
+                : null
+            }
+            open={visible}
+            destroyTooltipOnHide
+            placement={placement}
+            overlayClassName={styles.popover_warp}
+            overlayStyle={{ wordBreak: 'break-all' }}
+            onOpenChange={getData}
+        >
+            <div className={styles.text_warp} style={{ cursor: loading ? 'progress' : 'default' }}
+            >{text}</div>
+        </Popover>
     )
 }
 
