@@ -41,7 +41,7 @@ const IntroRow: React.FC<IProps> = (props) => {
             <Typography.Text strong>
                 {
                     formatMessage({
-                        id: "pages.worksapce.baseline.metric.expand.title",
+                        id: "pages.Workspace.baseline.metric.expand.title",
                         defaultMessage: "环境信息"
                     })
                 }

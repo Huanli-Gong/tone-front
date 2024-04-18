@@ -74,5 +74,5 @@ export default {
 
   'pages.workspace.baseline.metric.table.view': 'View Info',
   'pages.workspace.baseline.metric.table.expand': 'Collapse Info',
-  'pages.worksapce.baseline.metric.expand.title': "Environment Info"
+  'pages.Workspace.baseline.metric.expand.title': "Environment Info"
 }

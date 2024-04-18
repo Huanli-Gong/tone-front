@@ -38,15 +38,6 @@ const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) =>
         if (pk) window.open(`${basePath || "/refenerce/suite/"}?pk=${pk}`)
     }
 
-    const openRef = async () => {
-        if (!setting) return
-        const pk = await saveRefenerceData(setting)
-        // 编辑操作传 visible_range;
-        // 同步、删除操作不传 visible_range;
-         const { visible_range, optionType } = setting
-        if (pk) window.open(`${basePath || "/refenerce/suite/"}?pk=${pk}${optionType === 'edit'? `&visible_range=${visible_range}`: '' }`)
-    }
-
     return (
         <Modal
             destroyOnClose
@@ -77,7 +68,7 @@ const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) =>
                     <FormattedMessage id="TestSuite.suite.delete.range" />
                 </Typography.Text>
                 <Typography.Link
-                    onClick={openRef}
+                    onClick={handleOpenRef}
                 >
                     <FormattedMessage id="view.reference.details" />
                 </Typography.Link>

@@ -31,8 +31,9 @@ const SynchronizeModal = (props: any, ref: any) => {
     const handleOpenRef = async () => {
       if (!setting) return
       const { name, id, delete_temp_case_id_list } = setting
+      const case_id_list = delete_temp_case_id_list?.join()
       const pk = await saveRefenerceData({ name, id })
-      if (pk) window.open(`${props.basePath || "/refenerce/suite/"}?pk=${pk}&case_id_list=${delete_temp_case_id_list?.join()}`)
+      if (pk) window.open(`${props.basePath || "/refenerce/suite/"}?pk=${pk}${case_id_list? `&case_id_list=${case_id_list}`: ''}`)
     }
 
     return (
