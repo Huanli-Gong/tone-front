@@ -17,22 +17,25 @@ const DispathTagSelect = (props: any) => {
 
     const [tagPageNum, setTagPageNum] = useState(1)
     const [fetching, setFetching] = useState(true)
+    const [totalPage, setTotalPage] = useState(1)
 
     const dispatchRequest = async (page_num = 1) => {
         setFetching(true)
-        const { data, code } = await queryDispatchTags({
+        const { data, code, total_page } = await queryDispatchTags({
             ws_id,
             run_mode,
             page_num,
             run_environment: server_type,
             page_size: PAGE_SIZE
         })
-        if (code === 200 && data)
+        if (code === 200 && data) {
             setTagList((p: any) => data.reduce((pre: any, cur: any) => {
                 const ids = p.map(({ id }: any) => id)
                 if (ids.includes(cur.id)) return pre
                 return pre.concat(cur)
             }, []))
+            setTotalPage(total_page)
+        }    
         setFetching(false)
     }
 
@@ -48,8 +51,10 @@ const DispathTagSelect = (props: any) => {
         const { clientHeight, scrollHeight, scrollTop } = target
         if (clientHeight + scrollTop === scrollHeight) {
             const num = tagPageNum + 1
-            setTagPageNum(num)
-            dispatchRequest(num)
+            if (num <= totalPage) {
+                setTagPageNum(num)
+                dispatchRequest(num)
+            }
         }
     }
 
@@ -71,6 +76,7 @@ const DispathTagSelect = (props: any) => {
                 mode="multiple"
                 loading={fetching}
                 onPopupScroll={handleTagePopupScroll}
+                getPopupContainer={node => node.parentNode}
                 options={tagList?.map((i: any) => ({
                     value: i.id,
                     label: <Tag color={i.tag_color}>{i.name}</Tag>,

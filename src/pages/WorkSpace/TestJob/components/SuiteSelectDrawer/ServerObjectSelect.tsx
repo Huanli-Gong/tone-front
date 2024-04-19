@@ -32,33 +32,46 @@ const ServerObjectSelect = (props: any) => {
     const [pageNum, setPageNum] = useState(1)
     const [pageVisibleState, setPageVisibleState] = React.useState(false)
     const [searchValue, setSearchValue] = useState(undefined)
+    const [totalPage, setTotalPage] = useState(1)
 
     //内网单机
     const standaloneServerRequest = async (page_num = 1) => {
         const search = searchValue ? { ip: searchValue }: {}
-        const { data, code } = await standloneServerList({ ws_id, state: ['Available', 'Occupied', 'Reserved'], page_num, page_size: PAGE_SIZE, ...search }) //, page_size : 2
-        if (code === 200 && data) setServerList((p: any) => filterRepeat(p, data))
+        const { data, code, total_page } = await standloneServerList({ ws_id, state: ['Available', 'Occupied', 'Reserved'], page_num, page_size: PAGE_SIZE, ...search }) //, page_size : 2
+        if (code === 200 && data) {
+            setServerList((p: any) => filterRepeat(p, data))
+            setTotalPage(total_page)
+        }
     }
 
     //内网集群
     const clusterServerRequest = async (page_num = 1) => {
         const search = searchValue ? { ip: searchValue }: {}
-        const { data, code } = await queryClusterServer({ cluster_type: 'aligroup', ws_id, page_num, page_size: PAGE_SIZE, ...search })
-        if (code === 200 && data) setServerList((p: any) => filterRepeat(p, data))
+        const { data, code, total_page } = await queryClusterServer({ cluster_type: 'aligroup', ws_id, page_num, page_size: PAGE_SIZE, ...search })
+        if (code === 200 && data) {
+            setServerList((p: any) => filterRepeat(p, data))
+            setTotalPage(total_page)
+        }
     }
 
     //云上单机
     const clusterStandaloneRequest = async () => {
         const search = searchValue ? { ip: searchValue }: {}
-        const { data, code } = await queryClusterStandaloneServer({ ws_id, no_page: true, is_instance: serverObjectType === 'instance', state: ['Available', 'Occupied', 'Reserved'], ...search })
-        if (code === 200 && data) setServerList((p: any) => filterRepeat(p, data))
+        const { data, code, total_page } = await queryClusterStandaloneServer({ ws_id, no_page: true, is_instance: serverObjectType === 'instance', state: ['Available', 'Occupied', 'Reserved'], ...search })
+        if (code === 200 && data) {
+            setServerList((p: any) => filterRepeat(p, data))
+            setTotalPage(total_page)
+        }
     }
 
     //云上集群
     const clusterGroupRequest = async () => {
         const search = searchValue ? { ip: searchValue }: {}
-        const { data, code } = await queryClusterGroupServer({ cluster_type: 'aliyun', ws_id, no_page: true, ...search })
-        if (code === 200 && data) setServerList((p: any) => filterRepeat(p, data))
+        const { data, code, total_page } = await queryClusterGroupServer({ cluster_type: 'aliyun', ws_id, no_page: true, ...search })
+        if (code === 200 && data) {
+            setServerList((p: any) => filterRepeat(p, data))
+            setTotalPage(total_page)
+        }
     }
 
     const queryServerList = async (page_num = 1) => {
@@ -86,6 +99,7 @@ const ServerObjectSelect = (props: any) => {
 
         return () => {
             setPageVisibleState(false)
+            setTotalPage(1)
         }
     }, [serverObjectType, searchValue])
 
@@ -105,20 +119,17 @@ const ServerObjectSelect = (props: any) => {
         const { clientHeight, scrollHeight, scrollTop } = target
         if (clientHeight + scrollTop === scrollHeight) {
             const num = pageNum + 1
-            setPageNum(num)
-            queryServerList(num)
+            if (num <= totalPage) {
+                setPageNum(num)
+                queryServerList(num)
+            }
         }
     }
 
-  // 搜索
-  const onSearch = (word: any)=> {
-    // console.log('word:', word)
-    if (word) { 
-        setSearchValue(word) 
-    } else {
-        setSearchValue(undefined)
+    // 搜索
+    const onSearch = (word: any)=> {
+        setSearchValue(word || undefined)
     }
-  }
 
     const switchServerMessage = useMemo(
         () => {
@@ -200,6 +211,7 @@ const ServerObjectSelect = (props: any) => {
                     loading={fetching}
                     onPopupScroll={handleServerPopupScroll}
                     popupClassName="job_select_drop_cls"
+                    getPopupContainer={node => node.parentNode}
                     dropdownRender={(menu: any) => (
                         <DropdownRender
                             menu={menu}
