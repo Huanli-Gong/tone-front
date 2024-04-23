@@ -133,7 +133,7 @@ export default (props: FormProps) => {
                     name="name"
                     label={contrl.job_name.alias || <FormattedMessage id={`job.form.${contrl.job_name.name}`} />}
                     rules={[{
-                        pattern: /^[A-Za-z0-9\{}\._-]+$/g,
+                        // pattern: /^[A-Za-z0-9\{}\._-]+$/g,
                         message: formatMessage({ id: 'job.form.job_name.message' }, { date: '{date}' },)
                     }, {
                         max: 128,
