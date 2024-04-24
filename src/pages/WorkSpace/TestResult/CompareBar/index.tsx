@@ -14,7 +14,7 @@ import BatchTagModal from './BatchTagModal'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
-    const { selectedChange, allSelectRowData, allSelectedRowKeys } = props
+    const { selectedChange, allSelectRowData, allSelectedRowKeys, callback } = props
     const { ws_id } = useParams() as any
     const access = useAccess()
     const scrollbarsRef: any = useRef(null)
@@ -334,7 +334,7 @@ export default (props: any) => {
                     </Space>
                 </div>
                 <SaveReport ref={saveReportDraw} onOk={creatReportCallback} allGroup={[getBaselineGroup()]} />
-                <BatchTagModal ref={batchTagRef} ws_id={ws_id} />
+                <BatchTagModal ref={batchTagRef} ws_id={ws_id} callback={callback} />
             </div>
         </div>
     )

@@ -225,6 +225,7 @@ const BaseTab: React.FC<IProps> = () => {
                     countRefresh={countRefresh}
                     listRefresh={listRefresh}
                     setDataSource={mutate}
+                    callback={listRefresh}
                 />
             </React.Fragment>
         </JobListProvider.Provider>

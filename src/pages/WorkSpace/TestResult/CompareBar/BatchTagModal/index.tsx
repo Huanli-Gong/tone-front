@@ -1,6 +1,6 @@
-import { Modal, Form, Select, Tag, Empty, Spin, message } from 'antd';
+import { Modal, Form, Select, Tag, Empty, Spin, message, Button, Popconfirm } from 'antd';
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import { useRequest, useIntl } from 'umi'
+import { useRequest, useIntl, FormattedMessage } from 'umi'
 import { tagList as queryTagList } from '@/pages/WorkSpace/TagManage/service'
 import { queryBatchTag } from '../../services'
 import lodash from 'lodash'
@@ -76,14 +76,38 @@ const App = forwardRef((props: any, ref: any) => {
     initialState()
   };
 
+  // 已选中标签中包含的time标签
+  const timeTagList: any = selectedTag.filter((x: any) => tag_catch_name.indexOf(x.label) > -1 )
+  
+
   return (
     <Modal title="批量打标签"
       open={visible} 
       maskClosable={false}
-      onOk={handleOk} 
+      // onOk={handleOk} 
       onCancel={handleCancel}
       width={600}
       destroyOnClose={true}
+      footer={[
+        <Button key="back" onClick={handleCancel}>
+            <FormattedMessage id="operation.cancel" />
+        </Button>,
+        <>
+          {timeTagList.length ?
+            <Popconfirm
+                title={formatMessage({ id: 'ws.result.details.keep.time.job.tag' }, { data: timeTagList[0].label }) }
+                onConfirm={handleOk}
+                okText={<FormattedMessage id="operation.ok" />}
+                cancelText={<FormattedMessage id="operation.cancel" />}
+                placement="left"
+            >
+              <Button type="primary"><FormattedMessage id="operation.ok" /></Button>
+            </Popconfirm>
+            :
+            <Button key="submit" onClick={handleOk} type="primary"><FormattedMessage id="operation.ok" /></Button>
+          }
+        </>
+      ]}
     >
       <div>
         <Form

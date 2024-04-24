@@ -6,7 +6,6 @@ import { requestCodeMessage, targetJump, AccessTootip, matchTestType } from '@/u
 import { StarOutlined, StarFilled } from '@ant-design/icons'
 import { JobListStateTag } from '../Details/components'
 import { QusetionIconTootip } from '@/components/Product';
-import EllipsisPopover from '@/components/Public/EllipsisPopover'
 import OverflowList from '@/components/TagOverflow/index'
 import lodash from 'lodash'
 import CommonPagination from '@/components/CommonPagination';
@@ -53,7 +52,7 @@ const ListTable: React.FC<IProps> = (props) => {
     const { initialColumns } = useProvider()
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
-    const { pageQuery, setPageQuery, radioValue = 1, setRadioValue, countRefresh, dataSource, setDataSource, listRefresh, loading } = props
+    const { pageQuery, setPageQuery, radioValue = 1, setRadioValue, countRefresh, dataSource, setDataSource, listRefresh, loading, callback } = props
     const { ws_id } = useParams() as any
     const access = useAccess()
     const [selectedRowKeys, setSelectedRowKeys] = React.useState<any[]>([])
@@ -525,6 +524,10 @@ const ListTable: React.FC<IProps> = (props) => {
                         selectedChange={selectedChange}
                         allSelectedRowKeys={selectedRowKeys}
                         allSelectRowData={selectRowData}
+                        callback={()=> {
+                            handleResetSelectedKeys()
+                            callback()
+                        }}
                     />
                 </SelectionRow>
             }
