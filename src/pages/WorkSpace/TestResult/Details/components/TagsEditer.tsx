@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react'
 import { Button, Empty, Select, Space, Spin, Tag, Popconfirm, Tooltip } from 'antd'
-
+import moment from "moment"
 import { tagList as queryTagList } from '@/pages/WorkSpace/TagManage/service'
 import { useRequest, Access, useAccess, useIntl, FormattedMessage, useParams } from 'umi'
 import { EditOutlined, PlusOutlined } from '@ant-design/icons'
@@ -138,10 +138,17 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
 
                         {
                             tags.length > 0
-                                ? tags.map((tag: any) =>
-                                    <Tooltip title={tag.time_keep_to ? formatMessage({ id: 'ws.result.details.delete.tag' }, {data: tag.time_keep_to}): null}>
+                                ? tags.map((tag: any) => {
+                                    return <Tooltip title={tag.time_keep_to? (
+                                        moment(tag.time_keep_to).unix() > moment().unix() ?
+                                            formatMessage({id: 'ws.result.details.delete.tag'}, {data: tag.time_keep_to})
+                                            : formatMessage({id: 'ws.result.details.deleted.today'})
+                                        )
+                                        : null}
+                                    >
                                         <Tag style={{ margin: 0 }} color={tag.color} key={tag.id}>{tag.name}</Tag>
-                                    </Tooltip>)
+                                    </Tooltip>
+                                })
                                 : <span style={{ color: 'rgba(0,0,0,0.85)' }}>-</span>
                         }
                     </Space> :
@@ -199,7 +206,9 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
                             {/** 有时间的系统标签时，二次弹框确认； */}
                             {timeTagList.length ?
                                 <Popconfirm
-                                    title={formatMessage({ id: 'ws.result.details.keep.time.job.tag' }, { data: timeTagList[0].label }) }
+                                    title={
+                                        formatMessage({ id: 'ws.result.details.keep.time.job.tag' }, { data: timeTagList[0].label }) 
+                                    }
                                     onConfirm={handleOk}
                                     okText={<FormattedMessage id="operation.ok" />}
                                     cancelText={<FormattedMessage id="operation.cancel" />}

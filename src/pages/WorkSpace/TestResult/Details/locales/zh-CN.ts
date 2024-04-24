@@ -26,6 +26,7 @@ const text = {
   'stop': '停止Job',
   'keep.time.job.tag': '你以已选择 {data} 标签，确定后将在对应时间后进行job删除',
   'delete.tag': '预计 {data} 删除该job',
+  'deleted.today': '因为本job数据，超过标签时间将于今日删除',
   // Chart
   'increase': '上升',
   'decline': '下降',

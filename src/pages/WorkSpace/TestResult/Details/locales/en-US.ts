@@ -26,6 +26,8 @@ const text = {
   'stop': 'Stop Job',
   'keep.time.job.tag': 'You have selected the {data} tag, and once confirmed, the job will be deleted after the corresponding time',
   'delete.tag': 'Expected to delete this job on {data}',
+  'deleted.today': 'This job data will be deleted today if it exceeds the label time',
+
   // Chart
   'increase': 'Raise',// 'Rising',
   'decline': 'Drop',//'Falling',

@@ -190,7 +190,7 @@ const ListTable: React.FC<IProps> = (props) => {
         {
             title: <FormattedMessage id="ws.result.list.tag_list" />,
             dataIndex: 'tag_list',
-            width: 175,
+            width: 188,
             ellipsis: {
                 showTitle: false,
             },

@@ -17,6 +17,7 @@ const App = forwardRef((props: any, ref: any) => {
   const { formatMessage } = useIntl()
   const { ws_id } = props
   const [visible, setVisible] = useState(false);
+  const [disable, setDisable] = useState(false);
   const [jobList, setJobList] = useState([]);
   const [params, setParams] = React.useState<any>({ page_num: 1, page_size: 20 })
   const [list, setList] = React.useState([])
@@ -26,6 +27,7 @@ const App = forwardRef((props: any, ref: any) => {
   const initialState = ()=> {
     form.resetFields()
     setVisible(false)
+    setDisable(false)
     setJobList([])
     setList([])
     setSelectedTag([])
@@ -60,6 +62,7 @@ const App = forwardRef((props: any, ref: any) => {
 
 
   const handleOk = () => {
+    setDisable(false)
     form.validateFields().then(async (values) => {
       let q = { ...values, ws_id, job_id_list: jobList }
       const { code, msg } = await queryBatchTag(q)
@@ -89,7 +92,7 @@ const App = forwardRef((props: any, ref: any) => {
       width={600}
       destroyOnClose={true}
       footer={[
-        <Button key="back" onClick={handleCancel}>
+        <Button key="back" onClick={handleCancel} disabled={disable}>
             <FormattedMessage id="operation.cancel" />
         </Button>,
         <>
@@ -99,9 +102,10 @@ const App = forwardRef((props: any, ref: any) => {
                 onConfirm={handleOk}
                 okText={<FormattedMessage id="operation.ok" />}
                 cancelText={<FormattedMessage id="operation.cancel" />}
-                placement="left"
+                placement="bottomRight"
+                onCancel={()=> setDisable(false)}
             >
-              <Button type="primary"><FormattedMessage id="operation.ok" /></Button>
+              <Button onClick={()=> setDisable(true)} type="primary"><FormattedMessage id="operation.ok" /></Button>
             </Popconfirm>
             :
             <Button key="submit" onClick={handleOk} type="primary"><FormattedMessage id="operation.ok" /></Button>
