@@ -84,11 +84,11 @@ const App = forwardRef((props: any, ref: any) => {
   
 
   return (
-    <Modal title="批量打标签"
+    <Modal title={<FormattedMessage id="ws.result.list.batch.add.tag.jobs" />}
       open={visible} 
       maskClosable={false}
       // onOk={handleOk} 
-      onCancel={handleCancel}
+      onCancel={()=> { !disable && handleCancel() }}
       width={600}
       destroyOnClose={true}
       footer={[

@@ -64,7 +64,7 @@ const text: any = {
   'top.ranked': '如果有重复的，排序靠前的Job优先。',
   'create.report': '生成报告',
   'compare.analysis': '对比分析',
-  'batch.add.tag.jobs': '批量打标签',
+  'batch.add.tag.jobs': '批量编辑标签',
   'report.name': '报告名称',
   'report.name.placeholder': '支持搜索报告名称',
   'gmt_created': '保存时间',
