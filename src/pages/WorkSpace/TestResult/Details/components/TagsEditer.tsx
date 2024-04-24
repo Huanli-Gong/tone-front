@@ -1,10 +1,10 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react'
-import { Button, Empty, Select, Space, Spin, Tag } from 'antd'
+import { Button, Empty, Select, Space, Spin, Tag, Popconfirm, Tooltip } from 'antd'
 
 import { tagList as queryTagList } from '@/pages/WorkSpace/TagManage/service'
-import { useRequest, Access, useAccess, FormattedMessage, useParams } from 'umi'
+import { useRequest, Access, useAccess, useIntl, FormattedMessage, useParams } from 'umi'
 import { EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { updateJobTags } from '../service'
 
@@ -36,13 +36,14 @@ const tag_catch = [
     {id: 'keep_three_months', name: '保留三个月'},
     {id: 'keep_six_months', name: '保留六个月'},
     {id: 'keep_one_year', name: '保留一年'},
-  ]
+]
 const tag_catch_name = tag_catch.map((key)=> key.id)
 
 const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
     const { ws_id, id: job_id, share_id } = useParams() as any
     const isSharePage = !!share_id
     const access = useAccess();
+    const { formatMessage } = useIntl()
 
     const DEFAULT_LIST_PARAMS = { ws_id, page_num: 1, page_size: 100 }
 
@@ -117,6 +118,9 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
         }
     }
 
+    // 已选中标签中包含的time标签
+    const timeTagList: any = selectedTag.filter((x: any) => tag_catch_name.indexOf(x.label) > -1 )
+
     return (
         <div style={{ width: `calc(100% - ${width}px)` }}>
             {
@@ -134,7 +138,10 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
 
                         {
                             tags.length > 0
-                                ? tags.map((tag: any) => <Tag style={{ margin: 0 }} color={tag.color} key={tag.id}>{tag.name}</Tag>)
+                                ? tags.map((tag: any) =>
+                                    <Tooltip title={tag.time_keep_to ? formatMessage({ id: 'ws.result.details.delete.tag' }, {data: tag.time_keep_to}): null}>
+                                        <Tag style={{ margin: 0 }} color={tag.color} key={tag.id}>{tag.name}</Tag>
+                                    </Tooltip>)
                                 : <span style={{ color: 'rgba(0,0,0,0.85)' }}>-</span>
                         }
                     </Space> :
@@ -189,7 +196,20 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
                         />
                         <Space>
                             <Button onClick={handleCancel} size="small"  ><FormattedMessage id="operation.cancel" /></Button>
-                            <Button onClick={handleOk} size="small" type="primary"><FormattedMessage id="operation.ok" /></Button>
+                            {/** 有时间的系统标签时，二次弹框确认； */}
+                            {timeTagList.length ?
+                                <Popconfirm
+                                    title={formatMessage({ id: 'ws.result.details.keep.time.job.tag' }, { data: timeTagList[0].label }) }
+                                    onConfirm={handleOk}
+                                    okText={<FormattedMessage id="operation.ok" />}
+                                    cancelText={<FormattedMessage id="operation.cancel" />}
+                                    placement="topRight"
+                                >
+                                    <Button size="small" type="primary"><FormattedMessage id="operation.ok" /></Button>
+                                </Popconfirm>
+                                :
+                                <Button onClick={handleOk} size="small" type="primary"><FormattedMessage id="operation.ok" /></Button>
+                            }
                         </Space>
                     </Space>
             }

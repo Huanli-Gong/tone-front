@@ -7,6 +7,7 @@ import { StarOutlined, StarFilled } from '@ant-design/icons'
 import { JobListStateTag } from '../Details/components'
 import { QusetionIconTootip } from '@/components/Product';
 import EllipsisPopover from '@/components/Public/EllipsisPopover'
+import OverflowList from '@/components/TagOverflow/index'
 import lodash from 'lodash'
 import CommonPagination from '@/components/CommonPagination';
 import DelBar from "./DelBar"
@@ -190,22 +191,17 @@ const ListTable: React.FC<IProps> = (props) => {
         {
             title: <FormattedMessage id="ws.result.list.tag_list" />,
             dataIndex: 'tag_list',
-            width: 150,
+            width: 175,
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: any, row: any) => 
-                <EllipsisPopover title={row?.tag_list?.length ?
-                    <div style={{ width: 350 }}>
-                        {row.tag_list.map((item: any)=> 
-                            <Tag key={item.id}
-                                color={item.tag_color}
-                                style={{ margin:'2px',maxWidth:150,overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}
-                                title={item.name}
-                            >{item.name}</Tag>)}
-                    </div>
-                    : '-'
-                   }
+            render: (_: any, record: any) =>
+                <OverflowList
+                    list={
+                        record?.tag_list?.map((item: any) => {
+                            return <Tag color={item.tag_color} key={item.name}>{item.name}</Tag>
+                        }) || []
+                    }
                 />
         },
         {

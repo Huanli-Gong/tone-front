@@ -126,11 +126,10 @@ const BaseTab: React.FC<IProps> = () => {
         else {
             const base = JSON.parse(columnStates)
             const { tag_list, product_version } = DEFAULT_COLUMNS_SET_DATA
-            setInitialColumns(
-                base.product_version ?
-                    {...base, tag_list } :
-                    { ...base, product_version, tag_list }
-            )
+            let temp = { ...base }
+            if (!base.product_version) temp.product_version = product_version
+            if (!base.tag_list) temp.tag_list = tag_list
+            setInitialColumns(temp)
         }
     }, [])
 
