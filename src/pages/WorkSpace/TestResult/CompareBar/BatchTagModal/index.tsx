@@ -120,9 +120,9 @@ const App = forwardRef((props: any, ref: any) => {
           wrapperCol={{ span: 16 }}
         >
           <Form.Item
-            label="job标签"
+            label={<FormattedMessage id="ws.result.details.job.tag" />}
             name="tag_id"
-            rules={[{ required: true, message: '请选择job标签' }]}
+            rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
           >
             <Select
               mode="multiple"
