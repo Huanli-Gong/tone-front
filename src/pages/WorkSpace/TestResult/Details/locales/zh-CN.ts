@@ -24,7 +24,7 @@ const text = {
   'result.remarks.ps': '在这里可以记录对此次结果的说明，和对基线问题一些修正意见，结果备注和当前结果关联',
   'rerun': '重跑',
   'stop': '停止Job',
-  'keep.time.job.tag': '你已选择 {data} 标签，确定后将在对应时间后进行job删除',
+  'keep.time.job.tag': '你已选择 {data} 标签，确定后将在对应时间删除job',
   'delete.tag': '预计 {data} 删除该job',
   'deleted.today': '因为本job数据，超过标签时间将于今日删除',
   // Chart
