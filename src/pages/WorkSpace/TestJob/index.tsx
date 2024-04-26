@@ -84,7 +84,6 @@ const TestJob: React.FC<any> = (props) => {
     const [newSaveLoading, setNewSaveLoading] = useState(false)
     const [isReset, setIsReset] = useState(false)
     const [timeTagList, setTimeTagList]: any = useState([])
-    // console.log('timeTagList', timeTagList)
 
     const [jobInfo, setJobInfo] = useState('')
     const [isYamlFormat, setIsYamlFormat] = useState(false)
@@ -1220,22 +1219,34 @@ const TestJob: React.FC<any> = (props) => {
                             <Access accessible={access.IsWsSetting()}>
                                 <Button type="primary" onClick={handleSubmit} ><FormattedMessage id="ws.test.job.submit.test" /></Button>
                             </Access> */}
-                            <Button onClick={handleOpenTemplate} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
+                             
                             {/** 有时间的系统标签时，二次弹框确认； */}
                             {timeTagList.length ?
-                                <Popconfirm
-                                    title={
-                                        formatMessage({ id: 'ws.result.details.keep.time.job.tag' }, { data: timeTagList[0]?.label }) 
-                                    }
-                                    onConfirm={handleSubmit}
-                                    okText={<FormattedMessage id="operation.ok" />}
-                                    cancelText={<FormattedMessage id="operation.cancel" />}
-                                    placement="topRight"
-                                >
-                                    <Button type="primary" disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
-                                </Popconfirm>
+                                <>
+                                    <Popconfirm
+                                        title={formatMessage({ id: 'ws.result.details.keep.time.job.tag' }, { data: timeTagList[0]?.label }) }
+                                        onConfirm={handleOpenTemplate}
+                                        okText={<FormattedMessage id="operation.ok" />}
+                                        cancelText={<FormattedMessage id="operation.cancel" />}
+                                        placement="topRight"
+                                    >
+                                        <Button disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
+                                    </Popconfirm>
+                                    <Popconfirm
+                                        title={formatMessage({ id: 'ws.result.details.keep.time.job.tag' }, { data: timeTagList[0]?.label }) }
+                                        onConfirm={handleSubmit}
+                                        okText={<FormattedMessage id="operation.ok" />}
+                                        cancelText={<FormattedMessage id="operation.cancel" />}
+                                        placement="topRight"
+                                    >
+                                        <Button type="primary" disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
+                                    </Popconfirm>
+                                </>
                                 :
-                                <Button type="primary" onClick={handleSubmit} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
+                                <>
+                                  <Button onClick={handleOpenTemplate} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
+                                  <Button type="primary" onClick={handleSubmit} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
+                                </>
                             }
                         </Space>
                     </Row>
