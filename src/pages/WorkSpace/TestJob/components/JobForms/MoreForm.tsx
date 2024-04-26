@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useImperativeHandle, useEffect, useState } from 'react'
+import React, { useImperativeHandle, useEffect, useState, useMemo } from 'react'
 import { Form, Input, Select, InputNumber } from 'antd'
 import styles from './index.less'
 import type { FormProps } from './index'
@@ -17,6 +17,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
     const { ws_id }: any = useParams()
     const [form] = Form.useForm()
     const [tags, setTags] = useState<any[]>([])
+    const [tagsSelected, setTagsSelected] = useState<any[]>([])
     const [checkedList, setCheckedList] = React.useState<any>();
     const [reportTemplate, setReportTemplate] = useState<any>([])
     const [defaultTemplate, setDefaultTemplate] = useState({})
@@ -57,7 +58,6 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 if (reportTemplateDataRef) reportTemplateDataRef.current = dataSource
                 setReportTemplate(dataSource)
                 setDefaultTemplate(defaultTem)
-                // form.setFieldsValue({ report_template: defaultTem.name })
             }
         } catch (e) {
             console.log(e)
@@ -105,6 +105,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 callback_api,
                 job_timeout
             })
+            setTagsSelected(tags)
             setCheckedList(report_name)
             setCallbackUrl(callback_api)
         }
@@ -141,6 +142,8 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
         )
     }
 
+    const tagsObj = useMemo(() => tags?.filter((item: any)=> tagsSelected?.includes(item.id)), [tagsSelected, tags])
+
     return (
         <Form
             colon={false}
@@ -169,6 +172,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 'job_tag' in contrl &&
                 <TagSelect
                     tags={tags}
+                    initialValue={tagsObj}
                     // label="Job标签"
                     label={contrl.job_tag.alias || <FormattedMessage id={`job.form.${contrl.job_tag.name}`} />}
                     disabled={disabled}

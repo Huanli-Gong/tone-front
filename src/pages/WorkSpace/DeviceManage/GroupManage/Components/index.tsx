@@ -140,8 +140,13 @@ export const TagSelect: React.FC<FormItemProps & CustomTagSelectProps> = (props)
     const [selectedTag, setSelectedTag] = useState([]);
 
     useEffect(() => {
-        const tempList = initialValue?.map((item: any)=> ({value: item.id, label: item.name})) || []
-        setSelectedTag(tempList)
+        if (initialValue) {
+            const tempList = initialValue.map((item: any)=> ({value: item.id, label: item.name}))
+            setSelectedTag(tempList)
+            // 初始值: 已选中标签中包含的time标签
+            const timeTagList = tempList.filter((x: any) => tag_catch_name.indexOf(x.label) > -1 )
+            callback(timeTagList)
+        }
     }, [initialValue])
 
     return (
