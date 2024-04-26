@@ -11,7 +11,7 @@ const FailReasonPopover = ({ text, placement = 'left' }: any) => {
     const getData = async($visible: boolean)=> {
         if ($visible && text && !info.length) {
             setLoading(true)
-            const res = await queryFailReason({ problem: text}).catch(()=> setLoading(false))
+            const res = await queryFailReason({ problem: text, limit: 1 }).catch(()=> setLoading(false))
             setLoading(false)
             setVisible($visible)
             if (res.code === 200) {
