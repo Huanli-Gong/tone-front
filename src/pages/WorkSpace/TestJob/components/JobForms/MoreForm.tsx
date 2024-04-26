@@ -12,7 +12,7 @@ import { useParams, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
 
 const { Option } = Select;
-export default ({ contrl, disabled = false, onRef = null, template = {}, isReset, tagsDataRef, reportTemplateDataRef }: FormProps) => {
+export default ({ contrl, disabled = false, onRef = null, template = {}, isReset, tagsDataRef, reportTemplateDataRef, callback }: FormProps) => {
     const { formatMessage } = useIntl()
     const { ws_id }: any = useParams()
     const [form] = Form.useForm()
@@ -172,6 +172,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                     // label="Job标签"
                     label={contrl.job_tag.alias || <FormattedMessage id={`job.form.${contrl.job_tag.name}`} />}
                     disabled={disabled}
+                    callback={callback}
                 />
             }
             {

@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-target-blank */
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Badge, Tag, Select, Drawer, Space, Button, Form, Popover } from 'antd'
 import type { FormItemProps } from "antd"
 import { queryMember } from '@/services/Workspace'
@@ -119,9 +119,12 @@ type CustomTagSelectProps = {
     tags: any[];
     placeholder?: string;
     disabled?: boolean;
+    callback?: any;
 }
 
 export const TagSelect: React.FC<FormItemProps & CustomTagSelectProps> = (props) => {
+    const tag_catch_name = ['keep_three_months', 'keep_six_months', 'keep_one_year']
+    
     const { formatMessage } = useIntl()
     const {
         tags,
@@ -130,8 +133,16 @@ export const TagSelect: React.FC<FormItemProps & CustomTagSelectProps> = (props)
         label = formatMessage({ id: 'device.tag' }),
         name = 'tags',
         placeholder = formatMessage({ id: 'device.please.select.tag' }),
-        disabled = false
+        disabled = false,
+        callback = ()=> {}
     } = props
+
+    const [selectedTag, setSelectedTag] = useState([]);
+
+    useEffect(() => {
+        const tempList = initialValue?.map((item: any)=> ({value: item.id, label: item.name})) || []
+        setSelectedTag(tempList)
+    }, [initialValue])
 
     return (
         <Form.Item
@@ -144,17 +155,31 @@ export const TagSelect: React.FC<FormItemProps & CustomTagSelectProps> = (props)
                 placeholder={placeholder}
                 mode="multiple"
                 disabled={disabled}
+                onChange={(val: any, option: any)=> {
+                    const tempList = option?.map((item: any)=> ({value: item.value, label: item.label.props.children})) || []
+                    setSelectedTag(tempList)
+                    // 已选中标签中包含的time标签
+                    const timeTagList = tempList.filter((x: any) => tag_catch_name.indexOf(x.label) > -1 )
+                    callback(timeTagList)
+                }}
                 tagRender={tagRender}
                 allowClear
                 getPopupContainer={node => node.parentNode}
                 filterOption={(input, option) => (option?.name ?? '').toLowerCase().includes(input.toLowerCase())}
                 options={
-                    tags.map((i: any) => ({
-                        value: i.id,
-                        label: <Tag color={i.tag_color} >{i.name}</Tag>,
-                        name: i.name
-                    }))
-                }
+                    tags.map((tag: any) => {
+                      // 判断：时间标签选项已有选时，则其他时间项不能再选
+                      const intersect: any = selectedTag.filter((x: any) => tag_catch_name.indexOf(x.label) > -1 );
+                      const dis = tag_catch_name.includes(tag.name)? (intersect.length? (tag.name !== intersect[0].label): false): false
+                      const text = dis? <span style={{color:'#bfbfbf'}}>{tag.name}</span>: tag.name
+                      return ({
+                          value: tag.id,
+                          label: <Tag color={tag.tag_color}>{text}</Tag>,
+                          disabled: dis,
+                          name: tag.name
+                      })
+                    })
+                  }
             />
         </Form.Item>
     )

@@ -91,7 +91,6 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
     useEffect(() => {
         setKeys(tags.map((i: any) => i.id))
         const tempList = tags?.map((item: any)=> ({value: item.id, label: item.name})) || []
-        // console.log('useEffect-----tags:', tempList)
         setSelectedTag(tempList)
     }, [tags])
 
