@@ -129,7 +129,7 @@ const TypeChart = (props: any) => {
             }
         }
         return obj;
-    }, [data])
+    }, [data, chartType])
 
     useEffect(() => {
         const { series, subText, xAxisData, legData, dataZoom_end } = ChartList
@@ -284,12 +284,16 @@ const TypeChart = (props: any) => {
         }
         const timer = setTimeout(() => {
             // 渲染数据展示
-            const chartObj = echarts.init(chart.current, undefined, {
-                renderer: 'svg',
-            });
-            chartObj.setOption(option as any)
-            callBackColor(chartObj.getOption().color)
-            chartDom.current = chartObj
+            let chartObj: any = null
+            try {
+                chartObj = echarts?.init(chart.current, undefined, { renderer: 'svg' })
+            } catch {
+            }
+            if (chartObj) {
+                chartObj.setOption(option as any)
+                callBackColor(chartObj.getOption().color)
+                chartDom.current = chartObj
+            }
         }, duration)
 
         return () => {

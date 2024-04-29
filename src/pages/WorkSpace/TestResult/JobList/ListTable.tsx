@@ -230,8 +230,13 @@ const ListTable: React.FC<IProps> = (props) => {
             ),
             dataIndex: 'test_result',
             width: 140,
-            render: (_: any) => {
-                const result = JSON.parse(_)
+            render: (_: any, record: any) => {
+                let result = {}
+                try {
+                    result = JSON.parse(_)
+                } catch {
+                   console.log('JSON格式不对')
+                }
                 if (lodash.isNull(result)) {
                     return (
                         <Row>
@@ -243,9 +248,9 @@ const ListTable: React.FC<IProps> = (props) => {
                 } else {
                     return (
                         <Row>
-                            <Col span={8} style={{ color: "#1890FF" }} >{result.total}</Col>
-                            <Col span={8} style={{ color: "#52C41A" }} >{result.pass}</Col>
-                            <Col span={8} style={{ color: "#FF4D4F" }} >{result.fail}</Col>
+                            <Col span={8} style={{ color: "#1890FF" }} >{result.total || '-'}</Col>
+                            <Col span={8} style={{ color: "#52C41A" }} >{result.pass || '-'}</Col>
+                            <Col span={8} style={{ color: "#FF4D4F" }} >{result.fail || '-'}</Col>
                         </Row>
                     )
                 }

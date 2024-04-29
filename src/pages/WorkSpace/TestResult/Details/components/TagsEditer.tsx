@@ -179,7 +179,8 @@ const TagsEditer: React.FC<any> = ({ tags = [], onOk, creator_id, width }) => {
                                     {
                                         access.WsMemberOperateSelf() &&
                                         <div style={{ maxHeight: 300, overflow: 'auto', padding: '10px', borderTop: '1px solid #eee', marginBottom: '-4px' }} onClick={newLabel}>
-                                            <span className={styles.test_summary_job}><PlusOutlined style={{ marginRight: 8, color: '#1890ff' }} />
+                                            <span className={styles.test_summary_job}>
+                                                <PlusOutlined style={{ marginRight: 8, color: '#1890ff' }} />
                                                 <FormattedMessage id="ws.result.details.new.tag" />
                                             </span>
                                         </div>

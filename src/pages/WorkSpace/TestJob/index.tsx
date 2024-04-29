@@ -261,7 +261,9 @@ const TestJob: React.FC<any> = (props) => {
                 build_config, build_machine, scripts, ...rest
             }
 
-            const kernel_info = { hotfix_install, scripts, kernel_packages }
+            const kernel_info = { hotfix_install, scripts, 
+                kernel_packages: kernel_packages?.map((item: any)=> item?.trim()),  // 去除输入内容两端空格
+            }
 
             let scriptInfo = script_info
             let rpmInfo = rpm_info
@@ -741,8 +743,8 @@ const TestJob: React.FC<any> = (props) => {
 
     const handleCancelTemplate = (key: any) => {
         notification.close(key)
-        setFetching(false)
-        history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state || {} })
+        // setFetching(false)
+        // history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state || {} })
     }
 
     const handleSaveTemplateModify = async () => {
