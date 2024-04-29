@@ -1,14 +1,14 @@
-import React from "react"
-import { ReactComponent as ImageIcon } from "../assets/image.svg"
-import { ReactComponent as NetworkPicture } from "../assets/net-picture.svg"
-import { ReactComponent as UploadPicture } from "../assets/upload-picture.svg"
-import styled from "styled-components"
-import { ToolMenuList, ToolMenuItem } from "../styled"
-import DorpdownMenu from "./DropdownMenu";
+import React from 'react';
+import { ReactComponent as ImageIcon } from '../assets/image.svg';
+import { ReactComponent as NetworkPicture } from '../assets/net-picture.svg';
+import { ReactComponent as UploadPicture } from '../assets/upload-picture.svg';
+import styled from 'styled-components';
+import { ToolMenuList, ToolMenuItem } from '../styled';
+import DorpdownMenu from './DropdownMenu';
 
 const ImageInputWrap = styled.div`
     position: relative;
-`
+`;
 
 const ImageInputBlock = styled.div`
     position: absolute;
@@ -32,54 +32,54 @@ const ImageInputBlock = styled.div`
         padding-left: 8px;
         padding-right: 8px;
     }
-`
+`;
 
 const ImageInput = styled.input`
     display: none;
     width: 0;
     height: 0;
-`
+`;
 
 const ImageMenu: React.FC<Record<string, any>> = ({ editor }) => {
-    const inp = React.useRef<HTMLInputElement>(null)
+    const inp = React.useRef<HTMLInputElement>(null);
 
-    const [modal, setModal] = React.useState(false)
-    const ref = React.useRef(null) as any
-    const imgWrap = React.useRef(null) as any
+    const [modal, setModal] = React.useState(false);
+    const ref = React.useRef(null) as any;
+    const imgWrap = React.useRef(null) as any;
     const handleClick = () => {
-        inp.current?.click()
-    }
+        inp.current?.click();
+    };
 
     const inpImage = (src: string) => {
-        editor.chain().focus().setImage({ src }).run()
-        editor.chain().focus().setHardBreak().run()
-    }
+        editor.chain().focus().setImage({ src }).run();
+    };
 
     const handleInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-        const { target } = evt
-        if (!target?.files?.[0]) return
-        const reader = new FileReader()
+        const { target } = evt;
+        if (!target?.files?.[0]) return;
+        const reader = new FileReader();
         reader.onload = (e) => {
-            inpImage(e.target?.result as any)
-        }
-        reader.readAsDataURL(target.files?.[0])
-    }
+            inpImage(e.target?.result as any);
+        };
+        reader.readAsDataURL(target.files?.[0]);
+    };
 
     const handleConfirm = () => {
-        const { value } = ref.current
-        if (!value) return
-        if (!/^https?:\/\/(.+\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i.test(value)) return
-        inpImage(value)
-        ref.current.value = ""
-        setModal(false)
-    }
+        const { value } = ref.current;
+        if (!value) return;
+        if (!/^https?:\/\/(.+\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i.test(value))
+            return;
+        inpImage(value);
+        ref.current.value = '';
+        setModal(false);
+    };
 
     const handleCancel = () => {
-        ref.current.value = ""
-        setModal(false)
-    }
+        ref.current.value = '';
+        setModal(false);
+    };
 
-    if (!editor) return <></>
+    if (!editor) return <></>;
 
     return (
         <ImageInputWrap>
@@ -87,7 +87,7 @@ const ImageMenu: React.FC<Record<string, any>> = ({ editor }) => {
                 title=""
                 menu={
                     <ToolMenuList>
-                        <ToolMenuItem onClick={() => setModal(true)} >
+                        <ToolMenuItem onClick={() => setModal(true)}>
                             <NetworkPicture />
                             网络图片
                         </ToolMenuItem>
@@ -101,17 +101,18 @@ const ImageMenu: React.FC<Record<string, any>> = ({ editor }) => {
                 <ImageIcon />
             </DorpdownMenu>
             <ImageInput ref={inp} type="file" onChange={handleInputChange} />
-            {
-                modal &&
+            {modal && (
                 <ImageInputBlock ref={imgWrap}>
                     <span>图片地址：</span>
                     <input ref={ref} placeholder="请输入图片地" />
-                    <span style={{ cursor: "pointer" }} onClick={handleCancel}>取消</span>
+                    <span style={{ cursor: 'pointer' }} onClick={handleCancel}>
+                        取消
+                    </span>
                     <a onClick={handleConfirm}>确定</a>
                 </ImageInputBlock>
-            }
+            )}
         </ImageInputWrap>
-    )
-}
+    );
+};
 
-export default ImageMenu
+export default ImageMenu;

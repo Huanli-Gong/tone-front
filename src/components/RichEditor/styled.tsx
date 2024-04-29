@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const MenuItem = styled.span`
     display: inline-flex;
@@ -25,7 +25,7 @@ export const MenuItem = styled.span`
     &.disabled {
         background-color: #f1f1f1;
     }
-`
+`;
 
 export const ToolBar = styled.div`
     border-top: 1px solid #e5e5e5;
@@ -36,11 +36,11 @@ export const ToolBar = styled.div`
     align-items: center;
     height: 48px;
     padding: 0 8px;
-`
+`;
 
 export const ToolMenu = styled(MenuItem)`
     position: relative;
-`
+`;
 
 export const DropdownWrapper = `
     box-shadow: 0 8px 16px 4px rgb(0 0 0 / 4%);
@@ -56,11 +56,11 @@ export const DropdownWrapper = `
     bottom: 0;
     left: 0;
     transform: translateY(100%);
-`
+`;
 
 export const ToolMenuList = styled.ul`
     ${DropdownWrapper}
-`
+`;
 
 export const ToolMenuItem = styled.li`
     position: relative;
@@ -74,21 +74,26 @@ export const ToolMenuItem = styled.li`
     align-items: center;
 
     &:hover {
-        background-color: #EFF0F0;
+        background-color: #eff0f0;
         border-radius: 4px;
     }
 
-    h1,h2,h3,h4,h5,h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
         margin: 0;
     }
-`
+`;
 
 export const ToolMenuItemActive = styled.span`
     display: inline-flex;
     width: 16px;
     height: 100%;
     align-items: center;
-`
+`;
 
 export const ToolMenuWrapper = styled.div`
     display: flex;
@@ -96,7 +101,7 @@ export const ToolMenuWrapper = styled.div`
     flex-direction: row;
     gap: 8px;
     cursor: pointer;
-`
+`;
 
 export const ToolbarWidget = styled.span`
     display: inline-block;
@@ -105,18 +110,30 @@ export const ToolbarWidget = styled.span`
     background-color: #e5e5e5;
     margin-left: 6px;
     margin-right: 6px;
-`
+`;
 
 export const EditorCls = styled.div<{ editable?: boolean }>`
     width: 100%;
     height: 100%;
-    h1 { font-size: 28px !important; }
-    h2 { font-size: 24px !important; }
-    h3 { font-size: 20px !important; }
-    h4 { font-size: 16px !important; }
-    h5 { font-size: 13px !important; }
-    h6 { font-size: 12px !important; }
-    
+    h1 {
+        font-size: 28px !important;
+    }
+    h2 {
+        font-size: 24px !important;
+    }
+    h3 {
+        font-size: 20px !important;
+    }
+    h4 {
+        font-size: 16px !important;
+    }
+    h5 {
+        font-size: 13px !important;
+    }
+    h6 {
+        font-size: 12px !important;
+    }
+
     .ProseMirror {
         table {
             border-collapse: collapse;
@@ -147,7 +164,7 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
 
             .selectedCell:after {
                 background: rgba(27, 162, 227, 0.2);
-                content: "";
+                content: '';
                 left: 0;
                 right: 0;
                 top: 0;
@@ -187,15 +204,15 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
         width: 100%;
         height: 100%;
         overflow: auto;
-        border-radius: 0 0 4px 4px ;
-        ${({ editable }) => editable ? "border: 1px solid #e5e5e5;" : ""}
+        border-radius: 0 0 4px 4px;
+        ${({ editable }) => (editable ? 'border: 1px solid #e5e5e5;' : '')}
         padding: 8px;
         height: 100%;
         > * + * {
             margin-top: 0.75em;
         }
         &:focus-visible {
-            outline:none;
+            outline: none;
         }
         a span {
             color: #1890ff !important;
@@ -225,7 +242,7 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
         }
 
         code {
-            background-color: rgba(97,97,97, 0.1);
+            background-color: rgba(97, 97, 97, 0.1);
             color: #616161;
         }
 
@@ -257,7 +274,7 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
             background: #0d0d0d;
             border-radius: 0.5rem;
             color: #fff;
-            font-family: "JetBrainsMono", monospace;
+            font-family: 'JetBrainsMono', monospace;
             padding: 0.75rem 1rem;
 
             code {
@@ -265,7 +282,7 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
                 color: inherit;
                 font-size: 0.8rem;
                 padding: 0;
-                }
+            }
 
             .hljs-comment,
             .hljs-quote {
@@ -332,19 +349,15 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
             /* max-width: 100%; */
             max-width: 630px;
             height: auto;
-
-            &.ProseMirror-selectednode {
-                outline: 3px solid #68cef8;
-            }
         }
 
         blockquote {
             padding-left: 1rem;
-            border-left: 4px solid rgba(208,208,208,.9);
+            border-left: 4px solid rgba(208, 208, 208, 0.9);
         }
 
         hr {
-            border-top: 2px solid rgba(208,208,208,1);
+            border-top: 2px solid rgba(208, 208, 208, 1);
             margin: 2rem 0;
         }
 
@@ -361,20 +374,150 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
         background-color: #1890ff;
     }
 
-    .image-resizer {
-        display: inline-flex;
+    .tiptap-image-resize-container {
         position: relative;
-        flex-grow: 0;
-        .resize-trigger {
-            position: absolute;
-            right: -6px;
-            bottom: -9px;
-            opacity: 0;
-            transition: opacity .3s ease;
-            color: #3259a5;
+
+        .inline-block {
+            display: inline-block;
         }
-        &:hover .resize-trigger {
-            opacity: 1;
+
+        .text-center {
+            text-align: center;
+        }
+
+        .img-resize-title-container {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .input-image-title {
+            border: none;
+            outline: none;
+            color: #8a8f8d;
+
+            &:focus {
+                outline: none;
+                box-shadow: none;
+            }
+        }
+
+        .ne-image-title-content {
+            vertical-align: top;
+            min-width: 1px;
+            max-width: 100%;
+            min-height: 18px;
+            line-height: 22px;
+            font-size: 14px;
+            outline: none;
+            word-break: break-word;
+            white-space: normal;
+            color: #8a8f8d;
+            text-align: center;
+            caret-color: auto;
+        }
+
+        .tiptap-image-resize-wrapper {
+            position: relative;
+            display: inline-block;
+
+            .postimage {
+                display: inline-block;
+                border-radius: 8px;
+                max-width: 100%;
+            }
+
+            .tiptap-resize-left-handle,
+            .tiptap-resize-right-handle,
+            .tiptap-resize-top-handle,
+            .tiptap-resize-bottom-handle {
+                position: absolute;
+                opacity: 0;
+                width: 8px;
+                height: 30px;
+                transition: opacity 0.3s ease;
+                background-color: #000;
+                border: 1px solid #fff;
+                border-radius: 4px;
+            }
+
+            .tiptap-resize-top-handle,
+            .tiptap-resize-bottom-handle {
+                cursor: ns-resize;
+                left: 50%;
+                transform: translateX(-50%);
+                height: 8px;
+                width: 30px;
+            }
+
+            .tiptap-resize-left-handle,
+            .tiptap-resize-right-handle {
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: ew-resize;
+            }
+
+            .tiptap-resize-top-handle {
+                top: 0px;
+            }
+
+            .tiptap-resize-bottom-handle {
+                bottom: 0px;
+            }
+
+            .tiptap-resize-left-handle {
+                left: 0px;
+            }
+
+            .tiptap-resize-right-handle {
+                right: 0px;
+            }
+
+            &:hover {
+                ${({ editable }) =>
+                    editable && 'outline: rgb(100, 160, 255) solid 4px; border-radius: 8px;'}
+
+                .tiptap-resize-left-handle,
+                .tiptap-resize-right-handle,
+                .tiptap-resize-top-handle,
+                .tiptap-resize-bottom-handle {
+                    opacity: 1;
+                }
+            }
+        }
+
+        .image-title {
+            color: #a1a1a1;
+            border-bottom: 1px solid #e2e2e2;
         }
     }
-`
+`;
+
+export const ImageResizeBubble = styled.div`
+    position: absolute;
+    left: 0;
+    top: -34px;
+    display: flex;
+    gap: 8px;
+    background: #333;
+    color: #fff;
+    padding: 6px;
+    // padding-bottom: 20px;
+    border-radius: 8px;
+    z-index: 999;
+    .image-resize-bubble-span {
+        display: flex;
+        overflow: hidden;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.15s ease, opacity 0.1s ease;
+        width: 20px;
+        height: 20px;
+        font-size: 16px;
+        color: #fff;
+        cursor: pointer;
+        svg {
+            fill: #fff;
+        }
+    }
+`;
