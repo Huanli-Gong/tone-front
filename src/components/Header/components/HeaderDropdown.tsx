@@ -98,7 +98,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
         return {}
     }, [wsList, ws_id])
 
-    const hanldeScroll = ({ target }: any) => {
+    const handleScroll = ({ target }: any) => {
         const { clientHeight, scrollTop, scrollHeight } = target
         if (clientHeight + scrollTop === scrollHeight && !isOver && Object.prototype.toString.call(wsList?.next) === '[object String]') {
             queryWorkspaceList()
@@ -119,7 +119,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
                 () => (
                     <Menu
                         className={styles.workspaceDropdownMenu}
-                        onScroll={hanldeScroll}
+                        onScroll={handleScroll}
                     >
                         {
                             wsList?.data?.map(

@@ -586,6 +586,11 @@ const routes = [
 				name: 'DevOps',
 				component: '@/pages/WorkSpace/DevOps'
 			},
+			// {
+			// 	path: '/ws/:ws_id/logging',
+			// 	name: 'Logging',
+			// 	component: '@/pages/WorkSpace/Logging'
+			// },
 			{
 				hideInMenu: true,
 				inNav: true,
