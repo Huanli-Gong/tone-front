@@ -1,14 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react'
+import React, { } from 'react'
 import { useIntl, FormattedMessage, useParams } from 'umi';
 import { Button, Table } from 'antd';
 import type { TableColumnsType } from "antd"
-import { copyTooltipColumn, evnPrepareState } from '../components'
+import { CopyTooltip, evnPrepareState } from '../components'
 import TidDetail from './QueryTidList';
 import styles from './index.less'
 import { ReactComponent as ColumnStateLine } from '@/assets/svg/TestResult/line.svg'
 import { getStorageState } from '@/utils/table.hooks';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
+import FailReasonPopover from './FailReasonPopover'
 
 const ProcessExpandTable: React.FC<AnyType> = (props) => {
     const { dataSource, parentTableName, columnsChange } = props
@@ -64,7 +65,16 @@ const ProcessExpandTable: React.FC<AnyType> = (props) => {
             dataIndex: 'result',
             title: <FormattedMessage id="ws.result.details.output.results" />,
             width: getStorageState(parentTableName, "result"),
-            ...copyTooltipColumn('Nothing to do'),
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_: any, record: any)=> {
+              return (
+                ['fail', false].includes(record.state)?
+                    <FailReasonPopover text={_} />
+                    : <CopyTooltip text={_} defaultText="Nothing to do" />
+              )
+            },
         },
         {
             dataIndex: 'tid',
