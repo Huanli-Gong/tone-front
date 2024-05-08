@@ -61,11 +61,13 @@ const SynchronizeModal = (props: any, ref: any) => {
                     </Space>
                 </Typography.Text>
 
-                <Typography.Link
-                    onClick={handleOpenRef}
-                >
-                    <FormattedMessage id="view.reference.details" />
-                </Typography.Link>
+                {setting?.id && setting?.name &&
+                    <Typography.Link
+                        onClick={handleOpenRef}
+                    >
+                        <FormattedMessage id="view.reference.details" />
+                    </Typography.Link>
+                }
             </Space>
         </Modal>
     )

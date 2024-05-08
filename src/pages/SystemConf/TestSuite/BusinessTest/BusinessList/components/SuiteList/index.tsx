@@ -180,10 +180,12 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 				const ids = expandKeys.concat([row.id])
 				setExpandKeys(ids)
 			}
-		} else {
+		} else if (res.code === 201) {
 			// 判断 201有引用
 			const { id, name } = row
 			synchronizeRef.current?.show({ id, name, ...res.data })
+		} else {
+			synchronizeRef.current?.show({ code: res.code, msg: res.msg })
 		}
   }
 

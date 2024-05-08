@@ -185,10 +185,12 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             message.success(formatMessage({ id: 'request.synchronize.success' }))
             getList()
             setAsyncTime(new Date().getTime())
-        } else {
+        } else if (code === 201) {
             // 201 有引用
             const { id, name } = row
             synchronizeRef.current?.show({ id, name, ...data })
+        } else {
+            synchronizeRef.current?.show({ code, msg })
         }
     }
     
