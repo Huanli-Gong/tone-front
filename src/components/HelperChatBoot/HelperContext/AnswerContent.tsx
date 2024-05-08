@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Input, Row, Space, Tag, Typography } from 'antd';
+import { Empty, Input, Row, Space, Tag, Typography } from 'antd';
 import RichEditor from '@/components/RichEditor';
 import { ReactComponent as SendBtnIcon } from '@/assets/boot/send.svg';
 import { ReactComponent as RefreshBtn } from '@/assets/boot/refresh.svg';
@@ -139,6 +139,7 @@ const Server: React.FC<any> = (props) => {
         props;
 
     const handleRefreshAnswer = () => {
+        if (content?.length === 0) return;
         const { page_num, page_size, total } = props;
         const totalPage = Math.ceil(total / page_size);
         const $params = {
@@ -203,6 +204,9 @@ const Server: React.FC<any> = (props) => {
                         </Space>
                     )}
                 </Row>
+                {isTop && content?.length === 0 && (
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={'暂无推荐'} />
+                )}
                 {content.map((i: any, idx: number) => (
                     <Typography.Link
                         key={i.problem_id}
@@ -310,6 +314,7 @@ const AnswerContent: React.FC = () => {
                             <Server
                                 key={rowkey}
                                 {...ctx}
+                                content={[]}
                                 setCharts={setCharts}
                                 getAnswer={getAnswer}
                                 scrollChange={scrollChange}
@@ -345,20 +350,3 @@ const AnswerContent: React.FC = () => {
 };
 
 export default AnswerContent;
-
-/* React.useEffect(() => {
-    if (charts.length > 0) {
-        const ls = Array.from(document.querySelectorAll('.chart'))
-        const last = ls[ls.length - 1]
-        try {
-            scrollIntoView(last, {
-                behavior: 'smooth',
-                block: 'start',
-                inline: 'start',
-            })
-        }
-        catch (err) {
-            console.log(err)
-        }
-    }
-}, [charts]) */

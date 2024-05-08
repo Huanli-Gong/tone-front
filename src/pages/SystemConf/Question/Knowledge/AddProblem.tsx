@@ -111,7 +111,7 @@ const AddReasonDrawer: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 </div>
             }
         >
-            <Form form={form} layout="vertical" initialValues={{ level: 0 }}>
+            <Form form={form} layout="vertical" initialValues={{ level: 1 }}>
                 <Form.Item
                     name="problem"
                     label="标准问题"

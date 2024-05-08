@@ -8,6 +8,7 @@ import RichEditor from '@/components/RichEditor';
 import { useHelperBootContext } from '../Provider';
 import { useLocation } from 'umi';
 import cls from 'classnames';
+import DevelopmentIcon from '@/assets/svg/development_bg.svg';
 
 const ContentStyle = styled.div`
     height: 412px;
@@ -128,12 +129,12 @@ const ModuleTabs = styled(Tabs)`
     }
 `;
 
-const ServiceButton = styled.div`
+const ServiceButton = styled.div<{ disabled?: boolean }>`
     cursor: pointer;
     height: 22px;
     width: 56px;
     font-weight: 400;
-    color: rgba(32, 92, 232, 0.85);
+    color: ${({ disabled }) => (disabled ? 'rgba(0, 0, 0, 0.45)' : 'rgba(32, 92, 232, 0.85)')};
     position: absolute;
     right: 16px;
     top: 6px;
@@ -276,105 +277,129 @@ const SelfHelpModule: React.FC = () => {
     return (
         <div className="self-help-module">
             <ContentStyle>
-                <ServiceHeader>
-                    <div className="bg">
-                        <div className="p">一键诊断 智能解答，让自助成为解决问题的钥匙</div>
-                        <div className="input">
-                            <Input
-                                onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-                                    setInp(evt.target.value);
-                                }}
-                                onPressEnter={() => init(inp?.trim())}
-                                value={inp}
-                                placeholder="请输入Job ID"
-                            />
-                            <ServiceButton
-                                onClick={() => {
-                                    init(inp?.trim());
-                                    // setInp('')
-                                }}
-                            >
-                                立即排查
-                            </ServiceButton>
+                {BUILD_APP_ENV !== 'opensource' && (
+                    <ServiceHeader>
+                        <div className="bg">
+                            <div className="p">一键诊断 智能解答，让自助成为解决问题的钥匙</div>
+                            <div className="input">
+                                <Input
+                                    onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
+                                        setInp(evt.target.value);
+                                    }}
+                                    onPressEnter={() => init(inp?.trim())}
+                                    value={inp}
+                                    placeholder="请输入Job ID"
+                                />
+                                <ServiceButton
+                                    onClick={() => {
+                                        init(inp?.trim());
+                                    }}
+                                >
+                                    立即排查
+                                </ServiceButton>
+                            </div>
                         </div>
-                    </div>
-                </ServiceHeader>
+                    </ServiceHeader>
+                )}
 
                 {selfHepler && (
                     <ModuleTabs items={list} activeKey={tabkey} size="small" onChange={onChange} />
                 )}
-                {loading ? (
-                    <div className="problem">
-                        <Empty image={<EmptyIcon />} description="正在努力排查中..." />
-                    </div>
-                ) : (
-                    <div className="problem">
-                        {selfHepler?.[tabkey]?.map((i: any, idx: number) => {
-                            return (
-                                <div key={i.problem || idx} className="problem_block">
-                                    {i.problem && <div className="problem-title">{i.problem}</div>}
-
-                                    {i.answers.map((ctx: any, idx: number) => (
-                                        <Space
-                                            key={ctx.reason}
-                                            style={{ width: '100%' }}
-                                            direction="vertical"
-                                            size={12}
-                                        >
-                                            {ctx.reason && (
-                                                <div className="reason-title">
-                                                    <Tag color="processing">原因{idx + 1}</Tag>
-                                                    {ctx.reason}
-                                                </div>
+                {BUILD_APP_ENV !== 'opensource' ? (
+                    <>
+                        {loading ? (
+                            <div className="problem">
+                                <Empty image={<EmptyIcon />} description="正在努力排查中..." />
+                            </div>
+                        ) : (
+                            <div className="problem">
+                                {selfHepler?.[tabkey]?.map((i: any, idx: number) => {
+                                    return (
+                                        <div key={i.problem || idx} className="problem_block">
+                                            {i.problem && (
+                                                <div className="problem-title">{i.problem}</div>
                                             )}
-                                            {ctx.answer && (
-                                                <RichEditor
-                                                    editable={false}
-                                                    content={ctx.answer}
-                                                    styledCss={`
+
+                                            {i.answers.map((ctx: any, idx: number) => (
+                                                <Space
+                                                    key={ctx.reason}
+                                                    style={{ width: '100%' }}
+                                                    direction="vertical"
+                                                    size={12}
+                                                >
+                                                    {ctx.reason && (
+                                                        <div className="reason-title">
+                                                            <Tag color="processing">
+                                                                原因{idx + 1}
+                                                            </Tag>
+                                                            {ctx.reason}
+                                                        </div>
+                                                    )}
+                                                    {ctx.answer && (
+                                                        <RichEditor
+                                                            editable={false}
+                                                            content={ctx.answer}
+                                                            styledCss={`
                                                             img { width: 100%; }
                                                             .tiptap.ProseMirror { padding: 0 !important;}
                                                         `}
-                                                />
-                                            )}
-                                        </Space>
-                                    ))}
+                                                        />
+                                                    )}
+                                                </Space>
+                                            ))}
 
-                                    {i.influence && (
-                                        <div className="influence-text">
-                                            <Typography.Paragraph
-                                                ellipsis={{
-                                                    rows: 3,
-                                                    expandable: true,
-                                                    symbol: '展开',
-                                                }}
-                                            >
-                                                {i.influence}
-                                            </Typography.Paragraph>
+                                            {i.influence && (
+                                                <div className="influence-text">
+                                                    <Typography.Paragraph
+                                                        ellipsis={{
+                                                            rows: 3,
+                                                            expandable: true,
+                                                            symbol: '展开',
+                                                        }}
+                                                    >
+                                                        {i.influence}
+                                                    </Typography.Paragraph>
+                                                </div>
+                                            )}
+                                            <div className={cls('tips', `t-${i.level}`)}>
+                                                {i.level === 'error' ? '异常' : '提示'}
+                                            </div>
                                         </div>
+                                    );
+                                })}
+                                {JSON.stringify(selfHepler) === '{}' && (
+                                    <Empty
+                                        image={<EmptyResult />}
+                                        description={'Job ID错误或不存在，请检查后再尝试'}
+                                    />
+                                )}
+                                {JSON.stringify(selfHepler) !== '{}' &&
+                                    selfHepler?.[tabkey]?.length === 0 && (
+                                        <Empty
+                                            image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                            description="暂无异常"
+                                        />
                                     )}
-                                    <div className={cls('tips', `t-${i.level}`)}>
-                                        {i.level === 'error' ? '异常' : '提示'}
-                                    </div>
-                                </div>
-                            );
-                        })}
-                        {JSON.stringify(selfHepler) === '{}' && (
-                            <Empty
-                                image={<EmptyResult />}
-                                description={'Job ID错误或不存在，请检查后再尝试'}
-                            />
+                                {!!!selfHepler && (
+                                    <Empty
+                                        image={<EmptyIcon />}
+                                        description="立即排查您关注的Job"
+                                    />
+                                )}
+                            </div>
                         )}
-                        {JSON.stringify(selfHepler) !== '{}' &&
-                            selfHepler?.[tabkey]?.length === 0 && (
-                                <Empty
-                                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                                    description="暂无异常"
-                                />
-                            )}
-                        {!!!selfHepler && (
-                            <Empty image={<EmptyIcon />} description="立即排查您关注的Job" />
-                        )}
+                    </>
+                ) : (
+                    <div
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            paddingTop: '30%',
+                        }}
+                    >
+                        <Empty image={DevelopmentIcon} description="功能开发中..." />
                     </div>
                 )}
             </ContentStyle>

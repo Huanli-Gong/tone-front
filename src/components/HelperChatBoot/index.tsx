@@ -88,7 +88,6 @@ const Helper: React.FC = () => {
     const [active, setActive] = React.useState(0);
     const [feedback, setFeedback] = React.useState(false);
 
-    console.log(charts);
     const getTopAnswer = async (query: any = DEFAULT_PARAMS, rowkey?: any) => {
         const { data, code, msg, total } = await getUsualProblem(query);
         if (code !== 200) {
