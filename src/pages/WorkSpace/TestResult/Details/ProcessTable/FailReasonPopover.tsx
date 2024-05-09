@@ -27,7 +27,7 @@ const FailReasonPopover = ({ text, placement = 'left' }: any) => {
         }
     }, [text])
 
-    const style = { maxWidth: 400 }
+    const style: any = { maxWidth: 400, wordBreak: 'break-word' }
     return (
         <Popover
             content={text ?
