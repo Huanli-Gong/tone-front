@@ -221,7 +221,8 @@ export default (props: any) => {
                 let urlHref = ''
                 if (context) {
                     urlHref = context
-                    const reg = /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/;
+                    // const reg = /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/;
+                    const reg = /^((http|https|ftps):(?:\/\/))/;
                     if (!reg.test(context)) urlHref = `${window.origin}/ws/${ws_id}404?page=${location.href}`
                 }
 
