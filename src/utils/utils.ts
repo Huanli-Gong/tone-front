@@ -483,7 +483,7 @@ export const requestCodeMessage = (code: number, msg: string) => {
 //
 
 export const role_type_enum = [
-  { key: 'ws_member', name: 'worksapce成员' },
+  { key: 'ws_member', name: 'workspace成员' },
   { key: 'ws_tester', name: '测试人员' },
   { key: 'ws_test_admin', name: '测试管理员' },
   { key: 'sys_admin', name: '系统管理员' },
