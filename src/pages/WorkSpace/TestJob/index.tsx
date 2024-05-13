@@ -537,21 +537,21 @@ const TestJob: React.FC<any> = (props) => {
     }
 
     const handleSubmit = async () => {
-        if (fetching) return false
+        if (fetching) return
         setEnvErrorFlag(false)
-        let resultData = {}
+        let formData = {}
         setFetching(true)
         if (isYamlFormat) {
-            const { code, result } = await handleFormatChange('submit')
-            resultData = result
+            const { code, result = {} } = await handleFormatChange('submit')
             if (code !== 200) {
                 setFetching(false)
                 return
             }
+            formData = await transformDate(result)
         }
-        let data = isYamlFormat ? await transformDate(resultData) : await transformDate()
-        data = {
-            ...data,
+        formData = await transformDate()
+        let data = {
+            ...formData,
             workspace: ws_id,
             job_type: detail.id,
         }
@@ -573,30 +573,25 @@ const TestJob: React.FC<any> = (props) => {
             }
         }
         if (isMonitorEmpty(data)) {
+            setFetching(false)
             return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
         }
 
         if (!data.test_config) {
+            setFetching(false)
             return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         }
         // console.log(data.test_config)
         const $test_config = handleServerChannel(data.test_config)
-        try {
-            const { code, msg } = await createWsJobTest({ ...data, test_config: $test_config })
-            if (code === 200) {
-                setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
-                history.push(`/ws/${ws_id}/test_result`)
-                message.success(formatMessage({ id: 'ws.test.job.operation.success' }))
-            }
-            if (code !== 200) {
-                if (code === 1380)
-                    setEnvErrorFlag(true)
-                else
-                    requestCodeMessage(code, msg)
-            }
-        }
-        catch (error) {
-            setFetching(false)
+        const { code, msg } = await createWsJobTest({ ...data, test_config: $test_config }).catch(()=> setFetching(false))
+        if (code === 200) {
+            setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
+            history.push(`/ws/${ws_id}/test_result`)
+            message.success(formatMessage({ id: 'ws.test.job.operation.success' }))
+        } else if (code === 1380) {
+            setEnvErrorFlag(true)
+        } else {
+            requestCodeMessage(code, msg)
         }
         setFetching(false)
     }
@@ -683,7 +678,7 @@ const TestJob: React.FC<any> = (props) => {
             job_type: detail.id
         }
         const $test_config = handleServerChannel(data.test_config)
-        const { code, msg } = await saveTestTemplate({ ...data, test_config: $test_config, ...vals })
+        const { code, msg } = await saveTestTemplate({ ...data, test_config: $test_config, ...vals }).catch(()=> setFetching(false))
 
         if (code === 200) {
             message.success(formatMessage({ id: 'ws.test.job.operation.success' }))
@@ -1247,7 +1242,7 @@ const TestJob: React.FC<any> = (props) => {
                                 :
                                 <>
                                   <Button onClick={handleOpenTemplate} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
-                                  <Button type="primary" onClick={handleSubmit} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
+                                  <Button type="primary" loading={fetching} onClick={handleSubmit} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
                                 </>
                             }
                         </Space>
