@@ -88,6 +88,7 @@ const text = {
   'end_time': 'End Time',
   'note': 'Note',
   'join.baseline': 'Add Baseline',
+  'edit.baseline': 'Edit Baseline',
   // Drawer
   'bug': 'Bug Record',
   'bug.placeholder': 'Enter bug record',

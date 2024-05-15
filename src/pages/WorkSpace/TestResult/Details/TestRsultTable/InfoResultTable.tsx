@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Space, Tooltip, Input, Button, Typography } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
+import { FilterFilled } from '@ant-design/icons'
 
 import React, { useRef, useEffect } from 'react'
 import { useRequest, Access, useAccess, useParams, useIntl, FormattedMessage } from 'umi'
@@ -47,7 +47,7 @@ export default (props: any) => {
         ws_id,
         sub_case_name: undefined,
         sub_case_result: undefined,
-        page_size: 10,
+        page_size: 100,
         page_num: 1,
         share_id
     }
@@ -69,11 +69,7 @@ export default (props: any) => {
 
     const handleSearch = (selectedKeys: any, confirm: any) => {
         confirm?.();
-        setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_name: selectedKeys[0], page_num: 1, page_size: 10 }))
-    };
-
-    const handleReset = (clearFilters: any) => {
-        clearFilters();
+        setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_name: selectedKeys, page_num: 1, page_size: 100 }))
     };
 
     const getColumnSearchProps = (name: any) => ({
@@ -82,28 +78,35 @@ export default (props: any) => {
                 <Input
                     ref={searchInput}
                     placeholder={`${formatMessage({ id: 'operation.search' })} ${name}`}
-                    value={selectedKeys[0]}
-                    onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    value={selectedKeys}
+                    onChange={e => setSelectedKeys(e.target.value)}
                     onPressEnter={() => handleSearch(selectedKeys, confirm)}
-                    style={{ width: 188, marginBottom: 8, display: 'block' }}
+                    style={{ width: 150, marginBottom: 8, display: 'block' }}
                 />
                 <Space>
                     <Button
-                        type="primary"
                         onClick={() => handleSearch(selectedKeys, confirm)}
-                        icon={<SearchOutlined />}
+                        type="link"
                         size="small"
-                        style={{ width: 90 }}
+                        style={{ width: 75 }}
                     >
                         <FormattedMessage id="operation.search" />
                     </Button>
-                    <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+                    <Button 
+                        onClick={() => {
+                            setSelectedKeys(undefined)
+                            handleSearch(undefined, confirm)
+                        }}
+                        type="text"
+                        size="small" 
+                        style={{ width: 75, border: 'none' }}
+                    >
                         <FormattedMessage id="operation.reset" />
                     </Button>
                 </Space>
             </div>
         ),
-        filterIcon: (filtered: any) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+        filterIcon: (filtered: any) => <FilterFilled style={{ color: filtered ? '#1890ff' : undefined }} />,
         onFilterDropdownVisibleChange: (visible: any) => {
             if (visible) {
                 setTimeout(() => searchInput.current.select(), 100);
@@ -258,7 +261,8 @@ export default (props: any) => {
             fixed: "right",
             width: 200,
             render: (_: any) => {
-                const flag = _.result === 'Fail' && !_.bug
+                const failFlag = _.result === 'Fail'
+                const buttonText = _.bug ? <FormattedMessage id="ws.result.details.edit.baseline" /> : <FormattedMessage id="ws.result.details.join.baseline" />
                 return (
                     <Access accessible={access.WsTourist()}>
                         <Access
@@ -266,13 +270,13 @@ export default (props: any) => {
                             fallback={
                                 <Space>
                                     <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></span>
-                                    {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.join.baseline" /></span>}
+                                    {failFlag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>{buttonText}</span> }
                                 </Space>
                             }
                         >
                             <Space>
                                 <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenEditRemark(_)}><FormattedMessage id="operation.edit" /></span>
-                                {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>}
+                                {failFlag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenJoinBaseline(_)}>{buttonText}</span>}
                             </Space>
                         </Access>
                     </Access>
@@ -291,7 +295,7 @@ export default (props: any) => {
                 loading={loading}
                 className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
                 pagination={{
-                    pageSize: data.page_size || 10,
+                    pageSize: data.page_size || 100,
                     current: data.page_num || 1,
                     total: data.total || 0,
                     showQuickJumper: true,
@@ -307,6 +311,7 @@ export default (props: any) => {
                     showTotal(total) {
                         return formatMessage({ id: 'pagination.total.strip' }, { data: total })
                     },
+                    pageSizeOptions: [100, 200, 500],
                 }}
                 columns={columns}
                 rowClassName={styles.result_info_table_row}
