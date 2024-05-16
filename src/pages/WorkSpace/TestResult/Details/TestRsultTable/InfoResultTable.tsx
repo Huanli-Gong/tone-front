@@ -180,8 +180,6 @@ export default (props: any) => {
             }
         },
         {
-            dataIndex: 'description',
-            width: 180,
             title: (
                 <QusetionIconTootip
                     placement="bottomLeft"
@@ -189,6 +187,8 @@ export default (props: any) => {
                     desc={formatMessage({ id: 'ws.result.details.baseline.description.ps' })}
                 />
             ),
+            dataIndex: 'description',
+            width: 180,
             ellipsis: true,
             render: (_: any, row: any) => {
                 let context = row.description
@@ -260,8 +260,9 @@ export default (props: any) => {
             title: <FormattedMessage id="Table.columns.operation" />,
             fixed: "right",
             width: 200,
-            render: (_: any) => {
-                const failFlag = _.result === 'Fail'
+            render: (_: any, row: any) => {
+                // 失败的 && 没有关联关系的才能“修改基线”
+                const failFlag = _.result === 'Fail' && !row.skip_baseline_info
                 const buttonText = _.bug ? <FormattedMessage id="ws.result.details.edit.baseline" /> : <FormattedMessage id="ws.result.details.join.baseline" />
                 return (
                     <Access accessible={access.WsTourist()}>
