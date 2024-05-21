@@ -1,12 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Tooltip, Typography } from 'antd'
+import { FilterFilled } from '@ant-design/icons'
 import { QusetionIconTootip, ResultTdPopver, compareResultFontColor, compareResultSpan } from '../components'
 import { queryCaseResultPerformance } from '../service'
 import { useRequest, useAccess, Access, useParams, useIntl, FormattedMessage } from 'umi'
 import qs from 'querystring'
 import styles from './index.less'
 import { ResizeHooksTable } from '@/utils/table.hooks';
+import SearchInput from '@/components/Public/SearchInput';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 import { MetricSelectProvider } from '.'
@@ -16,9 +18,29 @@ export default (props: any) => {
     const { test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType } = props
     const { id: job_id, ws_id, share_id } = useParams() as any
     const { setOSuite, oSuite } = React.useContext(MetricSelectProvider)
-    const { data = [], run, loading } = useRequest(
-        () => queryCaseResultPerformance({ ws_id, job_id, case_id: test_case_id, suite_id, compare_result, share_id }),
-        { manual: true }
+    const defaultKeys = {
+        ws_id,
+        job_id,
+        case_id: test_case_id,
+        suite_id,
+        sub_case_name: undefined,
+        page_size: 100,
+        page_num: 1,
+        compare_result,
+        share_id
+    }
+    const [interfaceSearchKeys, setInterfaceSearchKeys] = useState<any>(defaultKeys)
+    const { data, run, loading } = useRequest(
+        (params = interfaceSearchKeys) => queryCaseResultPerformance(params),
+        {
+            initialData: { data: [] },
+            refreshDeps: [interfaceSearchKeys],
+            /* 解决请求重复的问题 */
+            debounceInterval: 200,
+            formatResult(res) {
+                return res
+            },
+        }
     )
 
     const access = useAccess()
@@ -38,12 +60,22 @@ export default (props: any) => {
     const strLocals = formatMessage({ id: 'ws.result.details.threshold' })
     const columns: any = [
         {
-            // title : 'Metric',
             title: <FormattedMessage id="ws.result.details.metric" />,
             dataIndex: 'metric',
             ellipsis: {
-                shwoTitle: false,
+                showTitle: false,
             },
+            filterIcon: (filtered: any) => {
+                return <FilterFilled style={{ color: interfaceSearchKeys.metric ? '#1890ff' : undefined }} />
+            },
+            filterDropdown: ({ confirm }: any) => (
+                <SearchInput
+                    autoFocus={false}
+                    value={interfaceSearchKeys.metric}
+                    confirm={confirm}
+                    onConfirm={(val: string) => setInterfaceSearchKeys({ ...interfaceSearchKeys, metric: val || undefined, page_num: 1 })}
+                />
+            ),
             render: (_: any) => (
                 _ ?
                     <Tooltip placement="topLeft" title={_}>
@@ -62,7 +94,7 @@ export default (props: any) => {
             ),
             dataIndex: 'test_value',
             ellipsis: {
-                shwoTitle: false,
+                showTitle: false,
             },
             width: 200,
             render: (_: any, row: any) => (
@@ -77,7 +109,7 @@ export default (props: any) => {
             dataIndex: 'baseline_value',
             width: 120,
             ellipsis: {
-                shwoTitle: false,
+                showTitle: false,
             },
             render: (_: any, row: any) => {
                 return (
@@ -149,7 +181,7 @@ export default (props: any) => {
             dataIndex: 'threshold',
             width: 120,
             ellipsis: {
-                shwoTitle: false,
+                showTitle: false,
             },
             render: (_: any) => (
                 _ ? <EllipsisPulic title={_} /> : '-'
@@ -191,25 +223,43 @@ export default (props: any) => {
                 ...oSuite,
                 [suite_id]: {
                     ...(oSuite?.[suite_id] || {}),
-                    [test_case_id]: data.map((i: any) => i.id)
+                    [test_case_id]: data.data.map((i: any) => i.id)
                 }
             })
         }
-    }, [oSuite, data])
+    }, [oSuite, data.data])
 
     return (
         <ResizeHooksTable
             name="ws-result-metric-list"
             rowKey="id"
-            loading={loading}
-            pagination={false}
-            rowSelection={rowSelection}
             size="small"
-            className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
+            loading={loading}
+            rowSelection={rowSelection}
+            className={`${styles.result_info_table_head} ${data.data?.length ? '' : styles.result_info_table_head_line}`}
+            pagination={{
+                pageSize: data.page_size || 100,
+                current: data.page_num || 1,
+                total: data.total || 0,
+                showQuickJumper: true,
+                showSizeChanger: true,
+                onChange(page_num, page_size) {
+                    /* 解决page_size切换，page_num不变的问题 */
+                    setInterfaceSearchKeys((p: any) => ({
+                        ...p,
+                        page_num: p.page_size === page_size ? page_num : 1,
+                        page_size
+                    }))
+                },
+                showTotal(total) {
+                    return formatMessage({ id: 'pagination.total.strip' }, { data: total })
+                },
+                pageSizeOptions: [100, 200, 500],
+            }}
             rowClassName={styles.result_info_table_row}
-            dataSource={data}
+            dataSource={data.data}
             columns={columns}
-            refreshDeps={[ws_id, strLocals, access]}
+            refreshDeps={[interfaceSearchKeys, ws_id, strLocals, access]}
         />
     )
 }
