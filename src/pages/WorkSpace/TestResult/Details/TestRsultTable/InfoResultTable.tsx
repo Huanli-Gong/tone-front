@@ -123,13 +123,13 @@ export default (props: any) => {
 
     useEffect(() => {
         if (refreshId === test_case_id) {
-            setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_result: stateWordMap(state) }))
+            setInterfaceSearchKeys((p: any) => ({ ...p, page_num: 1, page_size: 10, sub_case_result: stateWordMap(state) }))
             setTimeout(() => {
                 setRefreshId(null)
             }, 300)
         }
         if (!refreshId) {
-            setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_result: stateWordMap(state) }))
+            setInterfaceSearchKeys((p: any) => ({ ...p, page_num: 1, page_size: 10, sub_case_result: stateWordMap(state) }))
         }
     }, [state])
 
@@ -221,7 +221,8 @@ export default (props: any) => {
                 let urlHref = ''
                 if (context) {
                     urlHref = context
-                    const reg = /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/;
+                    // const reg = /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/;
+                    const reg = /^((http|https|ftps):(?:\/\/))/;
                     if (!reg.test(context)) urlHref = `${window.origin}/ws/${ws_id}404?page=${location.href}`
                 }
 
