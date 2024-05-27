@@ -83,6 +83,7 @@ const TestJob: React.FC<any> = (props) => {
     const [fetching, setFetching] = useState(false)
     const [newSaveLoading, setNewSaveLoading] = useState(false)
     const [isReset, setIsReset] = useState(false)
+    const [timeTagList, setTimeTagList]: any = useState([])
 
     const [jobInfo, setJobInfo] = useState('')
     const [isYamlFormat, setIsYamlFormat] = useState(false)
@@ -260,7 +261,9 @@ const TestJob: React.FC<any> = (props) => {
                 build_config, build_machine, scripts, ...rest
             }
 
-            const kernel_info = { hotfix_install, scripts, kernel_packages }
+            const kernel_info = { hotfix_install, scripts, 
+                kernel_packages: kernel_packages?.map((item: any)=> item?.trim()),  // 去除输入内容两端空格
+            }
 
             let scriptInfo = script_info
             let rpmInfo = rpm_info
@@ -740,8 +743,8 @@ const TestJob: React.FC<any> = (props) => {
 
     const handleCancelTemplate = (key: any) => {
         notification.close(key)
-        setFetching(false)
-        history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state || {} })
+        // setFetching(false)
+        // history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state || {} })
     }
 
     const handleSaveTemplateModify = async () => {
@@ -1162,6 +1165,7 @@ const TestJob: React.FC<any> = (props) => {
                                                     isReset={isReset}
                                                     tagsDataRef={tagsData}
                                                     reportTemplateDataRef={reportTemplateData}
+                                                    callback={setTimeTagList}
                                                 />
                                             </Row>
                                         }
@@ -1217,8 +1221,35 @@ const TestJob: React.FC<any> = (props) => {
                             <Access accessible={access.IsWsSetting()}>
                                 <Button type="primary" onClick={handleSubmit} ><FormattedMessage id="ws.test.job.submit.test" /></Button>
                             </Access> */}
-                            <Button onClick={handleOpenTemplate} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
-                            <Button type="primary" onClick={handleSubmit} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
+                             
+                            {/** 有时间的系统标签时，二次弹框确认； */}
+                            {timeTagList.length ?
+                                <>
+                                    <Popconfirm
+                                        title={formatMessage({ id: 'ws.result.details.keep.time.job.tag' }, { data: timeTagList[0]?.label }) }
+                                        onConfirm={handleOpenTemplate}
+                                        okText={<FormattedMessage id="operation.ok" />}
+                                        cancelText={<FormattedMessage id="operation.cancel" />}
+                                        placement="topRight"
+                                    >
+                                        <Button disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
+                                    </Popconfirm>
+                                    <Popconfirm
+                                        title={formatMessage({ id: 'ws.result.details.keep.time.job.tag' }, { data: timeTagList[0]?.label }) }
+                                        onConfirm={handleSubmit}
+                                        okText={<FormattedMessage id="operation.ok" />}
+                                        cancelText={<FormattedMessage id="operation.cancel" />}
+                                        placement="topRight"
+                                    >
+                                        <Button type="primary" disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
+                                    </Popconfirm>
+                                </>
+                                :
+                                <>
+                                  <Button onClick={handleOpenTemplate} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
+                                  <Button type="primary" onClick={handleSubmit} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
+                                </>
+                            }
                         </Space>
                     </Row>
                 }

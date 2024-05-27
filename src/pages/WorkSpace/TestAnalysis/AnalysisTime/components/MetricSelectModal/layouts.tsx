@@ -9,7 +9,6 @@ import FunctionalUnPassRate from "./FunctionalUnPassRate"
 import { getSelectMetricOrSubcase } from '../../services'
 import { useAnalysisProvider } from '@/pages/WorkSpace/TestAnalysis/AnalysisTime/provider';
 
-
 const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
     const { test_type, project_id, provider_env, onOk, show_type, tag, start_time, end_time, metricData } = props
     const { ws_id } = useParams() as any
@@ -40,7 +39,6 @@ const MetricSelectDrawerLayout: React.ForwardRefRenderFunction<AnyType, AnyType>
     const handleClose = React.useCallback(() => {
         setVisible(false)
         setInfo({})
-        setMetrics([])
     }, [])
 
     const title = React.useMemo(() => {

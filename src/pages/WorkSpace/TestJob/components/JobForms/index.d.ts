@@ -19,5 +19,6 @@ export interface FormProps {
     basicFormData?: any | undefined,
     envFormData?: any | undefined,
     moreFormData?: any | undefined,
-    isYamlFormat?: boolean
+    isYamlFormat?: boolean,
+    callback?: any 
 }

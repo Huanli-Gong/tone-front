@@ -35,6 +35,9 @@ export default {
   'menu.DirectRoute': 'directRoute',
 
   'menu.ShareReport': '测试报告',
+  'menu.share_report': '测试报告分享',
+  'menu.share_result_analysis': '对比分析分享',
+  'menu.share_time_analysis': '时序分析分享',
 
   'menu.JobTypePreview': '模板预览',
   'menu.TemplateEdit': '模板编辑',
@@ -61,6 +64,7 @@ export default {
   'menu.Workspace.TestReport.TemplateEdit': '编辑报告模版',
   'menu.Workspace.TestReport.Report': '测试报告',
   'menu.Workspace.TestReport.EditReport': '编辑报告',
+  'menu.Workspace.TestReport.ShareReport': '测试报告分享',
   // "menu.Workspace.TestReport.ShareReport": '分享报告',
   'menu.Workspace.TestReport.CompareAnalysisConf': '结果页',
 
@@ -139,4 +143,5 @@ export default {
   'menu.Workspace.TestAnalysis.ResultAnalysis': '结果分析',
 
   'menu.Workspace.DevOps': 'ws系统配置',
+  'menu.Workspace.Logging': '日志管理',
 };

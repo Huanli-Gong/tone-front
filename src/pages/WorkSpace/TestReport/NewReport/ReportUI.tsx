@@ -223,11 +223,13 @@ export const GroupTitle = styled.div<GroupRowProps>`
     ${GroupPulic}
     width : ${({ gLen }) => setGroupWdith(gLen)};
     border-right:1px solid rgba(0,0,0,0.10);
+    ${({ gLen }) => gLen <= 1 && 'border-bottom: 0;'}
 `
 export const GroupData = styled.div<GroupRowProps>`
     ${GroupPulic} 
     display:flex;     
     width : ${({ gLen }) => setDataWdith(gLen)};
+    ${({ gLen }) => gLen <= 1 && 'border-bottom: 0;'}
     &:last-child {
         border-right:none;
     }

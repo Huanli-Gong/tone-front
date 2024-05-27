@@ -110,6 +110,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 async (values: any) => {
                     const { bug } = values
                     const baseParams = { ...values, ws_id, test_type, bug: bug?.trim() }
+                    console.log(source)
                     if (source?.isMore) {
                         const { code, msg } = await perfJoinBaselineBatch({ ...baseParams, ids: oSuite, job_id })
                         defaultOption(code, msg)
@@ -124,7 +125,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     else {
                         const { suite_id, test_case_id: case_id } = source
                         const { code, msg } = case_id ? await perfJoinBaseline({ ...baseParams, job_id, suite_id, case_id }) :
-                            await perfJoinBaselineBatch({ ...baseParams, job_id, suite_list: [suite_id] })
+                            await perfJoinBaselineBatch({ ...baseParams, job_id, ids: { [suite_id]: {} } })
                         defaultOption(code, msg)
                     }
                 }

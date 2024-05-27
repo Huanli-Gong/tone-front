@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useImperativeHandle, useEffect, useState } from 'react'
+import React, { useImperativeHandle, useEffect, useState, useMemo } from 'react'
 import { Form, Input, Card, Row, Col, Popover, Select, InputNumber } from 'antd'
 import styles from './index.less'
 import { tagList } from '@/pages/WorkSpace/TagManage/service'
@@ -19,6 +19,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
     const locale = getLocale() === 'en-US';
     const [form] = Form.useForm()
     const [tags, setTags] = useState<any[]>([])
+    const [tagsSelected, setTagsSelected] = useState<any[]>([])
     const [checkedList, setCheckedList] = React.useState<any>();
     const [reportTemplate, setReportTemplate] = useState<any>([])
     const [defaultTemplate, setDefaultTemplate] = useState<any>({})
@@ -96,6 +97,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                 report_name,
                 callback_api
             })
+            setTagsSelected($tags)
             setCheckedList(report_name)
         }
     }, [defaultTemplate, reportTemplate, template])
@@ -106,6 +108,8 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
         form.setFieldsValue({ ...values, report_name: reportSelectVal })
         setCheckedList(reportSelectVal)
     }
+
+    const tagsObj = useMemo(() => tags?.filter((item: any)=> tagsSelected?.includes(item.id)), [tagsSelected, tags])
 
     return (
         <Card
@@ -145,6 +149,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             'job_tag' in contrl &&
                             <TagSelect
                                 tags={tags}
+                                initialValue={tagsObj}
                                 // label="Job标签"
                                 label={contrl.job_tag.alias || <FormattedMessage id={`ws.result.details.${contrl.job_tag.name}`} />}
                                 disabled={disabled}

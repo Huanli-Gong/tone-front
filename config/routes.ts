@@ -1,344 +1,349 @@
 const { BUILD_APP_ENV } = process.env;
 
 const routes = [
-    {
-        path: '/',
-        name: 'home',
-        component: BUILD_APP_ENV === 'opensource' ? './Home' : './AnolisHome',
-    },
-    {
-        path: '/job/:job_id',
-        component: './RedirectJob',
-    },
-    {
-        path: '/personCenter',
-        name: 'PersonCenter',
-        hideInMenu: true,
-        component: './PersonCenter',
-    },
-    {
-        name: 'Dashboard',
-        path: '/dashboard',
-        component: './DashBoard/index',
-        access: 'IsAdmin',
-    },
-    {
-        path: '/refenerce/:type',
-        //name: 'RefenerceDetail',
-        hideInMenu: true,
-        component: '@/pages/RefenerceDetail',
-    },
-    {
-        name: 'systemConf',
-        path: '/system',
-        component: './SystemConf/MenuLayout',
-        //showInWs: false,
-        access: 'IsSysTestAdmin',
-        routes: [
-            {
-                path: '/system/approve',
-                name: 'joinApprove',
-                component: './SystemConf/JoinApprove',
-                access: 'IsAdmin',
-            },
-            {
-                path: '/system/workspace',
-                name: 'workspaceManagement',
-                component: './SystemConf/WorkspaceManagement',
-                access: 'IsAdmin',
-            },
-            {
-                path: '/system/user',
-                name: 'userManagement',
-                component: './SystemConf/UserManagement',
-                access: 'IsAdmin',
-            },
-            {
-                path: '/system/suite',
-                name: 'suiteManagement',
-                component: './SystemConf/TestSuite',
-                access: 'IsSysTestAdmin',
-            },
-            {
-                path: '/system/kernel',
-                name: 'KernelManage',
-                component: '@/pages/SystemConf/KernelManage',
-                access: 'IsSysTestAdmin',
-            },
-            {
-                path: '/system/basic',
-                name: 'BasicSetting',
-                component: '@/pages/SystemConf/BasicSetting',
-                access: 'IsAdmin',
-            },
-            {
-                path: '/system/testfarm',
-                name: 'TestParmSetting',
-                component: '@/pages/SystemConf/TestParmSetting',
-                access: 'IsAdmin',
-            },
-            {
+	{
+		path: '/',
+		name: 'home',
+		component: BUILD_APP_ENV === "opensource" ? "./Home" : "./AnolisHome"
+	},
+	{
+		path: '/job/:job_id',
+		component: './RedirectJob',
+	},
+	{
+		path: '/personCenter',
+		name: 'PersonCenter',
+		hideInMenu: true,
+		component: './PersonCenter',
+	},
+	{
+		name: 'Dashboard',
+		path: '/dashboard',
+		component: './DashBoard/index',
+		access: 'IsAdmin',
+	},
+	{
+		path: '/refenerce/:type',
+		//name: 'RefenerceDetail',
+		hideInMenu: true,
+		component: '@/pages/RefenerceDetail',
+	},
+	{
+		name: 'systemConf',
+		path: '/system',
+		component: './SystemConf/MenuLayout',
+		//showInWs: false,
+		access: 'IsSysTestAdmin',
+		routes: [
+			{
+				path: '/system/approve',
+				name: 'joinApprove',
+				component: './SystemConf/JoinApprove',
+				access: 'IsAdmin',
+			},
+			{
+				path: '/system/workspace',
+				name: 'workspaceManagement',
+				component: './SystemConf/WorkspaceManagement',
+				access: 'IsAdmin',
+			},
+			{
+				path: '/system/user',
+				name: 'userManagement',
+				component: './SystemConf/UserManagement',
+				access: 'IsAdmin',
+			},
+			{
+				path: '/system/suite',
+				name: 'suiteManagement',
+				component: './SystemConf/TestSuite',
+				access: 'IsSysTestAdmin',
+			},
+			{
+				path: '/system/kernel',
+				name: 'KernelManage',
+				component: '@/pages/SystemConf/KernelManage',
+				access: 'IsSysTestAdmin',
+			},
+			{
+				path: '/system/basic',
+				name: 'BasicSetting',
+				component: '@/pages/SystemConf/BasicSetting',
+				access: 'IsAdmin',
+			},
+			{
+				path: '/system/testfarm',
+				name: 'TestParmSetting',
+				component: '@/pages/SystemConf/TestParmSetting',
+				access: 'IsAdmin',
+			},
+			{
                 path: '/system/question',
                 name: 'question',
                 component: '@/pages/SystemConf/Question',
                 access: 'IsAdmin',
             },
-            {
-                path: '*',
-                hideInMenu: true,
-                name: 'DirectRoute',
-                redirect: '/',
-            },
-        ].filter(Boolean),
-    },
-    {
-        path: '/message',
-        showInWs: true,
-        hideInMenu: true,
-        component: './TaskMessage',
-    },
-    {
-        path: '/share/job/:share_id',
-        hideInMenu: true,
-        name: 'share_job',
-        component: '@/pages/WorkSpace/TestResult/Details',
-    },
-    {
-        path: '/share/report/:report_id',
-        hideInMenu: true,
-        name: 'ShareReport',
-        component: '@/pages/WorkSpace/TestReport/NewReport',
-    },
-    {
-        path: '/share/analysis_result/:form_id',
-        hideInMenu: true,
-        component: '@/pages/WorkSpace/TestAnalysis/AnalysisResult',
-    },
-    {
-        path: '/share/analysis/:share_id',
-        hideInMenu: true,
-        component: '@/pages/WorkSpace/TestAnalysis/AnalysisTime/SharePage',
-    },
-    {
-        path: '/ws/:ws_id',
-        name: 'Workspace',
-        component: '@/pages/WorkSpace',
-        wrappers: ['@/wrappers/WorkspaceAuth'],
-        routes: [
-            {
-                path: '/ws/:ws_id/dashboard',
-                name: 'Dashboard',
-                inNav: true,
-                hasLeftNav: false,
-                routes: [
-                    {
-                        path: '/ws/:ws_id/dashboard',
-                        component: './WorkSpace/Dashboard',
-                    },
-                    {
-                        path: '/ws/:ws_id/dashboard/:project_id',
-                        component: './WorkSpace/Dashboard/Project',
-                    },
-                    {
-                        path: '*',
-                        redirect: '/ws/:ws_id/dashboard',
-                    },
-                ],
-            },
-            {
-                path: '/ws/:ws_id/test_job/:jt_id',
-                inNav: true,
-                name: 'TestJob',
-                routes: [
-                    {
-                        path: '/ws/:ws_id/test_job/:jt_id',
-                        component: './WorkSpace/TestJob',
-                        hideInMenu: true,
-                        name: 'TestJob',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_job/:jt_id/template',
-                        name: 'TestTemplate',
-                        hideInMenu: true,
-                        component: './WorkSpace/TestJob',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_job/:jt_id/import',
-                        component: './WorkSpace/TestJob',
-                        hideInMenu: true,
-                        name: 'TestExport',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_job/:jt_id/preview',
-                        name: 'JobTypePreview',
-                        hideInMenu: true,
-                        layout: false,
-                        component: './WorkSpace/TestJob',
-                    },
-                ],
-            },
-            {
-                path: '/ws/:ws_id/test_result',
-                inNav: true,
-                name: 'TestResult',
-                hasLeftNav: false,
-                routes: [
-                    {
-                        path: '/ws/:ws_id/test_result',
-                        hideInMenu: true,
-                        name: 'TestResult',
-                        component: '@/pages/WorkSpace/TestResult/JobList',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_result/:id',
-                        hideInMenu: true,
-                        component: '@/pages/WorkSpace/TestResult/Details',
-                    },
-                ],
-            },
-            {
-                path: '/ws/:ws_id/workspace/initSuccess',
-                hasLeftNav: false,
-                inNav: true,
-                component: './WorkSpace/CreateWorkspace/WsInitSucess',
-            },
-            {
-                path: '/ws/:ws_id/test_analysis',
-                name: 'TestAnalysis',
-                inNav: true,
-                hasLeftNav: false,
-                routes: [
-                    {
-                        path: '/ws/:ws_id/test_analysis/compare',
-                        name: 'CompareAnalysis',
-                        component: '@/pages/WorkSpace/TestAnalysis/AnalysisCompare',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_analysis/result',
-                        hideInMenu: true,
-                        name: 'ResultCompareAnalysis',
-                        component: '@/pages/WorkSpace/TestAnalysis/AnalysisResult',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_analysis/time',
-                        name: 'TimeAnalysis',
-                        component: '@/pages/WorkSpace/TestAnalysis/AnalysisTime',
-                    },
-                ],
-            },
-            {
-                path: '/ws/:ws_id/test_plan',
-                name: 'TestPlan',
-                // hideInMenu : true,
-                inNav: true,
-                routes: [
-                    {
-                        path: '/ws/:ws_id/test_plan/:plan_id/edit',
-                        hideInMenu: true,
-                        name: 'Edit',
-                        component: '@/pages/WorkSpace/TestPlan/PlanForm',
-                        access: 'IsWsSetting',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_plan/:plan_id/run',
-                        hideInMenu: true,
-                        name: 'Run',
-                        component: '@/pages/WorkSpace/TestPlan/PlanForm',
-                        access: 'IsWsSetting',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_plan/create',
-                        hideInMenu: true,
-                        name: 'Create',
-                        component: '@/pages/WorkSpace/TestPlan/PlanForm',
-                        access: 'IsWsSetting',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_plan',
-                        name: 'Manage',
-                        component: '@/pages/WorkSpace/TestPlan',
-                        access: 'IsWsSetting',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_plan/view',
-                        name: 'View',
-                        component: '@/pages/WorkSpace/TestPlan/PlanView',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_plan/view/summary/:plan_id',
-                        hideInMenu: true,
-                        name: 'Summary',
-                        component: '@/pages/WorkSpace/TestPlan/PlanView/ViewSummary',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_plan/view/detail/:plan_id',
-                        hideInMenu: true,
-                        name: 'Detail',
-                        component: '@/pages/WorkSpace/TestPlan/PlanView/ViewDetail',
-                    },
-                    {
-                        path: '*',
-                        redirect: '/',
-                    },
-                ],
-            },
-            {
-                path: '/ws/:ws_id/test_create_report',
-                name: 'CreateReport',
-                hideInMenu: true,
-                inNav: true,
-                component: '@/pages/WorkSpace/TestReport/NewReport',
-                access: 'IsWsSetting',
-            },
+			{
+				path: '*',
+				hideInMenu: true,
+				name: 'DirectRoute',
+				redirect: '/'
+			}
+		],
+	},
+	{
+		path: '/message',
+		showInWs: true,
+		hideInMenu: true,
+		component: './TaskMessage',
+	},
+	{
+		path: '/share',
+		hideInMenu: true,
+		routes: [{
+			path: '/share/job/:share_id',
+			name: 'share_job',
+			component: '@/pages/WorkSpace/TestResult/Details',
+		}, {
+			path: '/share/report/:share_id',
+			name: 'share_report',
+			component: '@/pages/WorkSpace/TestReport/NewReport'
+		}, {
+			path: '/share/analysis_result/:form_id',
+			name: 'share_result_analysis',
+			component: '@/pages/WorkSpace/TestAnalysis/AnalysisResult'
+		},
+		{
+			path: '/share/analysis/:share_id',
+			name: 'share_time_analysis',
+			component: '@/pages/WorkSpace/TestAnalysis/AnalysisTime/SharePage'
+		},]
+	},
+	{
+		path: '/ws/:ws_id',
+		name: 'Workspace',
+		component: '@/pages/WorkSpace',
+		wrappers: [
+			'@/wrappers/WorkspaceAuth',
+		],
+		routes: [
+			{
+				path: '/ws/:ws_id/dashboard',
+				name: 'Dashboard',
+				inNav: true,
+				hasLeftNav: false,
+				routes: [
+					{
+						path: '/ws/:ws_id/dashboard',
+						component: './WorkSpace/Dashboard',
+					},
+					{
+						path: '/ws/:ws_id/dashboard/:project_id',
+						component: './WorkSpace/Dashboard/Project',
+					},
+					{
+						path: '*',
+						redirect: '/ws/:ws_id/dashboard'
+					}
+				]
+			},
+			{
+				path: '/ws/:ws_id/test_job/:jt_id',
+				inNav: true,
+				name: 'TestJob',
+				routes: [{
+					path: '/ws/:ws_id/test_job/:jt_id',
+					component: './WorkSpace/TestJob',
+					hideInMenu: true,
+					name: 'TestJob',
+				},
+				{
+					path: '/ws/:ws_id/test_job/:jt_id/template',
+					name: 'TestTemplate',
+					hideInMenu: true,
+					component: './WorkSpace/TestJob',
+				},
+				{
+					path: '/ws/:ws_id/test_job/:jt_id/import',
+					component: './WorkSpace/TestJob',
+					hideInMenu: true,
+					name: 'TestExport',
+				},
+				{
+					path: '/ws/:ws_id/test_job/:jt_id/preview',
+					name: 'JobTypePreview',
+					hideInMenu: true,
+					layout: false,
+					component: './WorkSpace/TestJob',
+				},]
+			},
+			{
+				path: '/ws/:ws_id/test_result',
+				inNav: true,
+				name: 'TestResult',
+				hasLeftNav: false,
+				routes: [
+					{
+						path: '/ws/:ws_id/test_result',
+						hideInMenu: true,
+						name: 'TestResult',
+						component: "@/pages/WorkSpace/TestResult/JobList"
+					},
+					{
+						path: '/ws/:ws_id/test_result/:id',
+						hideInMenu: true,
+						component: '@/pages/WorkSpace/TestResult/Details',
+					}
+				]
+			},
+			{
+				path: '/ws/:ws_id/workspace/initSuccess',
+				hasLeftNav: false,
+				inNav: true,
+				component: './WorkSpace/CreateWorkspace/WsInitSucess',
+			},
+			{
+				path: '/ws/:ws_id/test_analysis',
+				name: 'TestAnalysis',
+				inNav: true,
+				hasLeftNav: false,
+				routes: [
+					{
+						path: '/ws/:ws_id/test_analysis/compare',
+						name: 'CompareAnalysis',
+						component: '@/pages/WorkSpace/TestAnalysis/AnalysisCompare',
+					},
+					{
+						path: '/ws/:ws_id/test_analysis/result',
+						hideInMenu: true,
+						name: 'ResultCompareAnalysis',
+						component: '@/pages/WorkSpace/TestAnalysis/AnalysisResult',
+					},
+					{
+						path: '/ws/:ws_id/test_analysis/time',
+						name: 'TimeAnalysis',
+						component: '@/pages/WorkSpace/TestAnalysis/AnalysisTime'
+					},
+				]
+			},
+			{
+				path: '/ws/:ws_id/test_plan',
+				name: 'TestPlan',
+				// hideInMenu : true,
+				inNav: true,
+				routes: [
+					{
+						path: '/ws/:ws_id/test_plan/:plan_id/edit',
+						hideInMenu: true,
+						name: 'Edit',
+						component: '@/pages/WorkSpace/TestPlan/PlanForm',
+						access: 'IsWsSetting',
+					},
+					{
+						path: '/ws/:ws_id/test_plan/:plan_id/run',
+						hideInMenu: true,
+						name: 'Run',
+						component: '@/pages/WorkSpace/TestPlan/PlanForm',
+						access: 'IsWsSetting',
+					},
+					{
+						path: '/ws/:ws_id/test_plan/create',
+						hideInMenu: true,
+						name: 'Create',
+						component: '@/pages/WorkSpace/TestPlan/PlanForm',
+						access: 'IsWsSetting',
+					},
+					{
+						path: '/ws/:ws_id/test_plan',
+						name: 'Manage',
+						component: '@/pages/WorkSpace/TestPlan',
+						access: 'IsWsSetting',
+					},
+					{
+						path: '/ws/:ws_id/test_plan/view',
+						name: 'View',
+						component: '@/pages/WorkSpace/TestPlan/PlanView',
+					},
+					{
+						path: '/ws/:ws_id/test_plan/view/summary/:plan_id',
+						hideInMenu: true,
+						name: 'Summary',
+						component: '@/pages/WorkSpace/TestPlan/PlanView/ViewSummary',
+					},
+					{
+						path: '/ws/:ws_id/test_plan/view/detail/:plan_id',
+						hideInMenu: true,
+						name: 'Detail',
+						component: '@/pages/WorkSpace/TestPlan/PlanView/ViewDetail',
+					},
+					{
+						path: '*',
+						redirect: '/'
+					}
+				]
+			},
+			{
+				path: '/ws/:ws_id/test_create_report',
+				name: 'CreateReport',
+				hideInMenu: true,
+				inNav: true,
+				component: '@/pages/WorkSpace/TestReport/NewReport',
+				access: 'IsWsSetting',
+			},
 
-            {
-                path: '/ws/:ws_id/test_report',
-                inNav: true,
-                name: 'TestReport',
-                hideChildrenInMenu: true,
-                routes: [
-                    {
-                        path: '/ws/:ws_id/test_report',
-                        component: '@/pages/WorkSpace/TestReport',
-                        name: 'Report',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_report/compare',
-                        hideInMenu: true,
-                        name: 'CompareAnalysisConf',
-                        component: '@/pages/WorkSpace/TestAnalysis/AnalysisCompare',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_report/template',
-                        name: 'TemplateCreate',
-                        component: '@/pages/WorkSpace/TestReport/Template',
-                        access: 'IsWsSetting',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_report/template/:temp_id',
-                        name: 'TemplateEdit',
-                        component: '@/pages/WorkSpace/TestReport/Template',
-                        access: 'IsWsSetting',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_report/template/:temp_id/preview',
-                        name: 'ReportTemplatePreview',
-                        layout: false,
-                        component: '@/pages/WorkSpace/TestReport/Template/Preview',
-                        access: 'IsWsSetting',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_report/:report_id',
-                        name: 'Report',
-                        component: '@/pages/WorkSpace/TestReport/NewReport',
-                    },
-                    {
-                        path: '/ws/:ws_id/test_report/:report_id/edit',
-                        exact: true,
-                        name: 'EditReport',
-                        component: '@/pages/WorkSpace/TestReport/NewReport',
-                        access: 'IsWsSetting',
-                    },
+			{
+				path: '/ws/:ws_id/test_report',
+				inNav: true,
+				name: 'TestReport',
+				hideChildrenInMenu: true,
+				routes: [
+					{
+						path: '/ws/:ws_id/test_report',
+						component: '@/pages/WorkSpace/TestReport',
+						name: 'Report',
+					},
+					{
+						path: '/ws/:ws_id/test_report/compare',
+						hideInMenu: true,
+						name: 'CompareAnalysisConf',
+						component: '@/pages/WorkSpace/TestAnalysis/AnalysisCompare',
+					},
+					{
+						path: '/ws/:ws_id/test_report/template',
+						name: 'TemplateCreate',
+						component: '@/pages/WorkSpace/TestReport/Template',
+						access: 'IsWsSetting',
+					},
+					{
+						path: '/ws/:ws_id/test_report/template/:temp_id',
+						name: 'TemplateEdit',
+						component: '@/pages/WorkSpace/TestReport/Template',
+						access: 'IsWsSetting',
+					},
+					{
+						path: '/ws/:ws_id/test_report/template/:temp_id/preview',
+						name: 'ReportTemplatePreview',
+						layout: false,
+						component: '@/pages/WorkSpace/TestReport/Template/Preview',
+						access: 'IsWsSetting',
+					},
+					{
+						path: '/ws/:ws_id/test_report/:report_id',
+						name: 'Report',
+						component: '@/pages/WorkSpace/TestReport/NewReport',
+					},
+					{
+						path: '/ws/:ws_id/test_report/:report_id/share',
+						name: 'ShareReport',
+						component: '@/pages/WorkSpace/TestReport/NewReport',
+					},
+					{
+						path: '/ws/:ws_id/test_report/:report_id/edit',
+						exact: true,
+						name: 'EditReport',
+						component: '@/pages/WorkSpace/TestReport/NewReport',
+						access: 'IsWsSetting',
+					},
 
                     {
                         path: '*',
@@ -588,6 +593,12 @@ const routes = [
                 name: 'DevOps',
                 component: '@/pages/WorkSpace/DevOps',
             },
+			BUILD_APP_ENV !== 'opensource' &&
+			{
+				path: '/ws/:ws_id/logging',
+				name: 'Logging',
+				component: '@/pages/WorkSpace/Logging'
+			},
             {
                 hideInMenu: true,
                 inNav: true,
@@ -611,7 +622,7 @@ const routes = [
                 name: '404',
                 component: '@/pages/404',
             },
-        ],
+        ].filter(Boolean)
     },
     BUILD_APP_ENV === 'opensource' && {
         path: '/login',
