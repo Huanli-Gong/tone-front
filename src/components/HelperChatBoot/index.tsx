@@ -6,6 +6,8 @@ import { BootContext } from './Provider';
 import moment from 'moment';
 import { getUsualProblem } from './HelperContext/services';
 
+export const CHART_DEFAULT_BOTTOM_PX = `76px`;
+
 const HelperContent = styled.div.attrs((props: any) => ({
     style: {
         transform: `translate(${props.pos.x}px, ${props.pos.y}px)`,
@@ -15,7 +17,7 @@ const HelperContent = styled.div.attrs((props: any) => ({
     height: 110px;
     width: 36px;
     right: 16px;
-    bottom: 58px;
+    bottom: ${CHART_DEFAULT_BOTTOM_PX};
     cursor: pointer;
     z-index: 1000;
 `;

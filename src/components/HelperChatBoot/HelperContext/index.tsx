@@ -9,6 +9,7 @@ import Feedback from './Feedback';
 import { getBootSetting } from '@/pages/SystemConf/Question/Knowledge/services';
 import { useRequest } from 'umi';
 import { useHelperBootContext } from '../Provider';
+import { CHART_DEFAULT_BOTTOM_PX } from '..';
 
 const Container = styled.div.attrs((props: any) => ({
     style: {
@@ -24,7 +25,7 @@ const Container = styled.div.attrs((props: any) => ({
     overflow: hidden;
 
     right: 64px;
-    bottom: 58px;
+    bottom: ${CHART_DEFAULT_BOTTOM_PX};
     z-index: 1000;
 `;
 
