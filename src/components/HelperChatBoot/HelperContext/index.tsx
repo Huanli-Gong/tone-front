@@ -24,7 +24,7 @@ const Container = styled.div.attrs((props: any) => ({
     overflow: hidden;
 
     right: 64px;
-    bottom: 16px;
+    bottom: 58px;
     z-index: 1000;
 `;
 

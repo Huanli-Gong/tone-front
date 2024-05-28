@@ -314,7 +314,6 @@ const AnswerContent: React.FC = () => {
                             <Server
                                 key={rowkey}
                                 {...ctx}
-                                content={[]}
                                 setCharts={setCharts}
                                 getAnswer={getAnswer}
                                 scrollChange={scrollChange}

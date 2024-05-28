@@ -15,7 +15,7 @@ const HelperContent = styled.div.attrs((props: any) => ({
     height: 110px;
     width: 36px;
     right: 16px;
-    bottom: 16px;
+    bottom: 58px;
     cursor: pointer;
     z-index: 1000;
 `;
