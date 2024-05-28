@@ -24,13 +24,14 @@ const OverflowList: React.FC<Iprops> = (props) => {
         (entries: IntersectionObserverEntry[]) => {
             const count = entries.reduce((pre: number, cur: IntersectionObserverEntry, index: number) => {
                 const { rootBounds, target } = cur;
-                const ww = rootBounds?.width
+                /* @ts-ignore */
+                const ww = rootBounds?.width - 84
                 if (ww) {
                     const rw = reduceCoutWidth(entries, index)
                     const pr = parseInt(getComputedStyle(target)["padding-right" as any]) || 0
                     const rsw = rw + pr
                     if ((ww - rsw) > 0 && index === entries.length) return pre += 1
-                    if (rsw < (ww - 32))
+                    if (rsw < ww)
                         return pre += 1
                 }
                 return pre
@@ -50,7 +51,7 @@ const OverflowList: React.FC<Iprops> = (props) => {
             for (const entry of entries) {
                 if (entry.contentRect) {
                     const { width } = entry.contentRect
-                    setRealWidth(width)
+                    setRealWidth(width - 84)
                 }
             }
         });
@@ -112,7 +113,7 @@ const OverflowList: React.FC<Iprops> = (props) => {
                                     )
                                 }
                             >
-                                <span style={{ color: "#8c92a4" }}>
+                                <span style={{ color: "#8c92a4", fontSize: 12 }}>
                                     +{list.length - currentCanShowCount}
                                 </span>
                             </Tooltip>

@@ -27,10 +27,10 @@ import { SmilieReplacer } from './components/Emoji/emojiReplacer';
 import { lowlight } from 'lowlight';
 import ImageResize from './components/ImageResize';
 
-type IProps = Partial<EditorOptions> & { placeholder?: string };
+type IProps = Partial<EditorOptions> & { placeholder?: string; contentStyle?: React.CSSProperties; styledCss?: string; }
 
 const RichEditor: React.FC<IProps> = (props) => {
-    const { content, placeholder, editable = true } = props;
+    const { content, placeholder, editable = true , contentStyle, styledCss = ''} = props;
     const regex = /<p>\s*(<img [^>]*\/?>)\s*(<br\s*\/?>)?\s*<\/p>/gi;
     const editor = useEditor(
         {
@@ -74,12 +74,13 @@ const RichEditor: React.FC<IProps> = (props) => {
     );
 
     return (
-        <EditorCls editable={editable}>
+        <EditorCls editable={editable}
+         styledCss={styledCss}>
             {editable && <MenuBar editor={editor} />}
             {editor && (
                 <EditorContent
                     editor={editor}
-                    style={{ height: `calc(100%${editable ? ' - 48px' : ''})` }}
+                    style={{ height: `calc(100%${editable ? " - 48px" : ""})`, ...contentStyle }}
                 />
             )}
         </EditorCls>

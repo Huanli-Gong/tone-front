@@ -1,5 +1,6 @@
+
 export default {
-  'basic.script': '系统脚本',  
+  'basic.script': '系统脚本',
   'basic.sys': '系统参数',
   'basic.new.config': '新增配置',
 
