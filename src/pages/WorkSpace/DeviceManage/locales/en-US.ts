@@ -160,6 +160,11 @@ export default {
   'device.delete.instance': 'Are you sure you want to delete the instance({data})？',
   'device.release.config': 'Are you sure you want to release the configuration ({data})？',
   'device.release.instance': 'Are you sure you want to release the instance ({data})？',
+  'device.copy': 'Copy Device',
+  'device.config.name.original': 'Original Configuration Name',
+  'device.instance.name.original': 'Original Instance Name',
+  'device.config.name.new': 'New Configuration Name',
+  'device.instance.name.new': 'New Instance Name',
 
   'device.name': 'Name',
   'device.name.message': 'Only letters, numbers, underscores, middle dashes and dots are allowed, and can only start with letters. The maximum length is 32 characters.',

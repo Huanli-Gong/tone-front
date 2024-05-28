@@ -16,6 +16,7 @@ import { StateBadge } from '../../GroupManage/Components'
 import { cloudList, delCloud, stateRefresh, cloudManageSyncName } from '../service';
 import { queryServerDel } from '../../GroupManage/services'
 import CloudDetail from './CloudDetail'
+import CopyDevice from './CopyDevice';
 import styles from './style.less';
 import { useParams, useIntl, FormattedMessage, getLocale, history, useLocation } from 'umi'
 import lodash from 'lodash'
@@ -69,6 +70,7 @@ export default (props: any) => {
     const logDrawer: any = useRef()
     const deployModal: any = useRef(null);
     const viewDetailRef: any = useRef(null)
+    const copyDeviceRef: any = useRef(null)
 
     const DEFAULT_PARAM = {
         t: tab,
@@ -557,6 +559,9 @@ export default (props: any) => {
                     <Typography.Link onClick={() => viewDetailRef.current.show(row, $instance)}>
                         <FormattedMessage id="operation.detail" />
                     </Typography.Link>
+                    <Typography.Link onClick={() => copyDeviceRef.current.show(row, $instance) }>
+                        <FormattedMessage id="operation.copy" />
+                    </Typography.Link>
                     <Access
                         accessible={access.WsMemberOperateSelf(row.owner)}
                         fallback={
@@ -687,6 +692,8 @@ export default (props: any) => {
             />
             <DeployModal ref={deployModal} />
             <CloudDetail ref={viewDetailRef} />
+            <CopyDevice ref={copyDeviceRef} onOk={()=> setParams({ ...params, page_num: 1 })} instance={$instance} />
+
             <Modal
                 title={<div><FormattedMessage id={!$instance ? 'device.tips' : 'delete.tips'} /></div>}
                 centered={true}

@@ -15,6 +15,14 @@ export async function addCloud(params: any = {}) {
     });
 }
 
+//copy
+export async function copyDevice(params: any = {}) {
+    return request('/', {
+        method: 'POST',
+        data: { ...params }
+    });
+}
+
 
 //编辑单机
 export async function editCloud(id: number, params: any = {}) {

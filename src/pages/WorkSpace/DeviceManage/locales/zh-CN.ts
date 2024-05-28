@@ -159,6 +159,11 @@ export default {
   'device.delete.instance': '确定要删除实例({data})吗？',
   'device.release.config': '确定要释放配置({data})吗？',
   'device.release.instance': '确定要释放实例({data})吗？',
+  'device.copy': '复制机器',
+  'device.config.name.original': '原配置名称',
+  'device.instance.name.original': '原新实例名称',
+  'device.config.name.new': '新配置名称',
+  'device.instance.name.new': '新实例名称',
 
   'device.name': '名称',
   'device.name.message': '仅允许包含字母、数字、下划线、中划线、点，且只能以字母开头，最长32个字符',
