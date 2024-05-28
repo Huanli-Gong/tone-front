@@ -141,6 +141,28 @@ export const copyTooltipColumn = (defaultText: string = '-') => ({
         )
     }
 })
+export const CopyTooltip = ({ text, defaultText = '-' }: any) => {
+    return (
+        text ?
+            <Tooltip
+                overlayClassName={styles.tootip_overflow}
+                placement='topLeft'
+                title={
+                    <Row>
+                        <Col span={24} style={{ whiteSpace: 'break-spaces' }}>{text}</Col>
+                        <Col span={24}>
+                            <Row justify="center">
+                                <CopyTextBtn text={text} />
+                            </Row>
+                        </Col>
+                    </Row>
+                }
+            >
+                {text}
+            </Tooltip> :
+            defaultText
+    )
+}
 
 export const compareResultFontColor = (result: string) => {
     if (result === 'decline') return '#C84C5A'

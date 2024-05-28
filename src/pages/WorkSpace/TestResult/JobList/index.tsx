@@ -77,6 +77,7 @@ const DEFAULT_COLUMNS_SET_DATA = {
     creator_name: { order: 7, disabled: false, },
     start_time: { order: 8, disabled: false, },
     end_time: { order: 9, disabled: false, },
+    tag_list: { order: 6.9, disabled: true, },
 }
 
 const REMEBER_COLUMNS_STATE_STRING_KEY = "test-job-list-columns-state"
@@ -124,12 +125,11 @@ const BaseTab: React.FC<IProps> = () => {
         }
         else {
             const base = JSON.parse(columnStates)
-
-            setInitialColumns(
-                base.product_version ?
-                    base :
-                    { ...base, product_version: DEFAULT_COLUMNS_SET_DATA.product_version }
-            )
+            const { tag_list, product_version } = DEFAULT_COLUMNS_SET_DATA
+            let temp = { ...base }
+            if (!base.product_version) temp.product_version = product_version
+            if (!base.tag_list) temp.tag_list = tag_list
+            setInitialColumns(temp)
         }
     }, [])
 
@@ -225,6 +225,7 @@ const BaseTab: React.FC<IProps> = () => {
                     countRefresh={countRefresh}
                     listRefresh={listRefresh}
                     setDataSource={mutate}
+                    callback={listRefresh}
                 />
             </React.Fragment>
         </JobListProvider.Provider>

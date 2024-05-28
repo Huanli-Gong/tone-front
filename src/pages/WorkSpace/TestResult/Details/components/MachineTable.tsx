@@ -9,7 +9,7 @@ import { queryMachineData } from '../service';
 import { StateBadge } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components/index'
 
 const RenderMachineItem: React.FC = () => {
-    const { ws_id, share_id, job_id } = useParams() as any
+    const { ws_id, share_id, id: job_id } = useParams() as any
 
     const [flag, setFlag] = useState<boolean>(true)
     const [loading, setLoading] = useState<boolean>(true)

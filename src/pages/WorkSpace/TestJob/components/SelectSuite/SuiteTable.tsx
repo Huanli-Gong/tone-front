@@ -26,7 +26,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 	const settingDrawerRef: any = useRef(null)
 	const [hasCases, setHasCases] = useState(true)
 
-	const [checked, setChecked] = useState<boolean>(false)
+	const [checked, setChecked] = useState<boolean>(true)
 	const [selectedSuiteKeys, setSelectedSuiteKeys] = useState<any[]>([])
 	const [selectedCaseKeys, setSelectedCaseKeys] = useState<any[]>([])
 	const [selectedCaseObj, setSelectedCaseObj] = useState<any>({})

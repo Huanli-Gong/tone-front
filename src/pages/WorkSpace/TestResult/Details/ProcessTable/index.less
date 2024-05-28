@@ -85,3 +85,40 @@
         }
     }
 }
+
+.popover_warp {
+    :global {
+        .ant-popover-inner-content {
+            padding: 12px 0px 12px 16px;
+        }
+    }
+}
+.answers_warp {
+    max-height: 400px;  /* 内容滚动条 */
+    overflow-y: scroll;
+    padding-right: 16px;
+
+    .process_fail_reason {
+        font-weight: 500;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.85);
+        padding: 8px 0;
+    }
+    .process_fail_answer {
+        :global {
+            ul, ol {
+                list-style-type: disc !important;
+            }
+            ul > li {
+                ul {
+                list-style: circle !important;
+                }
+            }
+        }
+    }
+}
+.text_warp {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { message, Space, Typography } from 'antd'
 import ConfPopoverTable from './ConfPopoverTable'
-import { evnPrepareState, tooltipTd } from '../components'
+import { CopyTooltip, evnPrepareState, tooltipTd } from '../components'
 import ServerLink from '@/components/MachineWebLink/index';
 import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
 import { useAccess, Access, useModel, useIntl, FormattedMessage, getLocale, useParams } from 'umi'
@@ -11,6 +11,7 @@ import CommonPagination from '@/components/CommonPagination';
 import TidDetail from './QueryTidList';
 import { ResizeHooksTable } from '@/utils/table.hooks';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
+import FailReasonPopover from './FailReasonPopover'
 
 const TestConfTable: React.FC<Record<string, any>> = (props) => {
     const { test_suite_name, test_suite_id, testType, provider_name, creator, columnsRefresh, setColumnsRefresh } = props
@@ -133,7 +134,16 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             dataIndex: 'result',
             title: <FormattedMessage id="ws.result.details.output.results" />,
             width: 150,
-            ...tooltipTd('Nothing to do'),
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_: any, record: any)=> {
+              return (
+                ['fail', false].includes(record.state)?
+                    <FailReasonPopover text={_} placement="leftBottom" />
+                    : <CopyTooltip text={_} defaultText="Nothing to do" />
+              )
+            },
         },
         {
             dataIndex: 'start_time',

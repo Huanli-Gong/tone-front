@@ -17,6 +17,7 @@ export default {
   'Workspace.JobConfig.JobTypeUpdate': 'Job类型编辑',
   'Workspace.JobConfig.CreateJobType': '新建Job类型',
   'Workspace.JobTypePreview': 'Job类型预览',
+  'Workspace.Dashboard': 'Dashboard',
 
   'Workspace.Baseline': '基线管理',
   'Workspace.Baseline.GroupBaseline': aligroupServer_baseline,
@@ -82,4 +83,6 @@ export default {
   'Workspace.TestPlan.View': '计划视图',
   'Workspace.TestPlan.Summary': '计划运行结果汇总',
   'Workspace.TestPlan.Detail': '计划详情',
+
+  'Workspace.Logging': '日志管理',
 };

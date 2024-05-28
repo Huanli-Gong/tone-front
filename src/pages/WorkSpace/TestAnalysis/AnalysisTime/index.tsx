@@ -93,6 +93,7 @@ const AnalysisTime: React.FC<any> = (props) => {
             show_type: ['pass_rate', 'result_trend'].includes(show_type) ? show_type : 'pass_rate',
             ...val
         })
+        setMetrics([])
         tabPaneRef.current?.reset()
     }
 

@@ -230,8 +230,8 @@ const TemplateCatalog = () => {
                         }
                         leftTitle?.classList.add('toc-selected');
                         const parentNode = leftTitle?.id.substring(5, 14)
-                        const parentTop = (document.querySelector(`#left_${parentNode}`) as any).offsetTop
-                        const parentTreeTop = (document.querySelector(`#left_tree_${parentNode}`) as any).offsetTop
+                        const parentTop = (document.querySelector(`#left_${parentNode}`) as any)?.offsetTop || 0
+                        const parentTreeTop = (document.querySelector(`#left_tree_${parentNode}`) as any)?.offsetTop || 0
                         if (leftTitle.attributes['class'].nodeValue == 'toc-selected') {
                             if (leftTitle?.id === 'left_perf_item' || leftTitle?.id === 'left_func_item') {
                                 setRoundHeight(parentTop)

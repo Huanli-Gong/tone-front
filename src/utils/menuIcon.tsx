@@ -40,7 +40,7 @@ export const WorkspaceMenuIcon = (name: any) => {
         case 'TestSuiteManage': return <WsSuite />
         case 'DevOps': return <Approval />
         case 'WorkspaceConfig': return <Ws />
-
+        case 'Logging': return <WsSuite />
         default: return <></>;
     }
 }

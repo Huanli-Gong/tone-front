@@ -17,9 +17,35 @@ import { editReport, saveReport } from '../services';
 import { history, useAccess, Access, useParams, useIntl, FormattedMessage, useLocation } from 'umi';
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { ReportContext } from './Provider';
-import _ from 'lodash';
+import lodash from 'lodash';
 import { ReportTemplate, ReportBodyContainer, ReportWarpper, ReportBread, BreadDetailL, BreadDetailR } from './ReportUI';
 import { CreatePageData, EditPageData } from './hooks';
+import SharePopover from './components/SharePopover';
+import styled from "styled-components"
+import { getShareId } from '../../TestResult/Details/service';
+
+const HoverSpan = styled.span`
+    &:hover {
+        .ant-space-item {
+            color: #1890FF;
+
+            path {
+                fill: #1890FF;
+            }
+        }
+    }
+`
+
+const ReportContainerRow = styled(Row)`
+    height: 50px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    backgroundColor: #fff;
+    paddingRight: 20;
+    boxShadow: 0 0 10px 0 rgba(0,0,0,0.06)
+`
 
 // 面包屑
 const BreadcrumbItem: React.FC<any> = ({ saveReportData, routeName, creator }) => {
@@ -29,6 +55,16 @@ const BreadcrumbItem: React.FC<any> = ({ saveReportData, routeName, creator }) =
     const { pathname } = useLocation()
     const access = useAccess();
     const handleCopyText = useCopyText(formatMessage({ id: 'report.link.copied.successfully' }))
+
+    const handleCopyOk = async (key: any) => {
+        if (key === 1) {
+            handleCopyText(location.origin + `/ws/${ws_id}/test_report/${report_id}/share`)
+        }
+        else {
+            const { data: share_id } = await getShareId({ report_id, ws_id })
+            handleCopyText(location.origin + `/share/report/${share_id}`)
+        }
+    }
 
     return (
         <Row justify={"space-between"} align="middle" style={{ height: 50 }}>
@@ -45,42 +81,54 @@ const BreadcrumbItem: React.FC<any> = ({ saveReportData, routeName, creator }) =
             {
                 !['EditReport', 'CreateReport'].includes(routeName) &&
                 <Space>
-                    <span
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => handleCopyText(location.origin + `/share/report/${report_id}`)}
+                    <SharePopover
+                        list={[
+                            {
+                                value: 1,
+                                label: formatMessage({ id: 'analysis.share_link.radio1' })
+                            },
+                            {
+                                value: 2,
+                                label: formatMessage({ id: 'analysis.share_link.radio2' })
+                            },
+                        ]}
+                        onCopy={handleCopyOk}
                     >
-                        <Space>
-                            <IconLink />
-                            <FormattedMessage id="operation.share" />
-                        </Space>
-                    </span>
+                        <HoverSpan>
+                            <Space size={4} style={{ cursor: 'pointer' }} align="center">
+                                <IconLink />
+                                <FormattedMessage id="operation.share" />
+                            </Space>
+                        </HoverSpan>
+                    </SharePopover>
+
                     {
-                        routeName !== 'ShareReport' &&
+                        !['ShareReport', 'share_report'].includes(routeName) &&
                         <Access
                             accessible={access.WsTourist() && access.WsMemberOperateSelf(creator)}
                             fallback={
                                 <span
                                     onClick={() => AccessTootip()}
                                 >
-                                    <Space align="center">
+                                    <Space size={4} align="center">
                                         <IconWarp />
                                         <FormattedMessage id="operation.edit" />
                                     </Space>
                                 </span>
                             }
                         >
-                            <span
+                            <HoverSpan
                                 style={{ cursor: 'pointer' }}
                                 onClick={() => {
                                     const editPath = pathname.lastIndexOf("/") === pathname.length - 1 ? 'edit' : '/edit'
                                     history.push(`${pathname}${pathname !== 'EditReport' ? editPath : ''}`)
                                 }}
                             >
-                                <Space align="center">
+                                <Space size={4} align="center">
                                     <IconEdit />
                                     <FormattedMessage id="operation.edit" />
                                 </Space>
-                            </span>
+                            </HoverSpan>
                         </Access>
                     }
                 </Space>
@@ -89,7 +137,6 @@ const BreadcrumbItem: React.FC<any> = ({ saveReportData, routeName, creator }) =
     )
 }
 
-
 const templDesc = ['background_desc', 'test_method_desc']
 const dataField = ['test_background', 'test_method', 'custom']
 
@@ -97,6 +144,7 @@ const Report: React.FC<AnyType> = (props) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any;
     const routeName = props.route.name
+
     const [btnState, setBtnState] = useState<boolean>(routeName === 'EditReport')
     const [btnConfirm, setBtnConfirm] = useState<boolean>(false)
     const [collapsed, setCollapsed] = useState(false)
@@ -109,7 +157,7 @@ const Report: React.FC<AnyType> = (props) => {
         }
     })
 
-    const basicData: any = ['Report', 'EditReport', 'ShareReport'].includes(routeName) ? EditPageData(props) : CreatePageData(props);
+    const basicData: any = ['Report', 'EditReport', 'ShareReport', 'share_report'].includes(routeName) ? EditPageData() : CreatePageData(props);
 
     const {
         environmentResult,
@@ -136,11 +184,10 @@ const Report: React.FC<AnyType> = (props) => {
     }, [saveReportData.name])
 
     useEffect(() => {
-        if (routeName === 'Report') {
+        if (['Report', 'share_report', 'ShareReport'].includes(routeName)) {
             setBtnState(false)
-        } else if (routeName === 'ShareReport') {
-            setBtnState(false)
-        } else {
+        }
+        else {
             setBtnState(true)
             setObj((draft: any) => {
                 draft.test_env = environmentResult
@@ -173,9 +220,9 @@ const Report: React.FC<AnyType> = (props) => {
     // job_li
     const getSelAllJob = () => {
         let result = []
-        if (_.isArray(allGroupData)) {
-            result = _.reduce(allGroupData, (arr: any, group: any) => {
-                const members = _.isArray(_.get(group, 'members')) ? _.get(group, 'members') : []
+        if (lodash.isArray(allGroupData)) {
+            result = lodash.reduce(allGroupData, (arr: any, group: any) => {
+                const members = lodash.isArray(lodash.get(group, 'members')) ? lodash.get(group, 'members') : []
                 members.forEach((obj: any) => {
                     if (obj && obj.id) arr.push(obj.id)
                 })
@@ -269,7 +316,14 @@ const Report: React.FC<AnyType> = (props) => {
                     >
                         <ReportWarpper ref={bodyRef}>
                             <Col span={24}>
-                                {!!ws_id && <BreadcrumbItem saveReportData={saveReportData} routeName={routeName} creator={creator} />}
+                                {
+                                    !['share_report', 'ShareReport'].includes(routeName) &&
+                                    <BreadcrumbItem
+                                        saveReportData={saveReportData}
+                                        routeName={routeName}
+                                        creator={creator}
+                                    />
+                                }
                                 <ReportHeader />
                                 <ReportBasicInfo />
                                 <div style={{ width: 1200 }}>
@@ -283,10 +337,9 @@ const Report: React.FC<AnyType> = (props) => {
 
                             {
                                 ['EditReport', 'CreateReport'].includes(routeName) &&
-                                <Row
+                                <ReportContainerRow
                                     align={'middle'}
                                     justify={'end'}
-                                    style={{ height: 50, position: "fixed", bottom: 0, left: 0, width: "100%", backgroundColor: "#fff", paddingRight: 20, boxShadow: '0 0 10px 0 rgba(0,0,0,0.06)' }}
                                 >
                                     <Button
                                         type="primary"
@@ -300,7 +353,7 @@ const Report: React.FC<AnyType> = (props) => {
                                                 <FormattedMessage id="operation.save" />
                                         }
                                     </Button>
-                                </Row>
+                                </ReportContainerRow>
                             }
                         </ReportWarpper>
                     </ReportBodyContainer>

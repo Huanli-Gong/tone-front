@@ -6,18 +6,21 @@ export const simplify = (child: any, idx: number, listId: number, name: string, 
     let suite_list: any = []
     child.list?.map((suite: any, suiteId: number) => {
         let conf_list: any = []
+        const { suite_id, suite_name } = suite
         suite.conf_list.map((conf: any) => {
+            const { conf_id, conf_name, metric_list } = conf
             let baseJobList = isOldReport ? [conf?.obj_id || conf.conf_source?.obj_id] : []
             let compareJobList = (conf.conf_compare_data || conf.compare_conf_list).map((i: any) => ({ job_id: i?.obj_id || '', is_baseline: i?.is_baseline }))
             conf_list.push({
-                conf_id: conf.conf_id,
-                conf_name: conf.conf_name,
+                conf_id,
+                conf_name,
+                metric_list,
                 job_list: baseJobList.concat(compareJobList)
             })
         })
         suite_list.push({
-            suite_id: suite.suite_id,
-            suite_name: suite.suite_name,
+            suite_id,
+            suite_name,
             conf_list,
             rowKey: name == 'group' ? `${idx}-${listId}-${suiteId}` : `${idx}-${suiteId}`
         })
@@ -48,7 +51,7 @@ export const deleteMethod = (dataSource: any, name: string, domain: any, rowKey:
     }
 }
 
-export const deleteSuite = (item: any, row: any) => {
+export const deleteSuite = (item: any, row: any, rowkey?: any) => {
     let ret = item.list.reduce((pre: any, suite: any) => {
         if (suite.suite_id == row.suite_id) return pre
         return pre.concat(suite)
@@ -59,7 +62,7 @@ export const deleteSuite = (item: any, row: any) => {
     }
 }
 
-export const deleteConf = (item: any, row: any) => {
+export const deleteConf = (item: any, row: any, rowkey?: any) => {
     return produce(item, (draft: any) => {
         draft.list = item.list.map(
             (suite: any) => {
@@ -75,6 +78,27 @@ export const deleteConf = (item: any, row: any) => {
                     conf_list
                 }
             })
+    })
+}
+
+export const deleteMetric = (item: any, row: any, rowkey?: any) => {
+    return produce(item, (draft: any) => {
+        draft.list = item.list.map((suite: any) => {
+            const { conf_list } = suite
+            return {
+                ...suite,
+                conf_list: conf_list.reduce((x: any, y: any) => {
+                    const { conf_id } = y
+                    if (conf_id === rowkey) {
+                        return x.concat({
+                            ...y,
+                            metric_list: y.metric_list.filter((metric: any) => metric.metric !== row.metric)
+                        })
+                    }
+                    return x.concat(y)
+                }, [])
+            }
+        })
     })
 }
 
@@ -97,29 +121,21 @@ export const handleDataArr = (dataArr: any, baseIndex: number) => {
 }
 
 export const reportDelete = (dataSource: any, name: string, row: any, rowKey: any) => {
-    if (name == 'suite') {
-        return dataSource.map((item: any) => {
-            if (item.is_group) {
-                let list = item.list.map((l: any) => deleteSuite(l, row))
-                return {
-                    ...item,
-                    list,
-                }
-            } else {
-                return deleteSuite(item, row)
+    let fn = deleteSuite
+    if (name === 'conf')
+        fn = deleteConf
+    if (name === 'metric')
+        fn = deleteMetric
+
+    return dataSource.map((item: any) => {
+        if (item.is_group) {
+            let list = item.list.map((l: any) => fn(l, row, rowKey))
+            return {
+                ...item,
+                list,
             }
-        })
-    } else {
-        return dataSource.map((item: any) => {
-            if (item.is_group) {
-                let list = item.list.map((l: any) => deleteConf(l, row))
-                return {
-                    ...item,
-                    list,
-                }
-            } else {
-                return deleteConf(item, row)
-            }
-        })
-    }
+        } else {
+            return fn(item, row, rowKey)
+        }
+    })
 }
