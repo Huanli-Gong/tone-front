@@ -55,7 +55,7 @@ export default ({ test_case_id, suite_id }: any) => {
         const renderData = (ctx.items.length ?
             <>
                 <span>{ctx.name}</span>
-                <DownloadOutlined onClick={() => handlePathClick(ctx, 'download_folder')} />
+                {BUILD_APP_ENV !== 'opensource' && <DownloadOutlined onClick={() => handlePathClick(ctx, 'download_folder')} />}
             </>
             :
             <>
