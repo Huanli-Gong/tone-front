@@ -36,7 +36,7 @@ const ReRunModal = (props: any, ref: any) => {
 
     const [okLink, setOkLink] = React.useState<string | null>(null)
 
-    const hanldeOk = () => {
+    const handelOk = () => {
         form
             .validateFields()
             .then(values => {
@@ -53,6 +53,11 @@ const ReRunModal = (props: any, ref: any) => {
                 setOkLink(`/ws/${ws_id}/test_job/${source.id}/import${search}`)
                 hanldeCancle()
             })
+            .catch(
+                (err: any) => {
+                    console.log(err)
+                }
+            )
     }
 
     const afterClose = () => {
@@ -84,7 +89,7 @@ const ReRunModal = (props: any, ref: any) => {
             title={<FormattedMessage id="ws.result.list.reRun.Modal.title" />}
             okText={<FormattedMessage id="operation.confirm" />}
             cancelText={<FormattedMessage id="operation.cancel" />}
-            onOk={hanldeOk}
+            onOk={handelOk}
             onCancel={hanldeCancle}
             maskClosable={false}
             afterClose={afterClose}
