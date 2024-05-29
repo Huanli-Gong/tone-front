@@ -195,13 +195,9 @@ const Helper: React.FC = () => {
     };
 
     React.useEffect(() => {
-        if (document) {
-            document.addEventListener('mousemove', handleMouseMove);
-        }
+        window.document.addEventListener('mousemove', handleMouseMove);
         return () => {
-            if (document) {
-                document.removeEventListener('mousemove', handleMouseMove);
-            }
+            window.document.removeEventListener('mousemove', handleMouseMove);
         };
     }, [start]);
 

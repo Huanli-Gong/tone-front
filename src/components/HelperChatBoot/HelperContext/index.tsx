@@ -9,7 +9,8 @@ import Feedback from './Feedback';
 import { getBootSetting } from '@/pages/SystemConf/Question/Knowledge/services';
 import { useRequest } from 'umi';
 import { useHelperBootContext } from '../Provider';
-import { CHART_DEFAULT_BOTTOM_PX } from '..';
+
+export const CHART_DEFAULT_BOTTOM_PX = `76px`;
 
 const Container = styled.div.attrs((props: any) => ({
     style: {
