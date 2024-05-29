@@ -559,9 +559,11 @@ export default (props: any) => {
                     <Typography.Link onClick={() => viewDetailRef.current.show(row, $instance)}>
                         <FormattedMessage id="operation.detail" />
                     </Typography.Link>
-                    <Typography.Link onClick={() => copyDeviceRef.current.show(row, $instance) }>
-                        <FormattedMessage id="operation.copy" />
-                    </Typography.Link>
+                    {!$instance &&
+                        <Typography.Link onClick={() => copyDeviceRef.current.show(row)}>
+                            <FormattedMessage id="operation.copy" />
+                        </Typography.Link>
+                    }
                     <Access
                         accessible={access.WsMemberOperateSelf(row.owner)}
                         fallback={
@@ -692,7 +694,7 @@ export default (props: any) => {
             />
             <DeployModal ref={deployModal} />
             <CloudDetail ref={viewDetailRef} />
-            <CopyDevice ref={copyDeviceRef} onOk={()=> setParams({ ...params, page_num: 1 })} instance={$instance} />
+            <CopyDevice ref={copyDeviceRef} onOk={()=> setParams({ ...params, page_num: 1 })} />
 
             <Modal
                 title={<div><FormattedMessage id={!$instance ? 'device.tips' : 'delete.tips'} /></div>}

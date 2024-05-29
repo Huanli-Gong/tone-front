@@ -17,7 +17,7 @@ export async function addCloud(params: any = {}) {
 
 //copy
 export async function copyDevice(params: any = {}) {
-    return request('/', {
+    return request('/api/server/cloud_server/copy/', {
         method: 'POST',
         data: { ...params }
     });

@@ -5,9 +5,8 @@ import { randomStrings, requestCodeMessage } from '@/utils/utils'
 import { copyDevice } from '../service'
 
 export default forwardRef(
-    ({ onOk, instance }: any, ref: any) => {
+    ({ onOk }: any, ref: any) => {
         const { formatMessage } = useIntl()
-        
         const [visible, setVisible] = useState(false)
         const [padding, setPadding] = useState(false)
         const [data, setData] = useState<any>({})
@@ -17,11 +16,11 @@ export default forwardRef(
             ref,
             () => ({
                 show: ( _: any = {}) => {
-                  const copyName = `${_.name}-copy-${randomStrings()}`
-                  form.setFieldsValue({ name: copyName, id: _.id, description: _.description })
-                  //
                   setVisible(true)
                   setData(_)
+                  // 数据回填
+                  const copyName = `${_.name}-copy-${randomStrings()}`
+                  form.setFieldsValue({ server_name: copyName, server_id: _.id, })
                 }
             }),
         )
@@ -35,16 +34,14 @@ export default forwardRef(
           form
               .validateFields()
               .then(async (values: any) => {
-                  // console.log(values)
                   setPadding(true)
-                  // const { msg, code } = await copyDevice({ ...values  })
-                  // if (code === 200) {
-                  //   onOk()
-                  //   handleClose()
-                  //   message.success(formatMessage({ id: 'operation.success' }))
-                  // }
-                  // else requestCodeMessage(code, msg)
-
+                  const { msg, code } = await copyDevice(values)
+                  if (code === 200) {
+                    onOk()
+                    handleClose()
+                    message.success(formatMessage({ id: 'operation.success' }))
+                  }
+                  else requestCodeMessage(code, msg)
                   setPadding(false)
               })
               .catch((err) => {
@@ -63,7 +60,7 @@ export default forwardRef(
                 onClose={handleClose}
                 bodyStyle={{ paddingTop: 12 }}
                 footer={
-                    <div style={{ textAlign: 'right', }} >
+                    <div style={{ textAlign: 'right' }}>
                         <Space>
                             <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
                             <Button type="primary" disabled={padding} onClick={handleOk}>
@@ -74,9 +71,9 @@ export default forwardRef(
                 }
             >
 
-                <Space style={{ paddingBottom: 12 }}>
+                <Space style={{ paddingBottom: 12, wordBreak: 'break-word' }}>
                     <div style={{ color: 'rgba(0,0,0,.8)', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                      {!instance ? <FormattedMessage id="device.config.name.original" />: <FormattedMessage id="device.instance.name.original" />}
+                      <FormattedMessage id="device.config.name.original" />
                     </div>
                     <div style={{ color: ' rgba(0,0,0,0.65)' }}>{data.name}</div>
                 </Space>
@@ -85,10 +82,10 @@ export default forwardRef(
                     layout="vertical"
                     form={form}
                 >
-                  <Form.Item name="id" noStyle />
+                  <Form.Item name="server_id" noStyle />
                   <Form.Item
-                      label={!instance ? <FormattedMessage id="device.config.name.new" />: <FormattedMessage id="device.instance.name.new" />}
-                      name="name"
+                      label={<FormattedMessage id="device.config.name.new" />}
+                      name="server_name"
                       rules={[{
                           required: true,
                           message: formatMessage({ id: 'please.enter' }),
@@ -96,11 +93,6 @@ export default forwardRef(
                       }]}
                   >
                       <Input autoComplete="off" placeholder={formatMessage({ id: 'please.enter' })} />
-                  </Form.Item>
-                  <Form.Item
-                      label={<FormattedMessage id="agent.modal.Description" />}
-                      name="description">
-                      <Input.TextArea rows={3} />
                   </Form.Item>
 
                 </Form>
