@@ -143,4 +143,5 @@ export default {
   'menu.Workspace.TestAnalysis.ResultAnalysis': '结果分析',
 
   'menu.Workspace.DevOps': 'ws系统配置',
+  'menu.Workspace.Logging': '日志管理',
 };

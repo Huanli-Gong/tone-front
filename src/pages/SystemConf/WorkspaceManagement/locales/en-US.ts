@@ -11,7 +11,7 @@ export default {
   'workspace.number': 'Number of Member',
   'workspace.is_public': 'Permission', // Public
   'workspace.home.recommended': 'Home Page Recommendation',
-  'workspace.recommended1': 'It will be displayed on the home page in the Recommended Worksapce module if choose "Yes" ',
+  'workspace.recommended1': 'It will be displayed on the home page in the Recommended Workspace module if choose "Yes" ',
   'workspace.recommended2': 'Drag up and down to adjust the display order. The home page displays the table in the same order',
   'workspace.configure.up.recommended': 'A max of {numb} recommended workspaces can be configured',
 

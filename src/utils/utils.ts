@@ -483,7 +483,7 @@ export const requestCodeMessage = (code: number, msg: string) => {
 //
 
 export const role_type_enum = [
-  { key: 'ws_member', name: 'worksapce成员' },
+  { key: 'ws_member', name: 'workspace成员' },
   { key: 'ws_tester', name: '测试人员' },
   { key: 'ws_test_admin', name: '测试管理员' },
   { key: 'sys_admin', name: '系统管理员' },
@@ -641,4 +641,19 @@ export const useStateRef = (state: any) => {
     return () => { }
   }, [state])
   return stateRef
+}
+
+export const getPageNumOnDel = (
+  params: {
+    page_num: number;
+    page_size: number;
+  },
+  data: {
+    total: number;
+  },
+  list: number = 1
+): number => {
+  const $page_num = Math.ceil((data?.total - list) / params.page_size) || 1
+
+  return $page_num < params.page_num ? $page_num : params.page_num
 }

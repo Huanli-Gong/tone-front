@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Breadcrumb, Typography, Row, Tag, Button, Spin } from 'antd'
+import { Breadcrumb, Typography, Row, Tag, Button, Spin, Popover } from 'antd'
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components'
 import { FormattedMessage, history } from 'umi'
 import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
@@ -88,7 +89,7 @@ const ViewDetail = (props: any) => {
     }, [plan_id])
 
     const TagInfo = ({ data }: any) => {
-        const { state, start_time, end_time } = data
+        const { state, start_time, end_time, error_info } = data
         const rowStyle = { display: 'flex', alignItems: 'center' }
         const normalStyle = { background: '#F2F4F6', border: '1px solid #F2F4F6' }
         return (
@@ -100,7 +101,16 @@ const ViewDetail = (props: any) => {
                     <Tag color='#649FF6' style={{ fontWeight: 500, textAlign: 'center' }}>Running</Tag>
                 )}
                 {state === 'fail' && (
-                    <Tag color='#C84C5A' style={{ fontWeight: 500, textAlign: 'center' }}>Fail</Tag>
+                    <div style={{ marginRight: 10 }}>
+                      <Tag color='#C84C5A' style={{ fontWeight: 500, textAlign: 'center' }}>Fail</Tag>
+                      <Popover
+                        placement="topLeft"
+                        content={error_info}
+                        arrowPointAtCenter
+                        >
+                            <QuestionCircleOutlined style={{ marginLeft: -5 }}/>
+                        </Popover>
+                    </div>
                 )}
                 {state === 'success' && (
                     <Tag color='#81BF84' style={{ fontWeight: 500, textAlign: 'center' }}>Complete</Tag>

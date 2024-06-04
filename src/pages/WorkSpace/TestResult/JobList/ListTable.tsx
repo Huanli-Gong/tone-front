@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from "react"
-import { Row, Col, Space, Typography, Popconfirm, message } from "antd"
+import { Row, Col, Space, Typography, Popconfirm, message, Tag } from "antd"
 import { useAccess, Access, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import { requestCodeMessage, targetJump, AccessTootip, matchTestType } from '@/utils/utils'
 import { StarOutlined, StarFilled } from '@ant-design/icons'
 import { JobListStateTag } from '../Details/components'
 import { QusetionIconTootip } from '@/components/Product';
+import OverflowList from '@/components/TagOverflow/index'
 import lodash from 'lodash'
 import CommonPagination from '@/components/CommonPagination';
 import DelBar from "./DelBar"
@@ -51,7 +52,7 @@ const ListTable: React.FC<IProps> = (props) => {
     const { initialColumns } = useProvider()
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
-    const { pageQuery, setPageQuery, radioValue = 1, setRadioValue, countRefresh, dataSource, setDataSource, listRefresh, loading } = props
+    const { pageQuery, setPageQuery, radioValue = 1, setRadioValue, countRefresh, dataSource, setDataSource, listRefresh, loading, callback } = props
     const { ws_id } = useParams() as any
     const access = useAccess()
     const [selectedRowKeys, setSelectedRowKeys] = React.useState<any[]>([])
@@ -72,13 +73,18 @@ const ListTable: React.FC<IProps> = (props) => {
         }
     }, [pageQuery.tab])
 
-    /* 重置 */
+    /** 重置 */
     React.useEffect(() => {
         return () => {
             setPageQuery((p: any) => ({ ...p, ...DEFAULT_PAGE_QUERY, ws_id }))
             setSortOrder({})
         }
     }, [setPageQuery, ws_id])
+
+    /** 重置对比栏及选中行 */
+    React.useEffect(() => {
+        if (ws_id) handleResetSelectedKeys()
+    }, [ws_id])
 
     const handleClickStar = async ({ collection, id }: any) => {
         const { msg, code } = !collection ?
@@ -182,6 +188,22 @@ const ListTable: React.FC<IProps> = (props) => {
             render: (_: any, row: any) => <JobListStateTag {...row} />
         },
         {
+            title: <FormattedMessage id="ws.result.list.tag_list" />,
+            dataIndex: 'tag_list',
+            width: 188,
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_: any, record: any) =>
+                <OverflowList
+                    list={
+                        record?.tag_list?.map((item: any) => {
+                            return <Tag color={item.tag_color} key={item.name}>{item.name}</Tag>
+                        }) || []
+                    }
+                />
+        },
+        {
             title: <FormattedMessage id="ws.result.list.test_type" />,
             width: locale ? 140 : 80,
             dataIndex: 'test_type',
@@ -208,8 +230,13 @@ const ListTable: React.FC<IProps> = (props) => {
             ),
             dataIndex: 'test_result',
             width: 140,
-            render: (_: any) => {
-                const result = JSON.parse(_)
+            render: (_: any, record: any) => {
+                let result = {}
+                try {
+                    result = JSON.parse(_)
+                } catch {
+                   console.log('JSON格式不对')
+                }
                 if (lodash.isNull(result)) {
                     return (
                         <Row>
@@ -221,9 +248,9 @@ const ListTable: React.FC<IProps> = (props) => {
                 } else {
                     return (
                         <Row>
-                            <Col span={8} style={{ color: "#1890FF" }} >{result.total}</Col>
-                            <Col span={8} style={{ color: "#52C41A" }} >{result.pass}</Col>
-                            <Col span={8} style={{ color: "#FF4D4F" }} >{result.fail}</Col>
+                            <Col span={8} style={{ color: "#1890FF" }} >{result.total || '-'}</Col>
+                            <Col span={8} style={{ color: "#52C41A" }} >{result.pass || '-'}</Col>
+                            <Col span={8} style={{ color: "#FF4D4F" }} >{result.fail || '-'}</Col>
                         </Row>
                     )
                 }
@@ -450,6 +477,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 return col
         }
     })
+    
 
     return (
         <Row style={basePadding}>
@@ -501,6 +529,10 @@ const ListTable: React.FC<IProps> = (props) => {
                         selectedChange={selectedChange}
                         allSelectedRowKeys={selectedRowKeys}
                         allSelectRowData={selectRowData}
+                        callback={()=> {
+                            handleResetSelectedKeys()
+                            callback()
+                        }}
                     />
                 </SelectionRow>
             }

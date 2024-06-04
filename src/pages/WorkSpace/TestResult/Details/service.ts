@@ -85,6 +85,10 @@ export const updateSuiteCaseOption = async (data: any) => {
 export const queryProcessPrepareList = async (params: any) => {
     return request(`/api/job/test/process/test_prepare/`, { params })
 }
+// 机器准备或conf状态是fail的情况下，鼠标光标放在错误信息查询
+export const queryFailReason = async (params: any) => {
+    return request(`/api/sys/chats/query/`, { params })
+}
 export const queryBuildList = async (params: any) => {
     return request(`/api/job/test/process/build/`, { params })
 }

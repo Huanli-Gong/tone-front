@@ -14,6 +14,7 @@ const text: any = {
   'test_type': 'Test Type',
   'project_id': 'Project',
   'test_conf': 'Test Conf',
+  'tag_list': 'Tag',
 
   'please.placeholder.job_id': 'Enter Job ID',
   'please.placeholder.name': 'Enter Job Name',
@@ -65,6 +66,7 @@ const text: any = {
   'top.ranked': 'If there are duplicates, the Job with the highest order takes precedence.',
   'create.report': 'Generate Report',
   'compare.analysis': 'Compare And Analysis',
+  'batch.add.tag.jobs': 'Batch Edit Tag To Jobs',
   'report.name': 'Report Name',
   'report.name.placeholder': 'Search by report name is supported.',
   'gmt_created': 'Save Time',

@@ -6,6 +6,7 @@ import { ReactComponent as Master } from '@/assets/svg/system/icon_sys_master.sv
 import { ReactComponent as Suite } from '@/assets/svg/system/icon_sys_suite.svg'
 import { ReactComponent as User } from '@/assets/svg/system/icon_sys_user.svg'
 import { ReactComponent as Ws } from '@/assets/svg/system/icon_sys_ws.svg'
+import { ReactComponent as Question } from '@/assets/boot/boot_menu.svg'
 
 import { ReactComponent as Baseline } from '@/assets/svg/ws/icon_ws_baseline.svg'
 import { ReactComponent as Device } from '@/assets/svg/ws/icon_ws_ip.svg'
@@ -14,7 +15,7 @@ import { ReactComponent as Operation } from '@/assets/svg/ws/icon_ws_operation.s
 import { ReactComponent as Product } from '@/assets/svg/ws/icon_ws_product.svg'
 import { ReactComponent as WsSuite } from '@/assets/svg/ws/icon_ws_suite.svg'
 
-export const SystemMenuIcon = ( name : any ) => {
+export const SystemMenuIcon = (name: any) => {
     switch (name) {
         case 'joinApprove': return <Approval />
         case 'BasicSetting': return <Basis />
@@ -23,12 +24,13 @@ export const SystemMenuIcon = ( name : any ) => {
         case 'suiteManagement': return <Suite />
         case 'userManagement': return <User />
         case 'workspaceManagement': return <Ws />
-    
+        case 'question': return <Question />
+
         default: return <></>;
     }
 }
 
-export const WorkspaceMenuIcon = ( name : any ) => {
+export const WorkspaceMenuIcon = (name: any) => {
     switch (name) {
         case 'baseline': return <Baseline />
         case 'DeviceManage': return <Device />
@@ -36,9 +38,9 @@ export const WorkspaceMenuIcon = ( name : any ) => {
         case 'TestParmSetting': return <Operation />
         case 'Product': return <Product />
         case 'TestSuiteManage': return <WsSuite />
-        case 'DevOps' : return <Approval />
+        case 'DevOps': return <Approval />
         case 'WorkspaceConfig': return <Ws />
-        
+        case 'Logging': return <WsSuite />
         default: return <></>;
     }
 }

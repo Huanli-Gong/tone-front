@@ -14,6 +14,7 @@ const text: any = {
   'project_id': '所属项目',
   'product_version': '产品版本',
   'test_conf': 'Test Conf',
+  'tag_list': '标签',
 
   'id': "ID",
   'test_type': '测试类型',
@@ -63,6 +64,7 @@ const text: any = {
   'top.ranked': '如果有重复的，排序靠前的Job优先。',
   'create.report': '生成报告',
   'compare.analysis': '对比分析',
+  'batch.add.tag.jobs': '批量编辑标签',
   'report.name': '报告名称',
   'report.name.placeholder': '支持搜索报告名称',
   'gmt_created': '保存时间',

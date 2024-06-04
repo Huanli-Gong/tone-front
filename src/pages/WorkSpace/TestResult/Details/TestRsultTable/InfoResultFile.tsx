@@ -19,12 +19,12 @@ export default ({ test_case_id, suite_id }: any) => {
     const { id: job_id, share_id } = useParams() as any
 
     const handlePathClick = async (ctx: any, state: string) => {
-        const params: any = {
+        let params: any = {
             path: ctx.path,
             job_id, share_id
         }
-
-        if (state == 'download') {
+        
+        if (state === 'download') {
             params.download = '1'
         }
 
@@ -37,28 +37,35 @@ export default ({ test_case_id, suite_id }: any) => {
             params.signature = signature
         }
 
-        if (state == 'download') params.download = '1';
-
-        const data = await request(`/api/get/oss/url/`, { params })
-
-        if (data) {
-            if (data.code === 200 && data.msg === 'ok') window.open(data.data)
-            else message.warn(`${state === 'download' ? formatMessage({ id: 'ws.result.details.failed.download.file' }) : formatMessage({ id: 'ws.result.details.failed.get.file' })}`)
+        if (state === 'download_folder') {
+            params.download = '1';
+            params.is_folder = '1'
+            const downloadUrl = location.origin + `/api/get/oss/url/?` + Object.keys(params).filter((item)=> params[item]).map((key)=> `${key}=${params[key]}`).join('&')
+            window.open(downloadUrl)
+        } else {
+            const data = await request(`/api/get/oss/url/`, { params })
+            if (data) {
+                if (data.code === 200 && data.msg === 'ok') window.open(data.data)
+                else message.warn(`${['download', 'download_folder'].includes(state) ? formatMessage({ id: 'ws.result.details.failed.download.file' }): formatMessage({ id: 'ws.result.details.failed.get.file' })}`)
+            }
         }
     }
 
     const RenderItem = (ctx: any) => {
+        const renderData = (ctx.items.length ?
+            <>
+                <span>{ctx.name}</span>
+                <DownloadOutlined onClick={() => handlePathClick(ctx, 'download_folder')} />
+            </>
+            :
+            <>
+                <span onClick={() => handlePathClick(ctx, 'look')}>{ctx.name}</span>
+                <DownloadOutlined onClick={() => handlePathClick(ctx, 'download')} />
+            </>
+        )
         return (
             <Space>
-                {
-                    share_id ?
-                        <span>{ctx.name}</span> :
-                        <span onClick={() => handlePathClick(ctx, 'look')}>{ctx.name}</span>
-                }
-                {
-                    (!share_id && !ctx.items.length) &&
-                    <DownloadOutlined onClick={() => handlePathClick(ctx, 'download')} />
-                }
+                {share_id? <span>{ctx.name}</span>: renderData}
             </Space>
         )
     }

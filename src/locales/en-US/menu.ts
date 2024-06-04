@@ -145,4 +145,5 @@ export default {
   'menu.Workspace.TestAnalysis.ResultAnalysis': 'Result Analysis',
 
   'menu.Workspace.DevOps': 'ws Config',
+  'menu.Workspace.Logging': 'Logging',
 };

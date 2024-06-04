@@ -79,4 +79,6 @@ export default {
   'Workspace.TestPlan.View': 'Plan View',
   'Workspace.TestPlan.Summary': 'Results Summary',
   'Workspace.TestPlan.Detail': 'Plan Detail',
+
+  'Workspace.Logging': 'Logging',
 };
