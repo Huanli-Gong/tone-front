@@ -86,11 +86,16 @@ export default forwardRef(
                   <Form.Item
                       label={<FormattedMessage id="device.config.name.new" />}
                       name="server_name"
-                      rules={[{
+                      rules={[
+                        {
                           required: true,
                           message: formatMessage({ id: 'please.enter' }),
-                          pattern: /^[A-Za-z0-9\._-]{1,64}$/g
-                      }]}
+                        },
+                        {
+                            pattern: /^[A-Za-z0-9\._-]{1,64}$/g,
+                            message: formatMessage({ id: 'please.enter.message64' }),
+                        },
+                    ]}
                   >
                       <Input autoComplete="off" placeholder={formatMessage({ id: 'please.enter' })} />
                   </Form.Item>
