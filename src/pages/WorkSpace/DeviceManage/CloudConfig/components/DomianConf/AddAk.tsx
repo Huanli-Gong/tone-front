@@ -75,6 +75,8 @@ export default forwardRef(
                 .then(async (values) => {
                     const valuesCopy = _.cloneDeep(values)
                     valuesCopy.enable = valuesCopy.enable ? 'True' : 'False'
+                    valuesCopy.name = valuesCopy.name?.trim()
+
                     if (title === 'new') {
                         const { code, msg } = await createCloudAk({ ...valuesCopy, ws_id })
                         defaultOption(code, msg)

@@ -228,7 +228,7 @@ const CustomStateTag: React.FC = (props: any) => {
         <RenderStateTag
             {...props}
             color={getStateColor(state)}
-            style={!stateColorMap.get(state) && { color: "#1d1d1d" }}
+            style={!stateColorMap.get(state) ? { color: "#1d1d1d" } : undefined}
         >
             {state === 'success' ? 'complete' : state}
         </RenderStateTag>
@@ -241,7 +241,7 @@ const CustomTooltipStateTag: React.FC<any> = (props) => {
         <TooltipStateTag
             {...props}
             color={getStateColor(state)}
-            style={!stateColorMap.get(state) && { color: "#1d1d1d" }}
+            style={!stateColorMap.get(state) ? { color: "#1d1d1d" } : undefined}
         >
             {state === 'success' ? 'complete' : state}
         </TooltipStateTag>
