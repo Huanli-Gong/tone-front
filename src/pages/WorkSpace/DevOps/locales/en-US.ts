@@ -18,4 +18,6 @@ export default {
   'devOps.pending_job_num': 'Job warning mechanism',
   'devOps.pedding_job_num.desc': 'Issue an alert when the number of pending items exceeds ',
   'devOps.pedding_job_num.desc_1': ' ',
+
+  'show.only.cases.the.current.ws': 'Show only the visible use cases of the current ws',
 }

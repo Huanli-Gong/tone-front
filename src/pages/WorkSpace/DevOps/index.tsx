@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
-import { message, Spin } from 'antd'
+import { message, Spin, Radio } from 'antd'
 import { FormattedMessage, useParams } from 'umi'
 
 import { queryDevOpsConfig, updateDevOpsConfig } from './service'
@@ -9,6 +9,7 @@ import { OperationTabCard } from '@/components/UpgradeUI'
 import ResultStatusType from './components/ResultStatusType'
 import MatrixBranch from './components/Matrix'
 import JobPeddingCount from './components/PendingJobNum'
+import ConfigRow from "./components/ConfigRow"
 
 import { DevOps } from './Provider'
 import AutomaticRecovery from './components/AutomaticRecovery'
@@ -63,6 +64,22 @@ const DevOpsPage: React.FC<AnyType> = (props) => {
                             <JobPeddingCount field='pending_job_num' />
                         </>
                     }
+
+                    <ConfigRow
+                        title={<FormattedMessage id="show.only.cases.the.current.ws" />}
+                    >
+                        <Radio.Group
+                            onChange={({ target }) => update({ suite_visible: target.value })}
+                            value={dataSource.suite_visible || '0'}
+                            options={[{
+                                value: '1',
+                                label: <FormattedMessage id="operation.yes" />
+                            }, {
+                                value: '0',
+                                label: <FormattedMessage id="operation.no" />
+                            }]}
+                        />
+                    </ConfigRow>
                 </OperationTabCard>
             </Spin>
         </DevOps.Provider>

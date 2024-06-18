@@ -18,4 +18,6 @@ export default {
   'devOps.pending_job_num': 'Job预警机制',
   'devOps.pedding_job_num.desc': 'Pending数量超过',
   'devOps.pedding_job_num.desc_1': '条时发出预警',
+
+  'show.only.cases.the.current.ws': '仅展示当前ws可见用例',
 }

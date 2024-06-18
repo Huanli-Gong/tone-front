@@ -5,7 +5,7 @@ import { FormattedMessage } from 'umi'
 import { queryProductList } from './service';
 import styles from './style.less';
 
-const FilterRadio: React.FC<any> = ({ confirm, onConfirm, page_size, ws_id }) => {
+const FilterRadio: React.FC<any> = ({ confirm, onConfirm, ws_id }) => {
 	const [project, setProject] = useState<any>([])
 	const [val, setVal] = useState<any>()
 	const [fetching, setFetching] = useState<boolean>(true)
@@ -14,7 +14,7 @@ const FilterRadio: React.FC<any> = ({ confirm, onConfirm, page_size, ws_id }) =>
 
 	const handleSearch = async () => {
 		setFetching(true)
-		const { data } = await queryProductList({ page_size: page_size || 10, page_num: 1, ws_id })
+		const { data } = await queryProductList({ ws_id })
 		let dataCopy = Array.isArray(data) ? data : []
 		dataCopy = dataCopy.filter($val => $val)
 		setProject(dataCopy)
