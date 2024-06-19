@@ -144,7 +144,7 @@ const NewMachine: React.FC<any> = (props) => {
 
     const loadAkData = async (selectedOptions: any) => {
         const targetOption = selectedOptions[selectedOptions.length - 1];
-        const { code, data, msg } = await querysAK({ ws_id, provider: targetOption.value })
+        const { code, data, msg } = await querysAK({ ws_id, provider: targetOption.value, enable: 'True' })
         if (code === 200) {
             targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });
             setOptions([...options])
