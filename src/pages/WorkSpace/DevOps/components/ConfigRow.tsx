@@ -30,7 +30,7 @@ type IProps = {
 }
 
 const ConfigRow: React.FC<IProps> = (props) => {
-    const { title } = props
+    const { title, ...other } = props
 
     return (
         <RowWrapper gutter={20} >
@@ -39,7 +39,7 @@ const ConfigRow: React.FC<IProps> = (props) => {
             </ColTitle>
             <Col>
                 {
-                    React.createElement('div', props)
+                    React.createElement('div', other)
                 }
             </Col>
         </RowWrapper>
