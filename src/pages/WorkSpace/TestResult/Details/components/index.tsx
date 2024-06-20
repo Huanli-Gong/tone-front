@@ -190,7 +190,7 @@ const StateTagCls = styled(Tag) <{ no_margin?: boolean }>`
 const RenderStateTag: React.FC<any> = (props) => {
     return (
         <StateTagCls
-            {...props}
+            {...{...props, collection: undefined }}
         />
     )
 }
