@@ -20,4 +20,5 @@ export default {
   'devOps.pedding_job_num.desc_1': '条时发出预警',
 
   'show.only.cases.the.current.ws': '仅展示当前ws可见用例',
+  'show.only.cases.the.current.ws.tips': '对workspace内添加suite列表进行过滤。选择“是”，则只展示面向当前workspace的suite以供选择添加'
 }
