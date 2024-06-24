@@ -708,7 +708,7 @@ const TestJob: React.FC<any> = (props) => {
     }
 
     const handleChangeTemplateName = ({ target }: any) => {
-        requestTemplateRun({ job_type_id: detail.id, name: target.value })
+        requestTemplateRun({ ws_id, job_type_id: detail.id, name: target.value })
     }
 
     const handleTemplateEditFunction = async (data: any) => {
