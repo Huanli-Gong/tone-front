@@ -328,9 +328,11 @@ export default (props: any) => {
                         <Button type="primary" onClick={_.partial(handleNext, 'test_analysis/compare')}>
                             <FormattedMessage id="ws.result.list.compare.analysis" />
                         </Button>
-                        <Button onClick={() => batchTagRef.current.show({ data: allSelectedRowKeys }) }>
-                            <FormattedMessage id="ws.result.list.batch.add.tag.jobs" />
-                        </Button>
+                        <Access accessible={access.loginBtn()}>
+                            <Button onClick={() => batchTagRef.current.show({ data: allSelectedRowKeys }) }>
+                                <FormattedMessage id="ws.result.list.batch.add.tag.jobs" />
+                            </Button>
+                        </Access>
                     </Space>
                 </div>
                 <SaveReport ref={saveReportDraw} onOk={creatReportCallback} allGroup={[getBaselineGroup()]} />

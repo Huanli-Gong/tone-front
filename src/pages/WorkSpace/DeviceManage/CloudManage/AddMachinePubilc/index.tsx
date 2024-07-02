@@ -144,14 +144,22 @@ const NewMachine: React.FC<any> = (props) => {
 
     const loadAkData = async (selectedOptions: any) => {
         const targetOption = selectedOptions[selectedOptions.length - 1];
-        const { code, data, msg } = await querysAK({ ws_id, provider: targetOption.value })
+        const { code, data=[], msg } = await querysAK({ ws_id, provider: targetOption.value })
         if (code === 200) {
-            targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });
-            setOptions([...options])
+            // targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });
+            // setOptions([...options])
+            const tempData = options.map((item)=>
+                item.value === targetOption.value ?
+                    ({ ...item, children: data.map((item: any) => ({ label: item.name, value: item.id })), })
+                : item
+            )
+            setOptions(tempData)
         } else {
             setTimeout(() => {
-                targetOption.children = []
-                setOptions([...options])
+                // targetOption.children = []
+                // setOptions([...options])
+                const tempData = options.map((item)=> item.value === targetOption.value ? ({ ...item, children: [] }) : item )
+                setOptions(tempData)
             }, 500);
             setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) })
             form.setFieldsValue({ manufacturer: undefined })
@@ -534,6 +542,18 @@ const NewMachine: React.FC<any> = (props) => {
         setVisible(false)
         setBtnLoading(false)
         form.resetFields()
+        setOptions([
+            {
+                value: 'aliyun_eci',
+                label: 'aliyun_eci',
+                isLeaf: false,
+            },
+            {
+                value: 'aliyun_ecs',
+                label: 'aliyun_ecs',
+                isLeaf: false,
+            },
+        ])
     }
 
     const disabledState = useMemo(() => {

@@ -1,11 +1,10 @@
 import React from 'react'
 import { Popover, Button } from 'antd'
-import { useIntl, FormattedMessage } from 'umi'
+import { FormattedMessage, getLocale  } from 'umi'
 import styles from '../index.less'
 import { LogOffContent } from './'
 
 const Logoff: React.FC = () => {
-    const { formatMessage } = useIntl()
     const [visible, setVisible] = React.useState(false)
 
     return (
@@ -24,7 +23,7 @@ const Logoff: React.FC = () => {
             title={<FormattedMessage id="ws.config.tips" />}
         >
             <Button onClick={() => setVisible(true)}>
-                <FormattedMessage id="operation.log.off" />
+                <span style={getLocale() === 'en-US' ? {letterSpacing: 'unset'}: undefined}><FormattedMessage id="operation.log.off" /></span>
             </Button>
         </Popover>
     )
