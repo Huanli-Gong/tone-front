@@ -12,9 +12,8 @@ export const transQuery = (obj: any) => {
 
         if ($type === '[object Array]') {
             pre[name] = JSON.stringify(val.map((i: any) => {
-                if (i.value) 
-                    return i.value
-                return i
+                if (['test_suite'].includes(name)) return i.label || i
+                return i.value || i
             }));
             return pre;
         }

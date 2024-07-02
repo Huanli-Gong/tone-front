@@ -86,8 +86,13 @@ const App = forwardRef((props: any, ref: any) => {
   
 
   return (
-    <Modal title={<FormattedMessage id="ws.result.list.batch.add.tag.jobs" />}
-      open={visible} 
+    <Modal title={
+      <div>
+        <FormattedMessage id="ws.result.list.batch.add.tag.jobs" />
+        <span style={{ fontSize: '12px' }}><FormattedMessage id="ws.result.list.only.add.system.tag" /></span>
+      </div>  
+      }
+      open={visible}
       maskClosable={false}
       // onOk={handleOk} 
       onCancel={()=> { !disable && handleCancel() }}

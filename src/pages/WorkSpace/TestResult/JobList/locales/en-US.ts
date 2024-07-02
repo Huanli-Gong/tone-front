@@ -67,6 +67,7 @@ const text: any = {
   'create.report': 'Generate Report',
   'compare.analysis': 'Compare And Analysis',
   'batch.add.tag.jobs': 'Batch Edit Tag To Jobs',
+  'only.add.system.tag': ' (Currently, only system tags are supported)',
   'report.name': 'Report Name',
   'report.name.placeholder': 'Search by report name is supported.',
   'gmt_created': 'Save Time',

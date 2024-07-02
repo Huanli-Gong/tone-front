@@ -144,8 +144,10 @@ const FilterForm: React.FC<IProps> = (props) => {
                 if (["project_id", "job_type_id"].includes(name)) {
                     return { name, value: + vals[name] }
                 }
-
-                if (["creators", "test_suite", "tags"].includes(name)) {
+                if (["test_suite"].includes(name)) {
+                    return { name, value: JSON.parse(vals[name]) }
+                }
+                if (["creators", "tags"].includes(name)) {
                     return { name, value: JSON.parse(vals[name]).map((i: any) => +i) }
                 }
 
