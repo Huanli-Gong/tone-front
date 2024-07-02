@@ -115,11 +115,16 @@ export default forwardRef(
                         }
                         name="name"
                         // help={msg}
-                        rules={[{
-                            required: true,
-                            message: formatMessage({ id: 'job.templates.template.name.message' }),
-                            pattern: /^[A-Za-z0-9\._-]{1,64}$/g
-                        }]}
+                        rules={[
+                            {
+                                required: true,
+                                message: formatMessage({ id: 'job.templates.template.name.message' }),
+                            },
+                            {
+                                pattern: /^[A-Za-z0-9\._-]{1,64}$/g,
+                                message: formatMessage({ id: 'please.enter.message64' }),
+                            }
+                        ]}
                     >
                         <Input autoComplete="off" placeholder={formatMessage({ id: 'job.templates.template.name.message' })} />
                     </Form.Item>

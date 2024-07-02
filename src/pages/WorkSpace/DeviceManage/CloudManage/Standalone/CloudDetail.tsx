@@ -5,9 +5,6 @@ import styles from './style.less'
 import DeployModal from '@/pages/WorkSpace/DeviceManage/GroupManage/Standalone/Components/DeployModal';
 import { dataSetMethod } from '../DataSetPulic';
 import { queryChannelState } from '../../GroupManage/services'
-// import { StateBadge } from './index'
-
-// import DeployServer from './DeployServer'
 
 const ViewDetailDrawer = forwardRef(
     (props, ref) => {
