@@ -1,5 +1,5 @@
 import { request } from 'umi';
 
 export const queryProductList = async ( params : any ) => {
-    return request(`/api/get/product/version/`, { params })
+    return request(`/api/report/test/report/product/version/`, { params })
 }

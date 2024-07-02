@@ -32,10 +32,11 @@ export default (props: any) => {
         page_size: 10,
     })
 
-    const init = async () => {
+    const init = async (params?: any) => {
         setLoading(true)
         const data = await queryWorkspaceMember({
-            ...pagenat,
+            ...pagenat, 
+            ...params,
             ws_id,
             role,
             keyword
@@ -46,7 +47,11 @@ export default (props: any) => {
 
     useEffect(() => {
         init()
-    }, [pagenat, keyword, refresh])
+    }, [pagenat, refresh])
+
+    useEffect(() => {
+        init({ page_num: 1 })
+    }, [keyword])
 
     const columns: any = [
         {
