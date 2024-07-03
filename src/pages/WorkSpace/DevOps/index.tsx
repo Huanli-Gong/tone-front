@@ -64,29 +64,29 @@ const DevOpsPage: React.FC<AnyType> = (props) => {
                                 field="matrix_repo_aliyun"
                             />
                             <JobPeddingCount field='pending_job_num' />
+
+                            <ConfigRow
+                                title={formatMessage({ id: "show.only.cases.the.current.ws" })}
+                            >
+                                <Radio.Group
+                                    onChange={({ target }) => update({ suite_visible: target.value })}
+                                    value={dataSource.suite_visible || '0'}
+                                    options={[
+                                        {
+                                            value: '1',
+                                            label: <FormattedMessage id="operation.yes" />
+                                        }, {
+                                            value: '0',
+                                            label: <QusetionIconTootip
+                                                        title={<FormattedMessage id="operation.no" />}
+                                                        desc={formatMessage({ id:"show.only.cases.the.current.ws.tips" })}
+                                                    />
+                                        },
+                                    ]}
+                                />
+                            </ConfigRow>                            
                         </>
                     }
-
-                    <ConfigRow
-                        title={formatMessage({ id: "show.only.cases.the.current.ws" })}
-                    >
-                        <Radio.Group
-                            onChange={({ target }) => update({ suite_visible: target.value })}
-                            value={dataSource.suite_visible || '0'}
-                            options={[
-                                {
-                                    value: '1',
-                                    label: <FormattedMessage id="operation.yes" />
-                                }, {
-                                    value: '0',
-                                    label: <QusetionIconTootip
-                                                title={<FormattedMessage id="operation.no" />}
-                                                desc={formatMessage({ id:"show.only.cases.the.current.ws.tips" })}
-                                            />
-                                },
-                            ]}
-                        />
-                    </ConfigRow>
                 </OperationTabCard>
             </Spin>
         </DevOps.Provider>
