@@ -607,7 +607,8 @@ const NewMachine: React.FC<any> = (props) => {
                         storage_type: 'cloud_efficiency',
                         extra_param: [{ param_key: '', param_value: '' }],
                         channel_type: 'toneagent',
-                        state: 'Available'
+                        state: 'Available',
+                        mode: 'passive',
                     }}
                 >
                     <Row gutter={16}>
@@ -1115,6 +1116,21 @@ const NewMachine: React.FC<any> = (props) => {
                                 <Input.TextArea rows={3} placeholder={formatMessage({ id: 'please.enter' })} />
                             </Form.Item>
                         </Col>
+
+                        {!is_instance && BUILD_APP_ENV === 'openanolis' &&
+                            <Col span={12} className={styles.warp}>
+                                <Form.Item
+                                    name="mode"
+                                    label={<FormattedMessage id="device.toneagent.working.mode" />}
+                                    rules={[{ required: false, message: formatMessage({ id: 'please.select' }) }]}
+                                >
+                                    <Radio.Group>
+                                        <Radio value={'active'} disabled><FormattedMessage id="device.active.mode" /></Radio>
+                                        <Radio value={'passive'}><FormattedMessage id="device.passive.mode" /></Radio>
+                                    </Radio.Group>
+                                </Form.Item>
+                            </Col>
+                        }
                     </Row>
                 </Form>
             </Spin>

@@ -130,7 +130,6 @@ export default {
   'device.private_ip.ip.placeholder': 'Please enter privateIP',
   'placeholder.enter.device.var_name': "Please enter Run Variable Name",
   'placeholder.enter.device.role': "Please select Role",
-
   // 云上机器
   // 'standalone': '单机',
   // 'cluster': '集群',
@@ -155,6 +154,9 @@ export default {
   'device.system.disk': 'System Disk',
   'device.extended.fields': 'Extended Fields',
   'device.aliyun.params': 'Alibaba Cloud openAPI parameters',
+  'device.toneagent.working.mode': 'Toneagent working mode',
+  'device.active.mode': 'Active mode',
+  'device.passive.mode': 'Passive mode',
   'device.tips': 'Tips',
   'device.delete.config': 'Are you sure you want to delete the configuration ({data})？',
   'device.delete.instance': 'Are you sure you want to delete the instance({data})？',
