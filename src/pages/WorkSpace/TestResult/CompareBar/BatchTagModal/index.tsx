@@ -56,7 +56,9 @@ const App = forwardRef((props: any, ref: any) => {
   }
   React.useEffect(() => {
     if (tagData?.data) {
-      setList((p: any) => p.concat(tagData?.data))
+      // 批量编辑标签时下拉框中应只有系统标签
+      const systemTag = tagData?.data.filter((item: any)=> item.source_tag === '系统标签') 
+      setList((p: any) => p.concat(systemTag))
     }
   }, [tagData])
 

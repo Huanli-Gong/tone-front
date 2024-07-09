@@ -15,7 +15,7 @@ const PersonCenter: React.FC<AnyType> = (props) => {
     const { isWs, wsId: ws_id } = props
 
     const { initialState } = useModel('@@initialState')
-    const { authList } = initialState
+    const { authList } = initialState || {}
 
     const onMenuClick = async (event: ClickParam) => {
         const { key }: any = event;

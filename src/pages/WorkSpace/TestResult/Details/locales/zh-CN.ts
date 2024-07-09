@@ -82,6 +82,7 @@ const text = {
   'end_time': '结束时间',
   'note': '备注',
   'join.baseline': '加入基线',
+  'edit.baseline': '修改基线',
   // Drawer
   'bug': '缺陷记录',
   'bug.placeholder': '请输入缺陷记录',

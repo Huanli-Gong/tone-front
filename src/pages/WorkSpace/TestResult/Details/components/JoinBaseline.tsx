@@ -76,6 +76,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 getBaselinePerfData()
                 if (_) {
                     setSource(_)
+                    form.setFieldsValue(_)
                 }
                 setPerfChangeVal(undefined)
                 setFuncsSelectVal(undefined)
@@ -108,8 +109,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             .validateFields()
             .then(
                 async (values: any) => {
-                    const { bug } = values
-                    const baseParams = { ...values, ws_id, test_type, bug: bug?.trim() }
+                    const baseParams = { ...values, ws_id, test_type, bug: values?.bug?.trim() }
                     console.log(source)
                     if (source?.isMore) {
                         const { code, msg } = await perfJoinBaselineBatch({ ...baseParams, ids: oSuite, job_id })
@@ -176,7 +176,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             maskClosable={false}
             keyboard={false}
             width="376"
-            title={<FormattedMessage id="ws.result.details.join.baseline" />}
+            title={source?.bug? <FormattedMessage id="ws.result.details.edit.baseline" />: <FormattedMessage id="ws.result.details.join.baseline" />}
             open={visible}
             bodyStyle={{ padding: 0 }}
             onClose={handleClose}
