@@ -15,7 +15,7 @@ const JobTemplateModal: React.FC<Record<string, any>> = (props) => {
     const dataSourceCopy = props.getData(jobTemplates)
 
     return (
-        <Layout.Content style={{ minWidth: 468, maxWidth: 912, paddingBottom: 8 }} key={props.testType}>
+        <Layout.Content style={{ minWidth: 468, maxWidth: 912, paddingBottom: 8 }}>
             <Row style={{ paddingLeft: 20, paddingRight: 19, marginBottom: 16 }}>
                 <Input
                     autoComplete="off"
