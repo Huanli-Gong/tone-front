@@ -7,6 +7,7 @@ import { CaretRightFilled, CaretDownFilled, DownOutlined } from '@ant-design/ico
 import { matchTestType } from '@/utils/utils'
 import CaseTable from './CaseTable'
 import JoinBaseline from '../components/JoinBaseline'
+import JoinBaselineBatch from '../components/JoinBaselineBatch'
 import EditRemarks from '../components/EditRemarks'
 import { ReactComponent as StopCircle } from '@/assets/svg/TestResult/suite/skip.svg'
 import { ReactComponent as SuccessCircle } from '@/assets/svg/TestResult/suite/success.svg'
@@ -55,6 +56,8 @@ const TestResultTable: React.FC<any> = (props) => {
     const [expandedRowKeys, setExpandedRowKeys] = useState<any[]>([])
     const [expandedCaseRowKeys, setExpandedCaseRowKeys] = React.useState<any[]>([])
     const joinBaselineDrawer: any = useRef(null)
+    const joinBaselineBatchDrawer: any = useRef(null)
+
     const contrastBaselineDrawer: any = useRef(null)
     const editRemarkDrawer: any = useRef(null)
     const [filterData, setFilterData] = useState<any>([])
@@ -68,6 +71,9 @@ const TestResultTable: React.FC<any> = (props) => {
     const [loading, setLoading] = React.useState(true)
 
     const [oSuite, setOSuite] = React.useState<any>({})
+    // functional 批量选择 case
+    const [funcCase, setFuncCase] = React.useState<any>([])
+
 
     const queryDefaultTestData = async () => {
         setLoading(true)
@@ -293,9 +299,18 @@ const TestResultTable: React.FC<any> = (props) => {
         queryDefaultTestData()
         setOSuite({})
     }
+    const handleJoinBaselineBatchOk = () => {
+        queryDefaultTestData()
+        setFuncCase([])
+    }
 
     const handleBatchJoinBaseline = () => {
-        joinBaselineDrawer.current.show({ isMore: true })
+        if (testType === 'functional') {
+            joinBaselineBatchDrawer.current.show(funcCase)
+        } else {
+            joinBaselineDrawer.current.show({ isMore: true })
+        }
+        
     }
 
     const handleOpenAll = () => {
@@ -378,11 +393,12 @@ const TestResultTable: React.FC<any> = (props) => {
     const [columnsChange, setColumnsChange] = React.useState(uuid())
     const batchBtnDisabled = React.useMemo(() => {
         if (oSuite && Object.keys(oSuite).length) return false
+        if (funcCase && funcCase.length) return false
         return true
-    }, [oSuite])
+    }, [oSuite, funcCase])
 
     return (
-        <MetricSelectProvider.Provider value={{ setOSuite, oSuite }}>
+        <MetricSelectProvider.Provider value={{ setOSuite, oSuite, setFuncCase, funcCase, }}>
             <div style={{ padding: "4px 20px 20px 20px" }}>
                 <Row justify="space-between" >
                     <Space>
@@ -416,7 +432,7 @@ const TestResultTable: React.FC<any> = (props) => {
                             }
                         </Dropdown.Button>
                         {
-                            !share_id && ['performance', 'business_performance'].includes(testType) &&
+                            !share_id && ['functional', 'performance', 'business_performance'].includes(testType) &&
                             <Access accessible={access.WsTourist()}>
                                 <Access
                                     accessible={access.WsMemberOperateSelf(creator)}
@@ -537,6 +553,13 @@ const TestResultTable: React.FC<any> = (props) => {
                     server_provider={serverProvider}
                     onOk={handleJoinBaselineOk}
                 />
+                <JoinBaselineBatch
+                    ref={joinBaselineBatchDrawer}
+                    test_type={testType}
+                    server_provider={serverProvider}
+                    onOk={handleJoinBaselineBatchOk}
+                />
+
                 <EditRemarks
                     ref={editRemarkDrawer}
                     onOk={queryDefaultTestData}

@@ -185,7 +185,8 @@ const TestResultDetails: React.FC<any> = (props) => {
                 caseResult={details.case_result}
                 provider_name={transProvider(details.provider_name)}
                 refreshResult={refreshResult}
-            />],
+            />
+        ],
         [
             2, "testProgress",
             <ProcessTable

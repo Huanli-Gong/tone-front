@@ -12,6 +12,7 @@ import { requestCodeMessage } from '@/utils/utils'
 import { renderTitle } from "."
 import { MetricSelectProvider } from '../TestRsultTable'
 
+/** 单个结果加入基线 */
 const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { formatMessage } = useIntl()
     const { ws_id, id: job_id } = useParams() as any

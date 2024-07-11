@@ -2,7 +2,7 @@
 import { Space, Tooltip, Input, Button, Typography } from 'antd'
 import { FilterFilled } from '@ant-design/icons'
 
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import { useRequest, Access, useAccess, useParams, useIntl, FormattedMessage } from 'umi'
 import { queryCaseResult } from '../service'
 import EditRemarks from '../components/EditRemarks'
@@ -17,6 +17,7 @@ import styles from './index.less'
 import { AccessTootip } from '@/utils/utils'
 import { ResizeHooksTable } from '@/utils/table.hooks'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
+import { MetricSelectProvider } from '.'
 
 const stateWordMap = (st: string) => new Map([
     ["success", 1],
@@ -34,6 +35,7 @@ export default (props: any) => {
         server_provider, state = '', suite_name, conf_name,
         refreshId, setRefreshId
     } = props
+    const { setFuncCase, funcCase } = React.useContext(MetricSelectProvider)
     const editRemark: any = useRef(null)
     const joinBaseline: any = useRef(null)
     const searchInput: any = useRef(null)
@@ -53,6 +55,7 @@ export default (props: any) => {
     }
 
     const [interfaceSearchKeys, setInterfaceSearchKeys] = React.useState(defaultKeys)
+    const [selectedRows, setSelectedRows] = useState<any>([])
 
     const { data, refresh, loading } = useRequest(
         (params = interfaceSearchKeys) => queryCaseResult(params),
@@ -162,21 +165,27 @@ export default (props: any) => {
         {
             dataIndex: 'result',
             title: (
-                <QusetionIconTootip
-                    placement="bottomLeft"
-                    title={formatMessage({ id: 'ws.result.details.test.result' })}
-                    desc={formatMessage({ id: 'ws.result.details.test.result.view.log.file' })}
-                />
+                <span>
+                    <QusetionIconTootip
+                        placement="bottomLeft"
+                        title={formatMessage({ id: 'ws.result.details.test.result' })}
+                        desc={formatMessage({ id: 'ws.result.details.test.result.view.log.file' })}
+                    /> 
+                    &emsp;/&emsp;基线结果状态
+                </span>
             ),
             width: 150,
             ellipsis: true,
+            align: 'center',
             render: (_: any) => {
                 let color = ''
                 if (_ === 'Fail') color = '#C84C5A'
                 if (_ === 'Pass') color = '#81BF84'
                 if (_ === 'Warning') color = '#dcc506'
                 if (_ === 'Stop') color = '#1D1D1D'
-                return <span style={{ color }}>{_}</span>
+                return <div>
+                    <span style={{ color }}>{_}</span>&emsp;/&emsp;<span style={{ color }}>{'-'}</span>
+                </div>
             }
         },
         {
@@ -287,6 +296,65 @@ export default (props: any) => {
         }
     ].filter(Boolean)
 
+    const match_sub_case_result = (str: string)=> {
+        if (str === 'Pass') return 1
+        if (str === 'Fail') return 2
+        if (str === 'Stop') return 4
+        if (str === 'Skip') return 5
+        if (str === 'Warning') return 6
+        return str
+    }
+
+    const filterSelectedAllData = (params: any[]) => {
+        const currTableSelectedRows = params.map((item: any)=> ({
+            ...item,
+            // "ws_id": ws_id,
+            // "test_type": "functional",
+            // "test_job_id": job_id,
+            "test_suite_id": suite_id,
+            "test_case_id": test_case_id,
+            "result_id": item.id,
+            "sub_case_result": match_sub_case_result(item.result)
+        }))
+        // 从所有级别suite、case、result表格中选的数据中，根据test_case_id 去除同一表格数据 && 再重新添加数据
+        const temp = funcCase.filter((item: any, i: number) => item.test_case_id !== test_case_id) || []
+        const list = temp.concat(currTableSelectedRows)
+        console.log('list:', list)
+        
+        setFuncCase(list)
+    }
+
+    const rowSelection: any = !share_id && testType === 'functional' ? {
+        columnWidth: 40,
+        selectedRowKeys: selectedRows.map((item: any)=> item.id),
+        onSelect: (record: any, selected: boolean) => {
+           let list = []
+           if (selected) {
+               list = [...selectedRows].concat([record])
+           } else {
+               list = [...selectedRows].filter((item)=> item.id !== record.id)
+           }
+           setSelectedRows(list)
+           filterSelectedAllData(list)
+        },
+        onSelectAll: (selected: boolean, rows: any[], changeRows: []) => {
+            // console.log('selected:', selected, changeRows )
+            let list = []
+            if (selected) {
+                const all = [...selectedRows].concat(changeRows)
+                // 去重
+                const temp = all.map((item: any)=> item.id)
+                list = all.filter((item, i) => i === temp.indexOf(item.id))
+            } else {
+                // 过滤
+                const temp = changeRows.map((item: any)=> item.id)
+                list = selectedRows.filter((item: any) => temp.indexOf(item.id) === -1)
+            }
+            setSelectedRows(list)
+            filterSelectedAllData(list)
+        },
+    } : undefined
+
     return (
         <>
             <ResizeHooksTable
@@ -295,6 +363,7 @@ export default (props: any) => {
                 rowKey="id"
                 size="small"
                 loading={loading}
+                rowSelection={rowSelection}
                 className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
                 pagination={{
                     pageSize: data.page_size || 100,
@@ -313,7 +382,7 @@ export default (props: any) => {
                     showTotal(total) {
                         return formatMessage({ id: 'pagination.total.strip' }, { data: total })
                     },
-                    pageSizeOptions: [100, 200, 500],
+                    pageSizeOptions: [10, 100, 200, 500],
                 }}
                 columns={columns}
                 rowClassName={styles.result_info_table_row}
