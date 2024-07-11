@@ -111,7 +111,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             .then(
                 async (values: any) => {
                     const baseParams = { ...values, ws_id, test_type, bug: values?.bug?.trim() }
-                    console.log(source)
+                    // console.log(source)
                     if (source?.isMore) {
                         const { code, msg } = await perfJoinBaselineBatch({ ...baseParams, ids: oSuite, job_id })
                         defaultOption(code, msg)
@@ -172,6 +172,8 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         }
     }
 
+    const failResult = source?.result?.toLowerCase() === 'fail'
+
     return (
         <Drawer
             maskClosable={false}
@@ -211,7 +213,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     style={{ background: '#fff', padding: '10px 20px' }}
                 >
                     {
-                        test_type === 'functional' &&
+                        test_type === 'functional' && failResult &&
                         <Form.Item label={<FormattedMessage id="ws.result.details.bug" />}
                             name="bug"
                             rules={[{
@@ -368,7 +370,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                         </div>
                     }
                     {
-                        test_type === 'functional' &&
+                        test_type === 'functional' && failResult &&
                         <>
                             <Form.Item label={<FormattedMessage id="ws.result.details.impact_result" />}
                                 name="impact_result"
@@ -388,6 +390,10 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     <Form.Item
                         label={'基线说明'}
                         name='desc'
+                        rules={[{
+                            required: failResult,
+                            message: formatMessage({ id: 'please.enter' }),
+                        }]}
                     >
                         <Input allowClear placeholder='请输入' />
                     </Form.Item>

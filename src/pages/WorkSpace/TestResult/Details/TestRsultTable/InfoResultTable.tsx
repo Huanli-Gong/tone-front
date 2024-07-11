@@ -271,8 +271,8 @@ export default (props: any) => {
             fixed: "right",
             width: 200,
             render: (_: any, row: any) => {
-                // 失败的 && 没有关联关系的才能“修改基线”
-                const failFlag = _.result === 'Fail' && !row.skip_baseline_info
+                // 没有关联关系的行数据才能“添加/修改”基线
+                const failFlag = !row.skip_baseline_info
                 const buttonText = _.bug ? <FormattedMessage id="ws.result.details.edit.baseline" /> : <FormattedMessage id="ws.result.details.join.baseline" />
                 return (
                     <Access accessible={access.WsTourist()}>
