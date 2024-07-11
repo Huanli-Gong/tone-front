@@ -302,89 +302,91 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     }
                     {
                         test_type === 'functional' &&
-                        <div onMouseDown={(e) => e.preventDefault()}>
-                            <Form.Item
-                                label={<FormattedMessage id="ws.result.details.baseline_id" />}
-                                name="baseline_id"
-                                rules={[{
-                                    required: true,
-                                    message: formatMessage({ id: 'ws.result.details.baseline_id.empty' })
-                                }]}
-                            >
-                                <Select
-                                    placeholder={formatMessage({ id: 'ws.result.details.baseline_id.placeholder' })}
-                                    mode="multiple"
-                                    className={styles.select_baseline}
-                                    allowClear
-                                    optionLabelProp="label"
-                                    ref={funcsBaselineSelect}
-                                    listHeight={160}
-                                    loading={loading}
-                                    getPopupContainer={node => node.parentNode}
-                                    onSearch={handleFuncsBaselineSelectSearch}
-                                    filterOption={
-                                        (input, option: any) => option.name.indexOf(input) >= 0
-                                    }
-                                    dropdownRender={menu => (
-                                        <>
-                                            {menu}
-                                            {
-                                                funcsSelectVal && !!funcsSelectVal.length && <>
-                                                    <Divider style={{ margin: '8px 0' }} />
-                                                    {
-                                                        access.IsWsSetting() &&
-                                                        <div
-                                                            style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '0 0 8px 8px' }}
-                                                            onClick={handleFuncsBaselineSelectBlur}
-                                                        >
-                                                            <Space>
-                                                                <PlusOutlined style={{ color: '#1890FF' }} />
-                                                                <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
-                                                                    <FormattedMessage id="ws.result.details.create.baseline" />
-                                                                </span>
-                                                            </Space>
-                                                        </div>
-                                                    }
-                                                </>
-                                            }
-                                        </>
-                                    )}
-                                    options={
-                                        baselineFuncList.map((item: any) => ({
-                                            value: item.value,
-                                            name: item.label,
-                                            label: (
-                                                <Typography.Text ellipsis={{ tooltip: item.label }}>
-                                                    <Highlighter
-                                                        highlightStyle={{ color: '#1890FF', padding: 0, background: 'unset' }}
-                                                        searchWords={[funcsSelectVal]}
-                                                        autoEscape
-                                                        textToHighlight={item.label}
-                                                    />
-                                                </Typography.Text>
-                                            )
-                                        }))
-                                    }
-                                />
-                            </Form.Item>
-                        </div>
-                    }
-                    {
-                        test_type === 'functional' && failResult &&
                         <>
+                            <div onMouseDown={(e) => e.preventDefault()}>
+                                <Form.Item
+                                    label={<FormattedMessage id="ws.result.details.baseline_id" />}
+                                    name="baseline_id"
+                                    rules={[{
+                                        required: true,
+                                        message: formatMessage({ id: 'ws.result.details.baseline_id.empty' })
+                                    }]}
+                                >
+                                    <Select
+                                        placeholder={formatMessage({ id: 'ws.result.details.baseline_id.placeholder' })}
+                                        mode="multiple"
+                                        className={styles.select_baseline}
+                                        allowClear
+                                        optionLabelProp="label"
+                                        ref={funcsBaselineSelect}
+                                        listHeight={160}
+                                        loading={loading}
+                                        getPopupContainer={node => node.parentNode}
+                                        onSearch={handleFuncsBaselineSelectSearch}
+                                        filterOption={
+                                            (input, option: any) => option.name.indexOf(input) >= 0
+                                        }
+                                        dropdownRender={menu => (
+                                            <>
+                                                {menu}
+                                                {
+                                                    funcsSelectVal && !!funcsSelectVal.length && <>
+                                                        <Divider style={{ margin: '8px 0' }} />
+                                                        {
+                                                            access.IsWsSetting() &&
+                                                            <div
+                                                                style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '0 0 8px 8px' }}
+                                                                onClick={handleFuncsBaselineSelectBlur}
+                                                            >
+                                                                <Space>
+                                                                    <PlusOutlined style={{ color: '#1890FF' }} />
+                                                                    <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
+                                                                        <FormattedMessage id="ws.result.details.create.baseline" />
+                                                                    </span>
+                                                                </Space>
+                                                            </div>
+                                                        }
+                                                    </>
+                                                }
+                                            </>
+                                        )}
+                                        options={
+                                            baselineFuncList.map((item: any) => ({
+                                                value: item.value,
+                                                name: item.label,
+                                                label: (
+                                                    <Typography.Text ellipsis={{ tooltip: item.label }}>
+                                                        <Highlighter
+                                                            highlightStyle={{ color: '#1890FF', padding: 0, background: 'unset' }}
+                                                            searchWords={[funcsSelectVal]}
+                                                            autoEscape
+                                                            textToHighlight={item.label}
+                                                        />
+                                                    </Typography.Text>
+                                                )
+                                            }))
+                                        }
+                                    />
+                                </Form.Item>
+                            </div>
                             <Form.Item label={<FormattedMessage id="ws.result.details.impact_result" />}
                                 name="impact_result"
-                                initialValue={true}>
-                                <Radio.Group>
+                                initialValue={true}
+                                // style={!failResult ? { display: 'none' }: {}}
+                            >
+                                <Radio.Group disabled={!failResult}>
                                     <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
                                     <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                                 </Radio.Group>
                             </Form.Item>
+                        </>
+                    }
+                    {
+                        test_type === 'functional' && failResult &&
                             <Form.Item label={<FormattedMessage id="ws.result.details.description" />}
                                 name="description">
                                 <Input.TextArea rows={4} placeholder={formatMessage({ id: 'ws.result.details.description.placeholder' })} />
                             </Form.Item>
-                        </>
                     }
 
                     <Form.Item

@@ -172,6 +172,7 @@ const JoinBaselineBatch: React.ForwardRefRenderFunction<any, any> = (props, ref)
                     </Space>
                 </div>
             }
+            destroyOnClose
         >
             <Spin spinning={loading}>
                 <Form
@@ -254,14 +255,13 @@ const JoinBaselineBatch: React.ForwardRefRenderFunction<any, any> = (props, ref)
                                   {fields.map((field, index) => {
                                           const styleRight = { paddingRight: 16 }
                                           const rowInfo = source[index]
-                                          const disabled = rowInfo?.result !== 'Fail'
+                                          const failResult = rowInfo?.result?.toLowerCase() === 'fail'
 
                                           return (
                                               <Row key={field.key}>
                                                     <Col style={styleRight} span={5}>
                                                         <Form.Item label={index? null: <span>&nbsp;Test Case</span>}
-                                                          name={[field.name, 'sub_case_name']}
-                                                        >
+                                                          name={[field.name, 'sub_case_name']}>
                                                           <Input disabled={true} bordered={false} style={{ color: 'rgba(0, 0, 0, 0.85)' }}/>
                                                         </Form.Item>
                                                     </Col>
@@ -270,51 +270,56 @@ const JoinBaselineBatch: React.ForwardRefRenderFunction<any, any> = (props, ref)
                                                           <Form.Item label={index? null: <FormattedMessage id="ws.result.details.bug" />}
                                                             name={[field.name, 'bug']}
                                                             rules={[{
-                                                                required: !disabled,
+                                                                required: failResult,
                                                                 message: formatMessage({ id: 'ws.result.details.bug.empty' }),
                                                                 validator(rule, value) {
-                                                                    if (!disabled) {
+                                                                    if (failResult) {
                                                                       return value?.trim()? Promise.resolve() : Promise.reject(formatMessage({ id: 'ws.result.details.bug.empty' }))
                                                                     }
                                                                     return Promise.resolve()
                                                                 },
                                                             }]}
                                                           >
-                                                            {disabled ? '-':
-                                                            <Input placeholder={formatMessage({ id: 'ws.result.details.bug.placeholder' })}
-                                                                autoComplete="off"
-                                                                disabled={disabled}
-                                                                // type={disabled ? 'hidden': undefined}
-                                                            />
-                                                           }
+                                                            {failResult ?
+                                                                <Input placeholder={formatMessage({ id: 'ws.result.details.bug.placeholder' })}
+                                                                    autoComplete="off"
+                                                                    disabled={!failResult}
+                                                                />
+                                                                : '-'
+                                                            }
                                                           </Form.Item>
                                                     </Col>
 
                                                     <Col style={styleRight} span={4}>
                                                         <Form.Item label={index? null: <FormattedMessage id="ws.result.details.impact_result" />}
                                                             name={[field.name, 'impact_result']}
-                                                            initialValue={true}>
-                                                            {disabled ? '-':
-                                                            <Radio.Group disabled={disabled}>
+                                                            initialValue={true}
+                                                        >
+                                                            <Radio.Group disabled={!failResult}>
                                                                 <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
                                                                 <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                                                             </Radio.Group>
-                                                            }
                                                         </Form.Item>
                                                     </Col>
                                                     <Col style={styleRight} span={5}>
                                                         <Form.Item label={index? null: <FormattedMessage id="ws.result.details.description" />}
                                                             name={[field.name, 'description']}>
-                                                            {disabled ? '-':
-                                                            <Input.TextArea rows={1} placeholder={formatMessage({ id: 'ws.result.details.description.placeholder' })} 
-                                                              disabled={disabled}
-                                                            />
+                                                            {failResult ?
+                                                                <Input.TextArea rows={1} placeholder={formatMessage({ id: 'ws.result.details.description.placeholder' })} 
+                                                                   disabled={!failResult}
+                                                                />
+                                                                : '-'
                                                              }
                                                         </Form.Item>
                                                     </Col>
                                                     <Col span={5}>
                                                         <Form.Item label={index? null: '基线说明'}
-                                                            name={[field.name, 'desc']}>
+                                                            name={[field.name, 'desc']}
+                                                            rules={[{
+                                                                required: failResult,
+                                                                message: formatMessage({ id: 'please.enter' }),
+                                                            }]}
+                                                        >
                                                             <Input allowClear placeholder='请输入' />
                                                         </Form.Item>
                                                     </Col>

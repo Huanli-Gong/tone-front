@@ -163,15 +163,14 @@ export default (props: any) => {
             ...getColumnSearchProps('Test Case'),
         },
         {
-            dataIndex: 'result',
+            dataIndex: 'result',  // 测试结果状态
             title: (
                 <span>
                     <QusetionIconTootip
                         placement="bottomLeft"
                         title={formatMessage({ id: 'ws.result.details.test.result' })}
                         desc={formatMessage({ id: 'ws.result.details.test.result.view.log.file' })}
-                    /> 
-                    &emsp;/&emsp;基线结果状态
+                    />
                 </span>
             ),
             width: 150,
@@ -183,9 +182,22 @@ export default (props: any) => {
                 if (_ === 'Pass') color = '#81BF84'
                 if (_ === 'Warning') color = '#dcc506'
                 if (_ === 'Stop') color = '#1D1D1D'
-                return <div>
-                    <span style={{ color }}>{_}</span>&emsp;/&emsp;<span style={{ color }}>{'-'}</span>
-                </div>
+                return <span style={{ color }}>{_}</span>
+            }
+        },
+        {
+            dataIndex: 'sub_case_result', // 基线结果状态
+            title: '基线结果',
+            width: 100,
+            ellipsis: true,
+            align: 'center',
+            render: (_: any) => {
+                let color = ''
+                if (_ === 'Fail') color = '#C84C5A'
+                if (_ === 'Pass') color = '#81BF84'
+                if (_ === 'Warning') color = '#dcc506'
+                if (_ === 'Stop') color = '#1D1D1D'
+                return <span style={{ color }}>{_ || '-'}</span>
             }
         },
         {
@@ -314,7 +326,7 @@ export default (props: any) => {
             "test_suite_id": suite_id,
             "test_case_id": test_case_id,
             "result_id": item.id,
-            "sub_case_result": match_sub_case_result(item.result)
+            "sub_case_result": match_sub_case_result(item.sub_case_result)
         }))
         // 从所有级别suite、case、result表格中选的数据中，根据test_case_id 去除同一表格数据 && 再重新添加数据
         const temp = funcCase.filter((item: any, i: number) => item.test_case_id !== test_case_id) || []
