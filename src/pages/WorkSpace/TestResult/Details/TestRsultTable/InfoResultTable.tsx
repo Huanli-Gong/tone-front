@@ -53,10 +53,10 @@ export default (props: any) => {
         page_num: 1,
         share_id
     }
-
     const [interfaceSearchKeys, setInterfaceSearchKeys] = React.useState(defaultKeys)
     const [selectedRows, setSelectedRows] = useState<any>([])
 
+    // 1.请求/刷新表格数据
     const { data, refresh, loading } = useRequest(
         (params = interfaceSearchKeys) => queryCaseResult(params),
         {
@@ -317,6 +317,7 @@ export default (props: any) => {
         return str
     }
 
+    /** start 批量加基线操作 */
     const filterSelectedAllData = (params: any[]) => {
         const currTableSelectedRows = params.map((item: any)=> ({
             ...item,
@@ -331,11 +332,9 @@ export default (props: any) => {
         // 从所有级别suite、case、result表格中选的数据中，根据test_case_id 去除同一表格数据 && 再重新添加数据
         const temp = funcCase.filter((item: any, i: number) => item.test_case_id !== test_case_id) || []
         const list = temp.concat(currTableSelectedRows)
-        console.log('list:', list)
-        
         setFuncCase(list)
+        // console.log('list:', list)
     }
-
     const rowSelection: any = !share_id && testType === 'functional' ? {
         columnWidth: 40,
         selectedRowKeys: selectedRows.map((item: any)=> item.id),
@@ -350,7 +349,6 @@ export default (props: any) => {
            filterSelectedAllData(list)
         },
         onSelectAll: (selected: boolean, rows: any[], changeRows: []) => {
-            // console.log('selected:', selected, changeRows )
             let list = []
             if (selected) {
                 const all = [...selectedRows].concat(changeRows)
@@ -366,6 +364,16 @@ export default (props: any) => {
             filterSelectedAllData(list)
         },
     } : undefined
+
+    useEffect(() => {
+        if (selectedRows.length && !funcCase.length) {
+            // 刷新表格
+            setSelectedRows([])
+            refresh()
+        }
+    }, [funcCase])
+    /** end 批量加基线操作 */
+
 
     return (
         <>

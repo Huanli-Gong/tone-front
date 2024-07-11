@@ -300,7 +300,6 @@ const TestResultTable: React.FC<any> = (props) => {
         setOSuite({})
     }
     const handleJoinBaselineBatchOk = () => {
-        queryDefaultTestData()
         setFuncCase([])
     }
 
