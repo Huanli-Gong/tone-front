@@ -93,6 +93,7 @@ const text = {
   'bug': 'Bug Record',
   'bug.placeholder': 'Enter bug record',
   'bug.empty': 'bug record can not empty.',
+  'baseline.bug': 'Baseline Bug Record',
   'baseline_id': 'Baseline Name',
   'baseline_id.placeholder': 'Choose Baseline or Create Baseline',
   'baseline_id.empty': 'Baseline Name can not empty.',

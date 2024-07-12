@@ -254,44 +254,52 @@ const JoinBaselineBatch: React.ForwardRefRenderFunction<any, any> = (props, ref)
                               <div>
                                   {fields.map((field, index) => {
                                           const styleRight = { paddingRight: 16 }
+                                          const styleRequired= { display: 'flex'}
+                                          display:'flex'
                                           const rowInfo = source[index]
                                           const failResult = rowInfo?.result?.toLowerCase() === 'fail'
 
                                           return (
                                               <Row key={field.key}>
                                                     <Col style={styleRight} span={5}>
-                                                        <Form.Item label={index? null: <span>&nbsp;Test Case</span>}
+                                                        {!index && <p><span>&nbsp;Test Case</span></p>}
+                                                        <Form.Item
                                                           name={[field.name, 'sub_case_name']}>
                                                           <Input disabled={true} bordered={false} style={{ color: 'rgba(0, 0, 0, 0.85)' }}/>
                                                         </Form.Item>
                                                     </Col>
 
                                                     <Col style={styleRight} span={5}>
-                                                          <Form.Item label={index? null: <FormattedMessage id="ws.result.details.bug" />}
-                                                            name={[field.name, 'bug']}
-                                                            rules={[{
-                                                                required: failResult,
-                                                                message: formatMessage({ id: 'ws.result.details.bug.empty' }),
-                                                                validator(rule, value) {
-                                                                    if (failResult) {
-                                                                      return value?.trim()? Promise.resolve() : Promise.reject(formatMessage({ id: 'ws.result.details.bug.empty' }))
-                                                                    }
-                                                                    return Promise.resolve()
-                                                                },
-                                                            }]}
-                                                          >
-                                                            {failResult ?
-                                                                <Input placeholder={formatMessage({ id: 'ws.result.details.bug.placeholder' })}
-                                                                    autoComplete="off"
-                                                                    disabled={!failResult}
-                                                                />
-                                                                : '-'
-                                                            }
-                                                          </Form.Item>
+                                                         {!index && <p><FormattedMessage id="ws.result.details.bug" /></p>}
+                                                         <div style={styleRequired}>
+                                                            {failResult && <span className={styles.item_required}>*</span>}
+                                                            <Form.Item
+                                                                name={[field.name, 'bug']}
+                                                                rules={[{
+                                                                    required: failResult,
+                                                                    message: formatMessage({ id: 'ws.result.details.bug.empty' }),
+                                                                    validator(rule, value) {
+                                                                        if (failResult) {
+                                                                        return value?.trim()? Promise.resolve() : Promise.reject(formatMessage({ id: 'ws.result.details.bug.empty' }))
+                                                                        }
+                                                                        return Promise.resolve()
+                                                                    },
+                                                                }]}
+                                                            >
+                                                                {failResult ?
+                                                                    <Input placeholder={formatMessage({ id: 'ws.result.details.bug.placeholder' })}
+                                                                        autoComplete="off"
+                                                                        disabled={!failResult}
+                                                                    />
+                                                                    : '-'
+                                                                }
+                                                            </Form.Item>
+                                                          </div>
                                                     </Col>
 
                                                     <Col style={styleRight} span={4}>
-                                                        <Form.Item label={index? null: <FormattedMessage id="ws.result.details.impact_result" />}
+                                                        {!index && <p><FormattedMessage id="ws.result.details.impact_result" /></p>}
+                                                        <Form.Item
                                                             name={[field.name, 'impact_result']}
                                                             initialValue={true}
                                                         >
@@ -302,7 +310,8 @@ const JoinBaselineBatch: React.ForwardRefRenderFunction<any, any> = (props, ref)
                                                         </Form.Item>
                                                     </Col>
                                                     <Col style={styleRight} span={5}>
-                                                        <Form.Item label={index? null: <FormattedMessage id="ws.result.details.description" />}
+                                                        {!index && <p><FormattedMessage id="ws.result.details.description" /></p>}
+                                                        <Form.Item
                                                             name={[field.name, 'description']}>
                                                             {failResult ?
                                                                 <Input.TextArea rows={1} placeholder={formatMessage({ id: 'ws.result.details.description.placeholder' })} 
@@ -313,15 +322,19 @@ const JoinBaselineBatch: React.ForwardRefRenderFunction<any, any> = (props, ref)
                                                         </Form.Item>
                                                     </Col>
                                                     <Col span={5}>
-                                                        <Form.Item label={index? null: '基线说明'}
-                                                            name={[field.name, 'desc']}
-                                                            rules={[{
-                                                                required: failResult,
-                                                                message: formatMessage({ id: 'please.enter' }),
-                                                            }]}
-                                                        >
-                                                            <Input allowClear placeholder='请输入' />
-                                                        </Form.Item>
+                                                        {!index && <p>基线说明</p>}
+                                                        <div style={styleRequired}>
+                                                            {failResult && <span className={styles.item_required}>*</span>}
+                                                            <Form.Item
+                                                                name={[field.name, 'desc']}
+                                                                rules={[{
+                                                                    required: failResult,
+                                                                    message: formatMessage({ id: 'please.enter' }),
+                                                                }]}
+                                                            >
+                                                                <Input allowClear placeholder='请输入' />
+                                                            </Form.Item>
+                                                        </div>
                                                     </Col>
                                               </Row>
                                           )

@@ -237,7 +237,7 @@ export default (props: any) => {
         },
         {
             dataIndex: 'bug',
-            title: ['business_functional'].includes(testType) ? <FormattedMessage id="ws.result.details.aone.bug" /> : <FormattedMessage id="ws.result.details.bug" />,
+            title: ['business_functional'].includes(testType) ? <FormattedMessage id="ws.result.details.aone.bug" /> : <FormattedMessage id="ws.result.details.baseline.bug" />,
             width: 180,
             ellipsis: true,
             render: (_: any, row: any) => {

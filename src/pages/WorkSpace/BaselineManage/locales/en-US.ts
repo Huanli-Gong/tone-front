@@ -45,6 +45,7 @@ export default {
   'pages.workspace.baseline.failDetail.table.bug': 'Defect Record',
   'pages.workspace.baseline.failDetail.table.source_job_id': 'Job Source',
   'pages.workspace.baseline.failDetail.table.impact_result': 'Impact Result',
+  'pages.workspace.baseline.failDetail.table.sub_case_result': 'Case State',
   'pages.workspace.baseline.failDetail.table.description': 'Problem Description',
   'pages.workspace.baseline.failDetail.table.action': 'Operation',
 
@@ -69,7 +70,7 @@ export default {
   'pages.workspace.baseline.expandPerf.ether': 'Network',
 
   // ExpandTable
-  'pages.workspace.baseline.failDetail': 'FailCase Detail',
+  'pages.workspace.baseline.failDetail': 'Case Detail',
   'pages.workspace.baseline.mertricDetail': 'Metric Detail',
 
   'pages.workspace.baseline.metric.table.view': 'View Info',

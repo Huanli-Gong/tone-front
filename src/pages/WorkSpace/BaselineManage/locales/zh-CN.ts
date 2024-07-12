@@ -46,6 +46,7 @@ export default {
   'pages.workspace.baseline.failDetail.table.bug': '缺陷记录',
   'pages.workspace.baseline.failDetail.table.source_job_id': '来源Job',
   'pages.workspace.baseline.failDetail.table.impact_result': '影响结果',
+  'pages.workspace.baseline.failDetail.table.sub_case_result': 'Case状态',
   'pages.workspace.baseline.failDetail.table.description': '问题描述',
   'pages.workspace.baseline.failDetail.table.action': '操作',
 
@@ -73,7 +74,7 @@ export default {
   'pages.workspace.baseline.expandPerf.ether': '网络',
 
   // ExpandTable
-  'pages.workspace.baseline.failDetail': 'FailCase详情',
+  'pages.workspace.baseline.failDetail': 'Case详情',
   'pages.workspace.baseline.mertricDetail': 'Metric详情',
 
   'pages.workspace.baseline.metric.table.view': '查看信息',

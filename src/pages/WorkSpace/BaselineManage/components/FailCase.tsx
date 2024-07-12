@@ -74,7 +74,7 @@ const FailCaseDrawer: React.ForwardRefRenderFunction<IProps, IRefs> = (props, re
     const columns = [
         {
             dataIndex: 'sub_case_name',
-            title: 'FailCase',
+            title: 'Case',
             key: 'sub_case_name',
             render: (sub_case_name: any) => (
                 <Typography.Text ellipsis={{ tooltip: true }}>
@@ -136,6 +136,26 @@ const FailCaseDrawer: React.ForwardRefRenderFunction<IProps, IRefs> = (props, re
                 return (
                     <Typography.Text ellipsis={{ tooltip: true }}>
                         {formatMessage({ id: `operation.${impact_result ? "yes" : "no"}` })}
+                    </Typography.Text>
+                )
+            }
+        },
+        {
+            dataIndex: 'sub_case_result',
+            title: formatMessage({ id: `pages.workspace.baseline.failDetail.table.sub_case_result` }),
+            ellipsis: {
+                showTitle: false
+            },
+            textWrap: 'word-break',
+            render: (text: any) => {
+                let color = ''
+                if (text === 'Fail') color = '#C84C5A'
+                if (text === 'Pass') color = '#81BF84'
+                if (text === 'Warning') color = '#dcc506'
+                if (text === 'Stop') color = '#1D1D1D'
+                return (
+                    <Typography.Text ellipsis={{ tooltip: true }}>
+                        <span style={{ color }}>{text || '-'}</span>   
                     </Typography.Text>
                 )
             }
@@ -240,7 +260,6 @@ const FailCaseDrawer: React.ForwardRefRenderFunction<IProps, IRefs> = (props, re
                         </Col>
                     </InfoRow>
                     <TableRow style={{ paddingTop: 20 }}>
-                        {/* <TableTitle>{'FailCase'}</TableTitle> */}
                         <Table
                             columns={columns}
                             loading={loading}
