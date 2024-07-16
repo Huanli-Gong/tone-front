@@ -15,6 +15,7 @@ import { ReactComponent as ErrorCircle } from '@/assets/svg/TestResult/suite/fai
 import { EllipsisEditColumn, tooltipTd } from '../components'
 import styles from './index.less'
 import ContrastBaseline from '../components/ContrastBaseline';
+import ContrastBaselineBatch from '../components/ContrastBaselineBatch';
 import { AccessTootip } from '@/utils/utils';
 import { ResizeHooksTable } from '@/utils/table.hooks';
 import { v4 as uuid } from "uuid"
@@ -49,7 +50,7 @@ const TestResultTable: React.FC<any> = (props) => {
     ]
 
     const { id: job_id, ws_id, share_id } = useParams() as any
-    const { caseResult = {}, test_type, provider_name: serverProvider = '', creator, refreshResult } = props
+    const { caseResult = {}, test_type, provider_name: serverProvider = '', creator, refreshResult, baselineNameCallback } = props
     const testType = React.useMemo(() => matchTestType(test_type), [test_type])
 
     const [openAllRows, setOpenAllRows] = useState(false)
@@ -59,6 +60,7 @@ const TestResultTable: React.FC<any> = (props) => {
     const joinBaselineBatchDrawer: any = useRef(null)
 
     const contrastBaselineDrawer: any = useRef(null)
+    const contrastBaselineBatchDrawer: any = useRef(null)
     const editRemarkDrawer: any = useRef(null)
     const [filterData, setFilterData] = useState<any>([])
     // const [openAllExpand, setOpenAllExpand] = useState(false)
@@ -71,13 +73,17 @@ const TestResultTable: React.FC<any> = (props) => {
     const [loading, setLoading] = React.useState(true)
 
     const [oSuite, setOSuite] = React.useState<any>({})
-    // functional 批量选择 case
+    // functional 批量选择case
     const [funcCase, setFuncCase] = React.useState<any>([])
+    // functional 批量选中的行数据，比对后的数据
+    const [compareData, setCompareData] = React.useState<any>([])
+    // functional 批量操作类型: 'compare', 'join_baseline'
+    const [batchType, setBatchType] = React.useState<any>('')
 
-
+    // 1. 请求表格数据
     const queryDefaultTestData = async () => {
         setLoading(true)
-        const { data } = await queryTestResult({ state: '', job_id, share_id })
+        const { data } = await queryTestResult({ state: '', job_id, share_id }).catch(()=> setLoading(false))
         setLoading(false)
         setFilterData(Object.prototype.toString.call(data) === "[object Array]" ? data : [])
     }
@@ -180,13 +186,11 @@ const TestResultTable: React.FC<any> = (props) => {
             }
         },
         {
-            title: ['functional', 'business_functional'].includes(testType) ?
-                <FormattedMessage id="ws.result.details.functional" /> :
-                (testType === 'business_business' ?
-                    <FormattedMessage id="ws.result.details.business_business" /> :
-                    <FormattedMessage id="ws.result.details.performance" />),
-            width: ['functional', 'business_functional', 'business_business'].includes(testType) ? 255 : 302,
+            title: ['functional', 'business_functional'].includes(testType) ? <FormattedMessage id="ws.result.details.functional" /> :
+                (testType === 'business_business' ? <FormattedMessage id="ws.result.details.business_business" /> :
+                <FormattedMessage id="ws.result.details.performance" />),
             key: "details",
+            width: ['functional', 'business_functional', 'business_business'].includes(testType) ? 255 : 302,
             render: (_: any) => {
                 return (
                     ['functional', 'business_functional', 'business_business'].includes(testType) ?
@@ -292,7 +296,11 @@ const TestResultTable: React.FC<any> = (props) => {
     ]
 
     const handleBatchContrastBaseline = () => {
-        contrastBaselineDrawer.current.show({ isMore: true })
+        if (testType === 'functional') {
+            contrastBaselineBatchDrawer.current.show(funcCase)
+        } else {
+            contrastBaselineDrawer.current.show({ isMore: true })
+        }
     }
 
     const handleJoinBaselineOk = () => {
@@ -300,6 +308,7 @@ const TestResultTable: React.FC<any> = (props) => {
         setOSuite({})
     }
     const handleJoinBaselineBatchOk = () => {
+        setBatchType('join_baseline')
         setFuncCase([])
     }
 
@@ -362,10 +371,10 @@ const TestResultTable: React.FC<any> = (props) => {
         }
     }, [caseResult, filterData])
 
-    const rowSelection = !share_id && testType === 'performance' ? {
+    const rowSelection = !share_id && ['performance'].includes(testType) ? {
         columnWidth: 40,
         selectedRowKeys: oSuite ? Object.keys(oSuite)?.map((i: any) => + i) : [],
-        onChange: (keys: any[]) => {
+        onChange: (keys: any[], rows: any[]) => {
             console.log(keys)
             if (keys.length > 0) {
                 setOSuite(keys.reduce((p: any, c: any) => {
@@ -397,7 +406,7 @@ const TestResultTable: React.FC<any> = (props) => {
     }, [oSuite, funcCase])
 
     return (
-        <MetricSelectProvider.Provider value={{ setOSuite, oSuite, setFuncCase, funcCase, }}>
+        <MetricSelectProvider.Provider value={{ setOSuite, oSuite, setFuncCase, funcCase, compareData, batchType }}>
             <div style={{ padding: "4px 20px 20px 20px" }}>
                 <Row justify="space-between" >
                     <Space>
@@ -537,6 +546,7 @@ const TestResultTable: React.FC<any> = (props) => {
                                 testType={testType}
                                 setIndexExpandFlag={setIndexExpandFlag}
                                 expandedCaseRowKeys={expandedCaseRowKeys}
+                                parentRowInfo = {record}
                             />
                         ),
                         expandIcon: ({ expanded, onExpand, record }: any) => (
@@ -568,6 +578,18 @@ const TestResultTable: React.FC<any> = (props) => {
                     test_type={testType}
                     server_provider={serverProvider}
                     onOk={handleContrastBaselineOk}
+                />
+
+                <ContrastBaselineBatch
+                    ref={contrastBaselineBatchDrawer}
+                    test_type={testType}
+                    onOk={(info: any)=> {
+                        const { name, data } = info
+                        baselineNameCallback(name)
+                        setCompareData(data)
+                        setBatchType('compare')
+                        setFuncCase([])
+                    }}
                 />
             </div>
         </MetricSelectProvider.Provider>

@@ -54,6 +54,8 @@ const TestResultDetails: React.FC<any> = (props) => {
     const [loading, setLoading] = React.useState(true)
     const [details, setDetails] = React.useState<any>({})
     const [tab, setTab] = useState<any>(query?.tab ? +query.tab : 1)
+    // 临时基线名称
+    const [tempBaselineName, setTempBaselineName] = React.useState('')
 
     const timer = React.useRef<any>(null)
 
@@ -185,6 +187,7 @@ const TestResultDetails: React.FC<any> = (props) => {
                 caseResult={details.case_result}
                 provider_name={transProvider(details.provider_name)}
                 refreshResult={refreshResult}
+                baselineNameCallback={setTempBaselineName}
             />
         ],
         [
@@ -316,7 +319,7 @@ const TestResultDetails: React.FC<any> = (props) => {
                                                         formatMessage({ id: 'ws.result.details.baseline_job' }) :
                                                         formatMessage({ id: 'ws.result.details.baseline_test' })
                                                 }
-                                                dataIndex={conversion()}
+                                                dataIndex={tempBaselineName || conversion()}
                                             />
                                             <Col span={8} >
                                                 <Row>

@@ -9,6 +9,7 @@ import EditRemarks from '../components/EditRemarks'
 import JoinBaseline from '../components/JoinBaseline'
 import { QusetionIconTootip } from '@/components/Product';
 import qs from 'querystring'
+import lodash from "lodash"
 
 import Highlighter from 'react-highlight-words'
 
@@ -33,9 +34,12 @@ export default (props: any) => {
     const {
         test_case_id, suite_id, testType, creator,
         server_provider, state = '', suite_name, conf_name,
-        refreshId, setRefreshId
+        refreshId, setRefreshId,
+        suiteRowInfo, confRowInfo,
     } = props
-    const { setFuncCase, funcCase } = React.useContext(MetricSelectProvider)
+    // console.log(  suiteRowInfo, confRowInfo, )
+
+    const { setFuncCase, funcCase, compareData, batchType } = React.useContext(MetricSelectProvider)
     const editRemark: any = useRef(null)
     const joinBaseline: any = useRef(null)
     const searchInput: any = useRef(null)
@@ -57,18 +61,40 @@ export default (props: any) => {
     const [selectedRows, setSelectedRows] = useState<any>([])
 
     // 1.请求/刷新表格数据
-    const { data, refresh, loading } = useRequest(
-        (params = interfaceSearchKeys) => queryCaseResult(params),
-        {
-            initialData: [],
-            refreshDeps: [interfaceSearchKeys],
-            /* 解决请求重复的问题 */
-            debounceInterval: 200,
-            formatResult(res) {
-                return res
-            },
+    // const { data, refresh, loading } = useRequest(
+    //     (params = interfaceSearchKeys) => queryCaseResult(params),
+    //     {
+    //         initialData: [],
+    //         refreshDeps: [interfaceSearchKeys],
+    //         /* 解决请求重复的问题 */
+    //         debounceInterval: 200,
+    //         formatResult(res) {
+    //             return res
+    //         },
+    //     }
+    // )
+
+    const [loading, setLoading] = useState<any>(false)
+    const [paginateData, setPaginateData] = useState<any>({ data: [] })
+    const refresh = lodash.debounce(
+      async (params?: any)=> {
+        try {
+            setLoading(true)
+            const q = params ? { ...interfaceSearchKeys, ...params }: interfaceSearchKeys
+            const res = await queryCaseResult(q)
+            if (res.code === 200) {
+                setPaginateData(res)
+            }
+            setLoading(false)
+        } catch {
+            setLoading(false)
         }
-    )
+    }, 200)
+
+    useEffect(()=> {
+        refresh()
+    }, [interfaceSearchKeys])
+
 
     const handleSearch = (selectedKeys: any, confirm: any) => {
         confirm?.();
@@ -317,8 +343,9 @@ export default (props: any) => {
         return str
     }
 
-    /** start 批量加基线操作 */
+    /** start 批量操作 */
     const filterSelectedAllData = (params: any[]) => {
+        // 1.数据重置
         const currTableSelectedRows = params.map((item: any)=> ({
             ...item,
             // "ws_id": ws_id,
@@ -328,12 +355,76 @@ export default (props: any) => {
             "test_case_id": test_case_id,
             "result_id": item.id,
             "sub_case_result": match_sub_case_result(item.sub_case_result)
-        }))
-        // 从所有级别suite、case、result表格中选的数据中，根据test_case_id 去除同一表格数据 && 再重新添加数据
-        const temp = funcCase.filter((item: any, i: number) => item.test_case_id !== test_case_id) || []
-        const list = temp.concat(currTableSelectedRows)
-        setFuncCase(list)
-        // console.log('list:', list)
+        })) // .sort((a, b)=> a.id - b.id)
+
+        // step2.添加1级2级父信息，重置树形结构
+        let treeData = []
+        const suitRow = funcCase.filter((item: any) => item.suite_id === suite_id)[0]
+        // 1层级: 已有suite时 
+        if (suitRow) {
+            const confRowList = suitRow.children || []
+            const confRow = confRowList.filter((item: any) => item.test_case_id === test_case_id)[0]
+            // 2层级
+            if (confRow) {
+                // 已有conf时，添加结果
+                treeData = funcCase.map((item: any)=>
+                    item.suite_id === suite_id ?
+                        ({  
+                            ...item,
+                            children: item.children.map((conf: any)=> {
+                                if (conf.test_case_id === test_case_id) {
+                                    return {
+                                        ...conf,
+                                        children: currTableSelectedRows
+                                    }
+                                }
+                                return conf
+                            })
+                        })
+                    :
+                    item
+                )
+            } else {
+                // 添加conf
+                const temp = {
+                    ...confRowInfo,
+                    children: currTableSelectedRows,
+                }
+                // 无conf时
+                treeData = funcCase.map((item: any)=> 
+                    item.suite_id === suite_id ?
+                        ({
+                            ...item,
+                            children: [...confRowList].concat([temp]).sort((a, b)=> a.test_case_id - b.test_case_id)
+                        })
+                        :
+                        item
+                )
+                 
+            }
+        } else {
+            // 添加suite
+            const temp = {
+                ...suiteRowInfo,
+                children: [
+                    {
+                        ...confRowInfo,
+                        children: currTableSelectedRows,
+                    }
+                ],
+            }
+            // 无suite时 
+            treeData = [...funcCase].concat([temp]).sort((a, b)=> a.job_suite_id - b.job_suite_id)
+        }
+        // console.log('treeData:', treeData)
+
+        // step3. 去除树形结构中的空行
+        const selectedTree = treeData.map((item: any)=> ({
+            ...item,
+            children: item.children.filter((conf: any)=> conf.children.length )
+        })).filter((suit: any)=> suit.children.length )
+        // console.log('selectedTree:', selectedTree)
+        setFuncCase(selectedTree)
     }
     const rowSelection: any = !share_id && testType === 'functional' ? {
         columnWidth: 40,
@@ -346,6 +437,7 @@ export default (props: any) => {
                list = [...selectedRows].filter((item)=> item.id !== record.id)
            }
            setSelectedRows(list)
+           //
            filterSelectedAllData(list)
         },
         onSelectAll: (selected: boolean, rows: any[], changeRows: []) => {
@@ -361,18 +453,42 @@ export default (props: any) => {
                 list = selectedRows.filter((item: any) => temp.indexOf(item.id) === -1)
             }
             setSelectedRows(list)
+            //
             filterSelectedAllData(list)
         },
     } : undefined
 
     useEffect(() => {
-        if (selectedRows.length && !funcCase.length) {
-            // 刷新表格
+        // 批量加入基线
+        if (batchType === 'join_baseline' && selectedRows.length && !funcCase.length) {
             setSelectedRows([])
             refresh()
         }
-    }, [funcCase])
-    /** end 批量加基线操作 */
+    }, [batchType, funcCase])
+
+    useEffect(() => {
+        // 批量对比
+        if (batchType === 'compare' && compareData.length) {
+            setSelectedRows([])
+            // console.log('compareData', compareData)
+            // “对比数据” 临时替换 “选中的数据”
+            const suiteItem = compareData.filter((s: any)=> s.suite_id === suite_id)[0]
+            if (suiteItem) {
+                const confItem = suiteItem.children.filter((s: any)=> s.test_case_id === test_case_id)[0]
+                if (confItem) {
+                    const caseList = confItem.children
+                    const { data = [] } = paginateData
+                    // 用id去匹配行，替换行数据
+                    const tempDataSet = data.map((item: any)=> {
+                        const row = caseList?.filter((s: any)=> item.id === s.id)[0]
+                        return row || item
+                    })
+                    setPaginateData({ ...paginateData, data: tempDataSet })
+                }
+            }
+        }
+    }, [batchType, compareData])
+    /** end 批量操作 */
 
 
     return (
@@ -384,11 +500,11 @@ export default (props: any) => {
                 size="small"
                 loading={loading}
                 rowSelection={rowSelection}
-                className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
+                className={`${styles.result_info_table_head} ${paginateData.data?.length ? '' : styles.result_info_table_head_line}`}
                 pagination={{
-                    pageSize: data.page_size || 100,
-                    current: data.page_num || 1,
-                    total: data.total || 0,
+                    pageSize: paginateData.page_size || 100,
+                    current: paginateData.page_num || 1,
+                    total: paginateData.total || 0,
                     showQuickJumper: true,
                     showSizeChanger: true,
                     onChange(page_num, page_size) {
@@ -406,7 +522,7 @@ export default (props: any) => {
                 }}
                 columns={columns}
                 rowClassName={styles.result_info_table_row}
-                dataSource={data.data || []}
+                dataSource={paginateData.data || []}
             />
             <EditRemarks ref={editRemark} onOk={refresh} />
             <JoinBaseline

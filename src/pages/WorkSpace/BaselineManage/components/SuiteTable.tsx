@@ -1,10 +1,12 @@
 import React from "react"
-import { Table, Typography } from "antd"
+import { Table, Typography, Space, Popconfirm } from "antd"
 import type { TableColumnProps } from "antd"
 import { useSize } from "ahooks"
 import { CaretRightFilled, CaretDownFilled, FilterFilled } from '@ant-design/icons'
-import { useIntl, useLocation } from "umi"
+import { useLocation, useIntl, useAccess, Access } from "umi"
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import SearchInput from '@/components/Public/SearchInput'
+import { AccessTootip } from '@/utils/utils';
 import Highlighter from 'react-highlight-words'
 import { queryFunctionalBaseline, queryPerformanceBaseline } from '../services'
 import ConfTable from "./ConfTable"
@@ -25,7 +27,7 @@ const BaseTable: React.FC<IProps> = (props) => {
     const basicParams = React.useMemo(() => ({ test_type, baseline_id, search_suite: "" }), [test_type, baseline_id])
     // const PAGE_DEFAULT_PARAMS: any = { test_type, baseline_id, search_suite: '' }  // 有用
 
-    const intl = useIntl()
+    const { formatMessage } = useIntl()
     const { query } = useLocation() as any
 
     const [listParams, setListParams] = React.useState<any>({})
@@ -33,6 +35,7 @@ const BaseTable: React.FC<IProps> = (props) => {
     const [loading, setLoading] = React.useState(true)
     const [expandKey, setExpandKey] = React.useState<React.Key[]>([])
     const ref = React.useRef(null)
+    const access = useAccess()
 
     React.useEffect(() => {
         setListParams(basicParams)
@@ -68,6 +71,10 @@ const BaseTable: React.FC<IProps> = (props) => {
         }
     }, [listParams])
 
+    const handleDelete =(record: any)=> {
+
+    }
+
     const { height } = useSize(ref)
 
     const columns: TableColumnProps<Record<string, any>>[] = [
@@ -80,7 +87,7 @@ const BaseTable: React.FC<IProps> = (props) => {
                     confirm={confirm}
                     onConfirm={(name: any) => setListParams((p: any) => ({ ...p, name }))}
                     currentData={{ test_type, id: baseline_id }}
-                    placeholder={intl.formatMessage({ id: 'pages.workspace.baseline.detail.table.test_suite_name' })} // "支持搜索Test Suite名称"
+                    placeholder={formatMessage({ id: 'pages.workspace.baseline.detail.table.test_suite_name' })} // "支持搜索Test Suite名称"
                     styleObj={{ container: 280, button_width: 140 }}
                 />
             ),
@@ -95,6 +102,41 @@ const BaseTable: React.FC<IProps> = (props) => {
                             textToHighlight={row.test_suite_name.toString()}
                         />
                     </Typography.Text>
+                )
+            }
+        },
+        {
+            title: formatMessage({ id: `pages.workspace.baseline.failDetail.table.action` }),
+            dataIndex: 'option',
+            width: 120,
+            fixed: 'right',
+            render: (text: any, record: any) => {
+                return (
+                    <Access
+                        accessible={access.WsMemberOperateSelf(record.creator)}
+                        fallback={
+                            <Space>
+                                <Typography.Link onClick={AccessTootip}>
+                                   {formatMessage({ id: `operation.delete` })}
+                                </Typography.Link>
+                            </Space>
+                        }
+                    >
+                        <Space size='small'>
+                            {/* 删除的弹框 */}
+                            <Popconfirm
+                                title={formatMessage({ id: "delete.prompt" })}
+                                onConfirm={() => handleDelete(record)}
+                                okText={formatMessage({ id: "operation.confirm" })}
+                                cancelText={formatMessage({ id: "operation.cancel" })}
+                                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                            >
+                                <Typography.Link >
+                                    {formatMessage({ id: `operation.delete` })}
+                                </Typography.Link>
+                            </Popconfirm>
+                        </Space>
+                    </Access>
                 )
             }
         }

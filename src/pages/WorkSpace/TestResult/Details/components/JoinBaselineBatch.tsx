@@ -2,7 +2,7 @@
 import { Drawer, Space, Button, Form, Input, Select, Radio, Spin, message, Divider, Typography, Row, Col } from 'antd'
 import React, { useState, forwardRef, useImperativeHandle, useRef } from 'react'
 import { useParams, useIntl, FormattedMessage, useAccess } from 'umi'
-import { queryBaselineList, perfJoinBaseline, perfJoinBaselineBatch, createFuncsDetail } from '../service'
+import { queryBaselineList, createFuncsDetail } from '../service'
 import styles from './index.less'
 import { PlusOutlined } from '@ant-design/icons'
 
@@ -71,8 +71,18 @@ const JoinBaselineBatch: React.ForwardRefRenderFunction<any, any> = (props, ref)
                 setVisible(true)
                 getBaselinePerfData()
                 if (_) {
-                    setSource(_)
-                    form.setFieldsValue({ batch_info: _ })
+                    let list: any = []
+                    _.forEach((item: any)=> {
+                        item.children.forEach((conf: any)=> {
+                            if (conf.children) {
+                                // 没有关联关系的行数据才能“添加/修改”基线
+                                const caseList = conf?.children?.filter((row: any)=> !row.skip_baseline_info) || []
+                                list = list.concat(caseList)
+                            }
+                        })
+                    })
+                    setSource(list)
+                    form.setFieldsValue({ batch_info: list })
                 }
                 setFuncsSelectVal(undefined)
             }
@@ -255,7 +265,6 @@ const JoinBaselineBatch: React.ForwardRefRenderFunction<any, any> = (props, ref)
                                   {fields.map((field, index) => {
                                           const styleRight = { paddingRight: 16 }
                                           const styleRequired= { display: 'flex'}
-                                          display:'flex'
                                           const rowInfo = source[index]
                                           const failResult = rowInfo?.result?.toLowerCase() === 'fail'
 

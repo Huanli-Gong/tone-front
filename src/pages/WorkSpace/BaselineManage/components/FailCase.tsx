@@ -114,16 +114,17 @@ const FailCaseDrawer: React.ForwardRefRenderFunction<IProps, IRefs> = (props, re
             textWrap: 'word-break',
             render: (text: any, row: any) => {
                 const urlHref = `/ws/${ws_id}/test_result/${text}`
-                const { job_name } = row
-                if (job_name)
+                const { job_name, is_copy } = row
+                if (job_name) {
+                    const name = is_copy ? `*${job_name}`: job_name
                     return (
-                        <Typography.Text ellipsis={{ tooltip: job_name }}>
+                        <Typography.Text ellipsis={{ tooltip: name }}>
                             <Typography.Link href={urlHref} target="_blank">
-                                {job_name}
+                                {name}
                             </Typography.Link>
                         </Typography.Text>
                     )
-
+                }
                 return <Typography.Text>-</Typography.Text>
             }
         },

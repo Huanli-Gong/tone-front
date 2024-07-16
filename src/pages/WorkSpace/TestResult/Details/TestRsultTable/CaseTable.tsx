@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Table, Space, Row } from 'antd'
-import React, { useEffect } from 'react'
+import React, { Children, useEffect } from 'react'
 import { Access, useAccess, useParams, FormattedMessage, getLocale } from 'umi'
 import ServerLink from '@/components/MachineWebLink/index';
 import { queryTestResultSuiteConfList } from '../service'
@@ -28,11 +28,15 @@ const background = `url(${treeSvg}) center center / 38.6px 32px `
 const CaseTable: React.FC<Record<string, any>> = (props) => {
     const {
         suite_id, testType, suite_name, server_provider, provider_name, creator, expandedState, expandedCaseRowKeys,
-        openAllRows = false, setIndexExpandFlag, parentTableName, columnsChange
+        openAllRows = false, setIndexExpandFlag, parentTableName, columnsChange,
+        parentRowInfo = {},
     } = props
 
     const locale = getLocale() === 'en-US';
-    const { setOSuite, oSuite } = React.useContext(MetricSelectProvider)
+    const { 
+        setOSuite, oSuite,
+        // funcSelectedRow, setFuncSelectedRow
+     } = React.useContext(MetricSelectProvider)
     const { id: job_id, share_id } = useParams() as any
     const [expandedRowKeys, setExpandedRowKeys] = React.useState<any[]>([])
 
@@ -225,7 +229,7 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
     const rowSelection = !share_id && ['performance', 'business_performance'].includes(testType) ? {
         columnWidth: 40,
         selectedRowKeys: oSuite?.[suite_id] ? Object.keys(oSuite?.[suite_id]).map((i: any) => + i) : [],
-        onChange: (keys: any[]) => {
+        onChange: (keys: any[], row: any[]) => {
             setOSuite(
                 keys.length > 0 ?
                     {
@@ -242,11 +246,29 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
                         return p
                     }, {})
             )
+
+            // 保存成树形结构
+            // setFuncSelectedRow(
+            //     keys.length > 0 ?
+            //         // 选中
+            //         (funcSelectedRow.filter((item: any)=> item.suite_id === suite_id).length ?
+            //            // 有父级行信息
+            //            funcSelectedRow.map((item: any)=> item.suite_id === suite_id ? ({ ...item, children: row }) : item)
+            //            :
+            //            // 无父级行信息
+            //            [ ...funcSelectedRow ].concat([{ ...parentRowInfo, children: row }])
+            //         )
+            //         :
+            //         // 全部取消
+            //         [ ...funcSelectedRow ].filter((item: any)=> item.suite_id !== suite_id)
+            // )
         }
     } : undefined
 
     useEffect(() => {
+        // 父级被选中时
         if (source && Object.prototype.toString.call(oSuite?.[suite_id]) === '[object Null]') {
+            // console.log('useEffect---setOSuite:', oSuite)
             setOSuite({
                 ...oSuite,
                 [suite_id]: source.reduce((p: any, c: any) => {
@@ -255,6 +277,11 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
                     return p
                 }, {})
             })
+
+            // 子集被全选
+            // setFuncSelectedRow(
+            //     funcSelectedRow.map((item: any)=> item.suite_id === suite_id ? ({ ...item, children: source }) : item)
+            // )
         }
     }, [oSuite, source])
 
@@ -310,6 +337,8 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
                                 suite_name={suite_name}
                                 refreshId={refreshId}
                                 setRefreshId={setRefreshId}
+                                suiteRowInfo={parentRowInfo}
+                                confRowInfo={record}
                             />
                         ),
                         expandIcon: ({ expanded, onExpand, record }: any) => (

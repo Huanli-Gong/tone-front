@@ -1,7 +1,7 @@
-import { Table, Layout, Spin, Row, Typography } from 'antd'
+import { Table, Layout, Spin, Row, Typography, Space, Popconfirm } from 'antd'
 import React, { useRef } from 'react'
-import { useLocation } from 'umi'
-
+import { useLocation, useIntl, useAccess, Access } from 'umi'
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { queryFunctionalBaseline, queryPerformanceBaseline } from '@/pages/WorkSpace/BaselineManage/services'
 import _ from 'lodash'
 import treeSvg from '@/assets/svg/tree.svg'
@@ -9,11 +9,13 @@ import treeSvg from '@/assets/svg/tree.svg'
 import FailCase from './FailCase'
 import MetricList from "./Metric"
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
+import { AccessTootip } from '@/utils/utils';
 
 // 性能三级
 type Iprops = Record<string, any>
 
 const ConfTable: React.FC<Iprops> = (props) => {
+    const { formatMessage } = useIntl()
     const { test_type, baseline_id, test_suite_id, server_sn } = props
     const { query }: any = useLocation()
 
@@ -25,17 +27,24 @@ const ConfTable: React.FC<Iprops> = (props) => {
 
     const failCase: any = useRef(null)
     const metric: any = React.useRef(null)
+    const access = useAccess();
+
+    const handleDelete =(record: any)=> {
+
+    }
 
     const columns = [{
         dataIndex: 'test_case_name',
         title: 'Test Conf',
         width: '30%',
         key: 'test_case_name',
-        render: (text: any) => {
+        render: (text: any, record: any) => {
             return (
-                <Typography.Link ellipsis>
-                    {text}
-                </Typography.Link>
+                <span onClick={()=> openDrawer(record)}>
+                    <Typography.Link ellipsis>
+                        {text}
+                    </Typography.Link>
+                </span>
             )
         },
     },
@@ -50,7 +59,43 @@ const ConfTable: React.FC<Iprops> = (props) => {
                 {row}
             </ColumnEllipsisText>
         )
-    }]
+    },
+    {
+        title: formatMessage({ id: `pages.workspace.baseline.failDetail.table.action` }),
+        dataIndex: 'option',
+        width: 120,
+        fixed: 'right',
+        render: (text: any, record: any) => {
+            return (
+                <Access
+                    accessible={access.WsMemberOperateSelf(record.creator)}
+                    fallback={
+                        <Space>
+                            <Typography.Link onClick={AccessTootip}>
+                               {formatMessage({ id: `operation.delete` })}
+                            </Typography.Link>
+                        </Space>
+                    }
+                >
+                    <Space size='small'>
+                        {/* 删除的弹框 */}
+                        <Popconfirm
+                            title={formatMessage({ id: "delete.prompt" })}
+                            onConfirm={() => handleDelete(record)}
+                            okText={formatMessage({ id: "operation.confirm" })}
+                            cancelText={formatMessage({ id: "operation.cancel" })}
+                            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                        >
+                            <Typography.Link >
+                                {formatMessage({ id: `operation.delete` })}
+                            </Typography.Link>
+                        </Popconfirm>
+                    </Space>
+                </Access>
+            )
+        }
+    }
+    ]
 
     const openDrawer = (record: any) => {
         if (test_type === 'functional') {
@@ -102,13 +147,13 @@ const ConfTable: React.FC<Iprops> = (props) => {
                             rowKey={'test_case_id'}
                             pagination={false}
                             size="small"
-                            onRow={(record: any) => {
-                                return {
-                                    onClick: () => {
-                                        openDrawer(record)
-                                    }, // 点击行
-                                };
-                            }}
+                            // onRow={(record: any) => {
+                            //     return {
+                            //         onClick: () => {
+                            //             openDrawer(record)
+                            //         }, // 点击行
+                            //     };
+                            // }}
                         />
                     </div>
                 </Row>
