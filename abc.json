@@ -3,11 +3,12 @@
         "type": "command",
         "command": {
             "cmd": [
+                "export NODE_OPTIONS=--openssl-legacy-provider",
                 "pnpm install",
                 "pnpm build",
                 "mv ./dist $BUILD_DEST"
             ]
         }
     },
-    "nodeVersion": 16
+    "nodeVersion": 20
 }
