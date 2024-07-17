@@ -354,7 +354,7 @@ export default (props: any) => {
             "test_suite_id": suite_id,
             "test_case_id": test_case_id,
             "result_id": item.id,
-            "sub_case_result": match_sub_case_result(item.sub_case_result)
+            "sub_case_result": match_sub_case_result(item.result)
         })) // .sort((a, b)=> a.id - b.id)
 
         // step2.添加1级2级父信息，重置树形结构

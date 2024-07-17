@@ -33,10 +33,7 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
     } = props
 
     const locale = getLocale() === 'en-US';
-    const { 
-        setOSuite, oSuite,
-        // funcSelectedRow, setFuncSelectedRow
-     } = React.useContext(MetricSelectProvider)
+    const { setOSuite, oSuite } = React.useContext(MetricSelectProvider)
     const { id: job_id, share_id } = useParams() as any
     const [expandedRowKeys, setExpandedRowKeys] = React.useState<any[]>([])
 

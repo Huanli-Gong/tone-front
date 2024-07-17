@@ -46,7 +46,7 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
     const treeData = data.map(async (item: any, i)=> {
       const conf = res[i]?.data || []
       const confChildren = await getCase(conf, baseline_id, item.test_suite_id)
-      return { ...item, children: confChildren }
+      return { ...item, children: confChildren || [] }
     })
     return treeData
   }
@@ -73,7 +73,7 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
 
           let baselineData: any = []
           for await (let item of res) {
-            baselineData.push(item)
+            if (item.children.length) baselineData.push(item)
           }
           // console.log('baselineData:', baselineData)
 
