@@ -57,7 +57,7 @@ export default (props: any) => {
         page_num: 1,
         share_id
     }
-    const [interfaceSearchKeys, setInterfaceSearchKeys] = React.useState({}) // defaultKeys
+    const [interfaceSearchKeys, setInterfaceSearchKeys] = React.useState(defaultKeys)
     const [selectedRows, setSelectedRows] = useState<any>([])
 
     // 1.请求/刷新表格数据
@@ -83,30 +83,7 @@ export default (props: any) => {
             const q = params ? { ...interfaceSearchKeys, ...params }: interfaceSearchKeys
             const res = await queryCaseResult(q)
             if (res.code === 200) {
-                // 判断匹配“对比数据”行id
-                if (batchType === 'compare' && selectedRows.length && compareData.length) {
-                    // “对比数据” 临时替换 “id相匹配的行数据”
-                    const suiteItem = compareData.filter((s: any)=> s.suite_id === suite_id)[0]
-                    if (suiteItem) {
-                        const confItem = suiteItem.children.filter((s: any)=> s.test_case_id === test_case_id)[0]
-                        if (confItem) {
-                            const caseList = confItem.children
-                            // 用id去匹配选中的行id，替换行数据
-                            const { data = [] } = res
-                            const tempDataSet = data.map((item: any)=> {
-                                const row = caseList?.filter((s: any)=> item.id === s.id)[0]
-                                return row || item
-                            })
-                            setPaginateData({ ...res, data: tempDataSet })
-                        } else {
-                            setPaginateData(res)
-                        }
-                    } else {
-                        setPaginateData(res)
-                    }
-                } else {
-                    setPaginateData(res)
-                }
+                setPaginateData(res)
             }
             setLoading(false)
         } catch {
@@ -115,9 +92,7 @@ export default (props: any) => {
     }, 200)
 
     useEffect(()=> {
-        if (Object.keys(interfaceSearchKeys).length) {
-            refresh()
-        } 
+        refresh()
     }, [interfaceSearchKeys])
 
 
@@ -180,13 +155,13 @@ export default (props: any) => {
 
     useEffect(() => {
         if (refreshId === test_case_id) {
-            setInterfaceSearchKeys({ ...defaultKeys, ...interfaceSearchKeys, page_num: 1, page_size: 10, sub_case_result: stateWordMap(state) })
+            setInterfaceSearchKeys((p: any) => ({ ...p, page_num: 1, page_size: 10, sub_case_result: stateWordMap(state) }))
             setTimeout(() => {
                 setRefreshId(null)
             }, 300)
         }
         if (!refreshId) {
-            setInterfaceSearchKeys({ ...defaultKeys, ...interfaceSearchKeys, page_num: 1, page_size: 10, sub_case_result: stateWordMap(state) })
+            setInterfaceSearchKeys((p: any) => ({ ...p, page_num: 1, page_size: 10, sub_case_result: stateWordMap(state) }))
         }
     }, [state])
 
@@ -379,7 +354,7 @@ export default (props: any) => {
             "test_suite_id": suite_id,
             "test_case_id": test_case_id,
             "result_id": item.id,
-            "template_sub_case_result": match_sub_case_result(item.result)
+            "sub_case_result": match_sub_case_result(item.result)
         })) // .sort((a, b)=> a.id - b.id)
 
         // step2.添加1级2级父信息，重置树形结构
@@ -493,25 +468,24 @@ export default (props: any) => {
 
     useEffect(() => {
         // 批量对比
-        if (batchType === 'compare' && selectedRows.length && compareData.length) {
+        if (batchType === 'compare' && compareData.length) {
             setSelectedRows([])
-            refresh()
-
-            // “对比数据” 临时替换 “id相匹配的行数据”
-            // const suiteItem = compareData.filter((s: any)=> s.suite_id === suite_id)[0]
-            // if (suiteItem) {
-            //     const confItem = suiteItem.children.filter((s: any)=> s.test_case_id === test_case_id)[0]
-            //     if (confItem) {
-            //         const caseList = confItem.children
-            //         // 用id去匹配选中的行id，替换行数据
-            //         const { data = [] } = paginateData
-            //         const tempDataSet = data.map((item: any)=> {
-            //             const row = caseList?.filter((s: any)=> item.id === s.id)[0]
-            //             return row || item
-            //         })
-            //         setPaginateData({ ...paginateData, data: tempDataSet })
-            //     }
-            // }
+            // console.log('compareData', compareData)
+            // “对比数据” 临时替换 “选中的数据”
+            const suiteItem = compareData.filter((s: any)=> s.suite_id === suite_id)[0]
+            if (suiteItem) {
+                const confItem = suiteItem.children.filter((s: any)=> s.test_case_id === test_case_id)[0]
+                if (confItem) {
+                    const caseList = confItem.children
+                    const { data = [] } = paginateData
+                    // 用id去匹配行，替换行数据
+                    const tempDataSet = data.map((item: any)=> {
+                        const row = caseList?.filter((s: any)=> item.id === s.id)[0]
+                        return row || item
+                    })
+                    setPaginateData({ ...paginateData, data: tempDataSet })
+                }
+            }
         }
     }, [batchType, compareData])
     /** end 批量操作 */

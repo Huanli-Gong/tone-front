@@ -62,7 +62,7 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
     form.validateFields()
       .then(async (values: any) => {
         const { baseline_id } = values
-        console.log('values:', values)
+        // console.log('values:', values)
 
         setLoading(true)
         const { code, data, msg } = await queryFunctionalBaseline({ test_type, baseline_id })
@@ -75,7 +75,7 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
           for await (let item of res) {
             if (item.children.length) baselineData.push(item)
           }
-          // console.log('baselineData:', baselineData)
+          // console.log('baselineData:', baselineData, drawerData)
 
           // 2.获取基线 和 已选数据, 按“名称”匹配
           const compareData = drawerData?.map((suite: any)=> {
@@ -111,11 +111,11 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
               ...conf,
               children: conf.children.map((caseObj: any)=> ({
                 ...caseObj,
-                sub_case_result: caseObj.sub_case_result || 'Na',
+                sub_case_result: caseObj.sub_case_result || 'NA',
               }))
             }))
           }))
-          // console.log('compareData:', compareData)
+          console.log('compareData:', compareData)
 
           const name = baselineList?.filter((item: any)=> baseline_id === item.id)[0].name
           onOk({ name, data: compareData })

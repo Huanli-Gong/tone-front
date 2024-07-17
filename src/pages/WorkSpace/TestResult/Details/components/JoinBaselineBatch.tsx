@@ -75,9 +75,7 @@ const JoinBaselineBatch: React.ForwardRefRenderFunction<any, any> = (props, ref)
                     _.forEach((item: any)=> {
                         item.children.forEach((conf: any)=> {
                             if (conf.children) {
-                                // 没有关联关系的行数据才能“添加/修改”基线
-                                const caseList = conf?.children?.filter((row: any)=> !row.skip_baseline_info) || []
-                                list = list.concat(caseList)
+                                list = list.concat(conf.children)
                             }
                         })
                     })
@@ -109,17 +107,17 @@ const JoinBaselineBatch: React.ForwardRefRenderFunction<any, any> = (props, ref)
                     const q = batch_info.map((item: any)=> {
                       const {
                         bug, impact_result, description, desc,
-                        test_suite_id, test_case_id, result_id, sub_case_result
+                        test_suite_id, test_case_id, result_id, template_sub_case_result,
                         } = item
                       
                       return (
                         item.result === 'Fail' ?
                         {
                           baseline_id, bug, impact_result, description, desc,
-                          ws_id, test_type, test_job_id, test_suite_id, test_case_id, result_id, sub_case_result
+                          ws_id, test_type, test_job_id, test_suite_id, test_case_id, result_id, sub_case_result: template_sub_case_result,
                         } : {
                           baseline_id, desc, impact_result,
-                          ws_id, test_type, test_job_id, test_suite_id, test_case_id, result_id, sub_case_result,
+                          ws_id, test_type, test_job_id, test_suite_id, test_case_id, result_id, sub_case_result: template_sub_case_result,
                         }
                       )
                     })
