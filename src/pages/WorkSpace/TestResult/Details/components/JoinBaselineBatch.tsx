@@ -118,7 +118,7 @@ const JoinBaselineBatch: React.ForwardRefRenderFunction<any, any> = (props, ref)
                           baseline_id, bug, impact_result, description, desc,
                           ws_id, test_type, test_job_id, test_suite_id, test_case_id, result_id, sub_case_result
                         } : {
-                          baseline_id, desc,
+                          baseline_id, desc, impact_result,
                           ws_id, test_type, test_job_id, test_suite_id, test_case_id, result_id, sub_case_result,
                         }
                       )
