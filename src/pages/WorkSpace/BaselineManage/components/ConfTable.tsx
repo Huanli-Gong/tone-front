@@ -1,6 +1,6 @@
-import { Table, Layout, Spin, Row, Typography, Space, Popconfirm } from 'antd'
+import { Table, Layout, Spin, Row, Typography, Space, Popconfirm, message } from 'antd'
 import React, { useRef } from 'react'
-import { useLocation, useIntl, useAccess, Access } from 'umi'
+import { useParams, useLocation, useIntl, useAccess, Access } from 'umi'
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { queryFunctionalBaseline, queryPerformanceBaseline } from '@/pages/WorkSpace/BaselineManage/services'
 import _ from 'lodash'
@@ -8,6 +8,7 @@ import treeSvg from '@/assets/svg/tree.svg'
 
 import FailCase from './FailCase'
 import MetricList from "./Metric"
+import { deletefuncsDetail } from '../services'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 import { AccessTootip } from '@/utils/utils';
 
@@ -18,6 +19,7 @@ const ConfTable: React.FC<Iprops> = (props) => {
     const { formatMessage } = useIntl()
     const { test_type, baseline_id, test_suite_id, server_sn } = props
     const { query }: any = useLocation()
+    const { ws_id }: any = useParams()
 
     const background = `url(${treeSvg}) center center / 38.6px 32px `  // 有用
     // 性能基线
@@ -29,8 +31,15 @@ const ConfTable: React.FC<Iprops> = (props) => {
     const metric: any = React.useRef(null)
     const access = useAccess();
 
-    const handleDelete =(record: any)=> {
-
+    const handleDelete = async (record: any) => {
+        const { test_case_id } = record
+        const { code, msg } = await deletefuncsDetail({ baseline_id, test_suite_id, test_case_id, ws_id });
+        if (code === 200) {
+            message.success(formatMessage({ id: 'operation.success' }))
+            getThirdDetail()
+        } else {
+            message.error(msg || formatMessage({ id: 'request.delete.failed' }))
+        }
     }
 
     const columns = [{
@@ -105,8 +114,9 @@ const ConfTable: React.FC<Iprops> = (props) => {
         metric.current?.show(record)
     }
 
-    const getThirdDetail = async (params: any) => {
+    const getThirdDetail = async () => {
         setLoading(true)
+        const params = { test_type, baseline_id, test_suite_id, server_sn }
         const { data, code } = test_type === "performance" ?
             await queryPerformanceBaseline(params) :
             await queryFunctionalBaseline(params)
@@ -126,7 +136,7 @@ const ConfTable: React.FC<Iprops> = (props) => {
 
     React.useEffect(() => {
         if (!baseline_id) return
-        getThirdDetail({ test_type, baseline_id, test_suite_id, server_sn })
+        getThirdDetail()
     }, [baseline_id])
 
     return (

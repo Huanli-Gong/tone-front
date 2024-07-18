@@ -1,14 +1,14 @@
 import React from "react"
-import { Table, Typography, Space, Popconfirm } from "antd"
+import { Table, Typography, Space, Popconfirm, message } from "antd"
 import type { TableColumnProps } from "antd"
 import { useSize } from "ahooks"
 import { CaretRightFilled, CaretDownFilled, FilterFilled } from '@ant-design/icons'
-import { useLocation, useIntl, useAccess, Access } from "umi"
+import { useParams, useLocation, useIntl, useAccess, Access } from "umi"
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import SearchInput from '@/components/Public/SearchInput'
 import { AccessTootip } from '@/utils/utils';
 import Highlighter from 'react-highlight-words'
-import { queryFunctionalBaseline, queryPerformanceBaseline } from '../services'
+import { queryFunctionalBaseline, queryPerformanceBaseline, deletefuncsDetail } from '../services'
 import ConfTable from "./ConfTable"
 import styled from "styled-components"
 
@@ -36,6 +36,7 @@ const BaseTable: React.FC<IProps> = (props) => {
     const [expandKey, setExpandKey] = React.useState<React.Key[]>([])
     const ref = React.useRef(null)
     const access = useAccess()
+    const { ws_id }: any = useParams()
 
     React.useEffect(() => {
         setListParams(basicParams)
@@ -58,7 +59,10 @@ const BaseTable: React.FC<IProps> = (props) => {
             await queryFunctionalBaseline(listParams) :
             await queryPerformanceBaseline(listParams)
         setLoading(false)
-        if (code !== 200) return
+        if (code !== 200) {
+            message.error(msg || formatMessage({ id: 'request.delete.failed' }))
+            return
+        }
         setSource(data)
     }
 
@@ -71,8 +75,15 @@ const BaseTable: React.FC<IProps> = (props) => {
         }
     }, [listParams])
 
-    const handleDelete =(record: any)=> {
-
+    const handleDelete = async (record: any) => {
+        const { test_suite_id } = record
+        const { code, msg } = await deletefuncsDetail({ baseline_id, test_suite_id, ws_id });
+        if (code === 200) {
+            message.success(formatMessage({ id: 'operation.success' }))
+            fetchListData()
+        } else {
+            message.error(msg || formatMessage({ id: 'request.delete.failed' }))
+        }
     }
 
     const { height } = useSize(ref)

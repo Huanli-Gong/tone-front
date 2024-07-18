@@ -83,8 +83,8 @@ export default (props: any) => {
             const q = params ? { ...interfaceSearchKeys, ...params }: interfaceSearchKeys
             const res = await queryCaseResult(q)
             if (res.code === 200) {
-                // 判断匹配“对比数据”行id
-                if (batchType === 'compare' && selectedRows.length && compareData.length) {
+                // 判断是批量对比
+                if (batchType === 'compare' && compareData.length) {
                     // “对比数据” 临时替换 “id相匹配的行数据”
                     const suiteItem = compareData.filter((s: any)=> s.suite_id === suite_id)[0]
                     if (suiteItem) {
@@ -447,8 +447,7 @@ export default (props: any) => {
         const selectedTree = treeData.map((item: any)=> ({
             ...item,
             children: item.children.filter((conf: any)=> conf.children.length )
-        })).filter((suit: any)=> suit.children.length )
-        // console.log('selectedTree:', selectedTree)
+        })).filter((suit: any)=> suit.children.length)
         setFuncCase(selectedTree)
     }
     const rowSelection: any = !share_id && testType === 'functional' ? {
@@ -484,38 +483,13 @@ export default (props: any) => {
     } : undefined
 
     useEffect(() => {
-        // 批量加入基线
-        if (batchType === 'join_baseline' && selectedRows.length && !funcCase.length) {
+        // 批量
+        if (batchType && selectedRows.length && (!funcCase.length || compareData.length)) {
             setSelectedRows([])
             refresh()
         }
-    }, [batchType, funcCase])
-
-    useEffect(() => {
-        // 批量对比
-        if (batchType === 'compare' && selectedRows.length && compareData.length) {
-            setSelectedRows([])
-            refresh()
-
-            // “对比数据” 临时替换 “id相匹配的行数据”
-            // const suiteItem = compareData.filter((s: any)=> s.suite_id === suite_id)[0]
-            // if (suiteItem) {
-            //     const confItem = suiteItem.children.filter((s: any)=> s.test_case_id === test_case_id)[0]
-            //     if (confItem) {
-            //         const caseList = confItem.children
-            //         // 用id去匹配选中的行id，替换行数据
-            //         const { data = [] } = paginateData
-            //         const tempDataSet = data.map((item: any)=> {
-            //             const row = caseList?.filter((s: any)=> item.id === s.id)[0]
-            //             return row || item
-            //         })
-            //         setPaginateData({ ...paginateData, data: tempDataSet })
-            //     }
-            // }
-        }
-    }, [batchType, compareData])
+    }, [batchType, funcCase, compareData])
     /** end 批量操作 */
-
 
     return (
         <>
