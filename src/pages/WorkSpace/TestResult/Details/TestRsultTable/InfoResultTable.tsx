@@ -35,11 +35,13 @@ export default (props: any) => {
         test_case_id, suite_id, testType, creator,
         server_provider, state = '', suite_name, conf_name,
         refreshId, setRefreshId,
-        suiteRowInfo, confRowInfo,
     } = props
     // console.log(  suiteRowInfo, confRowInfo, )
 
-    const { setFuncCase, funcCase, compareData, batchType } = React.useContext(MetricSelectProvider)
+    const { compareData, batchType,
+        setOSuite, oSuite,
+        setCancelSuite, cancelSuite,
+     } = React.useContext(MetricSelectProvider)
     const editRemark: any = useRef(null)
     const joinBaseline: any = useRef(null)
     const searchInput: any = useRef(null)
@@ -359,136 +361,161 @@ export default (props: any) => {
         }
     ].filter(Boolean)
 
-    const match_sub_case_result = (str: string)=> {
-        if (str === 'Pass') return 1
-        if (str === 'Fail') return 2
-        if (str === 'Stop') return 4
-        if (str === 'Skip') return 5
-        if (str === 'Warning') return 6
-        return str
+    // const match_sub_case_result = (str: string)=> {
+    //     if (str === 'Pass') return 1
+    //     if (str === 'Fail') return 2
+    //     if (str === 'Stop') return 4
+    //     if (str === 'Skip') return 5
+    //     if (str === 'Warning') return 6
+    //     return str
+    // }
+
+    // console.log('oSuite---3:', oSuite)
+    // console.log('cSuite---3:', cancelSuite)
+
+    const filterSelectedRow = () => {
+        return oSuite?.[suite_id]?.[test_case_id]?.map((item: any)=> item.id) || []
     }
-
-    /** start 批量操作 */
-    const filterSelectedAllData = (params: any[]) => {
-        // 1.数据重置
-        const currTableSelectedRows = params.map((item: any)=> ({
-            ...item,
-            // "ws_id": ws_id,
-            // "test_type": "functional",
-            // "test_job_id": job_id,
-            "test_suite_id": suite_id,
-            "test_case_id": test_case_id,
-            "result_id": item.id,
-            "template_sub_case_result": match_sub_case_result(item.result)
-        })) // .sort((a, b)=> a.id - b.id)
-
-        // step2.添加1级2级父信息，重置树形结构
-        let treeData = []
-        const suitRow = funcCase.filter((item: any) => item.suite_id === suite_id)[0]
-        // 1层级: 已有suite时 
-        if (suitRow) {
-            const confRowList = suitRow.children || []
-            const confRow = confRowList.filter((item: any) => item.test_case_id === test_case_id)[0]
-            // 2层级
-            if (confRow) {
-                // 已有conf时，添加结果
-                treeData = funcCase.map((item: any)=>
-                    item.suite_id === suite_id ?
-                        ({  
-                            ...item,
-                            children: item.children.map((conf: any)=> {
-                                if (conf.test_case_id === test_case_id) {
-                                    return {
-                                        ...conf,
-                                        children: currTableSelectedRows
-                                    }
-                                }
-                                return conf
-                            })
-                        })
-                    :
-                    item
-                )
-            } else {
-                // 添加conf
-                const temp = {
-                    ...confRowInfo,
-                    children: currTableSelectedRows,
-                }
-                // 无conf时
-                treeData = funcCase.map((item: any)=> 
-                    item.suite_id === suite_id ?
-                        ({
-                            ...item,
-                            children: [...confRowList].concat([temp]).sort((a, b)=> a.test_case_id - b.test_case_id)
-                        })
-                        :
-                        item
-                )
-                 
-            }
-        } else {
-            // 添加suite
-            const temp = {
-                ...suiteRowInfo,
-                children: [
-                    {
-                        ...confRowInfo,
-                        children: currTableSelectedRows,
-                    }
-                ],
-            }
-            // 无suite时 
-            treeData = [...funcCase].concat([temp]).sort((a, b)=> a.job_suite_id - b.job_suite_id)
-        }
-        // console.log('treeData:', treeData)
-
-        // step3. 去除树形结构中的空行
-        const selectedTree = treeData.map((item: any)=> ({
-            ...item,
-            children: item.children.filter((conf: any)=> conf.children.length )
-        })).filter((suit: any)=> suit.children.length)
-        setFuncCase(selectedTree)
+    const filterCancelRow = () => {
+        const paginateDataIds = paginateData.data.map((item: any)=> item.id)
+        /** 把"取消行"过滤掉 */
+        const precCancelList = cancelSuite?.[suite_id]?.[test_case_id] || []
+        // console.log('case---取消行:', precCancelList)
+        return paginateDataIds.filter((id: any)=> !precCancelList.includes(id))
     }
+    /** 1.是否是全选 */
+    const selectedAll = oSuite?.[suite_id]?.[test_case_id] === null ? filterCancelRow() : filterSelectedRow()
+    // console.log('selectedAll:', selectedAll,  oSuite?.[suite_id]?.[test_case_id] === null )
+
     const rowSelection: any = !share_id && testType === 'functional' ? {
         columnWidth: 40,
-        selectedRowKeys: selectedRows.map((item: any)=> item.id),
-        onSelect: (record: any, selected: boolean) => {
-           let list = []
-           if (selected) {
-               list = [...selectedRows].concat([record])
-           } else {
-               list = [...selectedRows].filter((item)=> item.id !== record.id)
-           }
-           setSelectedRows(list)
-           //
-           filterSelectedAllData(list)
-        },
-        onSelectAll: (selected: boolean, rows: any[], changeRows: []) => {
-            let list = []
-            if (selected) {
-                const all = [...selectedRows].concat(changeRows)
-                // 去重
-                const temp = all.map((item: any)=> item.id)
-                list = all.filter((item, i) => i === temp.indexOf(item.id))
+        selectedRowKeys: selectedAll,
+        onChange: (keys: React.Key[], rows: any[]) => {
+            // console.log('oSuite---3--onChange--keys:', keys)
+            // 当前页ids
+            const paginateDataIds = paginateData.data.map((item: any)=> item.id)
+
+            if (oSuite?.[suite_id]?.[test_case_id] === null) {
+                console.log('上级结节批量操作了')
+                // 当前页面：取消的行
+                const currCancelPageIds = paginateDataIds.filter((id: any)=> !keys.includes(id))
+                // 
+                const precCancelList = cancelSuite?.[suite_id]?.[test_case_id] || []
+                const totalCancelList = precCancelList.filter((id: any)=> !paginateDataIds.includes(+id)).concat(currCancelPageIds)
+                // console.log('在case取消行---totalCancelList:', totalCancelList)
+
+                setCancelSuite({
+                    ...cancelSuite,
+                    [suite_id]: totalCancelList.length > 0 ?
+                        {
+                            ...(cancelSuite?.[suite_id] || {}),
+                            [test_case_id]: totalCancelList,
+                        }
+                        :
+                        Object.keys(cancelSuite?.[suite_id]).reduce((p: any, c: any) => {
+                            if (+ c === test_case_id) {
+                                return p
+                            }
+                            p[c] = cancelSuite?.[suite_id]?.[c]
+                            return p
+                        }, {})
+                })
+
             } else {
-                // 过滤
-                const temp = changeRows.map((item: any)=> item.id)
-                list = selectedRows.filter((item: any) => temp.indexOf(item.id) === -1)
+                console.log('上级结节没批量操作，在case级操作')
+                const precList = oSuite?.[suite_id]?.[test_case_id] || []
+                // console.log('前一次选中的行---precListIds:', precListIds)
+
+                setOSuite({
+                    ...oSuite,
+                    [suite_id]: keys.length > 0 ?
+                        {
+                            ...(oSuite?.[suite_id] || {}),
+                            [test_case_id]: precList.filter((item: any)=> !paginateDataIds.includes(item.id)).concat(rows)
+                        }
+                        :
+                        Object.keys(oSuite?.[suite_id]).reduce((p: any, c: any) => {
+                            if (+ c === test_case_id) {
+                                // 当前页哪些数据要被过滤掉
+                                const selectRow = precList.filter((item: any)=> !paginateDataIds.includes(item.id))
+                                console.log('在case选中的行---selectRow:', selectRow)
+                                if (selectRow.length) {
+                                    p[c] = selectRow
+                                    return p
+                                }
+                                return p
+                            }
+                            p[c] = oSuite?.[suite_id]?.[c]
+                            return p
+                        }, {})
+                })
             }
-            setSelectedRows(list)
-            //
-            filterSelectedAllData(list)
+            
         },
+
     } : undefined
 
     useEffect(() => {
-        // 批量
-        if (batchType && selectedRows.length && (!funcCase.length || compareData.length)) {
-            setSelectedRows([])
+        // 父级被选中时
+        if (paginateData.total && Object.prototype.toString.call(oSuite?.[suite_id]?.[test_case_id]) === '[object Null]') {
+            // 分页数据全被取消
+            const precCancelList = cancelSuite?.[suite_id]?.[test_case_id] || []
+            if (precCancelList.length && precCancelList.length === paginateData.total) {
+                // step1.去除掉conf
+                const filterSuite = {
+                    ...oSuite,
+                    [suite_id]: Object.keys(oSuite?.[suite_id]).reduce((p: any, c: any) => {
+                                if (+ c === test_case_id) {
+                                    return p
+                                }
+                                p[c] = oSuite?.[suite_id]?.[c]
+                                return p
+                            }, {})
+                }
+                const filterCancelSuite = {
+                    ...cancelSuite,
+                    [suite_id]: Object.keys(cancelSuite?.[suite_id]).reduce((p: any, c: any) => {
+                        if (+ c === test_case_id) {
+                            return p
+                        }
+                        p[c] = cancelSuite?.[suite_id]?.[c]
+                        return p
+                    }, {})
+                }
+
+                // step2. 过滤值为{} 的 suite
+                setOSuite(
+                    Object.keys(filterSuite).reduce((p: any, c: any) => {
+                        if (filterSuite[c] && JSON.stringify(filterSuite[c]) === "{}" ) {
+                            return p
+                        }
+                        p[c] = filterSuite?.[c]
+                        return p
+                    }, {})
+                )
+                // 
+                setCancelSuite(
+                    Object.keys(filterCancelSuite).reduce((p: any, c: any) => {
+                        if (filterCancelSuite[c] && JSON.stringify(filterCancelSuite[c]) === "{}" ) {
+                            return p
+                        }
+                        p[c] = filterCancelSuite?.[c]
+                        return p
+                    }, {})
+                )
+
+            }
+
+        }
+    }, [cancelSuite])
+
+    useEffect(() => {
+        // 批量 && 有选中行的表格刷新
+        // console.log('batchType:', batchType)
+        if (paginateData.total && batchType === 'join_baseline' && !Object.keys(oSuite).length) {
             refresh()
         }
-    }, [batchType, funcCase, compareData])
+    }, [batchType, oSuite])
     /** end 批量操作 */
 
     return (

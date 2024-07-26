@@ -33,7 +33,10 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
     } = props
 
     const locale = getLocale() === 'en-US';
-    const { setOSuite, oSuite } = React.useContext(MetricSelectProvider)
+    const { 
+        setOSuite, oSuite,
+        setCancelSuite, cancelSuite,
+     } = React.useContext(MetricSelectProvider)
     const { id: job_id, share_id } = useParams() as any
     const [expandedRowKeys, setExpandedRowKeys] = React.useState<any[]>([])
 
@@ -223,9 +226,30 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
         }
     ], [creator, access, hasBaselineColumn, hasBaselineIdColumn, columnsChange]).filter(Boolean)
 
-    const rowSelection = !share_id && ['performance', 'business_performance'].includes(testType) ? {
+    const filterCancelRow = (keys: any[]) => {
+        const totalCancelObj = Object.keys(cancelSuite?.[suite_id]).reduce((p: any, c: any) => {
+            if (keys.includes(+ c)) {
+                p[c] = cancelSuite?.[suite_id]?.[c]
+                return p
+            }
+            return p
+        }, {})
+        console.log('在conf取消行---:', totalCancelObj)
+        return totalCancelObj
+    }
+
+    const selectedRow = () => {
+        return oSuite?.[suite_id] ? Object.keys(oSuite?.[suite_id]).map((i: any) => + i) : []
+    }
+    const selectedAllRow = () => {
+        return source?.map((item: any)=> item.test_case_id) || []
+    }
+    /** 是否是全选 */
+    const selectedAll = oSuite?.[suite_id] === null ? selectedAllRow(): selectedRow()
+    
+    const rowSelection = !share_id && ['performance', 'business_performance', 'functional'].includes(testType) ? {
         columnWidth: 40,
-        selectedRowKeys: oSuite?.[suite_id] ? Object.keys(oSuite?.[suite_id]).map((i: any) => + i) : [],
+        selectedRowKeys: selectedAll,
         onChange: (keys: any[], row: any[]) => {
             setOSuite(
                 keys.length > 0 ?
@@ -235,37 +259,39 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
                             p[c] = oSuite?.[suite_id]?.[c] || null
                             return p
                         }, {})
-                    } :
+                    }
+                    :
                     Object.keys(oSuite).reduce((p: any, c: any) => {
                         if (+ c !== suite_id) {
-                            return p[c] = oSuite?.[suite_id]?.[c] || null
+                            p[c] = oSuite?.[suite_id]?.[c] || null
+                            return p
                         }
                         return p
                     }, {})
             )
 
-            // 保存成树形结构
-            // setFuncSelectedRow(
-            //     keys.length > 0 ?
-            //         // 选中
-            //         (funcSelectedRow.filter((item: any)=> item.suite_id === suite_id).length ?
-            //            // 有父级行信息
-            //            funcSelectedRow.map((item: any)=> item.suite_id === suite_id ? ({ ...item, children: row }) : item)
-            //            :
-            //            // 无父级行信息
-            //            [ ...funcSelectedRow ].concat([{ ...parentRowInfo, children: row }])
-            //         )
-            //         :
-            //         // 全部取消
-            //         [ ...funcSelectedRow ].filter((item: any)=> item.suite_id !== suite_id)
-            // )
+            // 过滤掉“取消的conf行”
+            setCancelSuite(keys.length > 0 && cancelSuite?.[suite_id] && JSON.stringify(filterCancelRow(keys)) !== "{}" ?
+                { 
+                    ...cancelSuite, 
+                    [suite_id]: filterCancelRow(keys),
+                }
+                :
+                Object.keys(cancelSuite).reduce((p: any, c: any) => {
+                    if ( + c === suite_id) {
+                        return p
+                    }
+                    p[c] = cancelSuite?.[c]
+                    return p
+                }, {})
+            )
+
         }
     } : undefined
 
     useEffect(() => {
         // 父级被选中时
-        if (source && Object.prototype.toString.call(oSuite?.[suite_id]) === '[object Null]') {
-            // console.log('useEffect---setOSuite:', oSuite)
+        if (source.length && Object.prototype.toString.call(oSuite?.[suite_id]) === '[object Null]') {
             setOSuite({
                 ...oSuite,
                 [suite_id]: source.reduce((p: any, c: any) => {
@@ -274,11 +300,6 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
                     return p
                 }, {})
             })
-
-            // 子集被全选
-            // setFuncSelectedRow(
-            //     funcSelectedRow.map((item: any)=> item.suite_id === suite_id ? ({ ...item, children: source }) : item)
-            // )
         }
     }, [oSuite, source])
 

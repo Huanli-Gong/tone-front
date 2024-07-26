@@ -9,15 +9,15 @@ import { PlusOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words'
 import { createBaseline } from '@/pages/WorkSpace/BaselineManage/services'
 import { requestCodeMessage } from '@/utils/utils'
+import { MetricSelectProvider } from '../TestRsultTable'
 
-
-
-/** 批量结果加入基线 */
+/** 批量加入基线---表单弹框 */
 const JoinBaselineBatch: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { formatMessage } = useIntl()
     const { ws_id, id: test_job_id } = useParams() as any
     const access = useAccess()
     const { test_type, onOk } = props
+    const { setOSuite, oSuite, setCancelSuite, cancelSuite, } = React.useContext(MetricSelectProvider)
 
     const [form] = Form.useForm()
     const [visible, setVisible] = useState(false)

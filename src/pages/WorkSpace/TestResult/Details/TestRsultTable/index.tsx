@@ -7,7 +7,7 @@ import { CaretRightFilled, CaretDownFilled, DownOutlined } from '@ant-design/ico
 import { matchTestType } from '@/utils/utils'
 import CaseTable from './CaseTable'
 import JoinBaseline from '../components/JoinBaseline'
-import JoinBaselineBatch from '../components/JoinBaselineBatch'
+import BatchJoinBaseline from '../components/BatchJoinBaseline'
 import EditRemarks from '../components/EditRemarks'
 import { ReactComponent as StopCircle } from '@/assets/svg/TestResult/suite/skip.svg'
 import { ReactComponent as SuccessCircle } from '@/assets/svg/TestResult/suite/success.svg'
@@ -72,9 +72,10 @@ const TestResultTable: React.FC<any> = (props) => {
     const [selectSuiteState, setSelectSuiteState] = React.useState<undefined | string>("")
     const [loading, setLoading] = React.useState(true)
 
+    // functional 批量选择case or 取消行
     const [oSuite, setOSuite] = React.useState<any>({})
-    // functional 批量选择case
-    const [funcCase, setFuncCase] = React.useState<any>([])
+    const [cancelSuite, setCancelSuite] = React.useState<any>({})
+
     // functional 批量选中的行数据，比对后的数据
     const [compareData, setCompareData] = React.useState<any>([])
     // functional 批量操作类型: 'compare', 'join_baseline'
@@ -297,7 +298,7 @@ const TestResultTable: React.FC<any> = (props) => {
 
     const handleBatchContrastBaseline = () => {
         if (testType === 'functional') {
-            contrastBaselineBatchDrawer.current.show(funcCase)
+            // contrastBaselineBatchDrawer.current.show(funcCase)
         } else {
             contrastBaselineDrawer.current.show({ isMore: true })
         }
@@ -307,14 +308,17 @@ const TestResultTable: React.FC<any> = (props) => {
         queryDefaultTestData()
         setOSuite({})
     }
+    // 批量加基线OK
     const handleJoinBaselineBatchOk = () => {
+        console.log('批量加基线OK')
         setBatchType('join_baseline')
-        setFuncCase([])
+        setOSuite({})
+        setCancelSuite({})
     }
 
     const handleBatchJoinBaseline = () => {
         if (testType === 'functional') {
-            joinBaselineBatchDrawer.current.show(funcCase)
+            joinBaselineBatchDrawer.current.show({ })
         } else {
             joinBaselineDrawer.current.show({ isMore: true })
         }
@@ -371,16 +375,36 @@ const TestResultTable: React.FC<any> = (props) => {
         }
     }, [caseResult, filterData])
 
-    const rowSelection = !share_id && ['performance'].includes(testType) ? {
+    const filterSelectedRow = () => {
+        return Object.keys(oSuite)?.filter((i: any) => {
+            return oSuite[i] ? JSON.stringify(oSuite[i]) !== "{}" : true
+        })?.map((i: any) => + i) || []
+    }
+    const selectedAll = filterSelectedRow()
+    // console.log('selectedAll:', selectedAll,)
+    console.log('oSuite----1:', oSuite,)
+
+    const rowSelection = !share_id && ['performance', 'functional'].includes(testType) ? {
         columnWidth: 40,
-        selectedRowKeys: oSuite ? Object.keys(oSuite)?.map((i: any) => + i) : [],
+        selectedRowKeys: selectedAll,
         onChange: (keys: any[], rows: any[]) => {
-            console.log(keys)
             if (keys.length > 0) {
-                setOSuite(keys.reduce((p: any, c: any) => {
+                const temp = keys.reduce((p: any, c: any) => {
+                    console.log('c:', c,)
+
+                    const tempList = Object.keys(oSuite).map(item => + item)
+                    console.log('tempList:', tempList)
+
+                    if (tempList.includes(c) ) {
+                        p[c] = oSuite[c]
+                        return p
+                    }
                     p[c] = null
                     return p
-                }, {}))
+                }, {})
+                console.log('temp:', temp,)
+
+                setOSuite(temp)
             }
             else {
                 setOSuite({})
@@ -401,12 +425,11 @@ const TestResultTable: React.FC<any> = (props) => {
     const [columnsChange, setColumnsChange] = React.useState(uuid())
     const batchBtnDisabled = React.useMemo(() => {
         if (oSuite && Object.keys(oSuite).length) return false
-        if (funcCase && funcCase.length) return false
         return true
-    }, [oSuite, funcCase])
+    }, [oSuite])
 
     return (
-        <MetricSelectProvider.Provider value={{ setOSuite, oSuite, setFuncCase, funcCase, compareData, batchType }}>
+        <MetricSelectProvider.Provider value={{ setOSuite, oSuite, compareData, batchType, setBatchType, cancelSuite, setCancelSuite }}>
             <div style={{ padding: "4px 20px 20px 20px" }}>
                 <Row justify="space-between" >
                     <Space>
@@ -562,8 +585,9 @@ const TestResultTable: React.FC<any> = (props) => {
                     server_provider={serverProvider}
                     onOk={handleJoinBaselineOk}
                 />
-                <JoinBaselineBatch
+                <BatchJoinBaseline
                     ref={joinBaselineBatchDrawer}
+                    suiteData={filterData}
                     test_type={testType}
                     server_provider={serverProvider}
                     onOk={handleJoinBaselineBatchOk}
@@ -588,7 +612,7 @@ const TestResultTable: React.FC<any> = (props) => {
                         baselineNameCallback(name)
                         setCompareData(data)
                         setBatchType('compare')
-                        setFuncCase([])
+                        // setFuncCase([])
                     }}
                 />
             </div>

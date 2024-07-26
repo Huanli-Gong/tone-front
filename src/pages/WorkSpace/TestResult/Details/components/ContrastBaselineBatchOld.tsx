@@ -8,7 +8,6 @@ import { queryFunctionalBaseline } from '@/pages/WorkSpace/BaselineManage/servic
 
 import { MetricSelectProvider } from '../TestRsultTable'
 
-/** 批量对比基线--弹框 */
 const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
   const { formatMessage } = useIntl()
   const { ws_id, id: job_id } = useParams() as any
@@ -19,8 +18,6 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
   const [form] = Form.useForm()
   const [drawerData, setDrawerData] = useState<any>()
 
-  const { setOSuite, oSuite, setCancelSuite, cancelSuite, } = React.useContext(MetricSelectProvider)
-
   const { data: baselineList, loading: baselineLoading, run } = useRequest(
     () => queryBaselineList({ ws_id, test_type, page_size: 999 }),
     { initialData: [], manual: true }
@@ -29,6 +26,7 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
   useImperativeHandle(ref, () => ({
     show: (_: any) => {
       run()
+      setDrawerData(_)
       setVisible(true)
     }
   }))
@@ -40,6 +38,7 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
     return data.map((item: any, i) => ({ ...item, children: res[i]?.data || [] })
     ).filter((item: any) => item.children.length)
   }
+
   const getConf = async (data: any[], baseline_id: any) => {
     const promiseList = data.map((item)=> queryFunctionalBaseline({ test_suite_id: item.test_suite_id, test_type, baseline_id }))
     const res = await Promise.all(promiseList) || []

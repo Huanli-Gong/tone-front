@@ -41,7 +41,9 @@ const EllipsisPopover: React.FC<EllipsisProps> = (props) => {
         show ?
             <Popover content={title} placement={placement} overlayStyle={{ wordBreak: 'break-all' }}>
                 {TypographyDiv}
-            </Popover> : TypographyDiv
+            </Popover>
+            :
+            <div ref={ellipsis} style={{ whiteSpace: 'nowrap', width, color, ...style }} {...rest}>{children || title || '-'}</div>
     )
 }
 export default EllipsisPopover;
