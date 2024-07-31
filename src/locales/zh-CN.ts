@@ -76,6 +76,7 @@ export default {
   'please.select': '请选择',
   'please.enter': '请输入',
   'please.enter.message': '仅允许包含字母、数字、下划线、中划线、点，最长32个字符',
+  'please.enter.message64': '仅允许包含字母、数字、下划线、中划线、点，最长64个字符',
   'format.key.value': '格式：key=value，多个用空格或换行分割',
   'no.data': '暂无数据',
   'DEF_COMMON_FORMATE': ' ',

@@ -3,7 +3,7 @@ import moment from 'moment'
 import type { Moment } from 'moment'
 import React,{ useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { useRequest, useIntl, FormattedMessage } from 'umi'
+import { useRequest, FormattedMessage } from 'umi'
 import { queryWorkspaceProductData } from './services'
 
 import { ReactComponent as Icondroduct } from '@/assets/svg/dashboard/icon_droduct.svg'
@@ -47,7 +47,6 @@ const getField = (name: string) => new Map([
 ]).get(name)
 
 const WorkpsaceDashboard = (props: any) => {
-    const { formatMessage } = useIntl()
     const { ws_id } = props.match.params
     const [time, setTime] = React.useState<Moment | string | undefined>('24h')
     const [ loading, setLoading ] = useState<boolean>(true)
@@ -65,7 +64,7 @@ const WorkpsaceDashboard = (props: any) => {
             }
         })
     ), {
-        pollingInterval:5000,
+        pollingInterval: 300000, // 5分钟轮询
         manual:true,
         onSuccess:()=>{
             setLoading(false)

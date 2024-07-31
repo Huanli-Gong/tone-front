@@ -1,5 +1,6 @@
 import React, { memo } from 'react'
 import { Row, Col } from 'antd'
+import { getLocale } from 'umi'
 import styled from 'styled-components'
 
 const RowWrapper = styled(Row)`
@@ -16,11 +17,12 @@ const titleAfterCls = `
 
 type TitleColProps = {
     hasTitle: boolean;
+    locale: string;
 }
 
 const ColTitle = styled(Col) <TitleColProps>`
     text-align:right;
-    width: 260px;
+    width: ${({ locale }) => locale === 'en-US' ? '350' : '260'}px;
     ${({ hasTitle }) => hasTitle ? titleAfterCls : ''}
 `
 
@@ -30,16 +32,16 @@ type IProps = {
 }
 
 const ConfigRow: React.FC<IProps> = (props) => {
-    const { title } = props
-
+    const { title, ...other } = props
+    const locale = getLocale();
     return (
         <RowWrapper gutter={20} >
-            <ColTitle hasTitle={!!title}>
+            <ColTitle hasTitle={!!title} locale={locale}>
                 {title}
             </ColTitle>
             <Col>
                 {
-                    React.createElement('div', props)
+                    React.createElement('div', other)
                 }
             </Col>
         </RowWrapper>

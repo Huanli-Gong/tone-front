@@ -59,11 +59,16 @@ export default forwardRef(({ disabled, template, onEnabelChange }: any, ref: any
             <Form.Item
                 label={<FormattedMessage id="ws.test.job.template.name" />}
                 name="template_name"
-                rules={[{
-                    required: true,
-                    pattern: /^[A-Za-z0-9\._-]{1,64}$/g,
-                    message: formatMessage({ id: 'ws.test.job.template.message' }),
-                }]}
+                rules={[
+                    {
+                        required: true,
+                        message: formatMessage({ id: 'ws.test.job.template.message' }),
+                    },
+                    {
+                        pattern: /^[A-Za-z0-9\._-]{1,64}$/g,
+                        message: formatMessage({ id: 'please.enter.message64' }),
+                    }
+                ]}
             >
                 <Input autoComplete="off" disabled={disabled}
                     placeholder={formatMessage({ id: 'ws.test.job.template.message' })} />

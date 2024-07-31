@@ -272,7 +272,7 @@ export const filterColumns = [
                 labelInValue
             />
         ),
-        dataSet: (item: any) => ({ ...item, value: item.id, label: item.name })
+        dataSet: (item: any) => ({ ...item, value: item.name, label: item.name })
     },
     // 可选择多个 // api/case/test_suite/? page_num=4 & page_size=1000
     {

@@ -105,11 +105,16 @@ export default forwardRef(
                         /*hideRequiredMark*/
                         >
                             <Form.Item
-                                rules={[{
-                                    required: true,
-                                    pattern: /^[A-Za-z0-9\._-]{1,64}$/g,
-                                    message: formatMessage({ id: 'kernel.version.message' })
-                                }]}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: formatMessage({ id: 'kernel.version.message' })
+                                    },
+                                    {
+                                        pattern: /^[A-Za-z0-9\._-]{1,64}$/g,
+                                        message: formatMessage({ id: 'please.enter.message64' }),
+                                    }
+                                ]}
                                 label={<FormattedMessage id="kernel.version" />}
                                 name="version"
                             >

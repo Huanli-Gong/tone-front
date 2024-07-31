@@ -144,14 +144,22 @@ const NewMachine: React.FC<any> = (props) => {
 
     const loadAkData = async (selectedOptions: any) => {
         const targetOption = selectedOptions[selectedOptions.length - 1];
-        const { code, data, msg } = await querysAK({ ws_id, provider: targetOption.value })
+        const { code, data=[], msg } = await querysAK({ ws_id, provider: targetOption.value })
         if (code === 200) {
-            targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });
-            setOptions([...options])
+            // targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });
+            // setOptions([...options])
+            const tempData = options.map((item)=>
+                item.value === targetOption.value ?
+                    ({ ...item, children: data.map((item: any) => ({ label: item.name, value: item.id })), })
+                : item
+            )
+            setOptions(tempData)
         } else {
             setTimeout(() => {
-                targetOption.children = []
-                setOptions([...options])
+                // targetOption.children = []
+                // setOptions([...options])
+                const tempData = options.map((item)=> item.value === targetOption.value ? ({ ...item, children: [] }) : item )
+                setOptions(tempData)
             }, 500);
             setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) })
             form.setFieldsValue({ manufacturer: undefined })
@@ -534,6 +542,18 @@ const NewMachine: React.FC<any> = (props) => {
         setVisible(false)
         setBtnLoading(false)
         form.resetFields()
+        setOptions([
+            {
+                value: 'aliyun_eci',
+                label: 'aliyun_eci',
+                isLeaf: false,
+            },
+            {
+                value: 'aliyun_ecs',
+                label: 'aliyun_ecs',
+                isLeaf: false,
+            },
+        ])
     }
 
     const disabledState = useMemo(() => {
@@ -587,7 +607,8 @@ const NewMachine: React.FC<any> = (props) => {
                         storage_type: 'cloud_efficiency',
                         extra_param: [{ param_key: '', param_value: '' }],
                         channel_type: 'toneagent',
-                        state: 'Available'
+                        state: 'Available',
+                        mode: 'passive',
                     }}
                 >
                     <Row gutter={16}>
@@ -1095,6 +1116,21 @@ const NewMachine: React.FC<any> = (props) => {
                                 <Input.TextArea rows={3} placeholder={formatMessage({ id: 'please.enter' })} />
                             </Form.Item>
                         </Col>
+
+                        {!is_instance && BUILD_APP_ENV === 'openanolis' &&
+                            <Col span={12} className={styles.warp}>
+                                <Form.Item
+                                    name="mode"
+                                    label={<FormattedMessage id="device.toneagent.working.mode" />}
+                                    rules={[{ required: false, message: formatMessage({ id: 'please.select' }) }]}
+                                >
+                                    <Radio.Group>
+                                        <Radio value={'active'} disabled><FormattedMessage id="device.active.mode" /></Radio>
+                                        <Radio value={'passive'}><FormattedMessage id="device.passive.mode" /></Radio>
+                                    </Radio.Group>
+                                </Form.Item>
+                            </Col>
+                        }
                     </Row>
                 </Form>
             </Spin>
