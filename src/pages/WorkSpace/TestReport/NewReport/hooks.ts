@@ -69,6 +69,7 @@ export const CreatePageData = (props: any) => {
 
     const handleData = async (data: any) => {
         setLoading(true)
+        console.log('testDataParam:', data)
         const { perf_suite_dic, func_suite_dic } = data
         let perfArr: any = []
         let funcArr: any = []
@@ -80,25 +81,32 @@ export const CreatePageData = (props: any) => {
         }
         let resLen: any = []
         resLen = perfArr.concat(funcArr)
+        console.log('resLen:', resLen)
         setSuiteLen(resLen.length)
-        resLen.map((item: any, i: number) => queryCompareResultFn(item)
-            .then(res => {
-                if (res.code === 200) {
-                    setLoading(false)
-                    if (res.data.test_type === 'functional') {
-                        compareResult.func_data_result = compareResult.func_data_result.concat(res.data)
+        try {
+            resLen.map((item: any, i: number) => queryCompareResultFn(item)
+                .then(res => {
+                    if (res.code === 200) {
+                        setLoading(false)
+                        if (res.data.test_type === 'functional') {
+                            compareResult.func_data_result = compareResult.func_data_result.concat(res.data)
+                        }
+                        if (res.data.test_type === 'performance') {
+                            compareResult.perf_data_result = compareResult.perf_data_result.concat(res.data)
+                        }
                     }
-                    if (res.data.test_type === 'performance') {
-                        compareResult.perf_data_result = compareResult.perf_data_result.concat(res.data)
+                    setCompareResult({ ...compareResult })
+                    if (res.code !== 200) {
+                        message.error(res.msg)
+                        return
                     }
-                }
-                setCompareResult({ ...compareResult })
-                if (res.code !== 200) {
-                    message.error(res.msg)
-                    return
-                }
-            })
-        )
+                })
+            )
+        } catch (error) {
+            setLoading(false)
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => {

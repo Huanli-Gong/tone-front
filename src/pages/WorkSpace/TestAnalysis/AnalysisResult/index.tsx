@@ -47,6 +47,7 @@ const Report: React.FC = () => {
     // 请求对比数据
     const queryCompareForm = async () => {
         const data = await queryForm({ form_id })
+        console.log('对比数据:', data)
         if (data.code == 200) {
             if (!data?.data) return
             setTestDataParam(data?.data.testDataParam)
@@ -193,6 +194,8 @@ const Report: React.FC = () => {
     }
 
     const creatReportCallback = (reportData: any) => { // suiteData：已选的
+        console.log('对比数据--testDataParam:', testDataParam)
+
         history.push({
             pathname: `/ws/${ws_id}/test_create_report`,
             state: {
