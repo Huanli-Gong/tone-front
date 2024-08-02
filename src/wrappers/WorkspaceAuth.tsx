@@ -29,7 +29,7 @@ export default (props: any) => {
 
             /* 切换ws请求记录历史接口 */
             /* getHistoryFetcher() */
-            const ws = await enterWsAndGetList(ws_id)
+            const ws = await enterWsAndGetList(ws_id) || {}
             setInitialState((p: any) => ({
                 ...p,
                 ...ws,

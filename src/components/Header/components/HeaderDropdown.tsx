@@ -93,7 +93,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
 
     const current = React.useMemo(() => {
         if (!wsList) return {}
-        const [workspace] = wsList?.data?.filter(({ id }: any) => id === ws_id)
+        const [workspace] = (wsList?.data || [])?.filter(({ id }: any) => id === ws_id) // wsList?.data?.filter(({ id }: any) => id === ws_id)
         if (workspace) return workspace
         return {}
     }, [wsList, ws_id])
