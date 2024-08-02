@@ -26,10 +26,8 @@ const RoleSelect: React.FC<{ row: any, select: any[], handleChange: (val: number
     }
 
     useEffect(() => {
-        setSelectValue(row.role_list.map((item: any) => (item.id))[0])
+        setSelectValue(row?.role_list?.map((item: any) => (item.id))[0])
     }, [row.role_list])
-
-    // console.log('selectValue:', selectValue)
 
     return (
         <Spin spinning={loading} >

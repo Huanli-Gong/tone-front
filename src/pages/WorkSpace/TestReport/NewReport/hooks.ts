@@ -69,7 +69,6 @@ export const CreatePageData = (props: any) => {
 
     const handleData = async (data: any) => {
         setLoading(true)
-        console.log('testDataParam:', data)
         const { perf_suite_dic, func_suite_dic } = data
         let perfArr: any = []
         let funcArr: any = []
@@ -81,7 +80,6 @@ export const CreatePageData = (props: any) => {
         }
         let resLen: any = []
         resLen = perfArr.concat(funcArr)
-        console.log('resLen:', resLen)
         setSuiteLen(resLen.length)
         try {
             resLen.map((item: any, i: number) => queryCompareResultFn(item)
