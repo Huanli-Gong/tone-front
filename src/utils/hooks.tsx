@@ -10,7 +10,7 @@ const { document, location }: any = window
 
 export const enterWsAndGetList = async (ws_id: any) => {
     try {
-        const { data } = await enterWorkspaceHistroy({ ws_id })
+        const { data } = await enterWorkspaceHistroy({ ws_id }) || {}
         const { code, ...historyWorkspaces } = await queryWorkspaceHistory({
             page_num: 1,
             page_size: 20,

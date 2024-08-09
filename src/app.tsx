@@ -101,7 +101,7 @@ export async function getInitialState(): Promise<any> {
                 redirectErrorPage(401)
                 return baseAppState
             }
-            const ws: any = await enterWsAndGetList(ws_id)
+            const ws: any = await enterWsAndGetList(ws_id) || {}
             if (ws?.first_entry) {
                 history.push(`/ws/${ws_id}/workspace/initSuccess`)
             }

@@ -1117,7 +1117,7 @@ const NewMachine: React.FC<any> = (props) => {
                             </Form.Item>
                         </Col>
 
-                        {!is_instance && BUILD_APP_ENV === 'openanolis' &&
+                        {!is_instance && BUILD_APP_ENV !== 'opensource' &&
                             <Col span={12} className={styles.warp}>
                                 <Form.Item
                                     name="mode"
@@ -1125,7 +1125,9 @@ const NewMachine: React.FC<any> = (props) => {
                                     rules={[{ required: false, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     <Radio.Group>
-                                        <Radio value={'active'} disabled><FormattedMessage id="device.active.mode" /></Radio>
+                                        {BUILD_APP_ENV === 'openanolis' &&
+                                            <Radio value={'active'} disabled><FormattedMessage id="device.active.mode" /></Radio>
+                                        }
                                         <Radio value={'passive'}><FormattedMessage id="device.passive.mode" /></Radio>
                                     </Radio.Group>
                                 </Form.Item>
