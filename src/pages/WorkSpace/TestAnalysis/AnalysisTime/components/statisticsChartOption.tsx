@@ -3,13 +3,8 @@ import { textTip, commitLinkTip } from '.'
 
 const statisticsChartOption: any = (dataSource: any, ws_id: any, formatMessage: any) => {
     
-    const baseicData = [
-        { value: "Fail", color: "#C84C5A" },
-        { value: "Skip", color: "#D9D9D9" },
-        { value: "Pass", color: "#81BF84" }
-    ];
 
-    const data = Object.keys(dataSource).map((key: any) => {
+    const data = Object.keys(dataSource || {}).map((key: any) => {
         const value = dataSource[key]
         return {
           name: key,
@@ -19,6 +14,11 @@ const statisticsChartOption: any = (dataSource: any, ws_id: any, formatMessage: 
 
     const baseZoomLen = 25
     const yAxisLabel = ["Pass", "Skip", "Fail"];
+    const baseicData = [
+      { value: "Fail", color: "#C84C5A" },
+      { value: "Skip", color: "#D9D9D9" },
+      { value: "Pass", color: "#81BF84" }
+  ];
 
     const option = {
       tooltip: {
@@ -31,7 +31,9 @@ const statisticsChartOption: any = (dataSource: any, ws_id: any, formatMessage: 
         top: '5%',
         data: yAxisLabel.map((i) => ({
           name: i,
-          textStyle: { color: baseicData.filter((v) => v.value === i)[0].color }
+          textStyle: { 
+            color: baseicData.filter((item) => item.value === i)[0]?.color 
+          },
         }))
       },
       series: [
@@ -40,18 +42,13 @@ const statisticsChartOption: any = (dataSource: any, ws_id: any, formatMessage: 
           type: 'pie',
           radius: '50%',
           data: data,
-          // [
-          //   { value: 1048, name: 'Search Engine' },
-          //   { value: 735, name: 'Direct' },
-          //   { value: 580, name: 'Email' },
-          //   { value: 484, name: 'Union Ads' },
-          //   { value: 300, name: 'Video Ads' }
-          // ],
           label: {
             formatter: '{b}: ({d}%)'
           },
           itemStyle: {
-            // color: yAxisLabel.map((i) =>  baseicData.filter((v) => v.value === i)[0].color, )
+            color: (params: any) => {
+              return baseicData.filter((item: any) => item.value === params?.name)[0]?.color || '#D9D9D9'
+            }
           },
           emphasis: {
             itemStyle: {
