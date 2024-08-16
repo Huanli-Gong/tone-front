@@ -50,7 +50,7 @@ const text = {
   'tab.testProgress': '执行过程',
   'tab.testConfig': '测试配置',
   'tab.monitor': '数据监控',
-  'tab.log': '日志文件',
+  'tab.log': '日志详情',
   'tab.resultFile': '结果文件',
   'tab.versionInfo': '版本信息',
   'tab.executionDetails': '执行详情',

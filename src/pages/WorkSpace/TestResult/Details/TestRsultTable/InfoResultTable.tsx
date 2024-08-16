@@ -32,7 +32,7 @@ export default (props: any) => {
     const {
         test_case_id, suite_id, testType, creator,
         server_provider, state = '', suite_name, conf_name,
-        refreshId, setRefreshId
+        refreshId, setRefreshId, lookPathCallback = ()=> {}
     } = props
     const editRemark: any = useRef(null)
     const joinBaseline: any = useRef(null)
@@ -259,8 +259,8 @@ export default (props: any) => {
         !share_id &&
         {
             title: <FormattedMessage id="Table.columns.operation" />,
-            fixed: "right",
             width: 200,
+            fixed: "right",
             render: (_: any, row: any) => {
                 // 失败的 && 没有关联关系的才能“修改基线”
                 const failFlag = _.result === 'Fail' && !row.skip_baseline_info
@@ -284,7 +284,20 @@ export default (props: any) => {
                     </Access>
                 )
             }
-        }
+        },
+        {   
+            title: '日志',
+            dataIndex: 'log',
+            width: 80,
+            fixed: "right",
+            ellipsis: true,
+            render: (_: any, row: any)=> {
+                const filePath = row.conf_log_path 
+                return filePath ? 
+                <a><span onClick={()=> lookPathCallback(filePath, 'look') }>filePath</span></a>
+                : '-'
+            }
+        },
     ].filter(Boolean)
 
     return (

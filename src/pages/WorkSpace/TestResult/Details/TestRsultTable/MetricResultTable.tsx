@@ -15,7 +15,7 @@ import { MetricSelectProvider } from '.'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
-    const { test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType } = props
+    const { test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType, lookPathCallback = ()=> {}, } = props
     const { id: job_id, ws_id, share_id } = useParams() as any
     const { setOSuite, oSuite } = React.useContext(MetricSelectProvider)
     const defaultKeys = {
@@ -193,6 +193,19 @@ export default (props: any) => {
             dataIndex: "track_result",
             ellipsis: true,
             render: (_: any, row: any) => compareResultSpan(row.track_result, row.result, formatMessage)
+        },
+        {   
+            title: '日志',
+            dataIndex: 'log',
+            width: 80,
+            fixed: "right",
+            ellipsis: true,
+            render: (_: any, row: any)=> {
+                const filePath = row.conf_log_path
+                return filePath ? 
+                    <a><span onClick={()=> lookPathCallback(filePath, 'look') }>filePath</span></a>
+                : '-'
+            }
         },
     ]
 
