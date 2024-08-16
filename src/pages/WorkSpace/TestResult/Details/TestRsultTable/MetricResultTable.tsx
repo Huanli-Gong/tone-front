@@ -195,7 +195,7 @@ export default (props: any) => {
             render: (_: any, row: any) => compareResultSpan(row.track_result, row.result, formatMessage)
         },
         {   
-            title: '日志',
+            title: <FormattedMessage id="operation.log" />,
             dataIndex: 'log',
             width: 80,
             fixed: "right",
@@ -203,8 +203,8 @@ export default (props: any) => {
             render: (_: any, row: any)=> {
                 const filePath = row.conf_log_path
                 return filePath ? 
-                    <a><span onClick={()=> lookPathCallback(filePath, 'look') }>filePath</span></a>
-                : '-'
+                    <a><span onClick={()=> lookPathCallback(filePath, 'look') }>{formatMessage({ id: 'operation.log' })}</span></a>
+                : null
             }
         },
     ]

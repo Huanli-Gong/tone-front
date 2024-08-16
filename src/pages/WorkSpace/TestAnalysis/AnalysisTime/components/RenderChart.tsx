@@ -99,10 +99,10 @@ const RenderChart: React.FC<RenderChartProps> = (props) => {
         }
         myChart.hideLoading()
 
-        createCaseStatisticsChart()
+        const pieChart = createCaseStatisticsChart()
         return () => {
             myChart.dispose()
-            // caseStatisticsChart?.dispose()
+            pieChart?.dispose()
         }
     }, [dataSource, formatMessage, provider_env, show_type, test_type, ws_id])
 
