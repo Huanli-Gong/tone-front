@@ -216,10 +216,10 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
                 showTitle: false,
             },
             render: (_: any, row: any) => (
-                <div style={{ display: 'flex', justifyContent: 'space-between'}}>
+                <div style={{ display: 'flex'}}>
                     <EllipsisEditColumn
                         title={_}
-                        width={70}
+                        width={row.conf_log_path ? 80: 120}
                         access={access.WsMemberOperateSelf(creator)}
                         onEdit={
                             () => editRemarkDrawer.current.show({
@@ -229,18 +229,8 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
                             })
                         }
                     />
-                    {// row.conf_log_path && 
-                    <a><span onClick={
-                        ()=> {
-                            handlePathClick(row.conf_log_path, 'look')
-                            // const { test_case_id, conf_log_path = "" } = row
-                            // if (!expandedRowKeys.includes(test_case_id)) {
-                            //     setExpandedRowKeys(expandedRowKeys.concat([test_case_id]))
-                            // }
-                            // // 跳转日志
-                            // setConfLogInfo({ test_case_id, conf_log_path })
-                       }}
-                    >日志</span></a>
+                    {row.conf_log_path &&
+                       <a><span onClick={()=> handlePathClick(row.conf_log_path, 'look')}>&nbsp;{formatMessage({ id: 'operation.log' })}</span></a>
                     }
                 </div>
             )
