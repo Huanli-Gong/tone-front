@@ -10,12 +10,11 @@ const AddGroupItem: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, r
     const { onOk } = props
 
     const intl = useIntl()
-
     const [group, setGroup] = React.useState<AnyType>()
     const [open, setOpen] = React.useState(false)
     const [selectedRowDatas, setSelectedRowDatas] = React.useState<React.Key[]>([])
-
     const [activeKey, setActiveKey] = React.useState<"job" | "baseline">("job")
+    const [selectedWsId, setSelectedWsId] = React.useState<any>()
 
     const onTabClick = ($active: any) => {
         setActiveKey($active)
@@ -29,14 +28,16 @@ const AddGroupItem: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, r
                 setActiveKey($row?.type || "job")
                 setOpen(true)
                 setSelectedRowDatas($row.members || [])
+                setSelectedWsId($row.selectedWsId)
             }
         }
     })
 
     const handleCancel = () => {
         setOpen(false)
-        setSelectedRowDatas([])
         setActiveKey("job")
+        setSelectedRowDatas([])
+        setSelectedWsId(undefined)
     }
 
     const handleOk = () => {
@@ -50,7 +51,8 @@ const AddGroupItem: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, r
             ...group,
             members: selectedRowDatas,
             ...baseObj,
-            type: activeKey
+            type: activeKey,
+            selectedWsId,
         }
 
         onOk?.(result)
@@ -63,6 +65,8 @@ const AddGroupItem: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, r
         activeKey,
         selectedRowDatas,
         setSelectedRowDatas,
+        selectedWsId,
+        setSelectedWsId,
     }
 
     const getCurrentEditType = ($type: any) => {
@@ -112,7 +116,8 @@ const AddGroupItem: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, r
                             label: intl.formatMessage({ id: `analysis.${i}.data` }),
                             children: i === "job" ?
                                 <JobTable {...tableProps} />
-                                : <BaselineSelectTable {...tableProps} />
+                                :
+                                <BaselineSelectTable {...tableProps} />
                         })
                     })
                 }
