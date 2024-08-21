@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Space, Avatar, Typography, Select, Spin } from 'antd';
-import { queryWorkspaceHistory } from '@/services/Workspace'
+import { queryWorkspaceHistory, queryHomeWorkspace, queryWorkspaceTopList } from '@/services/Workspace'
 import { useModel } from 'umi'
 import { redirectErrorPage } from '@/utils/utils'
 import styled from 'styled-components'
@@ -32,51 +32,43 @@ const WorkspaceCover: React.FC<any> = ({ logo, show_name, theme_color }) => logo
         shape="square"
         size={24}
         src={logo}
-    /> :
+    />
+    :
     <Cover size={24} theme_color={theme_color}>{show_name?.slice(0, 1)}</Cover>
 
 
 
 const WsListSelect: React.FC<any> = ({ ws_id, onChange=()=> {}, onSelect=()=> {}, onClear=()=> {}, value, ...rest }) => {
-  const { initialState: { wsList, listFetchLoading }, setInitialState } = useModel("@@initialState")
   const [isOver, setIsOver] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [wsList, setWsList] = useState({ data: [], page_num: 1 })
 
-  const queryWorkspaceList = async () => {
-      setInitialState((p: any) => ({ ...p, listFetchLoading: true }))
-      let num = isOver ? wsList?.page_num : wsList?.page_num + 1
-      const { code, data, page_num, total_page } = await queryWorkspaceHistory({
-          page_num: num, page_size: 20, call_page: 'menu', ws_id
+  const queryWorkspaceList = async (q?: any) => {
+    setLoading(true)
+    try {
+      const res = await queryWorkspaceTopList({
+        page_num: wsList.page_num, page_size: 20, ws_id, ...q, // call_page: 'menu', 
       })
-      if (code !== 200) {
-          redirectErrorPage(500)
-          return
+
+      if (res.code === 200) {
+        setIsOver(res.total_page === res.page_num)
+        setWsList({
+          ...res, data: res.data || []
+        })
+      } else {
+        redirectErrorPage(500)
       }
-      setIsOver(total_page === page_num)
-      if (Object.prototype.toString.call(data) === "[object Array]" && !!data.length) {
-          setInitialState((p: any) => {
-              const obj = p.wsList.data.concat(data).reduce((pre: any, cur: any) => {
-                  pre[cur.id] = cur
-                  return pre
-              }, {})
-              return {
-                  ...p,
-                  listFetchLoading: false,
-                  wsList: {
-                      page_num,
-                      data: Object.entries(obj).map((item: any) => {
-                          const [, val] = item
-                          return val
-                      })
-                  }
-              }
-          })
-      }
+      setLoading(false) 
+    } catch (err) {
+      setLoading(false) 
+    }
   }
+
 
   const handleScroll = ({ target }: any) => {
     const { clientHeight, scrollTop, scrollHeight } = target
     if (clientHeight + scrollTop === scrollHeight && !isOver && Object.prototype.toString.call(wsList?.next) === '[object String]') {
-        queryWorkspaceList()
+        queryWorkspaceList({ page_num: wsList.page_num + 1 })
     }
   }
 
@@ -86,10 +78,9 @@ const WsListSelect: React.FC<any> = ({ ws_id, onChange=()=> {}, onSelect=()=> {}
 
 	return (
 			<Select
-				notFoundContent={listFetchLoading ? <Spin size="small" /> : null}
+				notFoundContent={loading ? <Spin size="small" /> : null}
 				showSearch
-				onSearch={queryWorkspaceList}
-				onPopupScroll={listFetchLoading ? () => {}: handleScroll} // 防抖
+				onPopupScroll={loading ? () => {}: handleScroll} // 防抖
 				showArrow={false}
         value={value}
         onSelect={onSelect}
