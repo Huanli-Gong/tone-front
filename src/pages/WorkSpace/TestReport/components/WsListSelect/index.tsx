@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Space, Avatar, Typography, Select, Spin } from 'antd';
-import { queryWorkspaceHistory, queryHomeWorkspace, queryWorkspaceTopList } from '@/services/Workspace'
+import { queryWorkspaceHistory, queryHomeWorkspace } from '@/services/Workspace'
 import { useModel } from 'umi'
 import { redirectErrorPage } from '@/utils/utils'
 import styled from 'styled-components'
@@ -46,8 +46,9 @@ const WsListSelect: React.FC<any> = ({ ws_id, onChange=()=> {}, onSelect=()=> {}
   const queryWorkspaceList = async (q?: any) => {
     setLoading(true)
     try {
-      const res = await queryWorkspaceTopList({
-        page_num: wsList.page_num, page_size: 20, ws_id, ...q, // call_page: 'menu', 
+      const res = await queryHomeWorkspace({
+        scope: 'powerful',
+        page_num: wsList.page_num, page_size: 20, ...q,
       })
 
       if (res.code === 200) {
