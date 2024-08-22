@@ -36,7 +36,7 @@ interface AligroupParams {
     page_num?: number,
     page_size?: number,
     name?: string,
-    is_temporary?: boolean,
+    is_temporary?: string,
     owner?: any,
     tags?: any,
     description?: string,
@@ -182,7 +182,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props) => {
     })
 
     const radioFilterCommonFields = (dataIndex: string, list: any[]) => ({
-        filterIcon: () => <FilterFilled style={{ color: params.hasOwnProperty(dataIndex) ? '#1890ff' : undefined }} />,
+        filterIcon: () => <FilterFilled style={{ color: (params[dataIndex] || params[dataIndex] === 0)  ? '#1890ff' : undefined }} />,
         filterDropdown: ({ confirm }: any) => (
             <SelectRadio
                 list={list}
@@ -213,8 +213,8 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props) => {
         {
             title: <FormattedMessage id="device.cluster/temporary.cluster" />,
             ...radioFilterCommonFields("is_temporary", [
-                { id: false, name: formatMessage({ id: 'cluster' }) },
-                { id: true, name: formatMessage({ id: 'device.temporary.cluster' }) },
+                { id: 0, name: formatMessage({ id: 'cluster' }) },
+                { id: 1, name: formatMessage({ id: 'device.temporary.cluster' }) },
             ]),
             dataIndex: 'is_temporary',
             width: enLocale ? 170 : 150,
