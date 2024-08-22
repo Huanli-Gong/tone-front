@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, forwardRef, useImperativeHandle } from 'react'
 import styles from './index.less'
-import { useIntl, FormattedMessage, useParams } from 'umi'
+import { useIntl, FormattedMessage, useParams, getLocale } from 'umi'
 import { Layout, Button, Space, Tag, message, Typography, Spin, Modal, Table } from 'antd'
 import { deleteServerGroup, queryServerDel } from '../services'
 import { CaretRightFilled, FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons'
@@ -15,6 +15,7 @@ import CommonPagination from '@/components/CommonPagination'
 import { usePageInit } from './hooks'
 import { requestCodeMessage, AccessTootip, saveRefenerceData } from '@/utils/utils';
 import { Access, useAccess } from 'umi';
+import SelectRadio from '@/components/Public/SelectRadio';
 import OverflowList from '@/components/TagOverflow/index'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 import { v4 as uuid } from 'uuid'
@@ -26,6 +27,7 @@ import DelConfirmModal from "@/pages/WorkSpace/DeviceManage/components/DelConfir
  */
 const Cluster = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
     const { ws_id } = useParams() as any
     const access = useAccess();
     const { loading, dataSource, params, setParams, setRefresh } = usePageInit()
@@ -101,6 +103,18 @@ const Cluster = (props: any, ref: any) => {
         }, []
     )
 
+    const radioFilterCommonFields = (dataIndex: string, list: any[]) => ({
+        filterIcon: () => <FilterFilled style={{ color: params.hasOwnProperty(dataIndex) ? '#1890ff' : undefined }} />,
+        filterDropdown: ({ confirm }: any) => (
+            <SelectRadio
+                list={list}
+                value={params[dataIndex]}
+                confirm={confirm}
+                onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
+            />
+        ),
+    })
+
     const columns: any = [
         {
             title: <FormattedMessage id="device.cluster.name" />,
@@ -110,6 +124,22 @@ const Cluster = (props: any, ref: any) => {
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(name: string) => setParams({ ...params, page_num: 1, name })} />
             )
+        },
+        {
+            title: <FormattedMessage id="device.cluster/temporary.cluster" />,
+            ...radioFilterCommonFields("is_temporary", [
+                { id: false, name: formatMessage({ id: 'cluster' }) },
+                { id: true, name: formatMessage({ id: 'device.temporary.cluster' }) },
+            ]),
+            dataIndex: 'is_temporary',
+            width: enLocale ? 170 : 150,
+            ellipsis: {
+                showTitle: false
+            },
+            render: (_: any, row: any) => {
+                const text = _ ? formatMessage({ id: 'device.temporary.cluster' }): formatMessage({ id: 'cluster' })
+                return <span>{row.hasOwnProperty('is_temporary') ? text: '-'}</span>
+            }
         },
         {
             title: 'Owner',

@@ -14,10 +14,11 @@ import SelectTags from '@/components/Public/SelectTags';
 import Highlighter from 'react-highlight-words';
 import AddCluster from './AddGroup'
 import { FilterFilled } from '@ant-design/icons';
-import { useParams, useIntl, FormattedMessage, useLocation, history } from 'umi';
+import { useParams, useIntl, FormattedMessage, useLocation, history, getLocale } from 'umi';
 import { useClientSize } from '@/utils/hooks';
 import { AccessTootip, handlePageNum, requestCodeMessage, saveRefenerceData, useStateRef } from '@/utils/utils';
 import { Access, useAccess } from 'umi'
+import SelectRadio from '@/components/Public/SelectRadio';
 import Log from '@/components/Public/Log';
 import OverflowList from '@/components/TagOverflow/index';
 import CommonPagination from '@/components/CommonPagination';
@@ -35,6 +36,7 @@ interface AligroupParams {
     page_num?: number,
     page_size?: number,
     name?: string,
+    is_temporary?: boolean,
     owner?: any,
     tags?: any,
     description?: string,
@@ -45,6 +47,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props) => {
     const { tab } = props
     const { query } = useLocation() as any
     const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
     const { ws_id }: any = useParams()
     const [form] = Form.useForm();
     const access = useAccess();
@@ -85,8 +88,11 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props) => {
     const getList = async ($params: any = {}) => {
         setLoading(true)
         const data: any = await querysCluster({ ...$params })
-        history.replace(`/ws/${ws_id}/device/cloud?${stringify({ ...$params, is_instance: $params.is_instance ? 1 : 0 })}`)
-        data && setSource(data)
+        if (data.code === 200) {
+            history.replace(`/ws/${ws_id}/device/cloud?${stringify({ ...$params, is_instance: $params.is_instance ? 1 : 0 })}`)
+            console.log('data:', data)
+            data && setSource(data)
+        }
         setLoading(false)
     };
     const totalCurrent = useStateRef(source)
@@ -175,6 +181,18 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props) => {
         filterIcon: () => <FilterFilled style={{ color: (params as any)[dataIndex] ? '#1890ff' : undefined }} />,
     })
 
+    const radioFilterCommonFields = (dataIndex: string, list: any[]) => ({
+        filterIcon: () => <FilterFilled style={{ color: params.hasOwnProperty(dataIndex) ? '#1890ff' : undefined }} />,
+        filterDropdown: ({ confirm }: any) => (
+            <SelectRadio
+                list={list}
+                value={params[dataIndex]}
+                confirm={confirm}
+                onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
+            />
+        ),
+    })
+
     const columns: any = [
         {
             title: <FormattedMessage id="device.cluster.name" />,
@@ -191,6 +209,22 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props) => {
                     />
                 </ColumnEllipsisText>
             )
+        },
+        {
+            title: <FormattedMessage id="device.cluster/temporary.cluster" />,
+            ...radioFilterCommonFields("is_temporary", [
+                { id: false, name: formatMessage({ id: 'cluster' }) },
+                { id: true, name: formatMessage({ id: 'device.temporary.cluster' }) },
+            ]),
+            dataIndex: 'is_temporary',
+            width: enLocale ? 170 : 150,
+            ellipsis: {
+                showTitle: false
+            },
+            render: (_: any, row: any) => {
+                const text = _ ? formatMessage({ id: 'device.temporary.cluster' }): formatMessage({ id: 'cluster' })
+                return <span>{row.hasOwnProperty('is_temporary') ? text: '-'}</span>
+            }
         },
         {
             title: 'Owner',
