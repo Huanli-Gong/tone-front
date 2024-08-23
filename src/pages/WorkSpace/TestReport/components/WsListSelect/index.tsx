@@ -48,11 +48,12 @@ const WsListSelect: React.FC<any> = ({ ws_id, onChange=()=> {}, onSelect=()=> {}
     try {
       const res = await queryHomeWorkspace({
         scope: 'powerful',
-        page_num: wsList.page_num, page_size: 20, ...q,
+        page_num: wsList.page_num, page_size: 999,
+        ...q,
       })
 
       if (res.code === 200) {
-        setIsOver(res.total_page === res.page_num)
+        // setIsOver(res.total_page === res.page_num)
         setWsList({
           ...res, data: res.data || []
         })
@@ -65,13 +66,18 @@ const WsListSelect: React.FC<any> = ({ ws_id, onChange=()=> {}, onSelect=()=> {}
     }
   }
 
+  // const handleScroll = ({ target }: any) => {
+  //   const { clientHeight, scrollTop, scrollHeight } = target
+  //   if (clientHeight + scrollTop === scrollHeight && !isOver && Object.prototype.toString.call(wsList?.next) === '[object String]') {
+  //       queryWorkspaceList({ page_num: wsList.page_num + 1 })
+  //   }
+  // }
 
-  const handleScroll = ({ target }: any) => {
-    const { clientHeight, scrollTop, scrollHeight } = target
-    if (clientHeight + scrollTop === scrollHeight && !isOver && Object.prototype.toString.call(wsList?.next) === '[object String]') {
-        queryWorkspaceList({ page_num: wsList.page_num + 1 })
-    }
-  }
+  // const handleSearch = async (word?: string) => {
+  //   console.log('word:', word)
+	// 	// const param = word && word.replace(/\s*/g, "")
+	// 	// queryWorkspaceList({ name: param, page_num: 1, ws_id })
+	// }
 
 	useEffect(() => {
 		queryWorkspaceList()
@@ -80,18 +86,20 @@ const WsListSelect: React.FC<any> = ({ ws_id, onChange=()=> {}, onSelect=()=> {}
 	return (
 			<Select
 				notFoundContent={loading ? <Spin size="small" /> : null}
-				showSearch
-				onPopupScroll={loading ? () => {}: handleScroll} // 防抖
-				showArrow={false}
+				// showSearch
+        // onSearch={handleSearch}
+				// onPopupScroll={loading ? () => {}: handleScroll} // 防抖
         value={value}
         onSelect={onSelect}
-        filterOption={(input, option: any) =>
-          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-        }
         {...rest}
+        filterOption={(input, option: any) => {
+          return (
+            option?.key?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0
+          )
+        }}
 			>
         {wsList?.data?.map((item: any) => 
-          <Select.Option key={item.id} value={item.id}>
+          <Select.Option key={item.show_name} value={item.id}>
               <Space>
                 <WorkspaceCover {...item} />
                 <ShowName ellipsis>{item.show_name}</ShowName>

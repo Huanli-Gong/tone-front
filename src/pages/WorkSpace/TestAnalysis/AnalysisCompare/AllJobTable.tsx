@@ -120,7 +120,7 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
 
     const getJobList = async () => {
         setLoading(true)
-        const data = await queryJobList(params)
+        const data = await queryJobList({ ...params, ws_id: selectedWsId, })
         setLoading(false)
         if (data.code === 200) {
             setDataSource(data)
@@ -454,7 +454,7 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                         rowKey='id'
                         columns={columns as any}
                         name="ws-compare-all-job-list"
-                        refreshDeps={[ws_id, params, autoFocus]}
+                        refreshDeps={[selectedWsId, params, autoFocus]}
                         loading={loading}
                         dataSource={tableData}
                         pagination={false}
