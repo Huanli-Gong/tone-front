@@ -69,7 +69,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
     }
     const getJobList = async () => {
         setLoading(true)
-        const data = await queryJobList(listParams)
+        const data = await queryJobList({ ...listParams, ws_id: selectedWsId })
         setLoading(false)
         if (data.code === 200) {
             setJobs(data)
