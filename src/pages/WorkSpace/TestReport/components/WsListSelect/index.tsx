@@ -86,7 +86,7 @@ const WsListSelect: React.FC<any> = ({ ws_id, onChange=()=> {}, onSelect=()=> {}
 	return (
 			<Select
 				notFoundContent={loading ? <Spin size="small" /> : null}
-				// showSearch
+				showSearch
         // onSearch={handleSearch}
 				// onPopupScroll={loading ? () => {}: handleScroll} // 防抖
         value={value}

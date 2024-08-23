@@ -315,7 +315,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
         allClear: true,
         optionFilterProp: "children",
         disabled: !!selectedRowDatas.length,
-        style: { flex: 1 },
+        style: { flex: 1, overflow: 'hidden' },
         filterOption: (input: any, option: any) => option.label?.toLowerCase().indexOf(input.toLowerCase()) >= 0
     }
 
@@ -331,7 +331,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
                             ws_id={ws_id}
                             value={selectedWsId} 
                             onSelect={onWsChange}
-                            style={{ flex: 1, overflow: 'hidden' }}
+                            style={{ flex: 1 }}
                         />
                     </div>
                 </Col>

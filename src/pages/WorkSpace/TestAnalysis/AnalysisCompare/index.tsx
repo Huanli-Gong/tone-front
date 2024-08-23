@@ -130,6 +130,7 @@ export default (props: any) => {
                     members: brr,
                     product_version: brr[0]?.['product_version'],
                     product_id: brr[0]?.['product_id'],
+                    ws_id: brr[0]?.['ws_id'],
                 }
             })
             newNoGroup.current = newGroup
@@ -145,7 +146,7 @@ export default (props: any) => {
         if (remainArr.length) snGroupingFn(remainArr, newGroup)
         if (!remainArr.length) {
             newGroup = newGroup.map((brr: any) => {
-                return { members: brr, product_version: brr[0]['product_version'], server: brr[0]['server'] }
+                return { members: brr, product_version: brr[0]['product_version'], server: brr[0]['server'], ws_id: brr[0]?.['ws_id'] }
             })
             newNoGroup.current = newGroup
         }
@@ -169,6 +170,7 @@ export default (props: any) => {
                     const addGroup = {
                         product_version: obj.product_version,
                         members: obj.members,
+                        selectedWsId: obj.ws_id || ws_id,
                         product_id: obj.product_id,
                         name,
                         type: 'job',
@@ -210,6 +212,7 @@ export default (props: any) => {
                     const addGroup = {
                         product_version: obj.product_version,
                         members: obj.members,
+                        selectedWsId: obj.ws_id || ws_id,
                         product_id: obj.product_id,
                         name,
                         type: 'job',
@@ -260,6 +263,7 @@ export default (props: any) => {
             product_version: undefined,
             product_id: undefined,
             members: [],
+            selectedWsId: ws_id,
             name,
             type,
             id: uuid()
@@ -413,7 +417,6 @@ export default (props: any) => {
     const handleSureOk = (suiteData: any) => { // suiteData：已选的
         const params: any = handleDomainList(suiteData)
         const paramEenvironment = handlEenvironment(suiteData)
-        // console.log('paramEenvironment:', paramEenvironment)
         setLoading(true)
         Promise.all([queryDomainGroupFn(params)])
             .then((result: any) => {
@@ -574,7 +577,6 @@ export default (props: any) => {
             base_group,
             compare_groups
         }
-        // console.log(paramData)
         return paramData
     }
 
@@ -684,11 +686,11 @@ export default (props: any) => {
             }
         }
         realGroup.type = groupArr[startGroupIndex].type
+        realGroup.selectedWsId = groupArr[startGroupIndex].selectedWsId
         return groupArr;
     };
 
     const diferentDeorderTwo = (noGoupArr: any, groupArr: any, startIndex: number, endIndex: number, endGroupIndex: number) => {
-        // console.log(groupArr)
         const realGroup = groupArr[endGroupIndex]
         const arr = _.cloneDeep(realGroup.members)
         const [removed] = noGoupArr.splice(startIndex, 1);
@@ -819,7 +821,7 @@ export default (props: any) => {
 
     const newGroupData = transformIdFn(_.cloneDeep(groupData))
     const newNoGroupData = transformNoGroupIdFn(noGroupData)
-
+    
     const scroll = {
         // 最大高度，内容超出该高度会出现滚动条
         height: layoutHeight - 329 + 8 - 22 - 5,
@@ -1259,7 +1261,7 @@ export default (props: any) => {
                     ref={deleteGroupModalRef}
                     onOk={handleDelGroup}
                 />
-
+                
                 <AddGroupItemModal
                     ref={addGroupItemModal}
                     allGroupData={groupData}
