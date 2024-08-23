@@ -241,6 +241,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
             dataIndex: 'creator_name',
             filterDropdown: ({ confirm }: any) => (
                 <SelectUser
+                    ws_id={selectedWsId}
                     autoFocus={autoFocus}
                     mode=""
                     confirm={confirm}
@@ -330,7 +331,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
                             ws_id={ws_id}
                             value={selectedWsId} 
                             onSelect={onWsChange}
-                            style={{ flex: 1 }}
+                            style={{ flex: 1, overflow: 'hidden' }}
                         />
                     </div>
                 </Col>

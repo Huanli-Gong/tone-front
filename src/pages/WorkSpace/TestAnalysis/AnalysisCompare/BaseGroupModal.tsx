@@ -227,7 +227,8 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
             const group_jobs = groupAll.map((item: any) => ({
                 group_name: item.name,
                 is_baseline: item.type === 'baseline' ? 1 : 0,
-                test_job_id: [].concat(item.members.map((i: any) => i.id))
+                test_job_id: [].concat(item.members.map((i: any) => i.id)),
+                // ws_id: item.selectedWsId,
             }))
             let rowKeys = tab === 'functional' ? selectedFuncRowKeys : selectedPerfRowKeys
             let selectdRows = suite_data.filter((i: any) => rowKeys.includes(String(i.suite_id)))

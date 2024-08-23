@@ -413,7 +413,7 @@ export default (props: any) => {
     const handleSureOk = (suiteData: any) => { // suiteData：已选的
         const params: any = handleDomainList(suiteData)
         const paramEenvironment = handlEenvironment(suiteData)
-
+        // console.log('paramEenvironment:', paramEenvironment)
         setLoading(true)
         Promise.all([queryDomainGroupFn(params)])
             .then((result: any) => {

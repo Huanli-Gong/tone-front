@@ -236,6 +236,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                 {
                     !!dataSource.length ?
                         dataSource.map((item: any, idx: number) => {
+                            const { group_jobs = [] } = item
                             return (
                                 <React.Fragment key={idx}>
                                     <TestSuite>
@@ -293,20 +294,23 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                                     </EllipsisPulic>
                                                                 </CaseTitle>
                                                                 {
-                                                                    conf_data?.slice(0, group)?.map((metric: any, idx: number) => (
-                                                                        <CaseText gLen={group} key={idx}>
-                                                                            <Space size={16}>
-                                                                                <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(metric.all_case)}</Typography.Text>
-                                                                                <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(metric.success_case)}</Typography.Text>
-                                                                                <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(metric.fail_case)}</Typography.Text>
-                                                                                {
-                                                                                    metric && !metric.is_baseline ?
-                                                                                        <JumpResult ws_id={item.ws_id} job_id={metric.obj_id} style={{ paddingLeft: 10 }} /> :
-                                                                                        <></>
-                                                                                }
-                                                                            </Space>
-                                                                        </CaseText>
-                                                                    ))
+                                                                    conf_data?.slice(0, group)?.map((metric: any, idx: number) => {
+                                                                        const selected_ws_id = group_jobs?.filter((jobObj: any)=> jobObj?.job_list?.includes(metric.obj_id))[0].ws_id || wsId
+                                                                        return (
+                                                                            <CaseText gLen={group} key={idx}>
+                                                                                <Space size={16}>
+                                                                                    <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(metric.all_case)}</Typography.Text>
+                                                                                    <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(metric.success_case)}</Typography.Text>
+                                                                                    <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(metric.fail_case)}</Typography.Text>
+                                                                                    {
+                                                                                        metric && !metric.is_baseline ?
+                                                                                            <JumpResult ws_id={selected_ws_id} job_id={metric.obj_id} style={{ paddingLeft: 10 }} /> :
+                                                                                            <></>
+                                                                                    }
+                                                                                </Space>
+                                                                            </CaseText>
+                                                                        )
+                                                                    })
                                                                 }
                                                             </TestCase>
                                                             <ExpandSubcases

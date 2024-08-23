@@ -221,7 +221,9 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                 shwoTitle: false,
             },
             dataIndex: 'creator_name',
-            filterDropdown: ({ confirm }: any) => <SelectUser
+            filterDropdown: ({ confirm }: any) => 
+               <SelectUser
+                ws_id={selectedWsId} 
                 autoFocus={autoFocus} mode="" confirm={confirm}
                 onConfirm={(val: []) => setParams({ ...params, creators: val ? JSON.stringify([val]) : null })} page_size={9999} />,
             onFilterDropdownVisibleChange: (visible: any) => {
