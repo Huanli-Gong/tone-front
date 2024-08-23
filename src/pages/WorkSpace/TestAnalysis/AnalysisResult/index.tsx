@@ -125,13 +125,15 @@ const Report: React.FC = () => {
                     message.error(res.msg)
                     return
                 }
-                const { test_type } = data
-                if (code === 200 && JSON.stringify(data) !== '{}' && ["functional", "performance"].includes(test_type)) {
-                    const field = test_type === "functional" ? "func_data_result" : "perf_data_result"
-                    setCompareResult((p: any) => ({
-                        ...p,
-                        [field]: p[field].concat(data)
-                    }))
+                if (code === 200 && JSON.stringify(data) !== '{}') {
+                    const { test_type } = data
+                    if (["functional", "performance"].includes(test_type)) {
+                        const field = test_type === "functional" ? "func_data_result" : "perf_data_result"
+                        setCompareResult((p: any) => ({
+                            ...p,
+                            [field]: p[field].concat(data)
+                        }))
+                    }
                 }
             })
         )
@@ -192,7 +194,7 @@ const Report: React.FC = () => {
         saveReportDraw.current?.show({})
     }
 
-    const creatReportCallback = (reportData: any) => { // suiteData：已选的
+    const createReportCallback = (reportData: any) => { // suiteData：已选的
         history.push({
             pathname: `/ws/${ws_id}/test_create_report`,
             state: {
@@ -319,7 +321,7 @@ const Report: React.FC = () => {
                     ws_id &&
                     <SaveReport
                         ref={saveReportDraw}
-                        onOk={creatReportCallback}
+                        onOk={createReportCallback}
                         allGroup={allGroupData}
                     />
                 }

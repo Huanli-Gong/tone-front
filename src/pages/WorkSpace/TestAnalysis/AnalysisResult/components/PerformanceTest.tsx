@@ -245,20 +245,6 @@ const ReportTestPref: React.FC<any> = (props) => {
             }))
         }
     }
-    const renderShare = (conf: any) => {
-        let obj = conf.conf_compare_data || conf.compare_conf_list || []
-        return obj.map((item: any, idx: number) => {
-            return (
-                <PrefDataText gLen={group} key={idx}>
-                    {
-                        !getCompareType(item) ?
-                            <JumpResult ws_id={wsId} job_id={item.obj_id || item} /> :
-                            <div style={{ height: 38 }} />
-                    }
-                </PrefDataText>
-            )
-        })
-    }
 
     const containerScroll = useScroll(containerRef)
     return (
@@ -336,7 +322,17 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                         <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
                                                             <PrefData>
                                                                 <PrefDataTitle gLen={group}><EllipsisPulic title={conf.conf_name} /></PrefDataTitle>
-                                                                {renderShare(conf)}
+                                                                {(conf.conf_compare_data || conf.compare_conf_list || []).map((objItem: any, idx: number) =>
+                                                                    <PrefDataText gLen={group} key={idx}>
+                                                                        {
+                                                                            !getCompareType(objItem) ?
+                                                                                <JumpResult ws_id={objItem.ws_id}  // wsId
+                                                                                    job_id={objItem.obj_id || objItem} />
+                                                                                :
+                                                                                <div style={{ height: 38 }} />
+                                                                        }
+                                                                    </PrefDataText>
+                                                                )}
                                                             </PrefData>
                                                             {
                                                                 conf.metric_list.map((metric: any, idx: number) => (
