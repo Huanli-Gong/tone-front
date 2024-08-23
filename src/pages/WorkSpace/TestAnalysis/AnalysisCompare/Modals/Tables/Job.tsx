@@ -313,7 +313,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
         showSearch: true,
         allClear: true,
         optionFilterProp: "children",
-        disabled,
+        disabled: !!selectedRowDatas.length,
         style: { flex: 1 },
         filterOption: (input: any, option: any) => option.label?.toLowerCase().indexOf(input.toLowerCase()) >= 0
     }
