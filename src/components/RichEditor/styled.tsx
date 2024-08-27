@@ -54,7 +54,7 @@ export const DropdownWrapper = `
     z-index: 100;
     overflow: hidden;
     bottom: 0;
-    left: 0;
+    right: 0;
     transform: translateY(100%);
 `;
 
@@ -112,7 +112,7 @@ export const ToolbarWidget = styled.span`
     margin-right: 6px;
 `;
 
-export const EditorCls = styled.div<{ editable?: boolean }>`
+export const EditorCls = styled.div<{ editable?: boolean, styledCss?: string }>`
     width: 100%;
     height: 100%;
     h1 {
@@ -346,8 +346,7 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
         }
 
         img {
-            /* max-width: 100%; */
-            max-width: 630px;
+            max-width: 640px;
             height: auto;
         }
 
@@ -491,6 +490,8 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
             border-bottom: 1px solid #e2e2e2;
         }
     }
+
+    ${({ styledCss }) => styledCss};
 `;
 
 export const ImageResizeBubble = styled.div`
@@ -520,4 +521,4 @@ export const ImageResizeBubble = styled.div`
             fill: #fff;
         }
     }
-`;
+`

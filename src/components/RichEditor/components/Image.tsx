@@ -12,7 +12,7 @@ const ImageInputWrap = styled.div`
 
 const ImageInputBlock = styled.div`
     position: absolute;
-    left: 0;
+    right: 0;
     bottom: -55px;
     background-color: #fff;
     padding: 8px;
@@ -65,14 +65,13 @@ const ImageMenu: React.FC<Record<string, any>> = ({ editor }) => {
     };
 
     const handleConfirm = () => {
-        const { value } = ref.current;
-        if (!value) return;
-        if (!/^https?:\/\/(.+\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i.test(value))
-            return;
-        inpImage(value);
-        ref.current.value = '';
-        setModal(false);
-    };
+        const { value } = ref.current
+        if (!value) return
+        // if (!/^https?:\/\/(.+\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i.test(value)) return 
+        inpImage(value)
+        ref.current.value = ""
+        setModal(false)
+    }
 
     const handleCancel = () => {
         ref.current.value = '';
@@ -85,6 +84,7 @@ const ImageMenu: React.FC<Record<string, any>> = ({ editor }) => {
         <ImageInputWrap>
             <DorpdownMenu
                 title=""
+                placement="rightButtom"
                 menu={
                     <ToolMenuList>
                         <ToolMenuItem onClick={() => setModal(true)}>
