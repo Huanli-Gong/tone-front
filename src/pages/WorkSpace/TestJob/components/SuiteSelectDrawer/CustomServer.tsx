@@ -1,25 +1,24 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import React, { useContext, useRef } from 'react'
-import { Form, Input } from 'antd'
+import React, { useRef } from 'react';
+import { Form, Input } from 'antd';
 import { useIntl, FormattedMessage } from 'umi';
-import { DrawerProvider } from './Provider'
-import styles from '../SelectSuite/style.less'
+import { useDrawerProvider } from './Provider';
+import styles from '../SelectSuite/style.less';
 import { checkIpAndSn } from './services';
-import DeployModal from '@/pages/WorkSpace/DeviceManage/GroupManage/Standalone/Components/DeployModal'
+import DeployModal from '@/pages/WorkSpace/DeviceManage/GroupManage/Standalone/Components/DeployModal';
 import { AgentSelect } from '@/components/utils';
-import type { FormInstance } from 'antd/lib/form';
 
 type IProps = {
     mask: boolean;
     multipInfo: any;
-    form: FormInstance;
-    loading?: boolean
-}
+    loading?: boolean;
+};
 
 const CustomServer: React.FC<IProps> = (props: any) => {
-    const { formatMessage } = useIntl()
-    const { mask, multipInfo, form } = props
-    const { setMask, setLoading } = useContext<any>(DrawerProvider)
+    const { formatMessage } = useIntl();
+
+    const form = Form.useFormInstance();
+    const { setMask, setLoading, mask, multipInfo } = useDrawerProvider();
 
     /**
      * @author jpt 部署Agent对话框
@@ -29,34 +28,30 @@ const CustomServer: React.FC<IProps> = (props: any) => {
     // 部署Agent
     const deployClick = (selectedRow: any) => {
         deployModal.current?.show({ ...selectedRow, detailData: selectedRow?.errors || [] });
-    }
+    };
 
     // 部署回调
     const deployCallback = (info: any) => {
         // step1.Agent部署结果信息
-        const { success_servers = [], } = info;
+        const { success_servers = [] } = info;
         const successIps = success_servers?.map((item: any) => item.ip);
         // step2.数据回填
         if (successIps?.length) {
-            form.setFieldsValue({ custom_ip: successIps[0] })
+            form.setFieldsValue({ custom_ip: successIps[0] });
         }
-    }
+    };
 
     // toneAgent校验失败的内容提示
     const ValidateIps: React.FC<any> = ({ data, channelType }) => (
         <span>
             <span>{data.msg?.join('')}</span>
-            {
-                !BUILD_APP_ENV && channelType == 'toneagent' &&
-                <span
-                    className={styles.btn_style}
-                    onClick={() => deployClick(data)}
-                >
+            {!BUILD_APP_ENV && channelType == 'toneagent' && (
+                <span className={styles.btn_style} onClick={() => deployClick(data)}>
                     <FormattedMessage id="select.suite.deploy.toneagent" />
                 </span>
-            }
+            )}
         </span>
-    )
+    );
 
     return (
         <>
@@ -64,18 +59,27 @@ const CustomServer: React.FC<IProps> = (props: any) => {
             <Form.Item
                 name="custom_channel"
                 style={{ width: '100%' }}
-                rules={!mask ?
-                    [{ required: true, message: formatMessage({ id: 'select.suite.custom_channel' }) }]
-                    :
-                    []
+                rules={
+                    !mask
+                        ? [
+                              {
+                                  required: true,
+                                  message: formatMessage({ id: 'select.suite.custom_channel' }),
+                              },
+                          ]
+                        : []
                 }
             >
                 <AgentSelect
                     style={{ width: '100%' }}
-                    placeholder={multipInfo.selfServer ? formatMessage({ id: 'select.suite.multiple.values' }) : formatMessage({ id: 'select.suite.agent.select' })}
+                    placeholder={
+                        multipInfo.selfServer
+                            ? formatMessage({ id: 'select.suite.multiple.values' })
+                            : formatMessage({ id: 'select.suite.agent.select' })
+                    }
                     onChange={(value: any) => {
-                        setMask(false)
-                        value && form.validate
+                        setMask(false);
+                        // value && form.validate;
                     }}
                 />
             </Form.Item>
@@ -83,42 +87,60 @@ const CustomServer: React.FC<IProps> = (props: any) => {
             <Form.Item
                 name="custom_ip"
                 style={{ width: '100%' }}
-                validateTrigger={["onBlur"]}
+                validateTrigger={['onBlur']}
                 rules={[
                     {
                         required: true,
-                        message: formatMessage({ id: 'select.suite.custom_ip' })
+                        message: formatMessage({ id: 'select.suite.custom_ip' }),
                     },
                     {
                         async validator(rule, value) {
-                            if (!value) return Promise.resolve(formatMessage({ id: 'select.suite.custom_ip' }))
-                            const channel_type = form.getFieldValue('custom_channel')
-                            if (!channel_type) return Promise.reject(formatMessage({ id: 'select.suite.custom_channel' }))
-                            setLoading(true)
+                            if (!value)
+                                return Promise.resolve(
+                                    formatMessage({ id: 'select.suite.custom_ip' }),
+                                );
+                            const channel_type = form.getFieldValue('custom_channel');
+                            if (!channel_type)
+                                return Promise.reject(
+                                    formatMessage({ id: 'select.suite.custom_channel' }),
+                                );
+                            setLoading(true);
                             // 接口校验
-                            const { code, msg } = await checkIpAndSn({ ip: value, channel_type }) || {}
+                            const { code, msg } =
+                                (await checkIpAndSn({ ip: value, channel_type })) || {};
                             if (code !== 200) {
-                                setLoading(false)
-                                return Promise.reject(<ValidateIps data={{ msg, errors: [value] }} channelType={channel_type} />)
+                                setLoading(false);
+                                return Promise.reject(
+                                    <ValidateIps
+                                        data={{ msg, errors: [value] }}
+                                        channelType={channel_type}
+                                    />,
+                                );
                             }
-                            Promise.resolve()
-                            setLoading(false)
-                            return
+                            Promise.resolve();
+                            setLoading(false);
+                            return;
                         },
-                    }
+                    },
                 ]}
             >
                 <Input
                     allowClear
-                    placeholder={multipInfo.selfServer ? formatMessage({ id: 'select.suite.multiple.values' }) : `${formatMessage({ id: 'select.suite.enter.ip' })}${!BUILD_APP_ENV ? "/SN" : ""}`}
+                    placeholder={
+                        multipInfo.selfServer
+                            ? formatMessage({ id: 'select.suite.multiple.values' })
+                            : `${formatMessage({ id: 'select.suite.enter.ip' })}${
+                                  !BUILD_APP_ENV ? '/SN' : ''
+                              }`
+                    }
                     autoComplete="off"
                 />
-            </Form.Item >
+            </Form.Item>
 
             {/**失败时部署Agent对话框 */}
-            < DeployModal ref={deployModal} callback={deployCallback} />
+            <DeployModal ref={deployModal} callback={deployCallback} />
         </>
-    )
-}
+    );
+};
 
-export default CustomServer
+export default CustomServer;
