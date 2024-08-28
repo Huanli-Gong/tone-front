@@ -144,7 +144,7 @@ export default {
   'device.cluster.instance': '集群实例',
   'device.config.name': '配置名称',
   'device.instance.name': '实例名称',
-  'device.manufacturer/ak': '云厂商/Ak',
+  'device.type/manufacturer/ak': '云类型/云厂商/Ak',
   'device.instance_type': '规格',
   'device.image': '镜像',
   'device.bandwidth': '带宽',
@@ -206,6 +206,9 @@ export default {
   'device.tag.delete.tips': '删除调度标签后，机器池、Job、测试模板所配置的当前标签均不再生效，请谨慎删除！！',
   'device.tag_color': '标签颜色',
 
+  'device.cloud.type': '云类型',
+  'device.cloud.type.cannot.empty': '云类型不能为空',
+  'device.cloud.type.select': '请选择云类型',
   'device.ak.config': 'AK配置',
   'device.image.config': '镜像配置',
   'device.new.ak': '新建AK',
@@ -230,6 +233,8 @@ export default {
   'device.edit.image': '编辑Image',
   'device.aliyun_ecs': '阿里云ECS',
   'device.aliyun_eci': '阿里云ECI',
+  'device.volcengine_ecs': '火山云ECS',
+  'device.tencent_ecs': '腾讯云ECS',
   'device.ak.name.cannot.empty': 'AK Name不能为空',
   'device.ak.name.cannot.repeated': 'AK Name不能重复',
   'device.ak.name.select': '请选择AK Name',
@@ -255,5 +260,9 @@ export default {
   'device.please.select.creator': '请选择创建者',
   'device.please.select.update_user': '请选择修改者',
   'device.please.select.ak_name': '请选择akName',
+  'device.no.available.machines': '暂无可用机器',
 
+  'device.cloud.alibaba': '阿里云',
+  'device.cloud.tencent': '腾讯云',
+  'device.cloud.volcanic': '火山云',
 }

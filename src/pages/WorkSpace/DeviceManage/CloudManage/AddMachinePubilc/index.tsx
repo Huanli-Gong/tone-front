@@ -19,14 +19,36 @@ import Disclaimer from '@/components/Disclaimer';
 const { Option } = Select;
 const optionLists = [
     {
-        value: 'aliyun_eci',
-        label: 'aliyun_eci',
-        isLeaf: false,
+        value: 'aliyun',
+        label: 'aliyun',
+        children: [{
+            value: 'aliyun_eci',
+            label: 'aliyun_eci',
+            isLeaf: false,
+        },
+        {
+            value: 'aliyun_ecs',
+            label: 'aliyun_ecs',
+            isLeaf: false,
+        }]
     },
     {
-        value: 'aliyun_ecs',
-        label: 'aliyun_ecs',
-        isLeaf: false,
+        value: 'tencent',
+        label: 'tencent',
+        children: [{
+            value: 'tencent_ecs',
+            label: 'tencent_ecs',
+            isLeaf: false,
+        }]
+    },
+    {
+        value: 'volcengine',
+        label: 'volcengine',
+        children: [{
+            value: 'volcengine_ecs',
+            label: 'volcengine_ecs',
+            isLeaf: false,
+        }]
     },
 ];
 
@@ -141,30 +163,97 @@ const NewMachine: React.FC<any> = (props) => {
             }, 500);
         }
     };
-
-    const loadAkData = async (selectedOptions: any) => {
-        const targetOption = selectedOptions[selectedOptions.length - 1];
-        const { code, data=[], msg } = await querysAK({ ws_id, provider: targetOption.value })
-        if (code === 200) {
-            // targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });
-            // setOptions([...options])
-            const tempData = options.map((item)=>
-                item.value === targetOption.value ?
-                    ({ ...item, children: data.map((item: any) => ({ label: item.name, value: item.id })), })
-                : item
-            )
-            setOptions(tempData)
-        } else {
-            setTimeout(() => {
-                // targetOption.children = []
-                // setOptions([...options])
-                const tempData = options.map((item)=> item.value === targetOption.value ? ({ ...item, children: [] }) : item )
+    const handleAkChange = async (value: any, selectedOptions: any) => {
+        // 获取云类型 => 云厂商 => AK
+        if (selectedOptions.length === 2 && !selectedOptions[selectedOptions.length - 1].isLeaf) {
+            const targetOption = selectedOptions[selectedOptions.length - 1];
+            const { code, data = [], msg } = await querysAK({ ws_id, cloud_type: value[0], provider: value[1] })
+            if (code === 200) {
+                const tempData = options.map((parent: any) => ({
+                    ...parent,
+                    children: parent.children.map((item: any) => item.value === targetOption.value ? ({
+                        ...item,
+                        children: data.map((item: any) => ({ label: item.name, value: item.id }))
+                    }) : item
+                    )
+                }))
                 setOptions(tempData)
-            }, 500);
-            setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) })
-            form.setFieldsValue({ manufacturer: undefined })
+            } else {
+                setTimeout(() => {
+                    const tempData = options.map((parent: any) => ({
+                        ...parent,
+                        children: parent.children.map((item: any) => ({ ...item, children: [] })
+                        )
+                    }))
+                    setOptions(tempData)
+                }, 500);
+                setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) })
+                form.setFieldsValue({ manufacturer: undefined })
+            }
         }
-    }
+
+        // 获取region
+        if (!firstAddDataFlag) {
+            setDisabled(true)
+            regionResetStatus()
+            if (value && value.length > 2) {
+                // case1.存储选的"云厂商"类型，决定规格的表现形式。
+                const frisItem = value[2]
+                setChangeManufacturer(frisItem)
+                // case2.查询各选框数据源。
+                setLoading(true)
+                const regionZone = form.getFieldValue('region')
+                let param = {
+                    ak_id: value[2],
+                    region: regionZone[0],
+                    zone: regionZone[1],
+                }
+
+                if (is_instance) {
+                    Promise.all([getSeverList(param)]).then(() => { setLoading(false), setDisabled(false) })
+                } else {
+                    Promise.all([getInstancegList(param), getImageList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
+                }
+            } else {
+                // 清除各选框数据源;
+                setInstance([])
+                setSever([])
+                setImage([])
+                setCategories({})
+            }
+        } else {
+            // 第一次添加机器时，"云厂商/AK"和"地域"两个选框有联动关系
+            setDisabled(true)
+            AkResetStatus()
+            if (value && value.length > 2) {
+                // case1.根据 ak_id 查询Region数据
+                const { code, data = [], msg } = await querysRegion({ ak_id: value[2] })
+                let list = []
+                if (code === 200) {
+                    list = data?.map((item: any) => {
+                        return {
+                            value: item.id,
+                            label: textRender(item.id),
+                            ak_id: value[2],
+                            isLeaf: false,
+                        }
+                    })
+                    setValidateAK({ validate: true, meg: '' })
+                } else {
+                    setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) })
+                }
+                setRegion(list)
+                setValidateRegion(!!list.length)
+                // case2.存储选的"云厂商"类型，决定规格的表现形式
+                const frisItem = value[2]
+                setChangeManufacturer(frisItem.value)
+            } else {
+                // 清除
+                setValidateAK({ validate: true, meg: '' })
+                setRegion([])
+            }
+        }
+    };
 
     const DEFAULT_FORM_VALUE = {
         instance_type: undefined,
@@ -198,70 +287,6 @@ const NewMachine: React.FC<any> = (props) => {
             ...DEFAULT_FORM_VALUE
         })
     }
-
-    const onAkChange = async (value: any, selectedOptions: any) => {
-        if (!firstAddDataFlag) {
-            setDisabled(true)
-            regionResetStatus()
-            if (value && value.length) {
-                // case1.存储选的"云厂商"类型，决定规格的表现形式。
-                const frisItem = value[0]
-                setChangeManufacturer(frisItem)
-                // case2.查询各选框数据源。
-                setLoading(true)
-                const regionZone = form.getFieldValue('region')
-                let param = {
-                    ak_id: value[1],
-                    region: regionZone[0],
-                    zone: regionZone[1],
-                }
-
-                if (is_instance) {
-                    Promise.all([getSeverList(param)]).then(() => { setLoading(false), setDisabled(false) })
-                } else {
-                    Promise.all([getInstancegList(param), getImageList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
-                }
-            } else {
-                // 清除各选框数据源;
-                setInstance([])
-                setSever([])
-                setImage([])
-                setCategories({})
-            }
-        } else {
-            // 第一次添加机器时，"云厂商/AK"和"地域"两个选框有联动关系
-            setDisabled(true)
-            AkResetStatus()
-            if (value && value.length) {
-                // case1.根据 ak_id 查询Region数据
-                const { code, data = [], msg } = await querysRegion({ ak_id: value[1] })
-                let list = []
-                if (code === 200) {
-                    list = data?.map((item: any) => {
-                        return {
-                            value: item.id,
-                            label: textRender(item.id),
-                            ak_id: value[1],
-                            isLeaf: false,
-                        }
-                    })
-                    setValidateAK({ validate: true, meg: '' })
-                } else {
-                    setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) })
-                }
-                setRegion(list)
-                setValidateRegion(!!list.length)
-                // case2.存储选的"云厂商"类型，决定规格的表现形式
-                const frisItem = value[0]
-                setChangeManufacturer(frisItem.value)
-            } else {
-                // 清除
-                setValidateAK({ validate: true, meg: '' })
-                setRegion([])
-            }
-        }
-    }
-
     const getShowRegion = async (param: any) => {
         setLoading(true)
         const { data: akData = [] } = await querysAK({ ws_id, provider: param.id })
@@ -542,18 +567,7 @@ const NewMachine: React.FC<any> = (props) => {
         setVisible(false)
         setBtnLoading(false)
         form.resetFields()
-        setOptions([
-            {
-                value: 'aliyun_eci',
-                label: 'aliyun_eci',
-                isLeaf: false,
-            },
-            {
-                value: 'aliyun_ecs',
-                label: 'aliyun_ecs',
-                isLeaf: false,
-            },
-        ])
+        setOptions(optionLists)
     }
 
     const disabledState = useMemo(() => {
@@ -664,7 +678,7 @@ const NewMachine: React.FC<any> = (props) => {
                             <Col span={12}>
                                 <Form.Item
                                     name="manufacturer"
-                                    label={<FormattedMessage id="device.manufacturer/ak" />}
+                                    label={<FormattedMessage id="device.type/manufacturer/ak" />}
                                     validateStatus={validateAK.validate ? '' : 'error'}
                                     help={validateAK.validate ? undefined : validateAK.meg}
                                     rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
@@ -672,8 +686,9 @@ const NewMachine: React.FC<any> = (props) => {
                                     <Cascader
                                         disabled={(type === 'cluster' && !firstAddDataFlag)}
                                         options={options}
-                                        loadData={loadAkData}
-                                        onChange={onAkChange}
+                                        // loadData={loadAkData}
+                                        onChange={handleAkChange}
+                                        changeOnSelect
                                         dropdownMenuColumnStyle={{ width: 165 }}
                                         dropdownClassName={styles.selectCascader}
                                     />
@@ -711,7 +726,7 @@ const NewMachine: React.FC<any> = (props) => {
                                 >
                                     <Select showSearch
                                         optionFilterProp="children"
-                                        placeholder={formatMessage({ id: 'please.select' })}
+                                        placeholder={formatMessage(sever.length == 0 ? {id: 'device.no.available.machines'} : {id: 'please.select' })}
                                         labelInValue
                                         disabled={sever.length == 0}
                                         filterOption={(input, option: any) =>

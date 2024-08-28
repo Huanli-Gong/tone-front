@@ -144,7 +144,7 @@ export default {
   'device.cluster.instance': 'Cluster Instance',
   'device.config.name': 'Configuration Name',
   'device.instance.name': 'Instance Name',
-  'device.manufacturer/ak': 'Cloud Vendor/Ak',
+  'device.type/manufacturer/ak': 'Cloud Type/Cloud Vendor/Ak',
   'device.instance_type': 'Instance Type',
   'device.image': 'Image',
   'device.bandwidth': 'Bandwidth',
@@ -205,6 +205,9 @@ export default {
   'device.tag.delete.tips': 'Deleting the dispatch tag will cause the current tag configured by the server pool, job and test template to be unavailable. Please delete it carefully.',
   'device.tag_color': 'Tag Color',
 
+  'device.cloud.type': 'Cloud Type',
+  'device.cloud.type.cannot.empty': 'Cloud Type cannot be empty',
+  'device.cloud.type.select': 'Please selete a Cloud Type',
   'device.ak.config': 'AK Configuration',
   'device.image.config': 'Image Configuration',
   'device.new.ak': 'Create AK',
@@ -229,6 +232,8 @@ export default {
   'device.edit.image': 'Edit Image',
   'device.aliyun_ecs': 'Aliyun CS',
   'device.aliyun_eci': 'Aliyun ECI',
+  'device.volcengine_ecs': 'Volcengine ECS',
+  'device.tencent_ecs': 'Tencent ECS',
   'device.ak.name.cannot.empty': 'AK Name cannot be empty.',
   'device.ak.name.cannot.repeated': 'AK Name cannot be duplicated',
   'device.ak.name.select': 'Please select AK Name',
@@ -254,4 +259,9 @@ export default {
   'device.please.select.creator': 'Please select a creator',
   'device.please.select.update_user': 'Please select a modifier',
   'device.please.select.ak_name': 'Please select akName',
+  'device.no.available.machines': 'No available machines at the moment',
+
+  'device.cloud.alibaba': 'Alibaba Clouds',
+  'device.cloud.tencent': 'Tencent Clouds',
+  'device.cloud.volcanic': 'Volcanic Clouds',
 }

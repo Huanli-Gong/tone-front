@@ -68,7 +68,7 @@ export default (props: any) => {
     const [deleteObj, setDeleteObj] = useState<any>({});
     const [autoFocus, setFocus] = useState<boolean>(true)
     const logDrawer: any = useRef()
-    const deployModal: any = useRef(null);
+    const deployModal: any = useRef<any>(null);
     const viewDetailRef: any = useRef(null)
     const copyDeviceRef: any = useRef(null)
 
