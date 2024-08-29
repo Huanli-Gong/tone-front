@@ -96,23 +96,29 @@ const NewMachine: React.FC<any> = (props) => {
         if (code === 200 && !!dataSource.length) {
             // 回填"云厂商/AK" 和 "地域"两个选框都同步第一次选的数据
             const { test_server = {} } = dataSource[dataSource.length - 1]
-            const { manufacturer, ak_id, region, zone } = test_server
-            if (ak_id && manufacturer && region && zone) {
+            const { cloud_type, manufacturer, ak_id, region, zone, instance_type } = test_server
+            if (cloud_type && ak_id && manufacturer && region && zone) {
                 setFirstAddDataFlag(false)
                 setChangeManufacturer(manufacturer)
                 setShowZone(true)
                 let params = {
                     ak_id,
-                    id: manufacturer,
+                    // id: manufacturer,
                     region,
                     zone,
                 }
-                if (!!is_instance) {
-                    Promise.all([getShowRegion(params, {}), getSeverList(params)]).then(() => { setLoading(false), setDisabled(false) })
-                } else {
-                    Promise.all([getShowRegion(params, {}), getInstancegList(params), getImageList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
+                const rest_param = {
+                    cloud_type,
+                    manufacturer,
+                    id,
+                    instance_type,
                 }
-                form.setFieldsValue({ manufacturer: [manufacturer, ak_id], region: [region, zone] })
+                if (!!is_instance) {
+                    Promise.all([getShowRegion(params, rest_param), getSeverList(params)]).then(() => { setLoading(false), setDisabled(false) })
+                } else {
+                    Promise.all([getShowRegion(params, rest_param), getInstancegList(params), getImageList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
+                }
+                form.setFieldsValue({ manufacturer: [cloud_type, manufacturer, ak_id], region: [region, zone] })
             }
         } else {
             setFirstAddDataFlag(true)
@@ -453,7 +459,6 @@ const NewMachine: React.FC<any> = (props) => {
         setBtnLoading(true)
         const extra_param = params.extra_param?.filter((i: any) => i.param_key)
         const param = { ...params, ws_id, is_instance, extra_param }
-        console.log('params',params)
         if (params.hasOwnProperty('manufacturer')) {
             param.cloud_type = params.manufacturer[0]
             param.manufacturer = params.manufacturer[1]
@@ -508,7 +513,6 @@ const NewMachine: React.FC<any> = (props) => {
         param.description = params.description || ''
         param.cluster_id = clusterId
         const { id, machineId } = editData
-        console.log('editData',editData)
         let res: any;
         if (type === 'cluster') {
             res = id ? await editGroupMachine(machineId, { ...param }) : await addGroupMachine({ ...param })
@@ -561,6 +565,16 @@ const NewMachine: React.FC<any> = (props) => {
     const handleModalState = useCallback((flag: any) => {
         if (flag) onSubmit()
     }, [clusterId, image])
+
+    const handleExtendedFieldsChange = (value: any) => {
+        if (value && value.indexOf('aliyun') > -1) {
+            return formatMessage({ id: 'device.aliyun.params'})
+        } else if (value && value.indexOf('tencent') > -1) {
+            return formatMessage({ id: 'device.tencent.params'})
+        } else if (value && value.indexOf('volcengine') > -1) {
+            return formatMessage({ id: 'device.volcengine.params'})
+        } else return
+    }
 
     const onClose = () => {
         // 初始化状态
@@ -729,7 +743,7 @@ const NewMachine: React.FC<any> = (props) => {
                                 >
                                     <Select showSearch
                                         optionFilterProp="children"
-                                        placeholder={formatMessage(sever.length == 0 ? {id: 'device.no.available.machines'} : {id: 'please.select' })}
+                                        placeholder={formatMessage(sever.length == 0 ? { id: 'device.no.available.machines' } : { id: 'please.select' })}
                                         labelInValue
                                         disabled={sever.length == 0}
                                         filterOption={(input, option: any) =>
@@ -973,7 +987,7 @@ const NewMachine: React.FC<any> = (props) => {
                         {!is_instance ?
                             <Col span={24} className={styles.warp}>
                                 <Form.Item
-                                    label={<QusetionIconTootip title={formatMessage({ id: 'device.extended.fields' })} desc={formatMessage({ id: 'device.aliyun.params' })} />}
+                                    label={<QusetionIconTootip title={formatMessage({ id: 'device.extended.fields' })} desc={handleExtendedFieldsChange(manufacturerType)} />}
                                     labelAlign="left"
                                     style={{ marginBottom: 0 }}
                                 >

@@ -5,6 +5,7 @@ import { useParams, useIntl, FormattedMessage } from "umi"
 import { cloudList as queryCloudServer, queryClusterMachine } from "@/pages/WorkSpace/DeviceManage/CloudManage/service"
 import styled from 'styled-components'
 import { queryClusterServer } from "@/pages/WorkSpace/TestJob/components/SuiteSelectDrawer/services"
+import { dataSetMethod } from '@/pages/WorkSpace/DeviceManage/CloudManage/DataSetPulic';
 
 const Wrapper = styled(Space)`
     width: 100%;
@@ -27,15 +28,15 @@ const Container = styled.div`
     padding: 20px;
 `
 
-export const dataSetMethod = (dict: any, formatMessage?: any) => {
-    const obj: any = {
-        cloud: formatMessage({ id: 'common.cloud' }),
-        cloud_efficiency: formatMessage({ id: 'common.cloud_efficiency' }),
-        cloud_ssd: formatMessage({ id: 'common.cloud_ssd' }),
-        cloud_essd: formatMessage({ id: 'common.cloud_essd' }),
-    }
-    return obj[dict]
-}
+// export const dataSetMethod = (dict: any, formatMessage?: any) => {
+//     const obj: any = {
+//         cloud: formatMessage({ id: 'common.cloud' }),
+//         cloud_efficiency: formatMessage({ id: 'common.cloud_efficiency' }),
+//         cloud_ssd: formatMessage({ id: 'common.cloud_ssd' }),
+//         cloud_essd: formatMessage({ id: 'common.cloud_essd' }),
+//     }
+//     return obj[dict]
+// }
 
 type TRowProps = {
     label: string;
