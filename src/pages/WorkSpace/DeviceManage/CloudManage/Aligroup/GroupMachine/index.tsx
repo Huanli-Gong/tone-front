@@ -718,7 +718,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={12}>
                                 <Form.Item
                                     name="manufacturer"
-                                    label={<FormattedMessage id="device.manufacturer/ak" />}
+                                    label={<FormattedMessage id="device.type/manufacturer/ak" />}
                                     validateStatus={validateAK.validate ? '' : 'error'}
                                     help={validateAK.validate ? undefined : validateAK.meg}
                                     rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}

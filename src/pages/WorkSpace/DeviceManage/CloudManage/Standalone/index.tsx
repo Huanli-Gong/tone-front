@@ -322,8 +322,8 @@ export default (props: any) => {
             render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.instance_id}</ColumnEllipsisText>
         },
         {
-            title: <FormattedMessage id="device.manufacturer/ak" />,
-            dataIndex: 'manufacturer',
+            title: <FormattedMessage id="device.type/manufacturer/ak" />,
+            dataIndex: 'manufacturer_ak',
             ...inputFilterCommonFields("manufacturer_ak_name"),
             width: 160,
             ellipsis: {

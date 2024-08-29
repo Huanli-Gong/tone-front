@@ -7,7 +7,7 @@ import {
 import Owner from '@/components/Owner/index';
 import { textRender } from '@/utils/hooks';
 import { requestCodeMessage, resetImage, resetECI, enumerEnglish } from '@/utils/utils';
-import { PlusCircleTwoTone, MinusCircleTwoTone } from '@ant-design/icons'
+import { PlusCircleTwoTone, MinusCircleTwoTone } from '@ant-design/icons';
 import styles from './style.less';
 import { useParams, useIntl, FormattedMessage, useModel } from 'umi';
 import _ from 'lodash';
@@ -67,7 +67,6 @@ const getInitialExtra = (obj: any) => {
  */
 const NewMachine: React.FC<any> = (props) => {
     const { onRef, is_instance, onSuccess, type } = props
-    // console.log(props)
     const { formatMessage } = useIntl();
     const { openModal, handleDisclaimerOpen } = useModel('disclaimer');
     const { ws_id }: any = useParams();
@@ -187,6 +186,7 @@ const NewMachine: React.FC<any> = (props) => {
                     }))
                     setOptions(tempData)
                 }, 500);
+                message.error(msg || formatMessage({ id: 'device.no.compliant.AK' }))
                 setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) })
                 form.setFieldsValue({ manufacturer: undefined })
             }
@@ -289,7 +289,7 @@ const NewMachine: React.FC<any> = (props) => {
     }
     const getShowRegion = async (param: any) => {
         setLoading(true)
-        const { data: akData = [] } = await querysAK({ ws_id, provider: param.id })
+        const { data: akData = [] } = await querysAK({ ws_id, cloud_type: param.cloud_type, provider: param.provider })
         const { data = [] } = await querysRegion({ ak_id: param.ak_id })
         const { data: query = [] } = await queryZone({ ak_id: param.ak_id, region: param.region })
 
@@ -359,7 +359,7 @@ const NewMachine: React.FC<any> = (props) => {
         let region = form.getFieldValue('region')
         let manufacturer = form.getFieldValue('manufacturer')
         let param = {
-            ak_id: manufacturer[1],
+            ak_id: manufacturer[2],
             region: region[0],
             zone: region[1],
             instance_type: val
@@ -396,11 +396,10 @@ const NewMachine: React.FC<any> = (props) => {
         const list = row.tag_list.map((item: any) => item.id)
         setTagFlag({ ...tagFlag, isQuery: 'edit', list })
         const param = { ...row }
-
         param.extra_param = getInitialExtra(param.extra_param)
         param.tags = param.tag_list?.map((item: any) => { return item.id }) || []
         param.is_instance = param.is_instance ? 1 : 0
-        param.manufacturer = [param.manufacturer, param.ak_id]
+        // param.manufacturer = [param.cloud_type, param.provider, param.ak_id]
         param.region = [param.region, param.zone]
         param.kernel_install = param.kernel_install ? 1 : 0
         setChangeManufacturer(row.manufacturer)
@@ -455,8 +454,10 @@ const NewMachine: React.FC<any> = (props) => {
         const param = { ...params, ws_id, is_instance, extra_param }
 
         if (params.hasOwnProperty('manufacturer')) {
-            param.manufacturer = params?.manufacturer[0]
-            param.ak_id = params.manufacturer[1]
+            param.cloud_type = params?.manufacturer[0]
+            // param.manufacturer = [params?.manufacturer[0],params?.manufacturer[1], params?.manufacturer[2]]
+            param.manufacturer = params.manufacturer[1]
+            param.ak_id = params.manufacturer[2]
             param.region = params.region[0]
             param.zone = params.region[1]
         }

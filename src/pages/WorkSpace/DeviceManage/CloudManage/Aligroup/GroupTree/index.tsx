@@ -170,7 +170,7 @@ const GroupTree: React.FC<any> = (props) => {
             dataIndex: 'pub_ip',
         },
         {
-            title: <FormattedMessage id="device.manufacturer/ak" />,
+            title: <FormattedMessage id="device.type/manufacturer/ak" />,
             dataIndex: 'manufacturer',
             width: 120,
             ellipsis: {
