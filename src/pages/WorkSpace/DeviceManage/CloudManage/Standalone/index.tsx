@@ -324,12 +324,12 @@ export default (props: any) => {
         {
             title: <FormattedMessage id="device.type/manufacturer/ak" />,
             dataIndex: 'manufacturer_ak',
-            ...inputFilterCommonFields("manufacturer_ak_name"),
+            ...inputFilterCommonFields("manufacturer_ak"),
             width: 160,
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{`${row.manufacturer}/${row.ak_name}`}</ColumnEllipsisText>
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
         },
         {
             title: 'Region/Zone',

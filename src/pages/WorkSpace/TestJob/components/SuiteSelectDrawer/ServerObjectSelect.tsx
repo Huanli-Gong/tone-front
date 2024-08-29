@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Select, Badge, Typography, Form } from 'antd'
+import { Select, Badge, Typography, Form, Tag, Space } from 'antd'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { standloneServerList, queryClusterServer, queryClusterStandaloneServer, queryClusterGroupServer } from './services';
 import debounce from 'lodash/debounce';
@@ -36,7 +36,7 @@ const ServerObjectSelect = (props: any) => {
 
     //内网单机
     const standaloneServerRequest = async (page_num = 1) => {
-        const search = searchValue ? { ip: searchValue }: {}
+        const search = searchValue ? { ip: searchValue } : {}
         const { data, code, total_page } = await standloneServerList({ ws_id, state: ['Available', 'Occupied', 'Reserved'], page_num, page_size: PAGE_SIZE, ...search }) //, page_size : 2
         if (code === 200 && data) {
             setServerList((p: any) => filterRepeat(p, data))
@@ -46,7 +46,7 @@ const ServerObjectSelect = (props: any) => {
 
     //内网集群
     const clusterServerRequest = async (page_num = 1) => {
-        const search = searchValue ? { ip: searchValue }: {}
+        const search = searchValue ? { ip: searchValue } : {}
         const { data, code, total_page } = await queryClusterServer({ cluster_type: 'aligroup', ws_id, page_num, page_size: PAGE_SIZE, ...search })
         if (code === 200 && data) {
             setServerList((p: any) => filterRepeat(p, data))
@@ -56,7 +56,7 @@ const ServerObjectSelect = (props: any) => {
 
     //云上单机
     const clusterStandaloneRequest = async () => {
-        const search = searchValue ? { ip: searchValue }: {}
+        const search = searchValue ? { ip: searchValue } : {}
         const { data, code, total_page } = await queryClusterStandaloneServer({ ws_id, no_page: true, is_instance: serverObjectType === 'instance', state: ['Available', 'Occupied', 'Reserved'], ...search })
         if (code === 200 && data) {
             setServerList((p: any) => filterRepeat(p, data))
@@ -66,7 +66,7 @@ const ServerObjectSelect = (props: any) => {
 
     //云上集群
     const clusterGroupRequest = async () => {
-        const search = searchValue ? { ip: searchValue }: {}
+        const search = searchValue ? { ip: searchValue } : {}
         const { data, code, total_page } = await queryClusterGroupServer({ cluster_type: 'aliyun', ws_id, no_page: true, ...search })
         if (code === 200 && data) {
             setServerList((p: any) => filterRepeat(p, data))
@@ -127,7 +127,7 @@ const ServerObjectSelect = (props: any) => {
     }
 
     // 搜索
-    const onSearch = (word: any)=> {
+    const onSearch = (word: any) => {
         setSearchValue(word || undefined)
     }
 
@@ -142,11 +142,22 @@ const ServerObjectSelect = (props: any) => {
         }, [serverObjectType]
     )
 
+    const renderCloudType = (val: any) => {
+        if (val === 'aliyun') {
+            return <Tag color="#f50" style={{ border: 'none' }}>阿里云</Tag>
+        } else if (val === 'tencent') {
+            return <Tag color="#2db7f5" style={{ border: 'none' }}>腾讯云</Tag>
+        } else if (val === 'volcengine') {
+            return <Tag color="#cd201f" style={{ border: 'none' }}>火山云</Tag>
+        } else return
+    }
+
     const options = useMemo(() => {
         let $options = []
         if (serverObjectType === 'server_object_id') {
             if (run_mode === 'standalone')
                 $options = serverList.map((item: any) => {
+
                     const text = item.ip || item.sn
                     return {
                         value: item.id,
@@ -174,8 +185,11 @@ const ServerObjectSelect = (props: any) => {
                     value: item.id,
                     label: (
                         <Typography.Text ellipsis={{ tooltip: text }}>
-                            <Badge style={{ marginRight: 8 }} status={getServerStatusMap(item.state) as any} />
-                            {text}
+                            <Space size={12}>
+                                <Badge style={{ marginRight: 8 }} status={getServerStatusMap(item.state) as any} />
+                                {text}
+                                {renderCloudType(item.cloud_type)}
+                            </Space>
                         </Typography.Text>
                     ),
                     search_key: text
@@ -185,7 +199,14 @@ const ServerObjectSelect = (props: any) => {
         if (serverObjectType === 'setting')
             $options = serverList.filter((i: any) => !i.is_instance).map((item: any) => ({
                 value: item.id,
-                label: <Typography.Text ellipsis={{ tooltip: true }}>{item.template_name}</Typography.Text>,
+                label: (
+                    <Typography.Text ellipsis={{ tooltip: true }}>
+                        <Space size={12}>
+                            {item.template_name}
+                            {renderCloudType(item.cloud_type)}
+                        </Space>
+                    </Typography.Text>
+                ),
                 search_key: item.template_name
             }))
 

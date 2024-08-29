@@ -78,7 +78,7 @@ const GroupTree: React.FC<any> = (props) => {
     }
 
     const paramTransform = (val: any) => {
-        const dict = {
+        const dict: any = {
             0: formatMessage({ id: 'operation.not.release' }),
             1: formatMessage({ id: 'operation.release' }),
             2: formatMessage({ id: 'device.failed.save' })
@@ -171,12 +171,12 @@ const GroupTree: React.FC<any> = (props) => {
         },
         {
             title: <FormattedMessage id="device.type/manufacturer/ak" />,
-            dataIndex: 'manufacturer',
+            dataIndex: 'manufacturer_ak',
             width: 120,
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{`${row.manufacturer}/${row.ak_name}`}</ColumnEllipsisText>
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
         },
         {
             title: 'Region/Zone',

@@ -108,9 +108,9 @@ const NewMachine: React.FC<any> = (props) => {
                     zone,
                 }
                 if (!!is_instance) {
-                    Promise.all([getShowRegion(params), getSeverList(params)]).then(() => { setLoading(false), setDisabled(false) })
+                    Promise.all([getShowRegion(params, {}), getSeverList(params)]).then(() => { setLoading(false), setDisabled(false) })
                 } else {
-                    Promise.all([getShowRegion(params), getInstancegList(params), getImageList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
+                    Promise.all([getShowRegion(params, {}), getInstancegList(params), getImageList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
                 }
                 form.setFieldsValue({ manufacturer: [manufacturer, ak_id], region: [region, zone] })
             }
@@ -148,7 +148,44 @@ const NewMachine: React.FC<any> = (props) => {
         const { data } = await querysServer(param)
         setSever(data || [])
     }
+    const getShowRegion = async (param: any, rest_param: any) => {
+        setLoading(true)
+        const { data: akData = [] } = await querysAK({ ws_id, cloud_type: rest_param.cloud_type, provider: rest_param.manufacturer })
+        const { data = [] } = await querysRegion({ ak_id: param.ak_id })
+        const { data: query = [] } = await queryZone({ ak_id: param.ak_id, region: param.region })
 
+        // 数据回显云类型 => 云厂商 => AK
+        const tempData = options.map((parent: any) => ({
+            ...parent,
+            children: parent.children.map((item: any) => item.value === rest_param.manufacturer ? ({
+                ...item,
+                children: akData.map((item: any) => ({ label: item.name, value: item.id }))
+            }) : item
+            )
+        }))
+
+        // 数据回显region
+        let list = data.map((item: any) => {
+            if (item.id == param.region) {
+                return {
+                    value: item.id,
+                    label: textRender(item.id),
+                    ak_id: param.ak_id,
+                    isLeaf: false,
+                    children: query.map((item: any) => { return { label: item.id, value: item.id } })
+                }
+            }
+            return {
+                value: item.id,
+                label: textRender(item.id),
+                ak_id: param.ak_id,
+                isLeaf: false,
+            }
+        })
+        setOptions(tempData)
+        setRegion(list)
+        setLoading(false)
+    }
     const loadRegionData = async (selectedOptions: any) => {
         const targetOption = selectedOptions[selectedOptions.length - 1];
         const { data, code } = await queryZone({ ak_id: targetOption.ak_id, region: targetOption.value })
@@ -287,46 +324,6 @@ const NewMachine: React.FC<any> = (props) => {
             ...DEFAULT_FORM_VALUE
         })
     }
-    const getShowRegion = async (param: any) => {
-        setLoading(true)
-        const { data: akData = [] } = await querysAK({ ws_id, cloud_type: param.cloud_type, provider: param.provider })
-        const { data = [] } = await querysRegion({ ak_id: param.ak_id })
-        const { data: query = [] } = await queryZone({ ak_id: param.ak_id, region: param.region })
-
-        let list = data.map((item: any) => {
-            if (item.id == param.region) {
-                return {
-                    value: item.id,
-                    label: textRender(item.id),
-                    ak_id: param.ak_id,
-                    isLeaf: false,
-                    children: query.map((item: any) => { return { label: item.id, value: item.id } })
-                }
-            }
-            return {
-                value: item.id,
-                label: textRender(item.id),
-                ak_id: param.ak_id,
-                isLeaf: false,
-            }
-        })
-
-        let lists = optionLists.map((item: any) => {
-            if (item.value === param.id) {
-                return {
-                    value: param.id,
-                    label: param.id,
-                    isLeaf: false,
-                    children: akData.map((item: any) => { return { label: item.name, value: item.id } })
-                }
-            }
-            return item
-        })
-        setOptions(lists)
-        setRegion(list)
-        setLoading(false)
-    }
-
     const onRegionChange = (value: any, selectedOptions: any) => {
         if (Array.isArray(selectedOptions) && selectedOptions.length) {
             let param = {
@@ -398,8 +395,8 @@ const NewMachine: React.FC<any> = (props) => {
         const param = { ...row }
         param.extra_param = getInitialExtra(param.extra_param)
         param.tags = param.tag_list?.map((item: any) => { return item.id }) || []
+        param.manufacturer = [param.cloud_type, param.manufacturer, param.ak_id]
         param.is_instance = param.is_instance ? 1 : 0
-        // param.manufacturer = [param.cloud_type, param.provider, param.ak_id]
         param.region = [param.region, param.zone]
         param.kernel_install = param.kernel_install ? 1 : 0
         setChangeManufacturer(row.manufacturer)
@@ -407,7 +404,11 @@ const NewMachine: React.FC<any> = (props) => {
             ak_id: param.ak_id,
             region: param.region[0],
             zone: param.region[1],
-            id: param.manufacturer[0],
+        }
+        const rest_param = {
+            cloud_type: param.cloud_type,
+            manufacturer: param.manufacturer[1],
+            id: param.id,
             instance_type: param.instance_type
         }
         if (param.ak_name == 'aliyun_eci') {
@@ -418,12 +419,12 @@ const NewMachine: React.FC<any> = (props) => {
             param.instance_type_two = Number(t.substring(type1 + 1, type2))
         }
         if (!!is_instance) {
-            Promise.all([getShowRegion(params), getSeverList(params)]).then(() => {
+            Promise.all([getShowRegion(params, rest_param), getSeverList(params)]).then(() => {
                 setLoading(false)
                 setDisabled(false)
             })
         } else {
-            Promise.all([getShowRegion(params), getInstancegList(params), getImageList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
+            Promise.all([getShowRegion(params, rest_param), getInstancegList(params), getImageList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
         }
         form.setFieldsValue(param)
     }
@@ -452,12 +453,12 @@ const NewMachine: React.FC<any> = (props) => {
         setBtnLoading(true)
         const extra_param = params.extra_param?.filter((i: any) => i.param_key)
         const param = { ...params, ws_id, is_instance, extra_param }
-
+        console.log('params',params)
         if (params.hasOwnProperty('manufacturer')) {
-            param.cloud_type = params?.manufacturer[0]
-            // param.manufacturer = [params?.manufacturer[0],params?.manufacturer[1], params?.manufacturer[2]]
+            param.cloud_type = params.manufacturer[0]
             param.manufacturer = params.manufacturer[1]
             param.ak_id = params.manufacturer[2]
+            // param.ak_id = params.ak_id
             param.region = params.region[0]
             param.zone = params.region[1]
         }
@@ -507,6 +508,7 @@ const NewMachine: React.FC<any> = (props) => {
         param.description = params.description || ''
         param.cluster_id = clusterId
         const { id, machineId } = editData
+        console.log('editData',editData)
         let res: any;
         if (type === 'cluster') {
             res = id ? await editGroupMachine(machineId, { ...param }) : await addGroupMachine({ ...param })
