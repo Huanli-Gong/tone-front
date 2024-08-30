@@ -121,7 +121,10 @@ export const enumer = (name: any) => {
     const list: any = {
         system: '公共镜像',
         self: '自定义镜像',
-        others: '共享镜像'
+        others: '共享镜像',
+        PRIVATE_IMAGE:'私有镜像',
+        PUBLIC_IMAGE:'公共镜像',
+        SHARED_IMAGE: '共享镜像',
     }
     return list[name];
 }

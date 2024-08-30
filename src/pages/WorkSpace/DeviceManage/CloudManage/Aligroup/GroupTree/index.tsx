@@ -198,12 +198,12 @@ const GroupTree: React.FC<any> = (props) => {
         },
         {
             title: <FormattedMessage id="device.image" />,
+            dataIndex: 'image',
             width: 120,
             ellipsis: {
                 showTitle: false,
             },
-            dataIndex: 'image',
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: row.image }} >{row.image_name}</ColumnEllipsisText>
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.image_name}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.bandwidth" />,
@@ -217,7 +217,7 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             width: 100,
-            render: (_: number, row: any) => <DataSetPulic name={row.storage_type} formatMessage={formatMessage} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }}><DataSetPulic name={row.storage_type} formatMessage={formatMessage} /></ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.console_conf" />,

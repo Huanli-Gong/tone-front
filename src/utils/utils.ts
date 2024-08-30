@@ -380,6 +380,93 @@ export const enumerEnglish = (name: any, formatMessage: any) => {
   return (list as any)[name];
 };
 
+// 适配多云系统盘的最小容量
+export const QuantityLimitMin = (val: any, field: string) => {
+  if (val && val.indexOf('aliyun') > -1) {
+      switch (field) {
+          case 'system_disk_size':
+              return 20;
+          case 'storage_size':
+              return 20;
+          case 'storage_number':
+              return 0;
+          case 'bandwidth':
+              return 10;
+          default:
+              return 0;
+      }
+  } else if (val && val.indexOf('tencent') > -1) {
+      switch (field) {
+          case 'system_disk_size':
+              return 50;
+          case 'storage_size':
+              return 20;
+          case 'storage_number':
+              return 0;
+          case 'bandwidth':
+              return 10;
+          default:
+              return 0;
+      }
+  } else if (val && val.indexOf('volcengine') > -1) {
+      switch (field) {
+          case 'system_disk_size':
+              return 20;
+          case 'storage_size':
+              return 10;
+          case 'storage_number':
+              return 0;
+          case 'bandwidth':
+              return 1;
+          default:
+              return 0;
+      } 
+  } else return 0
+}
+// 适配多云系统盘的最大容量
+export const QuantityLimitMax = (val: any, field: string) => {
+  if (val && val.indexOf('aliyun') > -1) {
+      switch (field) {
+          case 'system_disk_size':
+              return 500;
+          case 'storage_size':
+              return 500;
+          case 'storage_number':
+              return 16;
+          case 'bandwidth':
+              return 200;
+          default:
+              return 0;
+      }
+  } else if (val && val.indexOf('tencent') > -1) {
+      switch (field) {
+          case 'system_disk_size':
+              return 500;
+          case 'storage_size':
+              return 500;
+          case 'storage_number':
+              return 20;
+          case 'bandwidth':
+              return 100;
+          default:
+              return 0;
+      }
+  } else if (val && val.indexOf('volcengine') > -1) {
+      switch (field) {
+          case 'system_disk_size':
+              return 2048;
+          case 'storage_size':
+              return 32768;
+          case 'storage_number':
+              return 16;
+          case 'bandwidth':
+              return 200;
+          default:
+              return 0;
+      } 
+  } else return 0
+}
+
 export const gblen = (str: string) => {
   let len = 0;
   for (let i = 0; i < str.length; i++)
@@ -657,3 +744,4 @@ export const getPageNumOnDel = (
 
   return $page_num < params.page_num ? $page_num : params.page_num
 }
+

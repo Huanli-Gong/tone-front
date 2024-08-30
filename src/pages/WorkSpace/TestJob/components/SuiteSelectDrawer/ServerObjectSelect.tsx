@@ -27,7 +27,7 @@ const ServerObjectSelect = (props: any) => {
     const { serverObjectType, run_mode, server_type, serverList } = props
     const { ws_id } = useParams<any>()
     const { setServerList } = useContext<any>(DrawerProvider)
-    const PAGE_SIZE = 100
+    const PAGE_SIZE = 999
     const [fetching, setFetching] = useState(true)
     const [pageNum, setPageNum] = useState(1)
     const [pageVisibleState, setPageVisibleState] = React.useState(false)
@@ -55,9 +55,9 @@ const ServerObjectSelect = (props: any) => {
     }
 
     //云上单机
-    const clusterStandaloneRequest = async () => {
+    const clusterStandaloneRequest = async (page_num = 1) => {
         const search = searchValue ? { ip: searchValue } : {}
-        const { data, code, total_page } = await queryClusterStandaloneServer({ ws_id, no_page: true, is_instance: serverObjectType === 'instance', state: ['Available', 'Occupied', 'Reserved'], ...search })
+        const { data, code, total_page } = await queryClusterStandaloneServer({ ws_id, no_page: true, is_instance: serverObjectType === 'instance', state: ['Available', 'Occupied', 'Reserved'], ...search, page_num, page_size: PAGE_SIZE })
         if (code === 200 && data) {
             setServerList((p: any) => filterRepeat(p, data))
             setTotalPage(total_page)
@@ -65,9 +65,9 @@ const ServerObjectSelect = (props: any) => {
     }
 
     //云上集群
-    const clusterGroupRequest = async () => {
+    const clusterGroupRequest = async (page_num = 1) => {
         const search = searchValue ? { ip: searchValue } : {}
-        const { data, code, total_page } = await queryClusterGroupServer({ cluster_type: 'aliyun', ws_id, no_page: true, ...search })
+        const { data, code, total_page } = await queryClusterGroupServer({ cluster_type: 'aliyun', ws_id, no_page: true, ...search, page_num, page_size: PAGE_SIZE })
         if (code === 200 && data) {
             setServerList((p: any) => filterRepeat(p, data))
             setTotalPage(total_page)

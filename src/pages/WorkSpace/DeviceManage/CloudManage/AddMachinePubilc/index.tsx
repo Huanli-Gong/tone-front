@@ -6,7 +6,7 @@ import {
 } from '../service';
 import Owner from '@/components/Owner/index';
 import { textRender } from '@/utils/hooks';
-import { requestCodeMessage, resetImage, resetECI, enumerEnglish } from '@/utils/utils';
+import { requestCodeMessage, resetImage, resetECI, enumerEnglish, QuantityLimitMin, QuantityLimitMax } from '@/utils/utils';
 import { PlusCircleTwoTone, MinusCircleTwoTone } from '@ant-design/icons';
 import styles from './style.less';
 import { useParams, useIntl, FormattedMessage, useModel } from 'umi';
@@ -116,7 +116,7 @@ const NewMachine: React.FC<any> = (props) => {
                 if (!!is_instance) {
                     Promise.all([getShowRegion(params, rest_param), getSeverList(params)]).then(() => { setLoading(false), setDisabled(false) })
                 } else {
-                    Promise.all([getShowRegion(params, rest_param), getInstancegList(params), getImageList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
+                    Promise.all([getShowRegion(params, rest_param), getInstancegList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
                 }
                 form.setFieldsValue({ manufacturer: [cloud_type, manufacturer, ak_id], region: [region, zone] })
             }
@@ -351,7 +351,7 @@ const NewMachine: React.FC<any> = (props) => {
             })
             setShowZone(true)
             is_instance ? Promise.all([getSeverList(param)]).then(() => { setLoading(false), setDisabled(false) })
-                : Promise.all([getInstancegList(param), getImageList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
+                : Promise.all([getInstancegList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
         } else {
             // case2.清除选项时
             regionResetStatus()
@@ -575,7 +575,6 @@ const NewMachine: React.FC<any> = (props) => {
             return formatMessage({ id: 'device.volcengine.params'})
         } else return
     }
-
     const onClose = () => {
         // 初始化状态
         setValidateRegion(true)
@@ -629,13 +628,13 @@ const NewMachine: React.FC<any> = (props) => {
                     initialValues={{
                         instance_type_one: 1,
                         instance_type_two: 1,
-                        system_disk_size: 40,
+                        system_disk_size: manufacturerType.indexOf('tencent') > -1 ? 50 : 40,
                         storage_size: 40,
                         storage_number: 0,
                         release_rule: 1,
                         kernel_install: 1,
                         bandwidth: 10,
-                        storage_type: 'cloud_efficiency',
+                        storage_type: manufacturerType.indexOf('aliyun') > -1 ? 'cloud_efficiency' : undefined,
                         extra_param: [{ param_key: '', param_value: '' }],
                         channel_type: 'toneagent',
                         state: 'Available',
@@ -802,7 +801,7 @@ const NewMachine: React.FC<any> = (props) => {
                                             name="instance_type"
                                             rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                         >
-                                            <Select disabled={disabled || image.length === 0}
+                                            <Select disabled={disabled}
                                                 showSearch
                                                 placeholder={formatMessage({ id: 'please.select' })}
                                                 optionFilterProp="children"
@@ -891,8 +890,8 @@ const NewMachine: React.FC<any> = (props) => {
                                         //type="text"
                                         placeholder={formatMessage({ id: 'device.spec.size' })}
                                         style={{ width: 70 }}
-                                        min={20}
-                                        max={500}
+                                        min={QuantityLimitMin(manufacturerType, 'system_disk_size')}
+                                        max={QuantityLimitMax(manufacturerType, 'system_disk_size')}
                                         disabled={disabled || image.length === 0}
                                     />
                                 </Form.Item>
@@ -935,8 +934,8 @@ const NewMachine: React.FC<any> = (props) => {
                                     <InputNumber
                                         placeholder={formatMessage({ id: 'device.spec.size' })}
                                         style={{ width: 70 }}
-                                        min={20}
-                                        max={500}
+                                        min={QuantityLimitMin(manufacturerType, 'storage_size')}
+                                        max={QuantityLimitMax(manufacturerType, 'storage_size')}
                                         disabled={disabled || image.length === 0}
                                     />
                                 </Form.Item>
@@ -954,8 +953,8 @@ const NewMachine: React.FC<any> = (props) => {
                                     <InputNumber
                                         placeholder={formatMessage({ id: 'device.quantity' })}
                                         style={{ width: 70 }}
-                                        min={0}
-                                        max={16}
+                                        min={QuantityLimitMin(manufacturerType, 'storage_number')}
+                                        max={QuantityLimitMax(manufacturerType, 'storage_number')}
                                         disabled={disabled || image.length === 0}
                                     />
                                 </Form.Item>
@@ -975,7 +974,8 @@ const NewMachine: React.FC<any> = (props) => {
                                 >
                                     <Input
                                         type="number"
-                                        min={10}
+                                        min={QuantityLimitMin(manufacturerType, 'bandwidth')}
+                                        max={QuantityLimitMax(manufacturerType, 'bandwidth')}
                                         style={{ width: '100%' }}
                                         addonAfter="Mbit/s"
                                         placeholder={formatMessage({ id: 'please.enter' })}
