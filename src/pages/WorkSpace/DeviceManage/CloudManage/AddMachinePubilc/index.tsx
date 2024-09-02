@@ -226,6 +226,19 @@ const NewMachine: React.FC<any> = (props) => {
             }
         }
 
+        let storage_type_name;
+        if(value[1]?.indexOf('aliyun') > -1){
+            storage_type_name = 'cloud_efficiency'
+        } else if(value[1]?.indexOf('tencent') > -1){
+            storage_type_name = 'CLOUD_PREMIUM'
+        } else {
+            storage_type_name = 'ESSD_PL0'
+        } 
+        form.setFieldsValue({
+            system_disk_size: value[1]?.indexOf('tencent') > -1 ? 50 : 40,
+            storage_type: storage_type_name 
+        })
+
         // 获取region
         if (!firstAddDataFlag) {
             setDisabled(true)
@@ -242,7 +255,6 @@ const NewMachine: React.FC<any> = (props) => {
                     region: regionZone[0],
                     zone: regionZone[1],
                 }
-
                 if (is_instance) {
                     Promise.all([getSeverList(param)]).then(() => { setLoading(false), setDisabled(false) })
                 } else {
@@ -293,7 +305,7 @@ const NewMachine: React.FC<any> = (props) => {
         instance_type: undefined,
         instance_type_one: undefined,
         instance_type_two: undefined,
-        storage_type: undefined,
+        // storage_type: undefined,
         storage_size: 40,
         storage_number: 0,
         system_disk_category: undefined,
@@ -337,7 +349,6 @@ const NewMachine: React.FC<any> = (props) => {
                 image: undefined,
                 instance_id: undefined,
                 instance_type: undefined,
-                storage_type: undefined,
                 system_disk_category: undefined,
             })
             setShowZone(true)
@@ -582,14 +593,14 @@ const NewMachine: React.FC<any> = (props) => {
         return editData && editData.state === 'Occupied'
     }, [editData])
 
-    const cloud_type_param = Form.useWatch('manufacturer',form)
+    // const cloud_type_param = Form.useWatch('manufacturer',form)
 
-    useEffect(() => {
-        form.setFieldsValue({ 
-            system_disk_size: cloud_type_param?.indexOf('tencent') > -1 ? 50 : 40,
-            storage_type: cloud_type_param?.indexOf('aliyun') > -1 ? 'cloud_efficiency' : undefined 
-        })
-    },[ cloud_type_param ])
+    // useEffect(() => {
+    //     form.setFieldsValue({ 
+    //         system_disk_size: cloud_type_param?.indexOf('tencent') > -1 ? 50 : 40,
+    //         storage_type: cloud_type_param?.indexOf('aliyun') > -1 ? 'cloud_efficiency' : undefined 
+    //     })
+    // },[ cloud_type_param ])
    
     return (
         <Drawer
@@ -631,6 +642,7 @@ const NewMachine: React.FC<any> = (props) => {
                         instance_type_one: 1,
                         instance_type_two: 1,
                         storage_size: 40,
+                        // system_disk_size: 40,
                         storage_number: 0,
                         release_rule: 1,
                         kernel_install: 1,
@@ -887,7 +899,6 @@ const NewMachine: React.FC<any> = (props) => {
                                 >
                                     <InputNumber
                                         placeholder={formatMessage({ id: 'device.spec.size' })}
-                                        // defaultValue={manufacturerType?.indexOf('tencent') > -1 ? 50 : 40}
                                         style={{ width: 70 }}
                                         // min={QuantityLimitMin(manufacturerType, 'system_disk_size')}
                                         // max={QuantityLimitMax(manufacturerType, 'system_disk_size')}
