@@ -626,6 +626,7 @@ const NewMachine: React.FC<any> = (props) => {
                 <Form
                     layout="vertical"
                     form={form}
+                    scrollToFirstError={true}
                     initialValues={{
                         instance_type_one: 1,
                         instance_type_two: 1,
@@ -968,15 +969,13 @@ const NewMachine: React.FC<any> = (props) => {
                                     label={<FormattedMessage id="device.bandwidth" />}
                                     rules={[{ 
                                         required: true, 
-                                        min: QuantityLimitMin(manufacturerType, 'bandwidth'), 
-                                        max: QuantityLimitMax(manufacturerType, 'bandwidth'),
+                                        // min: QuantityLimitMin(manufacturerType, 'bandwidth'), 
+                                        // max: QuantityLimitMax(manufacturerType, 'bandwidth'),
                                         message: formatMessage({ id: 'please.enter' }) 
                                     }]}
                                 >
                                     <Input
                                         type="number"
-                                        // min={QuantityLimitMin(manufacturerType, 'bandwidth')}
-                                        // max={QuantityLimitMax(manufacturerType, 'bandwidth')}
                                         style={{ width: '100%' }}
                                         addonAfter="Mbit/s"
                                         placeholder={formatMessage({ id: 'please.enter' })}
