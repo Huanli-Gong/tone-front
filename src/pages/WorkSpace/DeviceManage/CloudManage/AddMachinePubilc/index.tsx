@@ -103,20 +103,19 @@ const NewMachine: React.FC<any> = (props) => {
                 setShowZone(true)
                 let params = {
                     ak_id,
-                    // id: manufacturer,
                     region,
                     zone,
+                    instance_type
                 }
                 const rest_param = {
                     cloud_type,
                     manufacturer,
                     id,
-                    instance_type,
                 }
                 if (!!is_instance) {
                     Promise.all([getShowRegion(params, rest_param), getSeverList(params)]).then(() => { setLoading(false), setDisabled(false) })
                 } else {
-                    Promise.all([getShowRegion(params, rest_param), getInstancegList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
+                    Promise.all([getShowRegion(params, rest_param), getInstancegList(params)]).then(() => { setLoading(false), setDisabled(false) })
                 }
                 form.setFieldsValue({ manufacturer: [cloud_type, manufacturer, ak_id], region: [region, zone] })
             }
@@ -140,14 +139,6 @@ const NewMachine: React.FC<any> = (props) => {
 
     const getCategoriesList = async (param: any) => {
         const { data } = await queryCategories(param)
-        /**  重组数据适配数据盘的默认值 */
-        /* let newData = data.slice(0)
-        let result = newData.some((v: any) => {
-            return v.value === 'cloud_efficiency'
-        })
-        const params = [{ title: '高效云盘', value: 'cloud_efficiency' }]
-        if (!result) newData = newData.concat(params)
-        setCategories(newData || []) */
         setCategories(data)
     }
     const getSeverList = async (param: any) => {
@@ -306,7 +297,7 @@ const NewMachine: React.FC<any> = (props) => {
         storage_size: 40,
         storage_number: 0,
         system_disk_category: undefined,
-        system_disk_size: 40,
+        // system_disk_size: 40,
     }
 
     // 重置联动控件
@@ -368,6 +359,7 @@ const NewMachine: React.FC<any> = (props) => {
             instance_type: val
         }
         getImageList(param)
+        getCategoriesList(param)
     }
 
     const newMachine = (id: any) => {
@@ -391,7 +383,7 @@ const NewMachine: React.FC<any> = (props) => {
     }));
 
     const editMachine = (row: any) => {
-        setFirstAddDataFlag(true)
+        setFirstAddDataFlag(false)
         setClusterId(row.cluster_id)
         setEditData(row)
         setShowZone(true)
@@ -410,12 +402,12 @@ const NewMachine: React.FC<any> = (props) => {
             ak_id: param.ak_id,
             region: param.region[0],
             zone: param.region[1],
+            instance_type: param.instance_type
         }
         const rest_param = {
             cloud_type: param.cloud_type,
             manufacturer: param.manufacturer[1],
             id: param.id,
-            instance_type: param.instance_type
         }
         if (param.ak_name == 'aliyun_eci') {
             const t = param.instance_type
@@ -590,6 +582,15 @@ const NewMachine: React.FC<any> = (props) => {
         return editData && editData.state === 'Occupied'
     }, [editData])
 
+    const cloud_type_param = Form.useWatch('manufacturer',form)
+
+    useEffect(() => {
+        form.setFieldsValue({ 
+            system_disk_size: cloud_type_param?.indexOf('tencent') > -1 ? 50 : 40,
+            storage_type: cloud_type_param?.indexOf('aliyun') > -1 ? 'cloud_efficiency' : undefined 
+        })
+    },[ cloud_type_param ])
+   
     return (
         <Drawer
             maskClosable={false}
@@ -628,13 +629,11 @@ const NewMachine: React.FC<any> = (props) => {
                     initialValues={{
                         instance_type_one: 1,
                         instance_type_two: 1,
-                        system_disk_size: manufacturerType.indexOf('tencent') > -1 ? 50 : 40,
                         storage_size: 40,
                         storage_number: 0,
                         release_rule: 1,
                         kernel_install: 1,
                         bandwidth: 10,
-                        storage_type: manufacturerType.indexOf('aliyun') > -1 ? 'cloud_efficiency' : undefined,
                         extra_param: [{ param_key: '', param_value: '' }],
                         channel_type: 'toneagent',
                         state: 'Available',
@@ -868,7 +867,7 @@ const NewMachine: React.FC<any> = (props) => {
                                             /> :
                                             <Select
                                                 placeholder={formatMessage({ id: 'please.select' })}
-                                                disabled={disabled}
+                                                disabled={disabled || image.length === 0}
                                                 options={categories?.sys_cat?.map((i: any) => ({
                                                     label: i.title,
                                                     value: i.value,
@@ -884,14 +883,13 @@ const NewMachine: React.FC<any> = (props) => {
                                 <Form.Item
                                     name="system_disk_size"
                                     label=" "
-                                    rules={[{ required: false, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     <InputNumber
-                                        //type="text"
                                         placeholder={formatMessage({ id: 'device.spec.size' })}
+                                        // defaultValue={manufacturerType?.indexOf('tencent') > -1 ? 50 : 40}
                                         style={{ width: 70 }}
-                                        min={QuantityLimitMin(manufacturerType, 'system_disk_size')}
-                                        max={QuantityLimitMax(manufacturerType, 'system_disk_size')}
+                                        // min={QuantityLimitMin(manufacturerType, 'system_disk_size')}
+                                        // max={QuantityLimitMax(manufacturerType, 'system_disk_size')}
                                         disabled={disabled || image.length === 0}
                                     />
                                 </Form.Item>
@@ -913,7 +911,7 @@ const NewMachine: React.FC<any> = (props) => {
                                             /> :
                                             <Select
                                                 placeholder={formatMessage({ id: 'please.select' })}
-                                                disabled={disabled}
+                                                disabled={disabled || image.length === 0}
                                                 options={categories?.data_cat?.map((i: any) => ({
                                                     label: i.title,
                                                     value: i.value,
@@ -929,13 +927,12 @@ const NewMachine: React.FC<any> = (props) => {
                                 <Form.Item
                                     name="storage_size"
                                     label=" "
-                                    rules={[{ required: false, message: formatMessage({ id: 'please.enter' }) }]}
                                 >
                                     <InputNumber
                                         placeholder={formatMessage({ id: 'device.spec.size' })}
                                         style={{ width: 70 }}
-                                        min={QuantityLimitMin(manufacturerType, 'storage_size')}
-                                        max={QuantityLimitMax(manufacturerType, 'storage_size')}
+                                        // min={QuantityLimitMin(manufacturerType, 'storage_size')}
+                                        // max={QuantityLimitMax(manufacturerType, 'storage_size')}
                                         disabled={disabled || image.length === 0}
                                     />
                                 </Form.Item>
@@ -948,13 +945,12 @@ const NewMachine: React.FC<any> = (props) => {
                                 <Form.Item
                                     name="storage_number"
                                     label=" "
-                                    rules={[{ required: false, message: formatMessage({ id: 'please.enter' }) }]}
                                 >
                                     <InputNumber
                                         placeholder={formatMessage({ id: 'device.quantity' })}
                                         style={{ width: 70 }}
-                                        min={QuantityLimitMin(manufacturerType, 'storage_number')}
-                                        max={QuantityLimitMax(manufacturerType, 'storage_number')}
+                                        // min={QuantityLimitMin(manufacturerType, 'storage_number')}
+                                        // max={QuantityLimitMax(manufacturerType, 'storage_number')}
                                         disabled={disabled || image.length === 0}
                                     />
                                 </Form.Item>
@@ -970,12 +966,17 @@ const NewMachine: React.FC<any> = (props) => {
                                 <Form.Item
                                     name="bandwidth"
                                     label={<FormattedMessage id="device.bandwidth" />}
-                                    rules={[{ required: true, message: formatMessage({ id: 'please.enter' }) }]}
+                                    rules={[{ 
+                                        required: true, 
+                                        min: QuantityLimitMin(manufacturerType, 'bandwidth'), 
+                                        max: QuantityLimitMax(manufacturerType, 'bandwidth'),
+                                        message: formatMessage({ id: 'please.enter' }) 
+                                    }]}
                                 >
                                     <Input
                                         type="number"
-                                        min={QuantityLimitMin(manufacturerType, 'bandwidth')}
-                                        max={QuantityLimitMax(manufacturerType, 'bandwidth')}
+                                        // min={QuantityLimitMin(manufacturerType, 'bandwidth')}
+                                        // max={QuantityLimitMax(manufacturerType, 'bandwidth')}
                                         style={{ width: '100%' }}
                                         addonAfter="Mbit/s"
                                         placeholder={formatMessage({ id: 'please.enter' })}
