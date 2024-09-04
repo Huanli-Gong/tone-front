@@ -83,6 +83,7 @@ const text = {
   'note': '备注',
   'join.baseline': '加入基线',
   'edit.baseline': '修改基线',
+  'additional.information': '附加信息',
   // Drawer
   'bug': '缺陷记录',
   'bug.placeholder': '请输入缺陷记录',

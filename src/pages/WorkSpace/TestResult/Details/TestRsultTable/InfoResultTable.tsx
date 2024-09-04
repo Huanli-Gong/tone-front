@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Space, Tooltip, Input, Button, Typography } from 'antd'
+import { Space, Tooltip, Input, Button, Typography, Divider } from 'antd'
 import { FilterFilled } from '@ant-design/icons'
 
 import React, { useRef, useEffect } from 'react'
@@ -8,6 +8,7 @@ import { queryCaseResult } from '../service'
 import EditRemarks from '../components/EditRemarks'
 import JoinBaseline from '../components/JoinBaseline'
 import { QusetionIconTootip } from '@/components/Product';
+import EllipsisPulic from '@/components/Public/EllipsisPulic'
 import qs from 'querystring'
 
 import Highlighter from 'react-highlight-words'
@@ -32,7 +33,7 @@ export default (props: any) => {
     const {
         test_case_id, suite_id, testType, creator,
         server_provider, state = '', suite_name, conf_name,
-        refreshId, setRefreshId, lookPathCallback = ()=> {}
+        refreshId, setRefreshId, lookPathCallback = () => { }
     } = props
     const editRemark: any = useRef(null)
     const joinBaseline: any = useRef(null)
@@ -92,13 +93,13 @@ export default (props: any) => {
                     >
                         <FormattedMessage id="operation.search" />
                     </Button>
-                    <Button 
+                    <Button
                         onClick={() => {
                             setSelectedKeys(undefined)
                             handleSearch(undefined, confirm)
                         }}
                         type="text"
-                        size="small" 
+                        size="small"
                         style={{ width: 75, border: 'none' }}
                     >
                         <FormattedMessage id="operation.reset" />
@@ -272,7 +273,7 @@ export default (props: any) => {
                             fallback={
                                 <Space>
                                     <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></span>
-                                    {failFlag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>{buttonText}</span> }
+                                    {failFlag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>{buttonText}</span>}
                                 </Space>
                             }
                         >
@@ -285,17 +286,54 @@ export default (props: any) => {
                 )
             }
         },
-        {   
-            title: <FormattedMessage id="operation.log" />,
+        {
+            title: <FormattedMessage id="ws.result.details.additional.information" />,
             dataIndex: 'log',
-            width: 80,
+            width: 240,
             fixed: "right",
-            ellipsis: true,
-            render: (_: any, row: any)=> {
-                const filePath = row.conf_log_path 
-                return filePath ? 
-                <a><span onClick={()=> lookPathCallback(filePath, 'look') }>{formatMessage({ id: 'operation.log' })}</span></a>
-                : null
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_: any, row: any) => {
+                const scene_all = row.log_path && row.extend_info && row.debug_info
+                if (scene_all) {
+                    return (
+                        <div style={{ display: 'flex', alignItems: 'center', overflow: 'auto' }}>
+                            <a><span onClick={() => lookPathCallback(row.log_path, 'look')}>{formatMessage({ id: 'operation.log' })}</span></a>
+                            <Divider type="vertical" />
+                            <EllipsisPulic title={row.extend_info} style={{ width: 40, flex: 'none' }} />
+                            <Divider type="vertical" />
+                            <>
+                                {row.debug_info?.map((item: any, index: number) => {
+                                    const key = Object.keys(item)[0];
+                                    const prefix = "console";
+                                    if (key.startsWith(prefix)) {
+                                        const realKey = key.substring(prefix.length);
+                                        const value = item[key];
+                                        return (
+                                            <a key={index}>
+                                                <span onClick={() => lookPathCallback(value, 'look')}>
+                                                    {`console${realKey}_>` + '，'}
+                                                </span>
+                                            </a>
+                                        );
+                                    }
+                                    return null;
+                                })}
+                            </>
+                        </div>
+                    )
+                } else if (row.log_path) {
+                    return (
+                        <a><span onClick={() => lookPathCallback(row.log_path, 'look')}>{formatMessage({ id: 'operation.log' })}</span></a>
+                    )
+                } else {
+                    return <span>NA</span>
+                }
+                // const filePath = row.conf_log_path 
+                // return filePath ? 
+                // <a><span onClick={()=> lookPathCallback(filePath, 'look') }>{formatMessage({ id: 'operation.log' })}</span></a>
+                // : null
             }
         },
     ].filter(Boolean)
@@ -329,6 +367,7 @@ export default (props: any) => {
                     pageSizeOptions: [100, 200, 500],
                 }}
                 columns={columns}
+                scroll={{ x: '100%' }}
                 rowClassName={styles.result_info_table_row}
                 dataSource={data.data || []}
             />

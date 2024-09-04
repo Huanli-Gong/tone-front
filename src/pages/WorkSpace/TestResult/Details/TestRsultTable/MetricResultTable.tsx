@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
-import { Tooltip, Typography } from 'antd'
+import { Tooltip, Typography, Divider } from 'antd'
 import { FilterFilled } from '@ant-design/icons'
 import { QusetionIconTootip, ResultTdPopver, compareResultFontColor, compareResultSpan } from '../components'
 import { queryCaseResultPerformance } from '../service'
@@ -15,7 +15,7 @@ import { MetricSelectProvider } from '.'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
-    const { test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType, lookPathCallback = ()=> {}, } = props
+    const { test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType, lookPathCallback = () => { }, } = props
     const { id: job_id, ws_id, share_id } = useParams() as any
     const { setOSuite, oSuite } = React.useContext(MetricSelectProvider)
     const defaultKeys = {
@@ -194,17 +194,50 @@ export default (props: any) => {
             ellipsis: true,
             render: (_: any, row: any) => compareResultSpan(row.track_result, row.result, formatMessage)
         },
-        {   
-            title: <FormattedMessage id="operation.log" />,
+        {
+            title: <FormattedMessage id="ws.result.details.additional.information" />,
             dataIndex: 'log',
-            width: 80,
+            width: 240,
             fixed: "right",
-            ellipsis: true,
-            render: (_: any, row: any)=> {
-                const filePath = row.conf_log_path
-                return filePath ? 
-                    <a><span onClick={()=> lookPathCallback(filePath, 'look') }>{formatMessage({ id: 'operation.log' })}</span></a>
-                : null
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_: any, row: any) => {
+                const scene_all = row.log_path && row.extend_info && row.debug_info
+                if (scene_all) {
+                    return (
+                        <div style={{ display: 'flex', alignItems: 'center', overflow: 'auto' }}>
+                            <a><span onClick={() => lookPathCallback(row.log_path, 'look')}>{formatMessage({ id: 'operation.log' })}</span></a>
+                            <Divider type="vertical" />
+                            <EllipsisPulic title={row.extend_info} style={{ width: 40, flex: 'none' }} />
+                            <Divider type="vertical" />
+                            <>
+                                {row.debug_info?.map((item: any, index: number) => {
+                                    const key = Object.keys(item)[0];
+                                    const prefix = "console";
+                                    if (key.startsWith(prefix)) {
+                                        const realKey = key.substring(prefix.length);
+                                        const value = item[key];
+                                        return (
+                                            <a key={index}>
+                                                <span onClick={() => lookPathCallback(value, 'look')}>
+                                                    {`console${realKey}_>` + '，'}
+                                                </span>
+                                            </a>
+                                        );
+                                    }
+                                    return null;
+                                })}
+                            </>
+                        </div>
+                    )
+                } else if (row.log_path) {
+                    return (
+                        <a><span onClick={() => lookPathCallback(row.log_path, 'look')}>{formatMessage({ id: 'operation.log' })}</span></a>
+                    )
+                } else {
+                    return <span>NA</span>
+                }
             }
         },
     ]
@@ -272,6 +305,7 @@ export default (props: any) => {
             rowClassName={styles.result_info_table_row}
             dataSource={data.data}
             columns={columns}
+            scroll={{ x: '100%' }}
             refreshDeps={[interfaceSearchKeys, ws_id, strLocals, access]}
         />
     )
