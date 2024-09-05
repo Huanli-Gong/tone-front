@@ -194,52 +194,6 @@ export default (props: any) => {
             ellipsis: true,
             render: (_: any, row: any) => compareResultSpan(row.track_result, row.result, formatMessage)
         },
-        {
-            title: <FormattedMessage id="ws.result.details.additional.information" />,
-            dataIndex: 'log',
-            width: 240,
-            fixed: "right",
-            ellipsis: {
-                showTitle: false,
-            },
-            render: (_: any, row: any) => {
-                const scene_all = row.log_path && row.extend_info && row.debug_info
-                if (scene_all) {
-                    return (
-                        <div style={{ display: 'flex', alignItems: 'center', overflow: 'auto' }}>
-                            <a><span onClick={() => lookPathCallback(row.log_path, 'look')}>{formatMessage({ id: 'operation.log' })}</span></a>
-                            <Divider type="vertical" />
-                            <EllipsisPulic title={row.extend_info} style={{ width: 40, flex: 'none' }} />
-                            <Divider type="vertical" />
-                            <>
-                                {row.debug_info?.map((item: any, index: number) => {
-                                    const key = Object.keys(item)[0];
-                                    const prefix = "console";
-                                    if (key.startsWith(prefix)) {
-                                        const realKey = key.substring(prefix.length);
-                                        const value = item[key];
-                                        return (
-                                            <a key={index}>
-                                                <span onClick={() => lookPathCallback(value, 'look')}>
-                                                    {`console${realKey}_>` + '，'}
-                                                </span>
-                                            </a>
-                                        );
-                                    }
-                                    return null;
-                                })}
-                            </>
-                        </div>
-                    )
-                } else if (row.log_path) {
-                    return (
-                        <a><span onClick={() => lookPathCallback(row.log_path, 'look')}>{formatMessage({ id: 'operation.log' })}</span></a>
-                    )
-                } else {
-                    return <span>NA</span>
-                }
-            }
-        },
     ]
 
     const rowSelection: any = !share_id && testType === 'performance' ? {

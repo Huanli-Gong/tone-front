@@ -257,51 +257,20 @@ export default (props: any) => {
             ),
             ...tooltipTd()
         },
-        !share_id &&
-        {
-            title: <FormattedMessage id="Table.columns.operation" />,
-            width: 200,
-            fixed: "right",
-            render: (_: any, row: any) => {
-                // 失败的 && 没有关联关系的才能“修改基线”
-                const failFlag = _.result === 'Fail' && !row.skip_baseline_info
-                const buttonText = _.bug ? <FormattedMessage id="ws.result.details.edit.baseline" /> : <FormattedMessage id="ws.result.details.join.baseline" />
-                return (
-                    <Access accessible={access.WsTourist()}>
-                        <Access
-                            accessible={access.WsMemberOperateSelf(creator)}
-                            fallback={
-                                <Space>
-                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></span>
-                                    {failFlag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>{buttonText}</span>}
-                                </Space>
-                            }
-                        >
-                            <Space>
-                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenEditRemark(_)}><FormattedMessage id="operation.edit" /></span>
-                                {failFlag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenJoinBaseline(_)}>{buttonText}</span>}
-                            </Space>
-                        </Access>
-                    </Access>
-                )
-            }
-        },
         {
             title: <FormattedMessage id="ws.result.details.additional.information" />,
             dataIndex: 'log',
             width: 240,
-            fixed: "right",
-            ellipsis: {
-                showTitle: false,
-            },
+            // fixed: "right",
+            ellipsis: true,
             render: (_: any, row: any) => {
                 const scene_all = row.log_path && row.extend_info && row.debug_info
                 if (scene_all) {
                     return (
-                        <div style={{ display: 'flex', alignItems: 'center', overflow: 'auto' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
                             <a><span onClick={() => lookPathCallback(row.log_path, 'look')}>{formatMessage({ id: 'operation.log' })}</span></a>
                             <Divider type="vertical" />
-                            <EllipsisPulic title={row.extend_info} style={{ width: 40, flex: 'none' }} />
+                            <EllipsisPulic title={row.extend_info} style={{ width: 50, flex: 'none' }} />
                             <Divider type="vertical" />
                             <>
                                 {row.debug_info?.map((item: any, index: number) => {
@@ -330,10 +299,35 @@ export default (props: any) => {
                 } else {
                     return <span>NA</span>
                 }
-                // const filePath = row.conf_log_path 
-                // return filePath ? 
-                // <a><span onClick={()=> lookPathCallback(filePath, 'look') }>{formatMessage({ id: 'operation.log' })}</span></a>
-                // : null
+            }
+        },
+        !share_id &&
+        {
+            title: <FormattedMessage id="Table.columns.operation" />,
+            width: 160,
+            fixed: "right",
+            render: (_: any, row: any) => {
+                // 失败的 && 没有关联关系的才能“修改基线”
+                const failFlag = _.result === 'Fail' && !row.skip_baseline_info
+                const buttonText = _.bug ? <FormattedMessage id="ws.result.details.edit.baseline" /> : <FormattedMessage id="ws.result.details.join.baseline" />
+                return (
+                    <Access accessible={access.WsTourist()}>
+                        <Access
+                            accessible={access.WsMemberOperateSelf(creator)}
+                            fallback={
+                                <Space>
+                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></span>
+                                    {failFlag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>{buttonText}</span>}
+                                </Space>
+                            }
+                        >
+                            <Space>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenEditRemark(_)}><FormattedMessage id="operation.edit" /></span>
+                                {failFlag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenJoinBaseline(_)}>{buttonText}</span>}
+                            </Space>
+                        </Access>
+                    </Access>
+                )
             }
         },
     ].filter(Boolean)
@@ -341,7 +335,7 @@ export default (props: any) => {
     return (
         <>
             <ResizeHooksTable
-                name="wsResultTableCaseList"
+                name="wsResultTableSubCaseList"
                 refreshDeps={[access, testType]}
                 rowKey="id"
                 size="small"
