@@ -168,7 +168,7 @@ export default forwardRef((props: any, ref: any) => {
                                         desc={
                                             <>
                                                 <Row><Typography.Text><FormattedMessage id="plan.available.placeholders" /></Typography.Text></Row>
-                                                <Row><Typography.Text>{`{date} {plan_name} {plan_id} {product_version}`}</Typography.Text></Row>
+                                                <Row><Typography.Text>{`{Job_name}_report-{report_seq_id}`}</Typography.Text></Row>
                                             </>
                                         }
                                     />

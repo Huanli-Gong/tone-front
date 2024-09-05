@@ -356,6 +356,7 @@ export const CreatePageData = (props: any) => {
                                             list.push({
                                                 ...item,
                                                 test_suite_description: suite[b].test_tool,
+                                                suite_name: suite[b].suite_show_name,
                                                 test_env: '',
                                                 test_description: '',
                                                 test_conclusion: '',
@@ -395,6 +396,7 @@ export const CreatePageData = (props: any) => {
                                         list.push({
                                             ...item,
                                             test_suite_description: suite[b].test_tool,
+                                            suite_name: suite[b].suite_show_name,
                                             rowKey: `${m}-${b}`
                                         })
                                     }
@@ -428,6 +430,7 @@ export const CreatePageData = (props: any) => {
                                         if (Number(item.suite_id) === Number(suite[b].test_suite_id)) {
                                             list.push({
                                                 ...item,
+                                                suite_name: suite[b].suite_show_name,
                                                 rowKey: `${m}-${b}`
                                             })
                                         }
@@ -457,11 +460,11 @@ export const CreatePageData = (props: any) => {
                             let list: any = []
                             let conf_list: any = []
                             for (let suite = res[m].list, b = 0; b < suite.length; b++) { //遍历项下面的suite
-
                                 func_data_result?.map((item: any, idx: number) => {
                                     if (Number(item.suite_id) === Number(suite[b].test_suite_id)) {
                                         list.push({
                                             ...item,
+                                            suite_name: suite[b].suite_show_name,
                                             rowKey: `${m}-${b}`
                                         })
                                     }
@@ -656,7 +659,6 @@ export const EditPageData = () => {
         }
         setDataSource(data)
         // window.document.title = data?.name || 'T-one'
-        // console.log(data)
         const { tmpl_id, creator, template_detail } = data
         setCreator(creator)
         let templateSource = template_detail

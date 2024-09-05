@@ -113,6 +113,7 @@ const ReportTestPref: React.FC<any> = (props) => {
     const [btn, setBtn] = useState<boolean>(true)
     const [btnName, setBtnName] = useState<string>('')
     const [filterName, setFilterName] = useState('all')
+    const [chartType, setChartType] = useState('1')
     const sortRef = useRef();
     const groupRowRef = useRef<any>(null)
     const { perf_data_result } = compareResult
@@ -291,7 +292,15 @@ const ReportTestPref: React.FC<any> = (props) => {
                                 <TestSuite key={idx}>
                                     <SuiteName style={{ textIndent: containerScroll?.left }}>
                                         {item.suite_name}
-                                        <ChartTypeChild containerScroll={containerScroll} btn={btn} isReport={false} obj={dataSource} suiteId={item.suite_id} setPerData={setDataSource} />
+                                        <ChartTypeChild 
+                                            btn={btn}
+                                            isReport={false} 
+                                            obj={dataSource} 
+                                            suiteId={item.suite_id} 
+                                            setPerData={setDataSource} 
+                                            chartType={chartType} 
+                                            setChartType={setChartType}
+                                        />
                                     </SuiteName>
                                     <TestConfWarpper>
                                         {
