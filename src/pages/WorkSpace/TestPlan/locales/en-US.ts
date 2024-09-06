@@ -114,7 +114,7 @@ export default {
   'plan.custom.script.cannot.empty': 'Custom script cannot be empty',
   'plan.checked': 'Checked',
   'plan.unChecked': 'Unchecked',
-  'plan.report_name.placeholder': 'Please enter a report name，for example：{Job_name}_report-{report_seq_id}',
+  'plan.report_name.placeholder': 'Please enter a report name，for example：{date} {plan_name} {plan_id} {product_version}',
   'plan.available.placeholders': 'Report names can be represented by placeholders：',
   'plan.select.report.template': 'Select report template',
   'plan.drawer.template_ellipsis.wraning': "The number of test templates in a single test phase shall not exceed 15！",

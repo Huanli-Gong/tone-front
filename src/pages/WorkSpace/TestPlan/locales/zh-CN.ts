@@ -117,7 +117,7 @@ export default {
   'plan.custom.script.cannot.empty': '自定义脚本不能为空',
   'plan.checked': '开',
   'plan.unChecked': '关',
-  'plan.report_name.placeholder': '请输入报告名称，例如：{Job_name}_report-{report_seq_id}',
+  'plan.report_name.placeholder': '请输入报告名称，例如：{date} {plan_name} {plan_id} {product_version}',
   'plan.available.placeholders': '报告名称可用占位符：',
   'plan.select.report.template': '选择报告模板',
   'plan.drawer.template_ellipsis.wraning': "单个测试阶段中测试模版数量不得超过15个！",

@@ -159,7 +159,7 @@ export default forwardRef((props: any, ref: any) => {
                         <Form.Item label={<FormattedMessage id="plan.report_name" />}>
                             <div style={{ position: 'relative' }}>
                                 <Form.Item name="report_name">
-                                    <Input autoComplete="off" placeholder={formatMessage({ id: 'plan.report_name.placeholder' }, { Job_name: '{Job_name}', report_seq_id: '{report_seq_id}' })} />
+                                    <Input autoComplete="off" placeholder={formatMessage({ id: 'plan.report_name.placeholder' })} />
                                 </Form.Item>
                                 <div style={{ position: 'absolute', right: -22, top: -4 }}>
                                     <QusetionIconTootip
@@ -168,7 +168,7 @@ export default forwardRef((props: any, ref: any) => {
                                         desc={
                                             <>
                                                 <Row><Typography.Text><FormattedMessage id="plan.available.placeholders" /></Typography.Text></Row>
-                                                <Row><Typography.Text>{`{Job_name}_report-{report_seq_id}`}</Typography.Text></Row>
+                                                <Row><Typography.Text>{`{date} {plan_name} {plan_id} {product_version}`}</Typography.Text></Row>
                                             </>
                                         }
                                     />
