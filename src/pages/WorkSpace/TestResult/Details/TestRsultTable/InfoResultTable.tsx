@@ -279,13 +279,29 @@ export default (props: any) => {
                                     if (key.startsWith(prefix)) {
                                         const realKey = key.substring(prefix.length);
                                         const value = item[key];
-                                        return (
+                                        const label = (
                                             <a key={index}>
                                                 <span onClick={() => lookPathCallback(value, 'look')}>
-                                                    {`console${realKey}_>` + '，'}
+                                                    {`console${realKey}_>`}
                                                 </span>
                                             </a>
-                                        );
+                                        )
+                                        if (index === row.debug_info.length - 1) {
+                                            // 最后一个元素，不加分隔符
+                                            return (
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    {label}
+                                                </div>
+                                            )
+                                        } else {
+                                            // 其他元素，在后面加上分隔符
+                                            return (
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    { label }
+                                                    <span style={{ width: '1px', height: 12, background: '#ccc', margin: '0 6px' }}></span>
+                                                </div>
+                                            )
+                                        }
                                     }
                                     return null;
                                 })}
