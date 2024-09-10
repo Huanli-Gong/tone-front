@@ -10,7 +10,6 @@ const TableForSubcase: React.FC<any> = (props) => {
     const [params, setParams] = React.useState({ page_num: 1, page_size: 20, test_suite_id });
 
     const { data, loading } = useRequest(() => querySubcaseList(params), {
-        manual: true,
         refreshDeps: [params],
         formatResult(res) {
             return res;
