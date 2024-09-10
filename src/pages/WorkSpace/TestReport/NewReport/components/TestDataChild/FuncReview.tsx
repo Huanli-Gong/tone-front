@@ -377,7 +377,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
         else
             setExpandKeys(expandKeys.concat(id))
     }
-
+ 
     const functionTable = Array.isArray(funcData.list) && !!funcData.list.length ?
         funcData?.list?.map((suite: any, idx: number) => {
             return (
@@ -506,6 +506,8 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                             </CaseTitle>
                                             {
                                                 dataList?.map((item: any, idx: number) => {
+                                                     // selected_ws_id 这段逻辑，用于兼容老数据，后续删除
+                                                    const selected_ws_id = suite.group_jobs?.filter((jobObj: any)=> jobObj?.job_list?.includes(item.obj_id))[0].ws_id || wsId
                                                     return (
                                                         <CaseText gLen={groupLen} btnState={btnState} key={idx}>
                                                             <Space size={16}>
@@ -514,7 +516,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                                                 <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(item.fail_case)}</Typography.Text>
                                                                 {
                                                                     !share_id && !getCompareType(item) &&
-                                                                    <JumpResult ws_id={wsId} job_id={item.obj_id} style={{ paddingLeft: 10 }} />
+                                                                    <JumpResult ws_id={item?.ws_id || selected_ws_id} job_id={item?.obj_id} style={{ paddingLeft: 10 }} />
                                                                 }
                                                             </Space>
                                                         </CaseText>

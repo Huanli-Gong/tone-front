@@ -20,9 +20,12 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import SelectRadio from '@/components/Public/SelectRadio';
 import SelectUser from '@/components/Public/SelectUser';
 import CommonPagination from '@/components/CommonPagination';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
+import WsListSelect from '@/pages/WorkSpace/TestReport/components/WsListSelect'
+
 import { requestCodeMessage } from '@/utils/utils'
 import { ResizeHooksTable } from '@/utils/table.hooks';
-import { ColumnEllipsisText } from '@/components/ColumnComponents';
+
 
 const { RangePicker } = DatePicker
 const { Option } = Select
@@ -68,8 +71,9 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
         { id: 1, name: formatMessage({ id: 'header.test_type.functional' }) },
         { id: 0, name: formatMessage({ id: 'header.test_type.performance' }) },
     ]
-    const [pruductId, setPruductId] = useState<any>()
-    const [pruductVersion, setPruductVersion] = useState<any>()
+    const [selectedWsId, setSelectedWsId] = useState<any>()
+    const [productId, setProductId] = useState<any>()
+    const [productVersion, setProductVersion] = useState<any>()
     const [dataSource, setDataSource] = useState(defaultResult)
 
     React.useImperativeHandle(ref, () => ({
@@ -86,28 +90,28 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
         confirm?.()
     }
 
-    const getProductList = async (id: any) => {
+    const getProductList = async (q: any) => {
         setLoading(true)
-        const result = await queryProductList({ ws_id, product_id: id })
+        const result = await queryProductList(q)
         if (result.code === 200) {
             let data = result.data.filter((val: any) => val?.trim())
             data = data.map((item: any, index: number) => ({ label: index, value: item }))
             setAllVersion(data)
-            if (!!data.length && pruductId) setPruductVersion(data[0].value)
-            else setPruductVersion(undefined)
+            if (data.length && productId) setProductVersion(data[0].value)
+            else setProductVersion(undefined)
         } else {
             requestCodeMessage(result.code, result.msg)
         }
         setLoading(false)
     }
 
-    const getProductData = async () => {
+    const getProductData = async (q: any) => {
         setLoading(true)
-        const result = await queryProduct({ ws_id })
+        const result = await queryProduct(q)
         if (result.code === 200) {
             const data = _.isArray(result.data) ? result.data : []
             setAllProduct(data)
-            if (!!data.length) setPruductId(undefined)
+            setProductId(data[0].id)
         } else {
             requestCodeMessage(result.code, result.msg)
         }
@@ -116,10 +120,10 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
 
     const getJobList = async () => {
         setLoading(true)
-        const data = await queryJobList(params)
+        const data = await queryJobList({ ...params, ws_id: selectedWsId, })
+        setLoading(false)
         if (data.code === 200) {
             setDataSource(data)
-            setLoading(false)
         } else {
             setDataSource(defaultResult)
             requestCodeMessage(data.code, data.msg)
@@ -217,7 +221,9 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                 shwoTitle: false,
             },
             dataIndex: 'creator_name',
-            filterDropdown: ({ confirm }: any) => <SelectUser
+            filterDropdown: ({ confirm }: any) => 
+               <SelectUser
+                ws_id={selectedWsId} 
                 autoFocus={autoFocus} mode="" confirm={confirm}
                 onConfirm={(val: []) => setParams({ ...params, creators: val ? JSON.stringify([val]) : null })} page_size={9999} />,
             onFilterDropdownVisibleChange: (visible: any) => {
@@ -257,43 +263,52 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
     ]
 
     useEffect(() => {
-        getProductData()
-        getProductList(undefined)
-    }, [])
+        if (ws_id) {
+            setSelectedWsId(ws_id)
+            getProductData({ ws_id })
+        }
+    }, [ws_id])
 
     useEffect(() => {
-        if (pruductId) getProductList(pruductId)
-    }, [pruductId])
+        if (productId) getProductList({ ws_id: selectedWsId, product_id: productId })
+    }, [productId])
+
+    useEffect(() => {
+        if (productId) {
+            setParams({ ...params, ws_id: selectedWsId, product_id: productId, product_version: productVersion || undefined  })
+        }
+    }, [productVersion])
 
     useEffect(() => {
         getJobList()
     }, [params])
 
-    useEffect(() => {
-        if (pruductId && !pruductVersion) {
-            setParams({ ...params, product_id: pruductId, product_version: undefined })
-        }
-        if (pruductId && pruductVersion) {
-            setParams({ ...params, product_version: pruductVersion, product_id: pruductId })
-        }
-    }, [pruductId, pruductVersion])
-
     const onVersionChange = (value: any) => {
-        setPruductVersion(value)
+        setProductVersion(value)
+    }
+
+    const onWsChange = (value: any) => {
+        // 重置其他控件选项
+        setProductId(undefined)
+        setProductVersion(undefined)
+        setDataSource(defaultResult)
+        // 
+        setSelectedWsId(value)
+        getProductData({ ws_id: value })
     }
 
     const onProductChange = (value: any) => {
-        setPruductId(value)
+        setProductId(value)
     }
 
     const handleClearVersion = () => {
-        setPruductVersion(undefined)
+        setProductVersion(undefined)
         setParams({ ...params, product_version: undefined })
     }
 
     const handleClearProduct = () => {
-        setPruductId(undefined)
-        setPruductVersion(undefined)
+        setProductId(undefined)
+        setProductVersion(undefined)
         setParams(page_default_params)
     }
 
@@ -350,7 +365,7 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
             }
         },
     };
-    const handleSelectCancle = () => {
+    const handleSelectCancel = () => {
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
@@ -386,14 +401,23 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
             <div className={styles.list_container} id="list_container">
                 <div className={styles.select_product}>
                     <Row>
-                        <Col span={12} >
+                       <Col span={8}>
+                            <span><FormattedMessage id="analysis.ws.list" /></span>
+                            <WsListSelect
+                                ws_id={ws_id}
+                                value={selectedWsId} 
+                                onSelect={onWsChange}
+                                style={{ width: 'calc(100% - 75px)' }}
+                            />
+                        </Col>
+                        <Col span={8} >
                             <span><FormattedMessage id="analysis.product.label" /></span>
                             <Select
                                 showSearch
                                 allowClear={true}
                                 style={{ width: 'calc(100% - 75px)' }}
                                 placeholder={formatMessage({ id: 'analysis.product.placeholder' })}
-                                value={pruductId}
+                                value={productId}
                                 optionFilterProp="children"
                                 onSelect={onProductChange}
                                 onClear={handleClearProduct}
@@ -404,14 +428,14 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                                 {allProduct.map((item: any) => <Option value={item.id} key={item.id}>{item.name}</Option>)}
                             </Select>
                         </Col>
-                        <Col span={12} >
+                        <Col span={8} >
                             <span><FormattedMessage id="analysis.version.label" /></span>
                             <Select
                                 showSearch
                                 allowClear={true}
                                 style={{ width: `calc(100% - ${getLocale() === 'en-US' ? 120 : 75}px)` }}
                                 placeholder={formatMessage({ id: 'analysis.version.placeholder' })}
-                                value={pruductVersion}
+                                value={productVersion}
                                 optionFilterProp="children"
                                 onSelect={onVersionChange}
                                 onClear={handleClearVersion}
@@ -432,7 +456,7 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                         rowKey='id'
                         columns={columns as any}
                         name="ws-compare-all-job-list"
-                        refreshDeps={[ws_id, params, autoFocus]}
+                        refreshDeps={[selectedWsId, params, autoFocus]}
                         loading={loading}
                         dataSource={tableData}
                         pagination={false}
@@ -453,7 +477,7 @@ const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                         <span><FormattedMessage id="analysis.selected" /></span>
                         <span className={styles.text_num}>{`${selectRowData.length}`}</span>
                         <span><FormattedMessage id="analysis.item" /></span>
-                        <span className={styles.text_cancle} onClick={handleSelectCancle}>
+                        <span className={styles.text_cancle} onClick={handleSelectCancel}>
                             <FormattedMessage id="analysis.all.cancel" />
                         </span>
                     </span>

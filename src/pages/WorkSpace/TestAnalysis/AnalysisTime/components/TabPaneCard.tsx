@@ -77,6 +77,8 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
     const { info, setInfo } = props
     const { show_type, provider_env, test_type } = info
     const [chartData, setChartData] = useState<any>({})
+    const [statisticsData, setStatisticsData] = useState<any>({})
+
     const [tableData, setTableData] = useState<any>([])
     const [metricData, setMetricData] = useState<any>(null)
     const [loading, setLoading] = useState(JSON.stringify(query) !== "{}")
@@ -107,6 +109,7 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
         setLoading(true)
         setTableData([])
         setChartData({})
+        setStatisticsData({})
 
         const { data, code } = test_type === 'performance' ?
             await queryPerfAnalysisList(params) :
@@ -116,10 +119,11 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
         if (code !== 200) return
         if (!data) return
 
-        const { job_list, metric_map, case_map } = data
+        const { job_list, metric_map, case_map, case_statistics } = data
         if (job_list && job_list.length > 0) {
             setChartData(test_type === 'performance' ? metric_map : case_map)
             setTableData(job_list)
+            setStatisticsData(case_statistics)
             return
         }
     }
@@ -475,6 +479,7 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                             provider_env={provider_env}
                             show_type={show_type}
                             dataSource={chartData}
+                            statisticsData={statisticsData}
                         />
                     }
 
@@ -482,7 +487,6 @@ const TabPaneCard: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                         tableData?.length === 0 &&
                         <EmptyComp />
                     }
-
                     {
                         tableData?.length > 0 &&
                         <AnalysisTable

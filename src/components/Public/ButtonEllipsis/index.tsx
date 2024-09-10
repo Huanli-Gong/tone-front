@@ -15,16 +15,17 @@ const ButtonEllipsis: React.FC<any> = ({ title, width = 150, onClick = () => { }
 
 	useEffect(() => {
 		isEllipsis()
-	}, []);
+	}, [title]);
 
 	const renderChildren = () => {
 		return (
-			children ? React.cloneElement(children) : title || '-'
+			children ? React.cloneElement(children): title || '-'
 		)
 	}
+
 	return (
 		<Space>
-			<div ref={ellipsis} className={styles.ellipsis} style={{ width: width }}>
+			<div ref={ellipsis} className={styles.ellipsis} style={{ maxWidth: width }}>
 				<Tooltip
 					overlayClassName={styles.tooltipCss}
 					color={isCode ? '#fff' : ''}
@@ -36,6 +37,7 @@ const ButtonEllipsis: React.FC<any> = ({ title, width = 150, onClick = () => { }
 				<span></span>
 				{!show && children && renderChildren()}
 			</div>
+
 			{show && children && renderChildren()}
 			{show && !children &&
 				<FileTextOutlined className={styles.edit} onClick={onClick} />

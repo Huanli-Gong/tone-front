@@ -10,10 +10,11 @@ import { querySuiteList, queryEenvironmentResultList, queryDomainGroup } from '.
 import { handleDomainList, getSelectedDataFn } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { requestCodeMessage } from '@/utils/utils';
+import BatchTagModal from './BatchTagModal'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
-    const { selectedChange, allSelectRowData } = props
+    const { selectedChange, allSelectRowData, allSelectedRowKeys, callback } = props
     const { ws_id } = useParams() as any
     const access = useAccess()
     const scrollbarsRef: any = useRef(null)
@@ -22,6 +23,7 @@ export default (props: any) => {
     const [secondRowData, setSecondRowData] = useState([])
     const [suitData, setSuitData] = useState<any>({}) // 全量数据
     const saveReportDraw: any = useRef(null)
+    const batchTagRef: any = useRef(null) 
     const onResizeWidth = () => {
         const oli = document.querySelector('#job_group li')
         const box: any = document.getElementById('job_group')
@@ -43,7 +45,7 @@ export default (props: any) => {
         onResizeWidth()
     }, [allSelectRowData])
 
-    const handleCancle = () => {
+    const handleCancel = () => {
         selectedChange()
     }
 
@@ -200,7 +202,7 @@ export default (props: any) => {
         const perf_keys = Object.keys(perf_suite) || []
         const duplicate: any = []
         const allGroupData: any = []
-        allGroupData.push({ members: allSelectRowData })
+        allGroupData.push({ ws_id, members: allSelectRowData })
         const newSuiteData = {
             func_suite_dic: getSelectedDataFn(
                 func_suite,
@@ -319,16 +321,22 @@ export default (props: any) => {
                 <div className={styles.operate}>
                     <Space>
                         <RightOutlined onClick={handleScroll} style={{ opacity: padding ? 1 : 0, marginLeft: 16, marginRight: 8 }} />
-                        <Button onClick={handleCancle}><FormattedMessage id="operation.cancel" /></Button>
+                        <Button onClick={handleCancel}><FormattedMessage id="operation.cancel" /></Button>
                         <Access accessible={access.IsWsSetting()}>
                             <Button type="primary" onClick={_.partial(handleSaveReportScript)} disabled={getDisabled()}><FormattedMessage id="ws.result.list.create.report" /></Button>
                         </Access>
                         <Button type="primary" onClick={_.partial(handleNext, 'test_analysis/compare')}>
                             <FormattedMessage id="ws.result.list.compare.analysis" />
                         </Button>
+                        <Access accessible={access.loginBtn()}>
+                            <Button onClick={() => batchTagRef.current.show({ data: allSelectedRowKeys }) }>
+                                <FormattedMessage id="ws.result.list.batch.add.tag.jobs" />
+                            </Button>
+                        </Access>
                     </Space>
                 </div>
                 <SaveReport ref={saveReportDraw} onOk={creatReportCallback} allGroup={[getBaselineGroup()]} />
+                <BatchTagModal ref={batchTagRef} ws_id={ws_id} callback={callback} />
             </div>
         </div>
     )

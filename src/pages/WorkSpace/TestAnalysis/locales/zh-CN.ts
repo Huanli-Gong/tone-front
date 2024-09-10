@@ -33,6 +33,7 @@ export default {
     'analysis.comparison.base_group.compare_data.empty': "基准组对比数据不能为空!",
     'analysis.comparison.group.compare_data.empty': "对比组数据不能为空！",
     // AddJob
+    'analysis.ws.list': 'ws列表：',
     'analysis.product.label': '产品：',
     'analysis.product.placeholder': '请选择产品',
     'analysis.version.label': '产品版本：',

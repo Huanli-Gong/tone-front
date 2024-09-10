@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Space, Tooltip, Input, Button, Typography } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
+import { FilterFilled } from '@ant-design/icons'
 
 import React, { useRef, useEffect } from 'react'
 import { useRequest, Access, useAccess, useParams, useIntl, FormattedMessage } from 'umi'
@@ -32,7 +32,7 @@ export default (props: any) => {
     const {
         test_case_id, suite_id, testType, creator,
         server_provider, state = '', suite_name, conf_name,
-        refreshId, setRefreshId
+        refreshId, setRefreshId, lookPathCallback = ()=> {}
     } = props
     const editRemark: any = useRef(null)
     const joinBaseline: any = useRef(null)
@@ -47,7 +47,7 @@ export default (props: any) => {
         ws_id,
         sub_case_name: undefined,
         sub_case_result: undefined,
-        page_size: 10,
+        page_size: 100,
         page_num: 1,
         share_id
     }
@@ -69,11 +69,7 @@ export default (props: any) => {
 
     const handleSearch = (selectedKeys: any, confirm: any) => {
         confirm?.();
-        setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_name: selectedKeys[0], page_num: 1, page_size: 10 }))
-    };
-
-    const handleReset = (clearFilters: any) => {
-        clearFilters();
+        setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_name: selectedKeys, page_num: 1, page_size: 100 }))
     };
 
     const getColumnSearchProps = (name: any) => ({
@@ -82,28 +78,35 @@ export default (props: any) => {
                 <Input
                     ref={searchInput}
                     placeholder={`${formatMessage({ id: 'operation.search' })} ${name}`}
-                    value={selectedKeys[0]}
-                    onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    value={selectedKeys}
+                    onChange={e => setSelectedKeys(e.target.value)}
                     onPressEnter={() => handleSearch(selectedKeys, confirm)}
-                    style={{ width: 188, marginBottom: 8, display: 'block' }}
+                    style={{ width: 150, marginBottom: 8, display: 'block' }}
                 />
                 <Space>
                     <Button
-                        type="primary"
                         onClick={() => handleSearch(selectedKeys, confirm)}
-                        icon={<SearchOutlined />}
+                        type="link"
                         size="small"
-                        style={{ width: 90 }}
+                        style={{ width: 75 }}
                     >
                         <FormattedMessage id="operation.search" />
                     </Button>
-                    <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+                    <Button 
+                        onClick={() => {
+                            setSelectedKeys(undefined)
+                            handleSearch(undefined, confirm)
+                        }}
+                        type="text"
+                        size="small" 
+                        style={{ width: 75, border: 'none' }}
+                    >
                         <FormattedMessage id="operation.reset" />
                     </Button>
                 </Space>
             </div>
         ),
-        filterIcon: (filtered: any) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+        filterIcon: (filtered: any) => <FilterFilled style={{ color: filtered ? '#1890ff' : undefined }} />,
         onFilterDropdownVisibleChange: (visible: any) => {
             if (visible) {
                 setTimeout(() => searchInput.current.select(), 100);
@@ -123,13 +126,13 @@ export default (props: any) => {
 
     useEffect(() => {
         if (refreshId === test_case_id) {
-            setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_result: stateWordMap(state) }))
+            setInterfaceSearchKeys((p: any) => ({ ...p, page_num: 1, page_size: 10, sub_case_result: stateWordMap(state) }))
             setTimeout(() => {
                 setRefreshId(null)
             }, 300)
         }
         if (!refreshId) {
-            setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_result: stateWordMap(state) }))
+            setInterfaceSearchKeys((p: any) => ({ ...p, page_num: 1, page_size: 10, sub_case_result: stateWordMap(state) }))
         }
     }, [state])
 
@@ -177,8 +180,6 @@ export default (props: any) => {
             }
         },
         {
-            dataIndex: 'description',
-            width: 180,
             title: (
                 <QusetionIconTootip
                     placement="bottomLeft"
@@ -186,6 +187,8 @@ export default (props: any) => {
                     desc={formatMessage({ id: 'ws.result.details.baseline.description.ps' })}
                 />
             ),
+            dataIndex: 'description',
+            width: 180,
             ellipsis: true,
             render: (_: any, row: any) => {
                 let context = row.description
@@ -221,7 +224,8 @@ export default (props: any) => {
                 let urlHref = ''
                 if (context) {
                     urlHref = context
-                    const reg = /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/;
+                    // const reg = /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/;
+                    const reg = /^((http|https|ftps):(?:\/\/))/;
                     if (!reg.test(context)) urlHref = `${window.origin}/ws/${ws_id}404?page=${location.href}`
                 }
 
@@ -255,10 +259,12 @@ export default (props: any) => {
         !share_id &&
         {
             title: <FormattedMessage id="Table.columns.operation" />,
-            fixed: "right",
             width: 200,
-            render: (_: any) => {
-                const flag = _.result === 'Fail' && !_.bug
+            fixed: "right",
+            render: (_: any, row: any) => {
+                // 失败的 && 没有关联关系的才能“修改基线”
+                const failFlag = _.result === 'Fail' && !row.skip_baseline_info
+                const buttonText = _.bug ? <FormattedMessage id="ws.result.details.edit.baseline" /> : <FormattedMessage id="ws.result.details.join.baseline" />
                 return (
                     <Access accessible={access.WsTourist()}>
                         <Access
@@ -266,19 +272,32 @@ export default (props: any) => {
                             fallback={
                                 <Space>
                                     <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></span>
-                                    {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.join.baseline" /></span>}
+                                    {failFlag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>{buttonText}</span> }
                                 </Space>
                             }
                         >
                             <Space>
                                 <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenEditRemark(_)}><FormattedMessage id="operation.edit" /></span>
-                                {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>}
+                                {failFlag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenJoinBaseline(_)}>{buttonText}</span>}
                             </Space>
                         </Access>
                     </Access>
                 )
             }
-        }
+        },
+        {   
+            title: <FormattedMessage id="operation.log" />,
+            dataIndex: 'log',
+            width: 80,
+            fixed: "right",
+            ellipsis: true,
+            render: (_: any, row: any)=> {
+                const filePath = row.conf_log_path 
+                return filePath ? 
+                <a><span onClick={()=> lookPathCallback(filePath, 'look') }>{formatMessage({ id: 'operation.log' })}</span></a>
+                : null
+            }
+        },
     ].filter(Boolean)
 
     return (
@@ -291,7 +310,7 @@ export default (props: any) => {
                 loading={loading}
                 className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
                 pagination={{
-                    pageSize: data.page_size || 10,
+                    pageSize: data.page_size || 100,
                     current: data.page_num || 1,
                     total: data.total || 0,
                     showQuickJumper: true,
@@ -307,6 +326,7 @@ export default (props: any) => {
                     showTotal(total) {
                         return formatMessage({ id: 'pagination.total.strip' }, { data: total })
                     },
+                    pageSizeOptions: [100, 200, 500],
                 }}
                 columns={columns}
                 rowClassName={styles.result_info_table_row}

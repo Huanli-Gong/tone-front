@@ -62,3 +62,7 @@ export const queryViewReportDatail = async (params: any) => {
 export const queryDomainGroup = (data: any) => {
     return request(`/api/report/domain/group/`, { method: 'post', data })
 }
+//
+export const queryBatchTag = (data: any) => {
+    return request(`/api/job/tag/relation/batch/`, { method: 'post', data })
+}

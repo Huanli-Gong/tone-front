@@ -7,6 +7,7 @@ import customChartOption from './customChartOption'
 import styled from 'styled-components'
 // import PerfLineOption from './PerfLineOption'
 import passRateLineOption from './passRateLineOption'
+import statisticsChartOption from './statisticsChartOption'
 // import AliyunPerfLine from './AliyunPerfLine'
 import { targetJump } from '@/utils/utils'
 
@@ -42,12 +43,29 @@ type RenderChartProps = {
 
 const RenderChart: React.FC<RenderChartProps> = (props) => {
     const { formatMessage } = useIntl()
-    const { dataSource: chartDatas, title, provider_env, test_type, show_type } = props
+    const { 
+        dataSource: chartDatas, title, provider_env, test_type, show_type,
+        statisticsData,
+    } = props
     const { ws_id }: any = useParams()
-
+    const caseStatisticsChart: any = useRef()
     const chart: any = useRef()
     const [dataSource, setDataSource] = useState<any>(undefined)
 
+    // 创建饼图图表
+    const createCaseStatisticsChart = ()=> {
+        const pieChart = echarts.init(caseStatisticsChart.current)
+        pieChart.clear()
+        pieChart.showLoading()
+        if (dataSource && JSON.stringify(dataSource) !== '{}') {
+            const option = statisticsChartOption(statisticsData, ws_id, formatMessage)
+            pieChart.setOption(option)
+        }
+        pieChart.hideLoading()
+        return pieChart
+    }
+
+    // 创建折线图表
     React.useEffect(() => {
         const myChart = echarts.init(chart.current)
         myChart.clear()
@@ -80,8 +98,11 @@ const RenderChart: React.FC<RenderChartProps> = (props) => {
             })
         }
         myChart.hideLoading()
+
+        const pieChart = createCaseStatisticsChart()
         return () => {
             myChart.dispose()
+            pieChart?.dispose()
         }
     }, [dataSource, formatMessage, provider_env, show_type, test_type, ws_id])
 
@@ -107,7 +128,11 @@ const RenderChart: React.FC<RenderChartProps> = (props) => {
                 (test_type === 'functional' && show_type === 'pass_rate') &&
                 <Title><FormattedMessage id="analysis.chart.title.resultTrend" /></Title>
             }
-            <div ref={chart} style={{ width: '100%', height: 360 - 48 }} />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent:'space-between' }}>
+                <div ref={chart} style={{ width: 'calc(100% - 350px)', height: 360 - 48 }} />
+                
+                <div ref={caseStatisticsChart} style={{ width: '300px', height: 360 - 48 }} />
+            </div>
         </CardWrapper>
     )
 }

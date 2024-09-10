@@ -119,7 +119,6 @@ const ReportListTable = (props: any) => {
         filterDropdown: ({ confirm }: any) => <SelectProductVersion
             confirm={confirm}
             onConfirm={(val: any) => setPageParam({ ...pageParam, product_version: val, page_num: 1 })}
-            page_size={9999}
             ws_id={ws_id}
         />,
         filterIcon: () => <FilterFilled style={{ color: pageParam.product_version ? '#1890ff' : undefined }} />,

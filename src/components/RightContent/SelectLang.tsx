@@ -1,6 +1,6 @@
 import React from 'react'
 import { getLocale, setLocale, FormattedMessage } from 'umi'
-import { Typography, Popover } from 'antd'
+import { Typography } from 'antd'
 
 class SelectLang extends React.Component {
   changLang = () => {

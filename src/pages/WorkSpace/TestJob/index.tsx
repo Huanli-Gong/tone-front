@@ -83,6 +83,7 @@ const TestJob: React.FC<any> = (props) => {
     const [fetching, setFetching] = useState(false)
     const [newSaveLoading, setNewSaveLoading] = useState(false)
     const [isReset, setIsReset] = useState(false)
+    const [timeTagList, setTimeTagList]: any = useState([])
 
     const [jobInfo, setJobInfo] = useState('')
     const [isYamlFormat, setIsYamlFormat] = useState(false)
@@ -260,7 +261,9 @@ const TestJob: React.FC<any> = (props) => {
                 build_config, build_machine, scripts, ...rest
             }
 
-            const kernel_info = { hotfix_install, scripts, kernel_packages }
+            const kernel_info = { hotfix_install, scripts, 
+                kernel_packages: kernel_packages?.map((item: any)=> item?.trim()),  // 去除输入内容两端空格
+            }
 
             let scriptInfo = script_info
             let rpmInfo = rpm_info
@@ -534,21 +537,21 @@ const TestJob: React.FC<any> = (props) => {
     }
 
     const handleSubmit = async () => {
-        if (fetching) return false
+        if (fetching) return
         setEnvErrorFlag(false)
-        let resultData = {}
+        let formData = {}
         setFetching(true)
         if (isYamlFormat) {
-            const { code, result } = await handleFormatChange('submit')
-            resultData = result
+            const { code, result = {} } = await handleFormatChange('submit')
             if (code !== 200) {
                 setFetching(false)
                 return
             }
+            formData = await transformDate(result)
         }
-        let data = isYamlFormat ? await transformDate(resultData) : await transformDate()
-        data = {
-            ...data,
+        formData = await transformDate()
+        let data = {
+            ...formData,
             workspace: ws_id,
             job_type: detail.id,
         }
@@ -570,30 +573,25 @@ const TestJob: React.FC<any> = (props) => {
             }
         }
         if (isMonitorEmpty(data)) {
+            setFetching(false)
             return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
         }
 
         if (!data.test_config) {
+            setFetching(false)
             return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         }
         // console.log(data.test_config)
         const $test_config = handleServerChannel(data.test_config)
-        try {
-            const { code, msg } = await createWsJobTest({ ...data, test_config: $test_config })
-            if (code === 200) {
-                setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
-                history.push(`/ws/${ws_id}/test_result`)
-                message.success(formatMessage({ id: 'ws.test.job.operation.success' }))
-            }
-            if (code !== 200) {
-                if (code === 1380)
-                    setEnvErrorFlag(true)
-                else
-                    requestCodeMessage(code, msg)
-            }
-        }
-        catch (error) {
-            setFetching(false)
+        const { code, msg } = await createWsJobTest({ ...data, test_config: $test_config }).catch(()=> setFetching(false))
+        if (code === 200) {
+            setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
+            history.push(`/ws/${ws_id}/test_result`)
+            message.success(formatMessage({ id: 'ws.test.job.operation.success' }))
+        } else if (code === 1380) {
+            setEnvErrorFlag(true)
+        } else {
+            requestCodeMessage(code, msg)
         }
         setFetching(false)
     }
@@ -680,7 +678,7 @@ const TestJob: React.FC<any> = (props) => {
             job_type: detail.id
         }
         const $test_config = handleServerChannel(data.test_config)
-        const { code, msg } = await saveTestTemplate({ ...data, test_config: $test_config, ...vals })
+        const { code, msg } = await saveTestTemplate({ ...data, test_config: $test_config, ...vals }).catch(()=> setFetching(false))
 
         if (code === 200) {
             message.success(formatMessage({ id: 'ws.test.job.operation.success' }))
@@ -710,7 +708,7 @@ const TestJob: React.FC<any> = (props) => {
     }
 
     const handleChangeTemplateName = ({ target }: any) => {
-        requestTemplateRun({ job_type_id: detail.id, name: target.value })
+        requestTemplateRun({ ws_id, job_type_id: detail.id, name: target.value })
     }
 
     const handleTemplateEditFunction = async (data: any) => {
@@ -740,8 +738,8 @@ const TestJob: React.FC<any> = (props) => {
 
     const handleCancelTemplate = (key: any) => {
         notification.close(key)
-        setFetching(false)
-        history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state || {} })
+        // setFetching(false)
+        // history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state || {} })
     }
 
     const handleSaveTemplateModify = async () => {
@@ -1162,6 +1160,7 @@ const TestJob: React.FC<any> = (props) => {
                                                     isReset={isReset}
                                                     tagsDataRef={tagsData}
                                                     reportTemplateDataRef={reportTemplateData}
+                                                    callback={setTimeTagList}
                                                 />
                                             </Row>
                                         }
@@ -1217,8 +1216,35 @@ const TestJob: React.FC<any> = (props) => {
                             <Access accessible={access.IsWsSetting()}>
                                 <Button type="primary" onClick={handleSubmit} ><FormattedMessage id="ws.test.job.submit.test" /></Button>
                             </Access> */}
-                            <Button onClick={handleOpenTemplate} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
-                            <Button type="primary" onClick={handleSubmit} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
+                             
+                            {/** 有时间的系统标签时，二次弹框确认； */}
+                            {timeTagList.length ?
+                                <>
+                                    <Popconfirm
+                                        title={formatMessage({ id: 'ws.result.details.keep.time.job.tag' }, { data: timeTagList[0]?.label }) }
+                                        onConfirm={handleOpenTemplate}
+                                        okText={<FormattedMessage id="operation.ok" />}
+                                        cancelText={<FormattedMessage id="operation.cancel" />}
+                                        placement="topRight"
+                                    >
+                                        <Button disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
+                                    </Popconfirm>
+                                    <Popconfirm
+                                        title={formatMessage({ id: 'ws.result.details.keep.time.job.tag' }, { data: timeTagList[0]?.label }) }
+                                        onConfirm={handleSubmit}
+                                        okText={<FormattedMessage id="operation.ok" />}
+                                        cancelText={<FormattedMessage id="operation.cancel" />}
+                                        placement="topRight"
+                                    >
+                                        <Button type="primary" disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
+                                    </Popconfirm>
+                                </>
+                                :
+                                <>
+                                  <Button onClick={handleOpenTemplate} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
+                                  <Button type="primary" loading={fetching} onClick={handleSubmit} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
+                                </>
+                            }
                         </Space>
                     </Row>
                 }

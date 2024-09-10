@@ -24,6 +24,9 @@ const text = {
   'result.remarks.ps': '在这里可以记录对此次结果的说明，和对基线问题一些修正意见，结果备注和当前结果关联',
   'rerun': '重跑',
   'stop': '停止Job',
+  'keep.time.job.tag': '你已选择 {data} 标签，确定后将在对应时间删除job',
+  'delete.tag': '预计 {data} 删除该job',
+  'deleted.today': '因为本job数据，超过标签时间将于今日删除',
   // Chart
   'increase': '上升',
   'decline': '下降',
@@ -47,7 +50,7 @@ const text = {
   'tab.testProgress': '执行过程',
   'tab.testConfig': '测试配置',
   'tab.monitor': '数据监控',
-  'tab.log': '日志文件',
+  'tab.log': '日志详情',
   'tab.resultFile': '结果文件',
   'tab.versionInfo': '版本信息',
   'tab.executionDetails': '执行详情',
@@ -79,6 +82,7 @@ const text = {
   'end_time': '结束时间',
   'note': '备注',
   'join.baseline': '加入基线',
+  'edit.baseline': '修改基线',
   // Drawer
   'bug': '缺陷记录',
   'bug.placeholder': '请输入缺陷记录',

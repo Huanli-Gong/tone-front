@@ -79,5 +79,5 @@ export default {
   'pages.workspace.baseline.metric.table.view': '查看信息',
   'pages.workspace.baseline.metric.table.expand': '收起信息',
 
-  'pages.Workspace.baseline.metric.expand.title': "环境信息"
+  'pages.workspace.baseline.metric.expand.title': "环境信息"
 };

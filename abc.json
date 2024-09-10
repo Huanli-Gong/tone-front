@@ -4,10 +4,10 @@
         "command": {
             "cmd": [
                 "pnpm install",
-                "pnpm build",
+                "pnpm build:tone",
                 "mv ./dist $BUILD_DEST"
             ]
         }
     },
-    "nodeVersion": 16
+    "nodeVersion": 20
 }

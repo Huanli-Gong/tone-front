@@ -75,6 +75,7 @@ export default {
   'please.select': 'Please select',
   'please.enter': 'Please enter',
   'please.enter.message': 'The value can contain a maximum of 32 characters, including letters, digits, underscores (_), hyphens (-), and dots (.)',
+  'please.enter.message64': 'The value can contain a maximum of 64 characters, including letters, digits, underscores (_), hyphens (-), and dots (.)',
   'format.key.value': 'Format: key = value, multiple separated by spaces or newlines',
   'no.data': 'No Data',
   'DEF_COMMON_FORMATE': ' ',

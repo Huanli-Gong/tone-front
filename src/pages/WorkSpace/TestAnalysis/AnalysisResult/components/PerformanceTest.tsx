@@ -245,20 +245,6 @@ const ReportTestPref: React.FC<any> = (props) => {
             }))
         }
     }
-    const renderShare = (conf: any) => {
-        let obj = conf.conf_compare_data || conf.compare_conf_list || []
-        return obj.map((item: any, idx: number) => {
-            return (
-                <PrefDataText gLen={group} key={idx}>
-                    {
-                        !getCompareType(item) ?
-                            <JumpResult ws_id={wsId} job_id={item.obj_id || item} /> :
-                            <div style={{ height: 38 }} />
-                    }
-                </PrefDataText>
-            )
-        })
-    }
 
     const containerScroll = useScroll(containerRef)
     return (
@@ -287,6 +273,8 @@ const ReportTestPref: React.FC<any> = (props) => {
                 {
                     dataSource && !!dataSource.length ?
                         dataSource.map((item: any, idx: number) => {
+                            const { group_jobs = [] } = item
+
                             return (
                                 <TestSuite key={idx}>
                                     <SuiteName style={{ textIndent: containerScroll?.left }}>
@@ -336,7 +324,19 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                         <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
                                                             <PrefData>
                                                                 <PrefDataTitle gLen={group}><EllipsisPulic title={conf.conf_name} /></PrefDataTitle>
-                                                                {renderShare(conf)}
+                                                                {(conf.conf_compare_data || conf.compare_conf_list || []).map((objItem: any, idx: number) => {
+                                                                    const selected_ws_id = group_jobs?.filter((jobObj: any)=> jobObj?.job_list?.includes(objItem.obj_id))[0].ws_id || wsId
+                                                                    return
+                                                                        <PrefDataText gLen={group} key={idx}>
+                                                                            {
+                                                                                !getCompareType(objItem) ?
+                                                                                    <JumpResult ws_id={selected_ws_id} job_id={objItem.obj_id || objItem} />
+                                                                                    :
+                                                                                    <div style={{ height: 38 }} />
+                                                                            }
+                                                                        </PrefDataText>
+                                                                    }
+                                                                )}
                                                             </PrefData>
                                                             {
                                                                 conf.metric_list.map((metric: any, idx: number) => (

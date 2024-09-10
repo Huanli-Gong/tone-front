@@ -627,7 +627,7 @@ const SuiteDrawer: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                             <Row>
                                                 {
                                                     fields.map((field, index) => {
-                                                        const { is_sys } = env_info_data?.[field.key]
+                                                        const { is_sys } = env_info_data[index] || {}
                                                         return (
                                                             <Row key={field.key}>
                                                                 <div style={{ width: '90%', marginRight: 8 }}>

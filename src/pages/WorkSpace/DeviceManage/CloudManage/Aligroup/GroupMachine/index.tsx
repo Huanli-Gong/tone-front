@@ -22,7 +22,7 @@ import { v4 as uuid } from 'uuid';
 import { queryMember } from '@/services/Workspace'
 
 /**
- * 
+ * (此组件是否已废弃)
  * 云上集群 - 添加机器
  * 
  */
@@ -126,7 +126,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         const targetOption = selectedOptions[selectedOptions.length - 1];
         targetOption.loading = true;
         try {
-            const { code, data, msg } = await querysAK({ ws_id, provider: targetOption.value })
+            const { code, data, msg } = await querysAK({ ws_id, provider: targetOption.value, enable: 'True' })
             targetOption.loading = false;
             if (code === 200) {
                 targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });

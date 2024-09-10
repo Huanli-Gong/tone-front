@@ -53,7 +53,7 @@ const SystemLayout: React.FC<layoutProps> = (props) => {
 								>
 									<Space>
 										{SystemMenuIcon(item.name)}
-										{<FormattedMessage id={"SystemConf.menuLayout." + item.name} />}
+										{<FormattedMessage id={"menu.systemConf." + item.name} />}
 									</Space>
 								</Menu.Item>
 							)

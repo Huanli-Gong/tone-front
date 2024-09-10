@@ -72,15 +72,17 @@ const SharePage: React.FC = () => {
     const [loading, setLoading] = React.useState(true)
     const [cLoading, setCLoading] = React.useState(true)
     const [tableData, setTableData] = React.useState<any>([])
+    const [statisticsData, setStatisticsData] = React.useState<any>({})
 
     const getFuncChartData = async (params: any) => {
         setCLoading(true)
         const { data, code } = await queryFuncAnalysisList({ ...params, share_id })
         setCLoading(false)
         if (code !== 200) return
-        const { case_map, job_list } = data
+        const { case_map, job_list, case_statistics } = data
         setSource((p: any) => ({ ...p, case_map }))
         setTableData(job_list)
+        setStatisticsData(case_statistics)
     }
 
     const init = async () => {
@@ -89,7 +91,7 @@ const SharePage: React.FC = () => {
         setLoading(false)
 
         if (code !== 200) return
-        const { provider_env, test_type, metricList } = data
+        const { provider_env, test_type, metricList, case_statistics } = data
 
         setSource({
             ...data,
@@ -97,6 +99,7 @@ const SharePage: React.FC = () => {
             provider_name: formatMessage({ id: provider_env }),
             metric: metricList
         })
+        setStatisticsData(case_statistics)
 
         if (test_type !== 'functional' && !data?.fetchData) {
             setCLoading(false)
@@ -221,6 +224,7 @@ const SharePage: React.FC = () => {
                     <ChartRender
                         share_id={share_id}
                         dataSource={source?.case_map}
+                        statisticsData={statisticsData}
                         {...source}
                     />
                 </div>

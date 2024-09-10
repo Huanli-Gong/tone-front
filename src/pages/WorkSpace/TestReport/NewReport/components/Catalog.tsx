@@ -230,9 +230,9 @@ const TemplateCatalog = () => {
                         }
                         leftTitle?.classList.add('toc-selected');
                         const parentNode = leftTitle?.id.substring(5, 14)
-                        const parentTop = (document.querySelector(`#left_${parentNode}`) as any).offsetTop
-                        const parentTreeTop = (document.querySelector(`#left_tree_${parentNode}`) as any).offsetTop
-                        if (leftTitle.attributes['class'].nodeValue == 'toc-selected') {
+                        const parentTop = (document.querySelector(`#left_${parentNode}`) as any)?.offsetTop || 0
+                        const parentTreeTop = (document.querySelector(`#left_tree_${parentNode}`) as any)?.offsetTop || 0
+                        if (leftTitle?.attributes['class']?.nodeValue == 'toc-selected') {
                             if (leftTitle?.id === 'left_perf_item' || leftTitle?.id === 'left_func_item') {
                                 setRoundHeight(parentTop)
                             } else {
@@ -240,7 +240,7 @@ const TemplateCatalog = () => {
                                 setRoundHeight(parentTreeTop + childTop)
                             }
                         } else {
-                            const childTop = leftTitle.children[0].children[0].offsetParent.offsetTop
+                            const childTop = leftTitle?.children[0]?.children[0]?.offsetParent?.offsetTop || 0
                             setRoundHeight(parentTreeTop + childTop)
                         }
                     }
@@ -282,7 +282,7 @@ const TemplateCatalog = () => {
         leftName.classList.add('toc-selected');
         const target = evt?.nativeEvent?.target
         const parentTreeTop = (document.querySelector(`#left_tree_${node.name}`) as any).offsetTop
-        if (target.attributes['class'].nodeValue == 'toc-selected') {
+        if (target?.attributes['class']?.nodeValue == 'toc-selected') {
             const childTop = target.offsetParent.offsetTop
             setRoundHeight(parentTreeTop + childTop)
         } else {

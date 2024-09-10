@@ -62,7 +62,7 @@ const Refenerce = (props: any) => {
         <Breadcrumb className="breadcrumb">
             <Breadcrumb.Item >
                 <span style={{ cursor: 'pointer' }} onClick={() => history.push(`/system/suite`)}>
-                    <FormattedMessage id="SystemConf.menuLayout.suiteManagement" />
+                    <FormattedMessage id="menu.systemConf.suiteManagement" />
                 </span>
             </Breadcrumb.Item>
             <Breadcrumb.Item >

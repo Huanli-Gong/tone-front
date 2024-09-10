@@ -141,6 +141,28 @@ export const copyTooltipColumn = (defaultText: string = '-') => ({
         )
     }
 })
+export const CopyTooltip = ({ text, defaultText = '-' }: any) => {
+    return (
+        text ?
+            <Tooltip
+                overlayClassName={styles.tootip_overflow}
+                placement='topLeft'
+                title={
+                    <Row>
+                        <Col span={24} style={{ whiteSpace: 'break-spaces' }}>{text}</Col>
+                        <Col span={24}>
+                            <Row justify="center">
+                                <CopyTextBtn text={text} />
+                            </Row>
+                        </Col>
+                    </Row>
+                }
+            >
+                {text}
+            </Tooltip> :
+            defaultText
+    )
+}
 
 export const compareResultFontColor = (result: string) => {
     if (result === 'decline') return '#C84C5A'
@@ -168,7 +190,7 @@ const StateTagCls = styled(Tag) <{ no_margin?: boolean }>`
 const RenderStateTag: React.FC<any> = (props) => {
     return (
         <StateTagCls
-            {...props}
+            {...{...props, collection: undefined }}
         />
     )
 }
@@ -206,7 +228,7 @@ const CustomStateTag: React.FC = (props: any) => {
         <RenderStateTag
             {...props}
             color={getStateColor(state)}
-            style={!stateColorMap.get(state) && { color: "#1d1d1d" }}
+            style={!stateColorMap.get(state) ? { color: "#1d1d1d" } : undefined}
         >
             {state === 'success' ? 'complete' : state}
         </RenderStateTag>
@@ -219,7 +241,7 @@ const CustomTooltipStateTag: React.FC<any> = (props) => {
         <TooltipStateTag
             {...props}
             color={getStateColor(state)}
-            style={!stateColorMap.get(state) && { color: "#1d1d1d" }}
+            style={!stateColorMap.get(state) ? { color: "#1d1d1d" } : undefined}
         >
             {state === 'success' ? 'complete' : state}
         </TooltipStateTag>

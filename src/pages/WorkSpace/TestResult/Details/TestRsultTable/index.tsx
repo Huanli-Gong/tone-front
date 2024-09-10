@@ -525,7 +525,6 @@ const TestResultTable: React.FC<any> = (props) => {
                             />
                         ),
                         expandIcon: ({ expanded, onExpand, record }: any) => (
-                            // expanded ? null : null
                             expanded ?
                                 (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
                                 (<CaretRightFilled onClick={e => onExpand(record, e)} />)

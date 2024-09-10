@@ -1,4 +1,4 @@
-const { BUILD_APP_ENV } = process.env
+const { BUILD_APP_ENV } = process.env;
 
 const routes = [
 	{
@@ -77,6 +77,12 @@ const routes = [
 				component: '@/pages/SystemConf/TestParmSetting',
 				access: 'IsAdmin',
 			},
+			{
+                path: '/system/question',
+                name: 'question',
+                component: '@/pages/SystemConf/Question',
+                access: 'IsAdmin',
+            },
 			{
 				path: '*',
 				hideInMenu: true,
@@ -339,339 +345,345 @@ const routes = [
 						access: 'IsWsSetting',
 					},
 
-					{
-						path: '*',
-						redirect: '/',
-					}
-				]
-			},
+                    {
+                        path: '*',
+                        redirect: '/',
+                    },
+                ],
+            },
+            {
+                path: '/ws/:ws_id/suite_search',
+                inNav: true,
+                name: 'TestSuiteSearch',
+                hasLeftNav: false,
+                routes: [
+                    {
+                        path: '/ws/:ws_id/suite_search',
+                        name: 'IndexPage',
+                        hideInMenu: true,
+                        component: '@/pages/WorkSpace/TestSuiteSearch/List/DefaultPageList',
+                    },
+                    {
+                        path: '/ws/:ws_id/suite_search/conf_Details',
+                        hideInMenu: true,
+                        name: 'ConfDetail',
+                        component: '@/pages/WorkSpace/TestSuiteSearch/Details/ConfDetails',
+                    },
+                    {
+                        path: '/ws/:ws_id/suite_search/suite_Details',
+                        hideInMenu: true,
+                        name: 'SuiteDetail',
+                        component: '@/pages/WorkSpace/TestSuiteSearch/Details/SuiteDetails',
+                    },
+                    {
+                        path: '/ws/:ws_id/suite_search/key',
+                        name: 'TestSuiteSearchResult',
+                        hideInMenu: true,
+                        inNav: true,
+                        component: '@/pages/WorkSpace/TestSuiteSearch/List/SearchPageList',
+                    },
+                ],
+            },
+            // 离线测试
+            {
+                path: '/ws/:ws_id/offline_test',
+                name: 'Upload',
+                inNav: true,
+                component: './WorkSpace/TestUpload',
+            },
+            {
+                path: '/ws/:ws_id/config',
+                name: 'WorkspaceConfig',
+                access: 'WsBtnPermission',
+                routes: [
+                    {
+                        path: '/ws/:ws_id/config/basic',
+                        name: 'BasicConfig',
+                        component: './WorkSpace/BasicConfig',
+                        access: 'WsBtnPermission',
+                    },
+                    {
+                        path: '/ws/:ws_id/config/member',
+                        name: 'MemberManage',
+                        component: './WorkSpace/MemberManage',
+                        access: 'WsBtnPermission',
+                    },
+                    {
+                        path: '/ws/:ws_id/config/join',
+                        name: 'JoinDetail',
+                        component: './WorkSpace/JoinDetail',
+                        access: 'WsBtnPermission',
+                    },
+                ],
+            },
+            {
+                path: '/ws/:ws_id/job',
+                name: 'JobConfig',
+                access: 'IsWsSetting',
+                routes: [
+                    {
+                        path: '/ws/:ws_id/job/types/create',
+                        hideInMenu: true,
+                        name: 'CreateJobType',
+                        hasLeftNav: false,
+                        component: './WorkSpace/JobTypeManage/CreateJobType',
+                    },
+                    {
+                        path: '/ws/:ws_id/job/types',
+                        exact: true,
+                        name: 'JobTypeManage',
+                        access: 'WsMemberNoPermission',
+                        component: './WorkSpace/JobTypeManage',
+                    },
+                    {
+                        path: '/ws/:ws_id/job/templates',
+                        name: 'TestTemplateManage',
+                        component: './WorkSpace/TestTemplateManage',
+                        access: 'IsWsSetting',
+                        exact: true,
+                    },
+                    {
+                        path: '/ws/:ws_id/job/tags',
+                        name: 'TagManage',
+                        component: './WorkSpace/TagManage',
+                        access: 'WsMemberNoPermission',
+                        exact: true,
+                    },
+                    {
+                        path: '/ws/:ws_id/job/update/:jt_id',
+                        hideInMenu: true,
+                        hasLeftNav: false,
+                        exact: true,
+                        name: 'JobTypeUpdate',
+                        access: 'WsMemberNoPermission',
+                        component: './WorkSpace/JobTypeManage/CreateJobType',
+                    },
+                ],
+            },
+            {
+                path: '/ws/:ws_id/baseline',
+                name: 'baseline',
+                access: 'IsWsSetting',
+                routes: [
+                    {
+                        path: '/ws/:ws_id/baseline/functional',
+                        component: '@/pages/WorkSpace/BaselineManage',
+                        name: 'functional',
+                    },
+                    {
+                        path: '/ws/:ws_id/baseline/performance',
+                        component: '@/pages/WorkSpace/BaselineManage',
+                        name: 'performance',
+                    },
+                    {
+                        hideInMenu: true,
+                        path: '*',
+                        redirect: '/ws/:ws_id/baseline/functional',
+                    },
+                ],
+            },
+            {
+                path: '/ws/:ws_id/device',
+                name: 'DeviceManage',
+                access: 'IsWsSetting',
+                routes: [
+                    {
+                        path: '/ws/:ws_id/device/group',
+                        name: 'GroupManage',
+                        exact: true,
+                        component: '@/pages/WorkSpace/DeviceManage/GroupManage',
+                        access: 'IsWsSetting',
+                    },
+                    {
+                        path: '/ws/:ws_id/device/cloud',
+                        name: 'CludeManage',
+                        exact: true,
+                        component: '@/pages/WorkSpace/DeviceManage/CloudManage',
+                        access: 'IsWsSetting',
+                    },
+                    {
+                        path: '/ws/:ws_id/device/tag',
+                        name: 'DispatchTag',
+                        exact: true,
+                        component: '@/pages/WorkSpace/DeviceManage/DispatchTag',
+                        access: 'IsWsSetting',
+                    },
+                    {
+                        path: '/ws/:ws_id/device/CloudConfig',
+                        name: 'CloudConfig',
+                        exact: true,
+                        component: '@/pages/WorkSpace/DeviceManage/CloudConfig',
+                        access: 'WsMemberNoPermission',
+                    },
+                ],
+            },
+            {
+                path: '/ws/:ws_id/message',
+                inNav: true,
+                //layout: false,
+                hideInMenu: true,
+                component: './TaskMessage',
+            },
+            {
+                path: '/ws/:ws_id/personCenter',
+                name: 'PersonCenter',
+                inNav: true,
+                hideInMenu: true,
+                component: './PersonCenter',
+            },
+            {
+                path: '/ws/:ws_id/refenerce/:type',
+                //name: 'RefenerceDetail',
+                inNav: true,
+                hideInMenu: true,
+                component: '@/pages/WorkSpace/RefenerceDetail',
+            },
+            {
+                //Test suite管理
+                path: '/ws/:ws_id/test_suite',
+                name: 'TestSuiteManage',
+                component: './WorkSpace/TestSuiteManage',
+                access: 'IsWsSetting',
+            },
+            {
+                path: '/ws/:ws_id/new_suite/:test_type',
+                name: 'TestSuiteCreate',
+                layout: false,
+                hideInMenu: true,
+                inNav: true,
+                component: './WorkSpace/TestSuiteManage/TestSuiteCreate',
+                access: 'WsMemberNoPermission',
+            },
+            {
+                //产品管理
+                path: '/ws/:ws_id/product',
+                name: 'Product',
+                component: '@/pages/WorkSpace/Product',
+                access: 'WsMemberNoPermission',
+            },
+            {
+                path: '/ws/:ws_id/test_template',
+                hideInMenu: true,
+                inNav: true,
+                layout: false,
+                routes: [
+                    {
+                        path: '/ws/:ws_id/test_template/:jt_id/edit',
+                        name: 'TemplateEdit',
+                        hideInMenu: true,
+                        layout: false,
+                        component: '@/pages/WorkSpace/TestJob',
+                    },
+                    {
+                        path: '/ws/:ws_id/test_template/:jt_id/preview',
+                        name: 'TemplatePreview',
+                        hideInMenu: true,
+                        layout: false,
+                        component: '@/pages/WorkSpace/TestJob',
+                    },
+                    {
+                        path: '*',
+                        redirect: '/',
+                    },
+                ],
+            },
+            {
+                path: '/ws/:ws_id/devOps',
+                access: 'WsMemberNoPermission',
+                name: 'DevOps',
+                component: '@/pages/WorkSpace/DevOps',
+            },
+			BUILD_APP_ENV !== 'opensource' &&
 			{
-				path: '/ws/:ws_id/suite_search',
-				inNav: true,
-				name: 'TestSuiteSearch',
-				hasLeftNav: false,
-				routes: [
-					{
-						path: '/ws/:ws_id/suite_search',
-						name: 'IndexPage',
-						hideInMenu: true,
-						component: '@/pages/WorkSpace/TestSuiteSearch/List/DefaultPageList',
-					},
-					{
-						path: '/ws/:ws_id/suite_search/conf_Details',
-						hideInMenu: true,
-						name: 'ConfDetail',
-						component: '@/pages/WorkSpace/TestSuiteSearch/Details/ConfDetails',
-					},
-					{
-						path: '/ws/:ws_id/suite_search/suite_Details',
-						hideInMenu: true,
-						name: 'SuiteDetail',
-						component: '@/pages/WorkSpace/TestSuiteSearch/Details/SuiteDetails',
-					},
-					{
-						path: '/ws/:ws_id/suite_search/key',
-						name: 'TestSuiteSearchResult',
-						hideInMenu: true,
-						inNav: true,
-						component: '@/pages/WorkSpace/TestSuiteSearch/List/SearchPageList',
-					}
-				]
+				path: '/ws/:ws_id/logging',
+				name: 'Logging',
+				component: '@/pages/WorkSpace/Logging'
 			},
-			// 离线测试
-			{
-				path: '/ws/:ws_id/offline_test',
-				name: 'Upload',
-				inNav: true,
-				component: './WorkSpace/TestUpload',
-			},
-			{
-				path: '/ws/:ws_id/config',
-				name: 'WorkspaceConfig',
-				access: 'WsBtnPermission',
-				routes: [
-					{
-						path: '/ws/:ws_id/config/basic',
-						name: 'BasicConfig',
-						component: './WorkSpace/BasicConfig',
-						access: 'WsBtnPermission',
-					},
-					{
-						path: '/ws/:ws_id/config/member',
-						name: 'MemberManage',
-						component: './WorkSpace/MemberManage',
-						access: 'WsBtnPermission'
-					},
-					{
-						path: '/ws/:ws_id/config/join',
-						name: 'JoinDetail',
-						component: './WorkSpace/JoinDetail',
-						access: 'WsBtnPermission',
-					}
-				]
-			},
-			{
-				path: '/ws/:ws_id/job',
-				name: 'JobConfig',
-				access: 'IsWsSetting',
-				routes: [
-					{
-						path: '/ws/:ws_id/job/types/create',
-						hideInMenu: true,
-						name: 'CreateJobType',
-						hasLeftNav: false,
-						component: './WorkSpace/JobTypeManage/CreateJobType',
-					},
-					{
-						path: '/ws/:ws_id/job/types',
-						exact: true,
-						name: 'JobTypeManage',
-						access: 'WsMemberNoPermission',
-						component: './WorkSpace/JobTypeManage',
-					},
-					{
-						path: '/ws/:ws_id/job/templates',
-						name: 'TestTemplateManage',
-						component: './WorkSpace/TestTemplateManage',
-						access: 'IsWsSetting',
-						exact: true
-					},
-					{
-						path: '/ws/:ws_id/job/tags',
-						name: 'TagManage',
-						component: './WorkSpace/TagManage',
-						access: 'WsMemberNoPermission',
-						exact: true
-					},
-					{
-						path: '/ws/:ws_id/job/update/:jt_id',
-						hideInMenu: true,
-						hasLeftNav: false,
-						exact: true,
-						name: 'JobTypeUpdate',
-						access: 'WsMemberNoPermission',
-						component: './WorkSpace/JobTypeManage/CreateJobType',
-					},
-				]
-			},
-			{
-				path: "/ws/:ws_id/baseline",
-				name: "baseline",
-				access: "IsWsSetting",
-				routes: [
-					{
-						path: "/ws/:ws_id/baseline/functional",
-						component: "@/pages/WorkSpace/BaselineManage",
-						name: "functional",
-					},
-					{
-						path: "/ws/:ws_id/baseline/performance",
-						component: "@/pages/WorkSpace/BaselineManage",
-						name: "performance",
-					},
-					{
-						hideInMenu: true,
-						path: "*",
-						redirect: "/ws/:ws_id/baseline/functional",
-					}
-				]
-			},
-			{
-				path: '/ws/:ws_id/device',
-				name: 'DeviceManage',
-				access: 'IsWsSetting',
-				routes: [
-					{
-						path: '/ws/:ws_id/device/group',
-						name: 'GroupManage',
-						exact: true,
-						component: '@/pages/WorkSpace/DeviceManage/GroupManage',
-						access: 'IsWsSetting',
+            {
+                hideInMenu: true,
+                inNav: true,
+                hasLeftNav: false,
+                name: '401',
+                path: '/ws/:ws_id/401',
+                component: '@/pages/401',
+            },
+            {
+                hideInMenu: true,
+                inNav: true,
+                hasLeftNav: false,
+                name: '500',
+                path: '/ws/:ws_id/500',
+                component: '@/pages/500',
+            },
+            {
+                hideInMenu: true,
+                inNav: true,
+                hasLeftNav: false,
+                name: '404',
+                component: '@/pages/404',
+            },
+        ].filter(Boolean)
+    },
+    BUILD_APP_ENV === 'opensource' && {
+        path: '/login',
+        layout: false,
+        hiseInMenu: true,
+        component: './Login',
+    },
+    {
+        path: '/:doc_type(help_doc|notice)',
+        hideInMenu: true,
+        routes: [
+            {
+                path: '/:doc_type(help_doc|notice)/create',
+                access: 'IsAdmin',
+                layout: false,
+                exact: true,
+                component: './DOC/Create',
+            },
+            {
+                path: '/:doc_type(help_doc|notice)/edit/:doc_id?',
+                access: 'IsAdmin',
+                component: './DOC/Create',
+            },
+            {
+                path: '/:doc_type(help_doc|notice)/:doc_id?',
+                component: './DOC',
+            },
+            {
+                redirect: '/',
+            },
+        ],
+    },
+    {
+        path: '/workspace/create',
+        layout: false,
+        hideInMenu: true,
+        component: './WorkSpace/CreateWorkspace',
+        access: 'ApplyPrivate',
+    },
+    {
+        path: '/401',
+        hideInMenu: true,
+        name: 'server.401',
+        component: './401',
+    },
+    {
+        path: '/500',
+        hideInMenu: true,
+        name: 'server.500',
+        component: './500',
+    },
+    {
+        path: '/404',
+        hideInMenu: true,
+        name: 'server.404',
+        component: './404',
+    },
+    {
+        path: '*',
+        redirect: '/',
+    },
+].filter(Boolean);
 
-					},
-					{
-						path: '/ws/:ws_id/device/cloud',
-						name: 'CludeManage',
-						exact: true,
-						component: '@/pages/WorkSpace/DeviceManage/CloudManage',
-						access: 'IsWsSetting',
-					},
-					{
-						path: '/ws/:ws_id/device/tag',
-						name: 'DispatchTag',
-						exact: true,
-						component: '@/pages/WorkSpace/DeviceManage/DispatchTag',
-						access: 'IsWsSetting',
-					},
-					{
-						path: '/ws/:ws_id/device/CloudConfig',
-						name: 'CloudConfig',
-						exact: true,
-						component: '@/pages/WorkSpace/DeviceManage/CloudConfig',
-						access: 'WsMemberNoPermission',
-					}
-				]
-			},
-			{
-				path: '/ws/:ws_id/message',
-				inNav: true,
-				//layout: false,
-				hideInMenu: true,
-				component: './TaskMessage',
-			},
-			{
-				path: '/ws/:ws_id/personCenter',
-				name: 'PersonCenter',
-				inNav: true,
-				hideInMenu: true,
-				component: './PersonCenter',
-			},
-			{
-				path: '/ws/:ws_id/refenerce/:type',
-				//name: 'RefenerceDetail',
-				inNav: true,
-				hideInMenu: true,
-				component: '@/pages/WorkSpace/RefenerceDetail',
-			},
-			{ //Test suite管理
-				path: '/ws/:ws_id/test_suite',
-				name: 'TestSuiteManage',
-				component: './WorkSpace/TestSuiteManage',
-				access: 'IsWsSetting',
-			},
-			{
-				path: '/ws/:ws_id/new_suite/:test_type',
-				name: 'TestSuiteCreate',
-				layout: false,
-				hideInMenu: true,
-				inNav: true,
-				component: './WorkSpace/TestSuiteManage/TestSuiteCreate',
-				access: 'WsMemberNoPermission',
-			},
-			{ //产品管理
-				path: '/ws/:ws_id/product',
-				name: 'Product',
-				component: '@/pages/WorkSpace/Product',
-				access: 'WsMemberNoPermission',
-			},
-			{
-				path: '/ws/:ws_id/test_template',
-				hideInMenu: true,
-				inNav: true,
-				layout: false,
-				routes: [
-					{
-						path: '/ws/:ws_id/test_template/:jt_id/edit',
-						name: 'TemplateEdit',
-						hideInMenu: true,
-						layout: false,
-						component: '@/pages/WorkSpace/TestJob'
-					},
-					{
-						path: '/ws/:ws_id/test_template/:jt_id/preview',
-						name: 'TemplatePreview',
-						hideInMenu: true,
-						layout: false,
-						component: '@/pages/WorkSpace/TestJob'
-					},
-					{
-						path: '*',
-						redirect: '/'
-					}
-				]
-			},
-			{
-				path: '/ws/:ws_id/devOps',
-				access: 'WsMemberNoPermission',
-				name: 'DevOps',
-				component: '@/pages/WorkSpace/DevOps'
-			},
-			{
-				hideInMenu: true,
-				inNav: true,
-				hasLeftNav: false,
-				name: "401",
-				path: "/ws/:ws_id/401",
-				component: "@/pages/401"
-			},
-			{
-				hideInMenu: true,
-				inNav: true,
-				hasLeftNav: false,
-				name: "500",
-				path: "/ws/:ws_id/500",
-				component: "@/pages/500"
-			},
-			{
-				hideInMenu: true,
-				inNav: true,
-				hasLeftNav: false,
-				name: "404",
-				component: "@/pages/404"
-			}
-		]
-	},
-	BUILD_APP_ENV === 'opensource' &&
-	{
-		path: '/login',
-		layout: false,
-		hiseInMenu: true,
-		component: './Login'
-	},
-	{
-		path: '/:doc_type(help_doc|notice)',
-		hideInMenu: true,
-		routes: [
-			{
-				path: '/:doc_type(help_doc|notice)/create',
-				access: 'IsAdmin',
-				layout: false,
-				exact: true,
-				component: './DOC/Create',
-			},
-			{
-				path: '/:doc_type(help_doc|notice)/edit/:doc_id?',
-				access: 'IsAdmin',
-				component: './DOC/Create',
-			},
-			{
-				path: '/:doc_type(help_doc|notice)/:doc_id?',
-				component: './DOC',
-			},
-			{
-				redirect: '/'
-			}
-		]
-	},
-	{
-		path: '/workspace/create',
-		layout: false,
-		hideInMenu: true,
-		component: './WorkSpace/CreateWorkspace',
-		access: 'ApplyPrivate',
-	},
-	{
-		path: '/401',
-		hideInMenu: true,
-		name: 'server.401',
-		component: './401',
-	},
-	{
-		path: '/500',
-		hideInMenu: true,
-		name: 'server.500',
-		component: './500',
-	},
-	{
-		path: '/404',
-		hideInMenu: true,
-		name: 'server.404',
-		component: './404',
-	},
-	{
-		path: '*',
-		redirect: '/'
-	}
-].filter(Boolean)
-
-export default routes
+export default routes;

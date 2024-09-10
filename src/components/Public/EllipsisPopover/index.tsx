@@ -8,7 +8,7 @@ const TextWarp = styled.div`
     text-overflow: ellipsis;
 `
 interface EllipsisProps {
-    title: string,
+    title: any,
     children?: React.ReactNode,
     style?: any,
     width?: number,

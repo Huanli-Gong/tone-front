@@ -24,6 +24,10 @@ const text = {
   'result.remarks.ps': 'Record the description of the results, and some corrections to the baseline problems. The notes are related to the current results',
   'rerun': 'Rerun',
   'stop': 'Stop Job',
+  'keep.time.job.tag': 'You have selected the {data} tag, and once confirmed, the job will be deleted after the corresponding time',
+  'delete.tag': 'Expected to delete this job on {data}',
+  'deleted.today': 'This job data will be deleted today if it exceeds the label time',
+
   // Chart
   'increase': 'Raise',// 'Rising',
   'decline': 'Drop',//'Falling',
@@ -51,7 +55,7 @@ const text = {
   'tab.testProgress': 'Cases',
   'tab.testConfig': 'Test Configurations',
   'tab.monitor': 'Data Monitor',
-  'tab.log': 'Logs',
+  'tab.log': 'Log Details',
   'tab.resultFile': 'Result File',
   'tab.versionInfo': 'Version Info',
   'tab.executionDetails': 'Execution Details',
@@ -84,6 +88,7 @@ const text = {
   'end_time': 'End Time',
   'note': 'Note',
   'join.baseline': 'Add Baseline',
+  'edit.baseline': 'Edit Baseline',
   // Drawer
   'bug': 'Bug Record',
   'bug.placeholder': 'Enter bug record',

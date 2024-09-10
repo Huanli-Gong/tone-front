@@ -5,7 +5,7 @@ import styles from './index.less'
 import { FormattedMessage, history, useIntl, useParams, getLocale, useLocation, useRouteMatch, useModel } from 'umi'
 import { useClientSize } from '@/utils/hooks'
 import { WorkspaceMenuIcon } from '@/utils/menuIcon'
-import AdCompoent from './components/Ad'
+import AdComponent from './components/Ad'
 
 const { document }: any = window
 
@@ -185,14 +185,14 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
                         {props.children}
                     </div>
                 </Layout.Content>
-                <AdCompoent />
+                <AdComponent />
             </Layout>
         )
 
     return (
         <div style={{ minHeight: height - 50, background: "#fff" }}>
             {props.children}
-            <AdCompoent />
+            <AdComponent />
         </div>
     )
 }

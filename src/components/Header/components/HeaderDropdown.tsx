@@ -93,12 +93,12 @@ export const HearderDropdown: React.FC<any> = (props) => {
 
     const current = React.useMemo(() => {
         if (!wsList) return {}
-        const [workspace] = wsList?.data?.filter(({ id }: any) => id === ws_id)
+        const [workspace] = (wsList?.data || [])?.filter(({ id }: any) => id === ws_id) // wsList?.data?.filter(({ id }: any) => id === ws_id)
         if (workspace) return workspace
         return {}
     }, [wsList, ws_id])
 
-    const hanldeScroll = ({ target }: any) => {
+    const handleScroll = ({ target }: any) => {
         const { clientHeight, scrollTop, scrollHeight } = target
         if (clientHeight + scrollTop === scrollHeight && !isOver && Object.prototype.toString.call(wsList?.next) === '[object String]') {
             queryWorkspaceList()
@@ -119,7 +119,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
                 () => (
                     <Menu
                         className={styles.workspaceDropdownMenu}
-                        onScroll={hanldeScroll}
+                        onScroll={handleScroll}
                     >
                         {
                             wsList?.data?.map(

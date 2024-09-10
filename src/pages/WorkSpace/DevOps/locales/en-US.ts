@@ -18,4 +18,7 @@ export default {
   'devOps.pending_job_num': 'Job warning mechanism',
   'devOps.pedding_job_num.desc': 'Issue an alert when the number of pending items exceeds ',
   'devOps.pedding_job_num.desc_1': ' ',
+
+  'show.only.cases.the.current.ws': 'Show only the visible cases of the current ws',
+  'show.only.cases.the.current.ws.tips': 'Filter the list of suites added to the workspace. If "Yes" is selected, only the suite facing the current workspace will be displayed for selection and addition'
 }

@@ -160,7 +160,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
     const dataSource = data?.map((i: any, idx: number) => (
         {
             ...i,
-            rowkey: `${i.server_id || i.server}-${idx}`,
+            rowKey: `${i.server_id || i.server}-${idx}`,
             exists: i?.server_list_exists?.[i?.server]
         })
     )
@@ -177,7 +177,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                 columns={columns}
                 name={TABLE_NAME}
                 onColumnsChange={() => setColumnsChange(uuidv4())}
-                rowKey="rowkey"
+                rowKey="rowKey"
                 loading={loading}
                 size="small"
                 className={styles.prepTable}
@@ -187,8 +187,8 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                     expandedRowClassName: () => 'expanded-row-padding-no',
                     expandedRowKeys: expandedKeys,
                     onExpand: (expanded: any, record) => {
-                        return expanded ? setExpandedKeys(expandedKeys.concat(record.rowkey)) :
-                            setExpandedKeys(expandedKeys.filter((i: any) => i !== record.rowkey))
+                        return expanded ? setExpandedKeys(expandedKeys.concat(record.rowKey)) :
+                            setExpandedKeys(expandedKeys.filter((i: any) => i !== record.rowKey))
                     },
                     expandedRowRender: (record: any) => {
                         if (record?.server_type === 'cluster') {
