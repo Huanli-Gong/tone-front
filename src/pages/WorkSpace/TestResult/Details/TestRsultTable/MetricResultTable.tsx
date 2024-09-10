@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
-import { Tooltip, Typography } from 'antd'
+import { Tooltip, Typography, Divider } from 'antd'
 import { FilterFilled } from '@ant-design/icons'
 import { QusetionIconTootip, ResultTdPopver, compareResultFontColor, compareResultSpan } from '../components'
 import { queryCaseResultPerformance } from '../service'
@@ -15,7 +15,7 @@ import { MetricSelectProvider } from '.'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
-    const { test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType, lookPathCallback = ()=> {}, } = props
+    const { test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType, lookPathCallback = () => { }, } = props
     const { id: job_id, ws_id, share_id } = useParams() as any
     const { setOSuite, oSuite } = React.useContext(MetricSelectProvider)
     const defaultKeys = {
@@ -194,19 +194,6 @@ export default (props: any) => {
             ellipsis: true,
             render: (_: any, row: any) => compareResultSpan(row.track_result, row.result, formatMessage)
         },
-        {   
-            title: <FormattedMessage id="operation.log" />,
-            dataIndex: 'log',
-            width: 80,
-            fixed: "right",
-            ellipsis: true,
-            render: (_: any, row: any)=> {
-                const filePath = row.conf_log_path
-                return filePath ? 
-                    <a><span onClick={()=> lookPathCallback(filePath, 'look') }>{formatMessage({ id: 'operation.log' })}</span></a>
-                : null
-            }
-        },
     ]
 
     const rowSelection: any = !share_id && testType === 'performance' ? {
@@ -272,6 +259,7 @@ export default (props: any) => {
             rowClassName={styles.result_info_table_row}
             dataSource={data.data}
             columns={columns}
+            scroll={{ x: '100%' }}
             refreshDeps={[interfaceSearchKeys, ws_id, strLocals, access]}
         />
     )

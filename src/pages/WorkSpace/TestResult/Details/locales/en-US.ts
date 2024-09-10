@@ -89,6 +89,7 @@ const text = {
   'note': 'Note',
   'join.baseline': 'Add Baseline',
   'edit.baseline': 'Edit Baseline',
+  'additional.information': 'Additional Information',
   // Drawer
   'bug': 'Bug Record',
   'bug.placeholder': 'Enter bug record',
