@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
 import { Typography, Space, Select, } from 'antd';
 import { FormattedMessage } from 'umi';
 
 const ChartTypeChild = (props: any) => {
     const { btn, isReport, obj, suiteId, setPerData, chartType, setChartType } = props;
-    // const [chartType, setChartType] = useState('1')
     const onChange = (val: string) => {
         setChartType(val)
         if (isReport) {
