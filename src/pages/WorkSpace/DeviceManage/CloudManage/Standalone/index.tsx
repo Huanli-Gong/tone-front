@@ -68,7 +68,7 @@ export default (props: any) => {
     const [deleteObj, setDeleteObj] = useState<any>({});
     const [autoFocus, setFocus] = useState<boolean>(true)
     const logDrawer: any = useRef()
-    const deployModal: any = useRef(null);
+    const deployModal: any = useRef<any>(null);
     const viewDetailRef: any = useRef(null)
     const copyDeviceRef: any = useRef(null)
 
@@ -322,14 +322,14 @@ export default (props: any) => {
             render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.instance_id}</ColumnEllipsisText>
         },
         {
-            title: <FormattedMessage id="device.manufacturer/ak" />,
-            dataIndex: 'manufacturer',
+            title: <FormattedMessage id="device.type/manufacturer/ak" />,
+            dataIndex: 'manufacturer_ak',
             ...inputFilterCommonFields("manufacturer_ak_name"),
             width: 160,
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{`${row.manufacturer}/${row.ak_name}`}</ColumnEllipsisText>
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
         },
         {
             title: 'Region/Zone',
@@ -380,6 +380,21 @@ export default (props: any) => {
                     ["cloud_efficiency", formatMessage({ id: 'device.cloud_efficiency' })],
                     ["cloud_ssd", formatMessage({ id: 'device.cloud_ssd' })],
                     ["cloud_essd", formatMessage({ id: 'device.cloud_essd' })],
+                    ['ephemeral_ssd', formatMessage({ id: 'device.ephemeral_ssd' })],
+                    ['cloud_auto', formatMessage({ id: 'device.cloud_auto' })],
+                    ['cloud_essd_entry', formatMessage({ id: 'device.cloud_essd_entry' })],
+                    ['ESSD_PL0', formatMessage({ id: 'device.ESSD_PL0' })],
+                    ['ESSD_FlexPL', formatMessage({ id: 'device.ESSD_FlexPL' })],
+                    ['LOCAL_BASIC', formatMessage({ id: 'device.LOCAL_BASIC' })],
+                    ['LOCAL_SSD', formatMessage({ id: 'device.LOCAL_SSD' })],
+                    ['CLOUD_BASIC', formatMessage({ id: 'device.CLOUD_BASIC' })],
+                    ['CLOUD_SSD', formatMessage({ id: 'device.CLOUD_SSD' })],
+                    ['CLOUD_PREMIUM', formatMessage({ id: 'device.CLOUD_PREMIUM' })],
+                    ['CLOUD_BSSD', formatMessage({ id: 'device.CLOUD_BSSD' })],
+                    ['CLOUD_HSSD', formatMessage({ id: 'device.CLOUD_HSSD' })],
+                    ['CLOUD_TSSD', formatMessage({ id: 'device.CLOUD_TSSD' })],
+                    ['LOCAL_NVME', formatMessage({ id: 'device.LOCAL_NVME' })],
+                    ['LOCAL_PRO', formatMessage({ id: 'device.LOCAL_PRO' })]
                 ].map(i => ({ id: i[0], name: i[1] }))
             ),
             dataIndex: 'storage_type',
@@ -387,7 +402,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <DataSetPulic name={row.storage_type} formatMessage={formatMessage} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} ><DataSetPulic name={row.storage_type} formatMessage={formatMessage} /></ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.release_rule" />,

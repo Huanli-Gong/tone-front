@@ -37,6 +37,7 @@ const CloudConfig: React.FC<any> = (props) => {
 	const [autoFocus, setFocus] = useState(true)
 
 	const defaultParmasAk = {
+		cloud_type: '',
 		name: '',
 		access_id: '',
 		access_key: '',
@@ -125,17 +126,58 @@ const CloudConfig: React.FC<any> = (props) => {
 	const providerList = [
 		{ id: 'aliyun_ecs', name: formatMessage({ id: 'device.aliyun_ecs' }) },
 		{ id: 'aliyun_eci', name: formatMessage({ id: 'device.aliyun_eci' }) },
+		{ id: 'tencent_ecs', name: formatMessage({ id: 'device.tencent_ecs' }) },
+		{ id: 'volcengine_ecs', name: formatMessage({ id: 'device.volcengine_ecs' }) }
 	]
+
 	const defaultList = [
 		{ id: 1, name: formatMessage({ id: 'operation.yes' }) },
 		{ id: 0, name: formatMessage({ id: 'operation.no' }) }
 	]
+
+	const cloudTypeList = [
+		{ id: 'aliyun', name: formatMessage({ id: 'device.cloud.alibaba' }) },
+		{ id: 'tencent', name: formatMessage({ id: 'device.cloud.tencent' }) },
+		{ id: 'volcengine', name: formatMessage({ id: 'device.cloud.volcanic' }) }
+	]
+
 	const styleObj = {
 		container: 180,
 		button_width: 90
 	}
 
+	const renderCloudType = (str: string) => {
+		switch (str) {
+			case 'aliyun':
+				return formatMessage({ id: 'device.cloud.alibaba' })
+			case 'tencent':
+				return formatMessage({ id: 'device.cloud.tencent' })
+			case 'volcengine':
+				return formatMessage({ id: 'device.cloud.volcanic' })
+			default:
+				return '-'
+		}
+	}
+
 	const columnsAk: any = [
+		{
+
+			title: <FormattedMessage id="device.cloud.type" />,
+			dataIndex: 'cloud_type',
+			fixed: 'left',
+			width: 100,
+			filterIcon: () => <FilterFilled style={{ color: fetchParams.cloud_type ? '#1890ff' : undefined }} />,
+			filterDropdown: ({ confirm }: any) => (
+				<SelectRadio
+					list={cloudTypeList}
+					confirm={confirm}
+					onConfirm={(val: any) => {
+						setFetchParams({ ...fetchParams, cloud_type: val })
+					}}
+				/>
+			),
+			render: (str: string) => renderCloudType(str),
+		},
 		{
 			title: 'AK Name',
 			dataIndex: 'name',
@@ -751,7 +793,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				rowKey={record => record.id + ''}
 				pagination={false}
 			/>
-			<Row justify="space-between" style={{ padding: '16px 20px 0px' }}>
+			<Row justify="space-between" style={{ padding: '16px 0px' }}>
 				{
 					data.total > 1 &&
 					<>

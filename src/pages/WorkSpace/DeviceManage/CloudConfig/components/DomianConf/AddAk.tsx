@@ -92,10 +92,30 @@ export default forwardRef(
                     setPadding(false)
                 })
         }
-        const providerArr = [
-            { id: 'aliyun_ecs', name: formatMessage({ id: 'device.aliyun_ecs' }) },
-            { id: 'aliyun_eci', name: formatMessage({ id: 'device.aliyun_eci' }) },
+
+        const cloudTypeList = [
+            { id: 'aliyun', name: formatMessage({ id: 'device.cloud.alibaba' }) },
+            { id: 'tencent', name: formatMessage({ id: 'device.cloud.tencent' }) },
+            { id: 'volcengine', name: formatMessage({ id: 'device.cloud.volcanic' }) }
         ]
+
+        const cloudTypeChange = (val: any) => {
+            console.log('val', val)
+            if (val === 'aliyun') {
+                return [
+                    { id: 'aliyun_ecs', name: formatMessage({ id: 'device.aliyun_ecs' }) },
+                    { id: 'aliyun_eci', name: formatMessage({ id: 'device.aliyun_eci' }) },
+                ]
+            } else if (val === 'tencent') {
+                return [
+                    { id: 'tencent_ecs', name: formatMessage({ id: 'device.tencent_ecs' }) }
+                ]
+            } else if (val === 'volcengine') {
+                return [
+                    { id: 'volcengine_ecs', name: formatMessage({ id: 'device.volcengine_ecs' }) }
+                ]
+            } else return [{}]
+        }
 
         return (
             <Drawer
@@ -107,7 +127,7 @@ export default forwardRef(
                 open={visible}
                 className={styles.add_baseline_drawer}
                 footer={
-                    <div style={{ textAlign: 'right', }} >
+                    <div style={{ textAlign: 'right' }} >
                         <Space>
                             <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
                             <Button type="primary" disabled={padding} onClick={handleOk}>
@@ -126,19 +146,19 @@ export default forwardRef(
                     }}
                 >
                     <Form.Item
-                        label={<FormattedMessage id="device.cloud.service.provider" />}
-                        name="provider"
-                        rules={[{ required: true, message: formatMessage({ id: 'device.cloud.service.provider.cannot.empty' }) },]}
+                        label={<FormattedMessage id="device.cloud.type" />}
+                        name="cloud_type"
+                        rules={[{ required: true, message: formatMessage({ id: 'device.cloud.type.cannot.empty' }) },]}
                     >
                         <Select
-                            placeholder={formatMessage({ id: 'device.cloud.service.provider.select' })}
+                            placeholder={formatMessage({ id: 'device.cloud.type.select' })}
                             filterOption={(input, option: any) => {
                                 return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }}
                             optionFilterProp="children"
                         >
                             {
-                                providerArr.map(
+                                cloudTypeList.map(
                                     (item: any) => (
                                         <Select.Option
                                             key={item.id}
@@ -150,6 +170,37 @@ export default forwardRef(
                                 )
                             }
                         </Select>
+                    </Form.Item>
+                    <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.cloud_type !== currentValues.cloud_type} noStyle>
+                        {({ getFieldValue }) => (
+                            <Form.Item
+                                label={<FormattedMessage id="device.cloud.service.provider" />}
+                                name="provider"
+                                rules={[{ required: true, message: formatMessage({ id: 'device.cloud.service.provider.cannot.empty' }) },]}
+
+                            >
+                                <Select
+                                    placeholder={formatMessage({ id: 'device.cloud.service.provider.select' })}
+                                    filterOption={(input, option: any) => {
+                                        return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    }}
+                                    optionFilterProp="children"
+                                >
+                                    {
+                                        cloudTypeChange(getFieldValue('cloud_type'))?.map(
+                                            (item: any) => (
+                                                <Select.Option
+                                                    key={item.id}
+                                                    value={item.id}
+                                                >
+                                                    {item.name}
+                                                </Select.Option>
+                                            )
+                                        )
+                                    }
+                                </Select>
+                            </Form.Item>
+                        )}
                     </Form.Item>
                     <Form.Item
                         label={<FormattedMessage id="device.enable" />}

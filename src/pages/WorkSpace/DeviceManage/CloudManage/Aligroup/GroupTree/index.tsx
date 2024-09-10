@@ -78,7 +78,7 @@ const GroupTree: React.FC<any> = (props) => {
     }
 
     const paramTransform = (val: any) => {
-        const dict = {
+        const dict: any = {
             0: formatMessage({ id: 'operation.not.release' }),
             1: formatMessage({ id: 'operation.release' }),
             2: formatMessage({ id: 'device.failed.save' })
@@ -170,13 +170,13 @@ const GroupTree: React.FC<any> = (props) => {
             dataIndex: 'pub_ip',
         },
         {
-            title: <FormattedMessage id="device.manufacturer/ak" />,
-            dataIndex: 'manufacturer',
+            title: <FormattedMessage id="device.type/manufacturer/ak" />,
+            dataIndex: 'manufacturer_ak',
             width: 120,
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{`${row.manufacturer}/${row.ak_name}`}</ColumnEllipsisText>
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
         },
         {
             title: 'Region/Zone',
@@ -198,12 +198,12 @@ const GroupTree: React.FC<any> = (props) => {
         },
         {
             title: <FormattedMessage id="device.image" />,
+            dataIndex: 'image',
             width: 120,
             ellipsis: {
                 showTitle: false,
             },
-            dataIndex: 'image',
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: row.image }} >{row.image_name}</ColumnEllipsisText>
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.image_name}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.bandwidth" />,
@@ -217,7 +217,7 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             width: 100,
-            render: (_: number, row: any) => <DataSetPulic name={row.storage_type} formatMessage={formatMessage} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }}><DataSetPulic name={row.storage_type} formatMessage={formatMessage} /></ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.console_conf" />,

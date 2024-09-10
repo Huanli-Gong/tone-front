@@ -6,8 +6,8 @@ import {
 } from '../service';
 import Owner from '@/components/Owner/index';
 import { textRender } from '@/utils/hooks';
-import { requestCodeMessage, resetImage, resetECI, enumerEnglish } from '@/utils/utils';
-import { PlusCircleTwoTone, MinusCircleTwoTone } from '@ant-design/icons'
+import { requestCodeMessage, resetImage, resetECI, enumerEnglish, QuantityLimitMin, QuantityLimitMax } from '@/utils/utils';
+import { PlusCircleTwoTone, MinusCircleTwoTone } from '@ant-design/icons';
 import styles from './style.less';
 import { useParams, useIntl, FormattedMessage, useModel } from 'umi';
 import _ from 'lodash';
@@ -19,14 +19,36 @@ import Disclaimer from '@/components/Disclaimer';
 const { Option } = Select;
 const optionLists = [
     {
-        value: 'aliyun_eci',
-        label: 'aliyun_eci',
-        isLeaf: false,
+        value: 'aliyun',
+        label: 'aliyun',
+        children: [{
+            value: 'aliyun_eci',
+            label: 'aliyun_eci',
+            isLeaf: false,
+        },
+        {
+            value: 'aliyun_ecs',
+            label: 'aliyun_ecs',
+            isLeaf: false,
+        }]
     },
     {
-        value: 'aliyun_ecs',
-        label: 'aliyun_ecs',
-        isLeaf: false,
+        value: 'tencent',
+        label: 'tencent',
+        children: [{
+            value: 'tencent_ecs',
+            label: 'tencent_ecs',
+            isLeaf: false,
+        }]
+    },
+    {
+        value: 'volcengine',
+        label: 'volcengine',
+        children: [{
+            value: 'volcengine_ecs',
+            label: 'volcengine_ecs',
+            isLeaf: false,
+        }]
     },
 ];
 
@@ -45,7 +67,6 @@ const getInitialExtra = (obj: any) => {
  */
 const NewMachine: React.FC<any> = (props) => {
     const { onRef, is_instance, onSuccess, type } = props
-    // console.log(props)
     const { formatMessage } = useIntl();
     const { openModal, handleDisclaimerOpen } = useModel('disclaimer');
     const { ws_id }: any = useParams();
@@ -75,23 +96,28 @@ const NewMachine: React.FC<any> = (props) => {
         if (code === 200 && !!dataSource.length) {
             // 回填"云厂商/AK" 和 "地域"两个选框都同步第一次选的数据
             const { test_server = {} } = dataSource[dataSource.length - 1]
-            const { manufacturer, ak_id, region, zone } = test_server
-            if (ak_id && manufacturer && region && zone) {
+            const { cloud_type, manufacturer, ak_id, region, zone, instance_type } = test_server
+            if (cloud_type && ak_id && manufacturer && region && zone) {
                 setFirstAddDataFlag(false)
                 setChangeManufacturer(manufacturer)
                 setShowZone(true)
                 let params = {
                     ak_id,
-                    id: manufacturer,
                     region,
                     zone,
+                    instance_type
+                }
+                const rest_param = {
+                    cloud_type,
+                    manufacturer,
+                    id,
                 }
                 if (!!is_instance) {
-                    Promise.all([getShowRegion(params), getSeverList(params)]).then(() => { setLoading(false), setDisabled(false) })
+                    Promise.all([getShowRegion(params, rest_param), getSeverList(params)]).then(() => { setLoading(false), setDisabled(false) })
                 } else {
-                    Promise.all([getShowRegion(params), getInstancegList(params), getImageList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
+                    Promise.all([getShowRegion(params, rest_param), getInstancegList(params)]).then(() => { setLoading(false), setDisabled(false) })
                 }
-                form.setFieldsValue({ manufacturer: [manufacturer, ak_id], region: [region, zone] })
+                form.setFieldsValue({ manufacturer: [cloud_type, manufacturer, ak_id], region: [region, zone] })
             }
         } else {
             setFirstAddDataFlag(true)
@@ -113,21 +139,50 @@ const NewMachine: React.FC<any> = (props) => {
 
     const getCategoriesList = async (param: any) => {
         const { data } = await queryCategories(param)
-        /**  重组数据适配数据盘的默认值 */
-        /* let newData = data.slice(0)
-        let result = newData.some((v: any) => {
-            return v.value === 'cloud_efficiency'
-        })
-        const params = [{ title: '高效云盘', value: 'cloud_efficiency' }]
-        if (!result) newData = newData.concat(params)
-        setCategories(newData || []) */
         setCategories(data)
     }
     const getSeverList = async (param: any) => {
         const { data } = await querysServer(param)
         setSever(data || [])
     }
+    const getShowRegion = async (param: any, rest_param: any) => {
+        setLoading(true)
+        const { data: akData = [] } = await querysAK({ ws_id, cloud_type: rest_param.cloud_type, provider: rest_param.manufacturer })
+        const { data = [] } = await querysRegion({ ak_id: param.ak_id })
+        const { data: query = [] } = await queryZone({ ak_id: param.ak_id, region: param.region })
 
+        // 数据回显云类型 => 云厂商 => AK
+        const tempData = options.map((parent: any) => ({
+            ...parent,
+            children: parent.children.map((item: any) => item.value === rest_param.manufacturer ? ({
+                ...item,
+                children: akData.map((item: any) => ({ label: item.name, value: item.id }))
+            }) : item
+            )
+        }))
+
+        // 数据回显region
+        let list = data.map((item: any) => {
+            if (item.id == param.region) {
+                return {
+                    value: item.id,
+                    label: textRender(item.id),
+                    ak_id: param.ak_id,
+                    isLeaf: false,
+                    children: query.map((item: any) => { return { label: item.id, value: item.id } })
+                }
+            }
+            return {
+                value: item.id,
+                label: textRender(item.id),
+                ak_id: param.ak_id,
+                isLeaf: false,
+            }
+        })
+        setOptions(tempData)
+        setRegion(list)
+        setLoading(false)
+    }
     const loadRegionData = async (selectedOptions: any) => {
         const targetOption = selectedOptions[selectedOptions.length - 1];
         const { data, code } = await queryZone({ ak_id: targetOption.ak_id, region: targetOption.value })
@@ -141,40 +196,120 @@ const NewMachine: React.FC<any> = (props) => {
             }, 500);
         }
     };
-
-    const loadAkData = async (selectedOptions: any) => {
-        const targetOption = selectedOptions[selectedOptions.length - 1];
-        const { code, data=[], msg } = await querysAK({ ws_id, provider: targetOption.value })
-        if (code === 200) {
-            // targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });
-            // setOptions([...options])
-            const tempData = options.map((item)=>
-                item.value === targetOption.value ?
-                    ({ ...item, children: data.map((item: any) => ({ label: item.name, value: item.id })), })
-                : item
-            )
-            setOptions(tempData)
-        } else {
-            setTimeout(() => {
-                // targetOption.children = []
-                // setOptions([...options])
-                const tempData = options.map((item)=> item.value === targetOption.value ? ({ ...item, children: [] }) : item )
+    const handleAkChange = async (value: any, selectedOptions: any) => {
+        // 获取云类型 => 云厂商 => AK
+        if (selectedOptions.length === 2 && !selectedOptions[selectedOptions.length - 1].isLeaf) {
+            const targetOption = selectedOptions[selectedOptions.length - 1];
+            const { code, data = [], msg } = await querysAK({ ws_id, cloud_type: value[0], provider: value[1] })
+            if (code === 200) {
+                const tempData = options.map((parent: any) => ({
+                    ...parent,
+                    children: parent.children.map((item: any) => item.value === targetOption.value ? ({
+                        ...item,
+                        children: data.map((item: any) => ({ label: item.name, value: item.id }))
+                    }) : item
+                    )
+                }))
                 setOptions(tempData)
-            }, 500);
-            setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) })
-            form.setFieldsValue({ manufacturer: undefined })
+            } else {
+                setTimeout(() => {
+                    const tempData = options.map((parent: any) => ({
+                        ...parent,
+                        children: parent.children.map((item: any) => ({ ...item, children: [] })
+                        )
+                    }))
+                    setOptions(tempData)
+                }, 500);
+                message.error(msg || formatMessage({ id: 'device.no.compliant.AK' }))
+                setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) })
+                form.setFieldsValue({ manufacturer: undefined })
+            }
         }
-    }
+
+        let storage_type_name;
+        if(value[1]?.indexOf('aliyun') > -1){
+            storage_type_name = 'cloud_efficiency'
+        } else if(value[1]?.indexOf('tencent') > -1){
+            storage_type_name = 'CLOUD_PREMIUM'
+        } else {
+            storage_type_name = 'ESSD_PL0'
+        } 
+        form.setFieldsValue({
+            system_disk_size: value[1]?.indexOf('tencent') > -1 ? 50 : 40,
+            storage_type: storage_type_name 
+        })
+
+        // 获取region
+        if (!firstAddDataFlag) {
+            setDisabled(true)
+            regionResetStatus()
+            if (value && value.length > 2) {
+                // case1.存储选的"云厂商"类型，决定规格的表现形式。
+                const frisItem = value[2]
+                setChangeManufacturer(frisItem)
+                // case2.查询各选框数据源。
+                setLoading(true)
+                const regionZone = form.getFieldValue('region')
+                let param = {
+                    ak_id: value[2],
+                    region: regionZone[0],
+                    zone: regionZone[1],
+                }
+                if (is_instance) {
+                    Promise.all([getSeverList(param)]).then(() => { setLoading(false), setDisabled(false) })
+                } else {
+                    Promise.all([getInstancegList(param), getImageList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
+                }
+            } else {
+                // 清除各选框数据源;
+                setInstance([])
+                setSever([])
+                setImage([])
+                setCategories({})
+            }
+        } else {
+            // 第一次添加机器时，"云厂商/AK"和"地域"两个选框有联动关系
+            setDisabled(true)
+            AkResetStatus()
+            if (value && value.length > 2) {
+                // case1.根据 ak_id 查询Region数据
+                const { code, data = [], msg } = await querysRegion({ ak_id: value[2] })
+                let list = []
+                if (code === 200) {
+                    list = data?.map((item: any) => {
+                        return {
+                            value: item.id,
+                            label: textRender(item.id),
+                            ak_id: value[2],
+                            isLeaf: false,
+                        }
+                    })
+                    setValidateAK({ validate: true, meg: '' })
+                } else {
+                    setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) })
+                }
+                setRegion(list)
+                setValidateRegion(!!list.length)
+                // case2.存储选的"云厂商"类型，决定规格的表现形式
+                const frisItem = value[2]
+                setChangeManufacturer(frisItem.value)
+            } else {
+                // 清除
+                setValidateAK({ validate: true, meg: '' })
+                setRegion([])
+            }
+        }
+    };
 
     const DEFAULT_FORM_VALUE = {
         instance_type: undefined,
         instance_type_one: undefined,
         instance_type_two: undefined,
-        storage_type: undefined,
+        // storage_type: undefined,
         storage_size: 40,
         storage_number: 0,
         system_disk_category: undefined,
-        system_disk_size: 40,
+        // system_disk_size: 40,
     }
 
     // 重置联动控件
@@ -198,110 +333,6 @@ const NewMachine: React.FC<any> = (props) => {
             ...DEFAULT_FORM_VALUE
         })
     }
-
-    const onAkChange = async (value: any, selectedOptions: any) => {
-        if (!firstAddDataFlag) {
-            setDisabled(true)
-            regionResetStatus()
-            if (value && value.length) {
-                // case1.存储选的"云厂商"类型，决定规格的表现形式。
-                const frisItem = value[0]
-                setChangeManufacturer(frisItem)
-                // case2.查询各选框数据源。
-                setLoading(true)
-                const regionZone = form.getFieldValue('region')
-                let param = {
-                    ak_id: value[1],
-                    region: regionZone[0],
-                    zone: regionZone[1],
-                }
-
-                if (is_instance) {
-                    Promise.all([getSeverList(param)]).then(() => { setLoading(false), setDisabled(false) })
-                } else {
-                    Promise.all([getInstancegList(param), getImageList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
-                }
-            } else {
-                // 清除各选框数据源;
-                setInstance([])
-                setSever([])
-                setImage([])
-                setCategories({})
-            }
-        } else {
-            // 第一次添加机器时，"云厂商/AK"和"地域"两个选框有联动关系
-            setDisabled(true)
-            AkResetStatus()
-            if (value && value.length) {
-                // case1.根据 ak_id 查询Region数据
-                const { code, data = [], msg } = await querysRegion({ ak_id: value[1] })
-                let list = []
-                if (code === 200) {
-                    list = data?.map((item: any) => {
-                        return {
-                            value: item.id,
-                            label: textRender(item.id),
-                            ak_id: value[1],
-                            isLeaf: false,
-                        }
-                    })
-                    setValidateAK({ validate: true, meg: '' })
-                } else {
-                    setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) })
-                }
-                setRegion(list)
-                setValidateRegion(!!list.length)
-                // case2.存储选的"云厂商"类型，决定规格的表现形式
-                const frisItem = value[0]
-                setChangeManufacturer(frisItem.value)
-            } else {
-                // 清除
-                setValidateAK({ validate: true, meg: '' })
-                setRegion([])
-            }
-        }
-    }
-
-    const getShowRegion = async (param: any) => {
-        setLoading(true)
-        const { data: akData = [] } = await querysAK({ ws_id, provider: param.id })
-        const { data = [] } = await querysRegion({ ak_id: param.ak_id })
-        const { data: query = [] } = await queryZone({ ak_id: param.ak_id, region: param.region })
-
-        let list = data.map((item: any) => {
-            if (item.id == param.region) {
-                return {
-                    value: item.id,
-                    label: textRender(item.id),
-                    ak_id: param.ak_id,
-                    isLeaf: false,
-                    children: query.map((item: any) => { return { label: item.id, value: item.id } })
-                }
-            }
-            return {
-                value: item.id,
-                label: textRender(item.id),
-                ak_id: param.ak_id,
-                isLeaf: false,
-            }
-        })
-
-        let lists = optionLists.map((item: any) => {
-            if (item.value === param.id) {
-                return {
-                    value: param.id,
-                    label: param.id,
-                    isLeaf: false,
-                    children: akData.map((item: any) => { return { label: item.name, value: item.id } })
-                }
-            }
-            return item
-        })
-        setOptions(lists)
-        setRegion(list)
-        setLoading(false)
-    }
-
     const onRegionChange = (value: any, selectedOptions: any) => {
         if (Array.isArray(selectedOptions) && selectedOptions.length) {
             let param = {
@@ -318,12 +349,11 @@ const NewMachine: React.FC<any> = (props) => {
                 image: undefined,
                 instance_id: undefined,
                 instance_type: undefined,
-                storage_type: undefined,
                 system_disk_category: undefined,
             })
             setShowZone(true)
             is_instance ? Promise.all([getSeverList(param)]).then(() => { setLoading(false), setDisabled(false) })
-                : Promise.all([getInstancegList(param), getImageList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
+                : Promise.all([getInstancegList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
         } else {
             // case2.清除选项时
             regionResetStatus()
@@ -334,12 +364,13 @@ const NewMachine: React.FC<any> = (props) => {
         let region = form.getFieldValue('region')
         let manufacturer = form.getFieldValue('manufacturer')
         let param = {
-            ak_id: manufacturer[1],
+            ak_id: manufacturer[2],
             region: region[0],
             zone: region[1],
             instance_type: val
         }
         getImageList(param)
+        getCategoriesList(param)
     }
 
     const newMachine = (id: any) => {
@@ -363,7 +394,7 @@ const NewMachine: React.FC<any> = (props) => {
     }));
 
     const editMachine = (row: any) => {
-        setFirstAddDataFlag(true)
+        setFirstAddDataFlag(false)
         setClusterId(row.cluster_id)
         setEditData(row)
         setShowZone(true)
@@ -371,11 +402,10 @@ const NewMachine: React.FC<any> = (props) => {
         const list = row.tag_list.map((item: any) => item.id)
         setTagFlag({ ...tagFlag, isQuery: 'edit', list })
         const param = { ...row }
-
         param.extra_param = getInitialExtra(param.extra_param)
         param.tags = param.tag_list?.map((item: any) => { return item.id }) || []
+        param.manufacturer = [param.cloud_type, param.manufacturer, param.ak_id]
         param.is_instance = param.is_instance ? 1 : 0
-        param.manufacturer = [param.manufacturer, param.ak_id]
         param.region = [param.region, param.zone]
         param.kernel_install = param.kernel_install ? 1 : 0
         setChangeManufacturer(row.manufacturer)
@@ -383,8 +413,12 @@ const NewMachine: React.FC<any> = (props) => {
             ak_id: param.ak_id,
             region: param.region[0],
             zone: param.region[1],
-            id: param.manufacturer[0],
             instance_type: param.instance_type
+        }
+        const rest_param = {
+            cloud_type: param.cloud_type,
+            manufacturer: param.manufacturer[1],
+            id: param.id,
         }
         if (param.ak_name == 'aliyun_eci') {
             const t = param.instance_type
@@ -394,12 +428,12 @@ const NewMachine: React.FC<any> = (props) => {
             param.instance_type_two = Number(t.substring(type1 + 1, type2))
         }
         if (!!is_instance) {
-            Promise.all([getShowRegion(params), getSeverList(params)]).then(() => {
+            Promise.all([getShowRegion(params, rest_param), getSeverList(params)]).then(() => {
                 setLoading(false)
                 setDisabled(false)
             })
         } else {
-            Promise.all([getShowRegion(params), getInstancegList(params), getImageList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
+            Promise.all([getShowRegion(params, rest_param), getInstancegList(params), getImageList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
         }
         form.setFieldsValue(param)
     }
@@ -428,10 +462,11 @@ const NewMachine: React.FC<any> = (props) => {
         setBtnLoading(true)
         const extra_param = params.extra_param?.filter((i: any) => i.param_key)
         const param = { ...params, ws_id, is_instance, extra_param }
-
         if (params.hasOwnProperty('manufacturer')) {
-            param.manufacturer = params?.manufacturer[0]
-            param.ak_id = params.manufacturer[1]
+            param.cloud_type = params.manufacturer[0]
+            param.manufacturer = params.manufacturer[1]
+            param.ak_id = params.manufacturer[2]
+            // param.ak_id = params.ak_id
             param.region = params.region[0]
             param.zone = params.region[1]
         }
@@ -534,6 +569,15 @@ const NewMachine: React.FC<any> = (props) => {
         if (flag) onSubmit()
     }, [clusterId, image])
 
+    const handleExtendedFieldsChange = (value: any) => {
+        if (value && value.indexOf('aliyun') > -1) {
+            return formatMessage({ id: 'device.aliyun.params'})
+        } else if (value && value.indexOf('tencent') > -1) {
+            return formatMessage({ id: 'device.tencent.params'})
+        } else if (value && value.indexOf('volcengine') > -1) {
+            return formatMessage({ id: 'device.volcengine.params'})
+        } else return
+    }
     const onClose = () => {
         // 初始化状态
         setValidateRegion(true)
@@ -542,24 +586,22 @@ const NewMachine: React.FC<any> = (props) => {
         setVisible(false)
         setBtnLoading(false)
         form.resetFields()
-        setOptions([
-            {
-                value: 'aliyun_eci',
-                label: 'aliyun_eci',
-                isLeaf: false,
-            },
-            {
-                value: 'aliyun_ecs',
-                label: 'aliyun_ecs',
-                isLeaf: false,
-            },
-        ])
+        setOptions(optionLists)
     }
 
     const disabledState = useMemo(() => {
         return editData && editData.state === 'Occupied'
     }, [editData])
 
+    // const cloud_type_param = Form.useWatch('manufacturer',form)
+
+    // useEffect(() => {
+    //     form.setFieldsValue({ 
+    //         system_disk_size: cloud_type_param?.indexOf('tencent') > -1 ? 50 : 40,
+    //         storage_type: cloud_type_param?.indexOf('aliyun') > -1 ? 'cloud_efficiency' : undefined 
+    //     })
+    // },[ cloud_type_param ])
+   
     return (
         <Drawer
             maskClosable={false}
@@ -595,16 +637,16 @@ const NewMachine: React.FC<any> = (props) => {
                 <Form
                     layout="vertical"
                     form={form}
+                    scrollToFirstError={true}
                     initialValues={{
                         instance_type_one: 1,
                         instance_type_two: 1,
-                        system_disk_size: 40,
                         storage_size: 40,
+                        // system_disk_size: 40,
                         storage_number: 0,
                         release_rule: 1,
                         kernel_install: 1,
                         bandwidth: 10,
-                        storage_type: 'cloud_efficiency',
                         extra_param: [{ param_key: '', param_value: '' }],
                         channel_type: 'toneagent',
                         state: 'Available',
@@ -664,7 +706,7 @@ const NewMachine: React.FC<any> = (props) => {
                             <Col span={12}>
                                 <Form.Item
                                     name="manufacturer"
-                                    label={<FormattedMessage id="device.manufacturer/ak" />}
+                                    label={<FormattedMessage id="device.type/manufacturer/ak" />}
                                     validateStatus={validateAK.validate ? '' : 'error'}
                                     help={validateAK.validate ? undefined : validateAK.meg}
                                     rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
@@ -672,8 +714,9 @@ const NewMachine: React.FC<any> = (props) => {
                                     <Cascader
                                         disabled={(type === 'cluster' && !firstAddDataFlag)}
                                         options={options}
-                                        loadData={loadAkData}
-                                        onChange={onAkChange}
+                                        // loadData={loadAkData}
+                                        onChange={handleAkChange}
+                                        changeOnSelect
                                         dropdownMenuColumnStyle={{ width: 165 }}
                                         dropdownClassName={styles.selectCascader}
                                     />
@@ -711,7 +754,7 @@ const NewMachine: React.FC<any> = (props) => {
                                 >
                                     <Select showSearch
                                         optionFilterProp="children"
-                                        placeholder={formatMessage({ id: 'please.select' })}
+                                        placeholder={formatMessage(sever.length == 0 ? { id: 'device.no.available.machines' } : { id: 'please.select' })}
                                         labelInValue
                                         disabled={sever.length == 0}
                                         filterOption={(input, option: any) =>
@@ -770,7 +813,7 @@ const NewMachine: React.FC<any> = (props) => {
                                             name="instance_type"
                                             rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                         >
-                                            <Select disabled={disabled || image.length === 0}
+                                            <Select disabled={disabled}
                                                 showSearch
                                                 placeholder={formatMessage({ id: 'please.select' })}
                                                 optionFilterProp="children"
@@ -837,7 +880,7 @@ const NewMachine: React.FC<any> = (props) => {
                                             /> :
                                             <Select
                                                 placeholder={formatMessage({ id: 'please.select' })}
-                                                disabled={disabled}
+                                                disabled={disabled || image.length === 0}
                                                 options={categories?.sys_cat?.map((i: any) => ({
                                                     label: i.title,
                                                     value: i.value,
@@ -853,14 +896,12 @@ const NewMachine: React.FC<any> = (props) => {
                                 <Form.Item
                                     name="system_disk_size"
                                     label=" "
-                                    rules={[{ required: false, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     <InputNumber
-                                        //type="text"
                                         placeholder={formatMessage({ id: 'device.spec.size' })}
                                         style={{ width: 70 }}
-                                        min={20}
-                                        max={500}
+                                        // min={QuantityLimitMin(manufacturerType, 'system_disk_size')}
+                                        // max={QuantityLimitMax(manufacturerType, 'system_disk_size')}
                                         disabled={disabled || image.length === 0}
                                     />
                                 </Form.Item>
@@ -882,7 +923,7 @@ const NewMachine: React.FC<any> = (props) => {
                                             /> :
                                             <Select
                                                 placeholder={formatMessage({ id: 'please.select' })}
-                                                disabled={disabled}
+                                                disabled={disabled || image.length === 0}
                                                 options={categories?.data_cat?.map((i: any) => ({
                                                     label: i.title,
                                                     value: i.value,
@@ -898,13 +939,12 @@ const NewMachine: React.FC<any> = (props) => {
                                 <Form.Item
                                     name="storage_size"
                                     label=" "
-                                    rules={[{ required: false, message: formatMessage({ id: 'please.enter' }) }]}
                                 >
                                     <InputNumber
                                         placeholder={formatMessage({ id: 'device.spec.size' })}
                                         style={{ width: 70 }}
-                                        min={20}
-                                        max={500}
+                                        // min={QuantityLimitMin(manufacturerType, 'storage_size')}
+                                        // max={QuantityLimitMax(manufacturerType, 'storage_size')}
                                         disabled={disabled || image.length === 0}
                                     />
                                 </Form.Item>
@@ -917,13 +957,12 @@ const NewMachine: React.FC<any> = (props) => {
                                 <Form.Item
                                     name="storage_number"
                                     label=" "
-                                    rules={[{ required: false, message: formatMessage({ id: 'please.enter' }) }]}
                                 >
                                     <InputNumber
                                         placeholder={formatMessage({ id: 'device.quantity' })}
                                         style={{ width: 70 }}
-                                        min={0}
-                                        max={16}
+                                        // min={QuantityLimitMin(manufacturerType, 'storage_number')}
+                                        // max={QuantityLimitMax(manufacturerType, 'storage_number')}
                                         disabled={disabled || image.length === 0}
                                     />
                                 </Form.Item>
@@ -939,11 +978,15 @@ const NewMachine: React.FC<any> = (props) => {
                                 <Form.Item
                                     name="bandwidth"
                                     label={<FormattedMessage id="device.bandwidth" />}
-                                    rules={[{ required: true, message: formatMessage({ id: 'please.enter' }) }]}
+                                    rules={[{ 
+                                        required: true, 
+                                        // min: QuantityLimitMin(manufacturerType, 'bandwidth'), 
+                                        // max: QuantityLimitMax(manufacturerType, 'bandwidth'),
+                                        message: formatMessage({ id: 'please.enter' }) 
+                                    }]}
                                 >
                                     <Input
                                         type="number"
-                                        min={10}
                                         style={{ width: '100%' }}
                                         addonAfter="Mbit/s"
                                         placeholder={formatMessage({ id: 'please.enter' })}
@@ -955,7 +998,7 @@ const NewMachine: React.FC<any> = (props) => {
                         {!is_instance ?
                             <Col span={24} className={styles.warp}>
                                 <Form.Item
-                                    label={<QusetionIconTootip title={formatMessage({ id: 'device.extended.fields' })} desc={formatMessage({ id: 'device.aliyun.params' })} />}
+                                    label={<QusetionIconTootip title={formatMessage({ id: 'device.extended.fields' })} desc={handleExtendedFieldsChange(manufacturerType)} />}
                                     labelAlign="left"
                                     style={{ marginBottom: 0 }}
                                 >
