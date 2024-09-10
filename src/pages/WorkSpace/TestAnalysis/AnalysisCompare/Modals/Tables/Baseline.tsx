@@ -1,5 +1,5 @@
-import { Space } from "antd"
 import React from "react"
+import { Space, Row, Col, } from "antd"
 import { ResizeHooksTable } from '@/utils/table.hooks';
 import CommonPagination from "@/components/CommonPagination"
 import { useIntl, FormattedMessage, useParams } from "umi"
@@ -10,6 +10,7 @@ import SearchInput from '@/components/Public/SearchInput'
 import { FilterFilled } from '@ant-design/icons'
 import SelectRadio from '@/components/Public/SelectRadio';
 import { getUserFilter } from '@/components/TableFilters'
+import WsListSelect from '@/pages/WorkSpace/TestReport/components/WsListSelect'
 
 const DEFAULTPARAM = {
     page_num: 1,
@@ -17,7 +18,9 @@ const DEFAULTPARAM = {
 }
 
 const BaselineSelect: React.FC<AnyType> = (props) => {
-    const { selectedRowDatas, setSelectedRowDatas } = props
+    const { selectedRowDatas, setSelectedRowDatas,
+        selectedWsId, setSelectedWsId,
+     } = props
 
     const { ws_id } = useParams() as any
     const { formatMessage } = useIntl()
@@ -26,17 +29,29 @@ const BaselineSelect: React.FC<AnyType> = (props) => {
         { id: 1, name: formatMessage({ id: 'header.test_type.functional' }) },
         { id: 0, name: formatMessage({ id: 'header.test_type.performance' }) },
     ]
-
+    // const [selectedWsId, setSelectedWsId] = React.useState<any>()
     const [listParams, setListParams] = React.useState<any>(DEFAULTPARAM)
     const [autoFocus, setFocus] = React.useState(true)
 
+
     const { data: baselines, loading } = useRequest(
-        () => queryBaelineList({ ...listParams, ws_id }),
+        () => queryBaelineList({ ...listParams, ws_id: selectedWsId || ws_id,  }),
         {
             debounceInterval: 200,
             refreshDeps: [listParams],
         }
     )
+
+    React.useEffect(() => {
+        if (!selectedWsId) {
+            setSelectedWsId(ws_id) 
+        }
+    }, [])
+
+    const onWsChange = (value: any) => {
+        setListParams((p: any) => ({ ...p, page_num: 1, ws_id: value }))
+        setSelectedWsId(value)
+    }
 
     const baselineSelection = {
         selectedRowKeys: selectedRowDatas.map((i: any) => i.id),
@@ -137,28 +152,40 @@ const BaselineSelect: React.FC<AnyType> = (props) => {
     ]
 
     return (
-        <Space
-            direction="vertical"
-            style={{ width: "100%", display: "flex", padding: "0 16px" }}
-            size={0}
-        >
-            <ResizeHooksTable
-                rowSelection={baselineSelection as any}
-                rowKey='id'
-                name="ws-analysis-compare-baseline-add"
-                columns={columns as any}
-                refreshDeps={[listParams, ws_id]}
-                loading={loading}
-                dataSource={baselines?.data}
-                pagination={false}
-                size="small"
-            />
-            <CommonPagination
-                total={baselines?.total}
-                currentPage={listParams?.page_num}
-                pageSize={listParams?.page_size}
-                onPageChange={(page_num, page_size) => setListParams((p: any) => ({ ...p, page_num, page_size }))}
-            />
+        <Space direction="vertical" style={{ width: "100%", display: "flex", padding: "0 16px" }} size={0}>
+            <Row>
+                <Col span={8}>
+                    <div style={{display: 'flex',alignItems: 'center'}}>
+                        <span><FormattedMessage id="analysis.ws.list" /></span>
+                        <WsListSelect
+                            ws_id={ws_id}
+                            value={selectedWsId} 
+                            onSelect={onWsChange}
+                            style={{ flex: 1 }}
+                        />
+                    </div>
+                </Col>
+            </Row>
+
+            <Space direction="vertical" size={0} style={{ width: "100%" }}>
+                <ResizeHooksTable
+                    rowSelection={baselineSelection as any}
+                    rowKey='id'
+                    name="ws-analysis-compare-baseline-add"
+                    columns={columns as any}
+                    refreshDeps={[listParams, selectedWsId]}
+                    loading={loading}
+                    dataSource={baselines?.data}
+                    pagination={false}
+                    size="small"
+                />
+                <CommonPagination
+                    total={baselines?.total}
+                    currentPage={listParams?.page_num}
+                    pageSize={listParams?.page_size}
+                    onPageChange={(page_num, page_size) => setListParams((p: any) => ({ ...p, page_num, page_size }))}
+                />
+            </Space>
         </Space>
     )
 }

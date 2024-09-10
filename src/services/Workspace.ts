@@ -7,6 +7,8 @@ export async function queryWorkspace(params: any) {
 export async function queryWorkspaceHistory(params?: any) {
     return request('/api/sys/workspace/history/', { params })
 }
+
+// 对比分析获取垮ws的ws集合接口改用这个
 export async function queryHomeWorkspace(params: any) {
     return request('/api/sys/workspace/list/', { params })
 }

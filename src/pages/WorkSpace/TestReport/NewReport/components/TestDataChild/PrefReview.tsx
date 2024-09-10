@@ -211,7 +211,7 @@ const Performance = (props: any) => {
         }))
     }
 
-    const renderShare = (conf: any) => {
+    const renderShare = (conf: any, group_jobs: any) => {
         let objList: any = []
         let objConf = conf?.conf_source || conf
         allGroupData?.map((c: any, i: number) => {
@@ -224,11 +224,13 @@ const Performance = (props: any) => {
         return (
             arr.map((item: any, idx: number) => {
                 if (!item) return <></>
+                // selected_ws_id 这段逻辑，用于兼容老数据，后续删除
+                const selected_ws_id = group_jobs?.filter((jobObj: any)=> jobObj?.job_list?.includes(item.obj_id))[0].ws_id || wsId
                 return (
                     <PrefDataText gLen={groupLen} btnState={btnState} key={item?.obj_id}>
                         {
                             !share_id && !getCompareType(item) ?
-                                <JumpResult ws_id={wsId} job_id={item?.obj_id || item} /> :
+                                <JumpResult ws_id={item?.ws_id || selected_ws_id} job_id={item?.obj_id || item} /> :
                                 <div style={{ height: 38 }} />
                         }
                     </PrefDataText>
@@ -349,7 +351,7 @@ const Performance = (props: any) => {
                                                 <PrefData>
                                                     <DelBtn name='conf' conf={conf} cid={cid} />
                                                     <PrefDataTitle gLen={groupLen}><EllipsisPulic title={conf.conf_name} /></PrefDataTitle>
-                                                    {renderShare(conf)}
+                                                    {renderShare(conf, suite.group_jobs)}
                                                 </PrefData>
                                                 {
                                                     conf.metric_list.map((metric: any, idx: number) => (

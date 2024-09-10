@@ -202,7 +202,7 @@ export default (props: any) => {
         const perf_keys = Object.keys(perf_suite) || []
         const duplicate: any = []
         const allGroupData: any = []
-        allGroupData.push({ members: allSelectRowData })
+        allGroupData.push({ ws_id, members: allSelectRowData })
         const newSuiteData = {
             func_suite_dic: getSelectedDataFn(
                 func_suite,

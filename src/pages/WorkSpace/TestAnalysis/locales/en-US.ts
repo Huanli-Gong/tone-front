@@ -34,6 +34,7 @@ export default {
     'analysis.comparison.base_group.compare_data.empty': "Benchmark group comparison data cannot be empty!",
     'analysis.comparison.group.compare_data.empty': "Comparison group data cannot be empty!",
     // AddJob
+    'analysis.ws.list': 'WS List：',
     'analysis.product.label': 'Product：',
     'analysis.product.placeholder': 'Please select product',
     'analysis.version.label': 'Product Version：',

@@ -14,6 +14,7 @@ import { ColumnEllipsisText } from "@/components/ColumnComponents"
 import Highlighter from "react-highlight-words"
 import { ResizeHooksTable } from "@/utils/table.hooks"
 import CommonPagination from "@/components/CommonPagination"
+import WsListSelect from '@/pages/WorkSpace/TestReport/components/WsListSelect'
 
 import lodash from "lodash"
 
@@ -27,9 +28,12 @@ export const filterJobIds = (arr: any, $type: any) => arr.filter((i: any) => i.t
 
 const AddJobTable: React.FC<AnyType> = (props) => {
     const { selectedRowDatas, setSelectedRowDatas } = props
-    const { product_id, product_version, members, noGroupData, allGroupData, activeKey } = props
+    const { product_id, product_version, members, noGroupData, allGroupData, activeKey,
+        selectedWsId, setSelectedWsId,
+     } = props
 
-    const hasIds = filterJobIds(noGroupData, activeKey).concat(filterJobIds(allGroupData, activeKey)).filter((i: any) => !members.map((t: any) => t.id).includes(i))
+    const tempList = filterJobIds(allGroupData, activeKey)
+    const hasIds = filterJobIds(noGroupData, activeKey).concat(tempList).filter((i: any) => !members.map((t: any) => t.id).includes(i))
 
     const { ws_id } = useParams() as any
     const { formatMessage } = useIntl()
@@ -41,34 +45,49 @@ const AddJobTable: React.FC<AnyType> = (props) => {
 
     const [listParams, setListParams] = React.useState<AnyType>({
         ...DEFAULT_PAGE_PARAMS,
-        ws_id,
+        ws_id: selectedWsId || ws_id,
         state: 'success,fail,skip,stop,running',
         filter_id: hasIds.toString()
     })
+    const [products, setProduct] = React.useState<any>([])
 
     const [autoFocus, setFocus] = React.useState(true)
     const [productVersions, setProductVersions] = React.useState([])
+    const [loading, setLoading] = React.useState<any>(false)
+    const [jobs, setJobs] = React.useState({})
 
+    const getProduct = async (q: any)=> {
+        const { data = [], code } = await queryProduct(q)
+        if (code === 200) setProduct(data)
+        else setProduct([])
+    }
     const getProductVersionsList = async (id: any) => {
-        const { data, code } = await queryProductList({ ws_id, product_id: id })
+        const { data, code } = await queryProductList({ ws_id: selectedWsId, product_id: id })
         if (code === 200)
             return data || []
         return []
     }
-
-    const { data: { data: products } } = useRequest(() => queryProduct({ ws_id }), { initialData: [] })
-
-    const { data: jobs, loading } = useRequest(
-        () => queryJobList(listParams),
-        {
-            debounceInterval: 200,
-            refreshDeps: [listParams],
-            ready: !!listParams.product_id && !!listParams.product_version
+    const getJobList = async () => {
+        setLoading(true)
+        const data = await queryJobList({ ...listParams, ws_id: selectedWsId })
+        setLoading(false)
+        if (data.code === 200) {
+            setJobs(data)
+        } else {
+            setJobs({})
         }
-    )
+    }
+    // const { data: jobs, loading } = useRequest(
+    //     () => queryJobList(listParams),
+    //     {
+    //         debounceInterval: 200,
+    //         refreshDeps: [listParams],
+    //         ready: !!listParams.product_id && !!listParams.product_version
+    //     }
+    // )
 
     React.useEffect(() => {
-        if (products && products.length > 0) {
+        if (products && products.length) {
             const newData = { product_id: product_id ?? products[0].id, product_version }
             if (newData.product_id)
                 getProductVersionsList(newData.product_id)
@@ -84,6 +103,30 @@ const AddJobTable: React.FC<AnyType> = (props) => {
                     })
         }
     }, [products, product_id, product_version])
+
+
+    React.useEffect(() => {
+        if (selectedWsId) {
+            getProduct({ ws_id: selectedWsId })
+        } else {
+            setSelectedWsId(ws_id)
+            getProduct({ ws_id })
+        }
+    }, [])
+
+    React.useEffect(() => {
+        if (listParams.product_id && listParams.product_version) {
+           getJobList()
+        }
+    }, [listParams])
+
+    const onWsChange = (value: any) => {
+        setListParams((p: any) => ({ ...p, page_num: 1, ws_id: value, product_id: undefined, product_version: undefined }))
+        setJobs({})
+        // 
+        setSelectedWsId(value)
+        getProduct({ ws_id: value })
+    }
 
     const disabled = React.useMemo(() => {
         return product_version && product_id
@@ -198,6 +241,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
             dataIndex: 'creator_name',
             filterDropdown: ({ confirm }: any) => (
                 <SelectUser
+                    ws_id={selectedWsId}
                     autoFocus={autoFocus}
                     mode=""
                     confirm={confirm}
@@ -270,71 +314,80 @@ const AddJobTable: React.FC<AnyType> = (props) => {
         showSearch: true,
         allClear: true,
         optionFilterProp: "children",
-        disabled,
-        style: { width: "100%" },
+        disabled: !!selectedRowDatas.length,
+        style: { flex: 1, overflow: 'hidden' },
         filterOption: (input: any, option: any) => option.label?.toLowerCase().indexOf(input.toLowerCase()) >= 0
     }
 
     return (
         <Space direction="vertical" style={{ width: "100%", padding: "0 16px" }} size={0}>
             <Row gutter={20}>
-                <Col span={12}>
-                    <Row align={"middle"}>
-                        <Col span={4}><FormattedMessage id="analysis.product.label" /></Col>
-                        <Col span={20}>
-                            <Select
-                                {...baseSelectProps}
-                                placeholder={formatMessage({ id: 'analysis.product.placeholder' })}
-                                value={listParams.product_id}
-                                onSelect={(value: any) => {
-                                    getProductVersionsList(value)
-                                        .then((list: any) => {
-                                            const newVersion = list && list.length > 0 ? list[0] : undefined
-                                            setListParams((p: any) => ({ ...p, page_num: 1, product_id: value, product_version: newVersion }))
-                                            setProductVersions(list)
-                                            setSelectedRowDatas([])
-                                        })
-                                }}
-                                options={
-                                    products?.map((item: any) => ({
-                                        value: item.id,
-                                        label: item.name
-                                    }))
-                                }
-                            />
-                        </Col>
-                    </Row>
+                <Col span={8}>
+                    <div style={{display: 'flex',alignItems: 'center'}}>
+                        <span><FormattedMessage id="analysis.ws.list" /></span>
+                        <WsListSelect
+                            {...baseSelectProps}
+                            allClear={false}
+                            ws_id={ws_id}
+                            value={selectedWsId} 
+                            onSelect={onWsChange}
+                            style={{ flex: 1 }}
+                        />
+                    </div>
                 </Col>
-                <Col span={12}>
-                    <Row align={"middle"}>
-                        <Col span={4}><FormattedMessage id="analysis.version.label" /></Col>
-                        <Col span={20}>
-                            <Select
-                                {...baseSelectProps}
-                                placeholder={formatMessage({ id: 'analysis.version.placeholder' })}
-                                value={listParams.product_version}
-                                onSelect={(value: any) => {
-                                    setListParams({ ...listParams, product_version: value })
-                                    setSelectedRowDatas([])
-                                }}
-                                options={
-                                    productVersions?.map((item: any) => ({
-                                        value: item,
-                                        label: item
-                                    }))
-                                }
-                            />
-                        </Col>
-                    </Row>
+                <Col span={8}>
+                    <div style={{display: 'flex',alignItems: 'center'}}>
+                        <FormattedMessage id="analysis.product.label" />
+                        <Select
+                            {...baseSelectProps}
+                            placeholder={formatMessage({ id: 'analysis.product.placeholder' })}
+                            value={listParams.product_id}
+                            onSelect={(value: any) => {
+                                getProductVersionsList(value)
+                                    .then((list: any) => {
+                                        const newVersion = list && list.length > 0 ? list[0] : undefined
+                                        setListParams((p: any) => ({ ...p, page_num: 1, product_id: value, product_version: newVersion }))
+                                        setProductVersions(list)
+                                        setSelectedRowDatas([])
+                                    })
+                            }}
+                            options={
+                                products?.map((item: any) => ({
+                                    value: item.id,
+                                    label: item.name
+                                }))
+                            }
+                        />
+                    </div>
+                </Col>
+                <Col span={8}>
+                    <div style={{display: 'flex',alignItems: 'center'}}>
+                        <FormattedMessage id="analysis.version.label" />
+                        <Select
+                            {...baseSelectProps}
+                            placeholder={formatMessage({ id: 'analysis.version.placeholder' })}
+                            value={listParams.product_version}
+                            onSelect={(value: any) => {
+                                setListParams({ ...listParams, product_version: value })
+                                setSelectedRowDatas([])
+                            }}
+                            options={
+                                productVersions?.map((item: any) => ({
+                                    value: item,
+                                    label: item
+                                }))
+                            }
+                        />
+                    </div>
                 </Col>
             </Row>
 
-            <Space direction="vertical" size={0} style={{ width: "100%" }} >
+            <Space direction="vertical" size={0} style={{ width: "100%" }}>
                 <ResizeHooksTable
                     rowSelection={rowSelection as any}
                     rowKey='id'
                     name="ws-analysis-compare-job-add"
-                    refreshDeps={[ws_id, listParams, selectedRowDatas, disabled, props]}
+                    refreshDeps={[selectedWsId, listParams, selectedRowDatas, disabled, props]}
                     columns={columns as any}
                     loading={loading}
                     dataSource={jobs?.data ?? []}
