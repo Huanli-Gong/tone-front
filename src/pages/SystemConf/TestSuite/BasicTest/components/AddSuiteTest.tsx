@@ -59,7 +59,7 @@ const LableForCallbackUrl: React.FC = () => {
 
 /**
  * @module 系统级
- * @description 新增、编辑suite级
+ * @description 新增、编辑suite
  */
 export default forwardRef(({ onOk, wsList }: any, ref: any) => {
     const { formatMessage } = useIntl();
@@ -166,6 +166,7 @@ export default forwardRef(({ onOk, wsList }: any, ref: any) => {
                                 ...dataSource,
                                 path: 'visible_range',
                                 visible_range: s,
+                                optionType: 'edit',
                             });
                     }
                 }

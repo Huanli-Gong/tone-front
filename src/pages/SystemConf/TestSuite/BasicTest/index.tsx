@@ -49,7 +49,7 @@ import ConfEditDrawer from './components/CaseTable/ConfEditDrawer';
 import lodash from 'lodash';
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
 import { useSuiteProvider } from '../hooks';
-
+import SynchronizeModal from './components/SynchronizeModal';
 import DeleteTips from './components/DeleteTips';
 import DeleteDefault from './components/DeleteDefault';
 import MetricBatchDelete from './components/MetricTable/MetricBatchDelete';
@@ -91,6 +91,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         { id: 0, name: formatMessage({ id: 'operation.no' }) },
     ];
 
+    const synchronizeRef: any = useRef(null);
     const confDrawer: any = useRef(null);
     const suiteEditDrawer: any = useRef(null);
     const deleteTipsRef = React.useRef<any>(null);
@@ -189,23 +190,46 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         else getList();
     };
 
-    const synchro = async (row: any) => {
-        setSync(true);
+    // 同步判断弹窗: 201有引用
+    const onSynchronize = async (row: any) => {
+        props.setSynchronizeLoading(true);
         const hide = message.loading({
             content: formatMessage({ id: 'operation.synchronizing' }),
             duration: 0,
         });
-        const { code, msg } = await syncSuite(row.id);
-        setSync(false);
+        const { code, data, msg } = await syncSuite(row.id).catch(() =>
+            props.setSynchronizeLoading(false),
+        );
+        props.setSynchronizeLoading(false);
         hide();
-        if (code !== 200) {
-            message.warning(`${formatMessage({ id: 'request.synchronize.failed' })}，${msg}`);
-            return;
+        // 判断无引用
+        if (code === 200) {
+            message.success(formatMessage({ id: 'request.synchronize.success' }));
+            getList();
+            setAsyncTime(new Date().getTime());
+        } else if (code === 201) {
+            // 201 有引用
+            const { id, name } = row;
+            synchronizeRef.current?.show({ id, name, ...data });
+        } else {
+            synchronizeRef.current?.show({ code, msg });
         }
-        message.success(formatMessage({ id: 'request.synchronize.success' }));
-        getList();
-        setAsyncTime(new Date().getTime());
     };
+
+    // const synchro = async (row: any) => {
+    //     setSync(true)
+    //     const hide = message.loading({ content: formatMessage({ id: 'operation.synchronizing' }), duration: 0 })
+    //     const { code, msg } = await syncSuite(row.id)
+    //     setSync(false)
+    //     hide()
+    //     if (code !== 200) {
+    //         message.warning(`${formatMessage({ id: 'request.synchronize.failed' })}，${msg}`)
+    //         return
+    //     }
+    //     message.success(formatMessage({ id: 'request.synchronize.success' }))
+    //     getList()
+    //     setAsyncTime(new Date().getTime())
+    // }
 
     const wsMap = React.useMemo(() => {
         return (wsList || []).reduce((pre: any, cur: any) => {
@@ -472,7 +496,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             fixed: 'right',
             render: (_, row) => (
                 <Space>
-                    <Typography.Link onClick={() => synchro(row)}>
+                    <Typography.Link onClick={() => onSynchronize(row)}>
                         <FormattedMessage id="operation.synchronize" />
                     </Typography.Link>
                     <Typography.Link onClick={() => editOuter(row)}>

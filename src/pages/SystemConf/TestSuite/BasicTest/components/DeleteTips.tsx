@@ -34,8 +34,7 @@ const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) =>
 
     const handleOpenRef = async () => {
         if (!setting) return
-        const { name, id } = setting
-        const pk = await saveRefenerceData({ name, id })
+        const pk = await saveRefenerceData(setting)
         if (pk) window.open(`${basePath || "/refenerce/suite/"}?pk=${pk}`)
     }
 
@@ -47,11 +46,11 @@ const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) =>
             open={visible}
             onCancel={hanldeCancel}
             footer={[
-                <Button key="submit" onClick={handleOk} type={"danger" as any}>
-                    {
-                        okText || <FormattedMessage id="operation.confirm.delete" />
-                    }
-                </Button>,
+                // <Button key="submit" onClick={handleOk} type={"danger" as any}>
+                //     {
+                //         okText || <FormattedMessage id="operation.confirm.delete" />
+                //     }
+                // </Button>,
                 <Button key="back" type="primary" onClick={hanldeCancel}>
                     <FormattedMessage id="operation.cancel" />
                 </Button>

@@ -418,13 +418,13 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
             {/** 编辑说明 */}
             <DesFastEditDrawer ref={descFastEdit} onOk={handleEditDesc} />
 
-            {/** 200表示删除有引用;*/}
+            {/** 200表示有引用,不能直接删除;*/}
             <Modal
                 title={<FormattedMessage id="delete.tips" />}
                 footer={[
-                    <Button key="submit" onClick={remInnner}>
-                        <FormattedMessage id="operation.confirm.delete" />
-                    </Button>,
+                    // <Button key="submit" onClick={remInnner}>
+                    //     <FormattedMessage id="operation.confirm.delete" />
+                    // </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
                         <FormattedMessage id="operation.cancel" />
                     </Button>,
