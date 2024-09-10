@@ -57,6 +57,7 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 import { workspaceList } from '@/pages/SystemConf/WorkspaceManagement/service';
 import OverflowList from '@/components/TagOverflow';
+import TableForSubcase from './components/TableForSubcase';
 
 const timeout: any = null;
 let timer: any = null;
@@ -582,9 +583,11 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                     pagination={false}
                     expandable={{
                         indentSize: 0,
-                        expandedRowRender: (record) => (
-                            <CaseTable key={asyncTime} id={record.id} type={testType} />
-                        ),
+                        expandedRowRender: (record) => {
+                            const { has_conf } = record;
+                            if (!has_conf) return <TableForSubcase {...record} />;
+                            return <CaseTable key={asyncTime} id={record.id} type={testType} />;
+                        },
                         onExpand: (_, record) => (_ ? setExpandKey([record.id]) : setExpandKey([])),
                         expandedRowClassName: () => 'case_expand_row',
                         expandedRowKeys: expandKey,

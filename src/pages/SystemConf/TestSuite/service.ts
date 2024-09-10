@@ -4,7 +4,7 @@ import { request } from 'umi';
 //Suite列表查询
 export async function suiteList(params?: any) {
     return request('/api/case/test_suite/', {
-        params
+        params,
     });
 }
 
@@ -12,7 +12,7 @@ export async function suiteList(params?: any) {
 export async function addSuite(params: any) {
     return request('/api/case/test_suite/', {
         method: 'POST',
-        data: { ...params }
+        data: { ...params },
     });
 }
 
@@ -20,42 +20,42 @@ export async function addSuite(params: any) {
 export async function editSuite(outId: number, params: any) {
     return request(`/api/case/test_suite/detail/${outId}/`, {
         method: 'PUT',
-        data: { ...params }
+        data: { ...params },
     });
 }
 // 同步
 export function manual() {
-    return request('/api/case/manual_sync/')
+    return request('/api/case/manual_sync/');
 }
 // 最后一次同步时间
 export function lastSync() {
-    return request('/api/case/last_sync/')
+    return request('/api/case/last_sync/');
 }
 //查询成员
 export function member(params: any) {
     return request('/api/auth/user/', {
-        params
-    })
+        params,
+    });
 }
 
 export function batchDeleteMetric(data: {
     id_list: React.Key[];
     is_sync?: boolean;
-    object_type: "case" | "suite";
+    object_type: 'case' | 'suite';
     object_id: number | string;
 }) {
-    return request(`/api/case/test_metric/batch/del/`, { data, method: "post" })
+    return request(`/api/case/test_metric/batch/del/`, { data, method: 'post' });
 }
 
 //创建test metric name list
 export function queryTestMetric(params: any) {
-    return request(`/api/case/test_metric_list/`, { params })
+    return request(`/api/case/test_metric_list/`, { params });
 }
 
 //删除Suite
 export async function delSuite(outId: number) {
     return request(`/api/case/test_suite/detail/${outId}/`, {
-        method: 'DELETE'
+        method: 'DELETE',
     });
 }
 // 同步Suite
@@ -66,7 +66,7 @@ export async function syncSuite(id: number) {
 // 展开Suite
 export async function openSuite(params: any) {
     return request('/api/case/test_case/', {
-        params
+        params,
     });
 }
 
@@ -74,7 +74,7 @@ export async function openSuite(params: any) {
 export async function addCase(params: any) {
     return request('/api/case/test_case/ ', {
         method: 'POST',
-        data: { ...params }
+        data: { ...params },
     });
 }
 
@@ -82,7 +82,7 @@ export async function addCase(params: any) {
 export async function editCase(innerId: any, params: any) {
     return request(`/api/case/test_case/detail/${innerId}/`, {
         method: 'PUT',
-        data: { ...params }
+        data: { ...params },
     });
 }
 
@@ -97,7 +97,7 @@ export async function delCase(innerId: number) {
 export async function delBentch(data: any) {
     return request('/api/case/test_case/batch/', {
         method: 'DELETE',
-        data
+        data,
     });
 }
 
@@ -105,14 +105,14 @@ export async function delBentch(data: any) {
 export async function editBentch(data: any) {
     return request('/api/case/test_case/batch/', {
         method: 'put',
-        data
+        data,
     });
 }
 
 //获取metric
 export async function metricList(params: any) {
     return request('/api/case/test_metric/', {
-        params
+        params,
     });
 }
 
@@ -120,7 +120,7 @@ export async function metricList(params: any) {
 export async function addMetric(params: any) {
     return request('/api/case/test_metric/ ', {
         method: 'POST',
-        data: { ...params }
+        data: { ...params },
     });
 }
 
@@ -128,7 +128,7 @@ export async function addMetric(params: any) {
 export async function editMetric(metricId: number, params: any) {
     return request(`/api/case/test_metric/${metricId}/`, {
         method: 'PUT',
-        data: { ...params }
+        data: { ...params },
     });
 }
 
@@ -136,42 +136,42 @@ export async function editMetric(metricId: number, params: any) {
 export async function delMetric(metricId: number, data?: any) {
     return request(`/api/case/test_metric/${metricId}/`, {
         method: 'DELETE',
-        data
+        data,
     });
 }
 
 //校验suite
 export function validateSuite(params: any) {
-    return request(`/api/case/test_suite/exist/`, { params })
+    return request(`/api/case/test_suite/exist/`, { params });
 }
 
 // get domain list
 export async function getDomain(params: any) {
-    if (params) return request(`/api/case/test_domain/`, { params })
-    return request(`/api/case/test_domain/`)
+    if (params) return request(`/api/case/test_domain/`, { params });
+    return request(`/api/case/test_domain/`);
 }
 //create  domain
 export function createDomains(data: any) {
-    return request(`/api/case/test_domain/`, { method: 'post', data })
+    return request(`/api/case/test_domain/`, { method: 'post', data });
 }
 
-//update  domain 
+//update  domain
 export function updateDomains(data: any) {
-    return request(`/api/case/test_domain/`, { method: 'put', data })
+    return request(`/api/case/test_domain/`, { method: 'put', data });
 }
 
-//delete  domain 
+//delete  domain
 export async function deleteDomains(data: any) {
-    return request(`/api/case/test_domain/`, { method: 'delete', data })
+    return request(`/api/case/test_domain/`, { method: 'delete', data });
 }
 
 /*************** 业务测试接口 ********************/
 // 1.业务测试列表。
 export async function queryBusinessList(params: any) {
-    let tempParams = {}
+    let tempParams = {};
     for (let key in params) {
         if (params[key] || params[key] === 0) {
-            tempParams[key] = params[key]
+            tempParams[key] = params[key];
         }
     }
     return request('/api/case/test_business/', { method: 'GET', params: tempParams });
@@ -179,61 +179,61 @@ export async function queryBusinessList(params: any) {
 
 // 2.添加业务
 export function addBusiness(data: any) {
-    return request(`/api/case/test_business/`, { method: 'post', data })
+    return request(`/api/case/test_business/`, { method: 'post', data });
 }
 
 // 3.查询业务项下suite列表
 export async function querySuiteList(params: any) {
-    const { business_id } = params
-    return request(`/api/case/test_business/detail/${business_id}/`, { method: 'GET', });
+    const { business_id } = params;
+    return request(`/api/case/test_business/detail/${business_id}/`, { method: 'GET' });
 }
 
 // 4.修改业务
 export async function editBusiness(data: any) {
-    const { id } = data
+    const { id } = data;
     return request(`/api/case/test_business/detail/${id}/`, { method: 'PUT', data });
 }
 
 // 5.删除业务项
 export async function deleteBusiness(data: any) {
-    const { id } = data
-    return request(`/api/case/test_business/detail/${id}/`, { method: 'DELETE', });
+    const { id } = data;
+    return request(`/api/case/test_business/detail/${id}/`, { method: 'DELETE' });
 }
 
 // 6.业务项下(新增  / 删除)suite
 // 6.1.新增suite
 export function addSuite2(data: any) {
-    return request(`/api/case/test_suite/`, { method: 'POST', data })
+    return request(`/api/case/test_suite/`, { method: 'POST', data });
 }
 
 // 6.2.删除suite
 export async function deleteSuite(data: any) {
-    const { id } = data
+    const { id } = data;
     return request(`/api/case/test_suite/${id}/`, { method: 'DELETE', data });
 }
 
 // 7.编辑suite
-// ????  
+// ????
 
 // 8.校验suite
 export async function checkSuite(params: any) {
     return request(`/api/case/test_suite/exist/`, { method: 'GET', params });
 }
 
-// 9.Conf展开  
+// 9.Conf展开
 export function queryConf(params: any) {
-    // 展开Suite 
-    return openSuite(params)
+    // 展开Suite
+    return openSuite(params);
 }
 
 // 10.新增接入测试类型conf
 export function addConf(params: any) {
-    return addCase(params)
+    return addCase(params);
 }
 // 编辑接入测试类型conf
 export function editConf(params: any) {
-    const { id, ...other } = params
-    return editCase(id, other)
+    const { id, ...other } = params;
+    return editCase(id, other);
 }
 
 // 11.1 批量删除前进行查询
@@ -247,4 +247,8 @@ export async function deleteBusinessSuiteAll(data: any) {
 // 12.conf级-批量修改
 export async function deleteBusinessConfEditAll(data: any) {
     return request(`/api/case/test_case/batch/`, { method: 'PUT', data });
+}
+
+export async function querySubcaseList(params: any) {
+    return request(`/api/case/test_sub_case/`, { method: 'get', params });
 }
