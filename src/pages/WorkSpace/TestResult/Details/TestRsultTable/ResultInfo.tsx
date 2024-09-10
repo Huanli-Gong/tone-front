@@ -1,5 +1,5 @@
 import { Tabs } from 'antd'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { isUrl } from '@/utils/utils'
 import { FormattedMessage } from 'umi'
 
@@ -41,13 +41,21 @@ const ResultInfo: React.FC<any> = (props) => {
     const ciDetail = ci_detail ? JSON.parse(ci_detail) : {}
 
     const [tab, setTab] = React.useState("1")
+
+    // useEffect(()=> {
+    //     // 切换到日志文件tab
+    //     if (confLogInfo.test_case_id && confLogInfo.test_case_id === test_case_id) {
+    //         setTab('3')
+    //     }
+    // }, [confLogInfo.test_case_id])
+
     // console.log('ciDetail:', ci_detail);
 
     return (
         <div style={{ paddingLeft: 40, paddingRight: 0, background: '#FBFBFB', width: "100%" }}>
             <CustomTabs
                 defaultActiveKey="1"
-                onTabClick={(t: any) => setTab(t)}
+                onTabClick={(t: any) => setTab(t) }
                 activeKey={tab}
                 /* @ts-ignore */
                 items={

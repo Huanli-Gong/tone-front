@@ -13,7 +13,7 @@ const TreeFileIcon: React.FC<any> = (props: any) => (
         <span className={styles.file_icon} />
 )
 
-export default ({ test_case_id, suite_id }: any) => {
+export default ({ test_case_id, suite_id, confLogInfo }: any) => {
     const { formatMessage } = useIntl()
     const { initialState } = useModel('@@initialState')
     const { id: job_id, share_id } = useParams() as any
@@ -95,12 +95,21 @@ export default ({ test_case_id, suite_id }: any) => {
         }
     )
 
+    // 默认展开的文件
+    // let defaultExpandedKeys = []
+    // if (test_case_id === confLogInfo.test_case_id) {
+    //     const str = confLogInfo.conf_log_path || ''
+    //     const folder = str.indexOf('/') > -1 ? str.substring(0, str.lastIndexOf('/')): str
+    //     defaultExpandedKeys = folder.split('/')
+    // }
+
     return (
         <div style={{ minHeight: 50 }}>
             <Spin spinning={loading}>
                 {
                     data.length > 0 ?
                         <Tree
+                            // defaultExpandedKeys={defaultExpandedKeys}
                             style={{ padding: 20 }}
                             treeData={data}
                             showIcon={true}

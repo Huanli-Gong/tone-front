@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Table, Space, Row } from 'antd'
+import { Table, Space, Row, Button, message } from 'antd'
 import React, { useEffect } from 'react'
-import { Access, useAccess, useParams, FormattedMessage, getLocale } from 'umi'
+import { Access, useAccess, useParams, FormattedMessage, useIntl, useModel, getLocale, request } from 'umi'
 import ServerLink from '@/components/MachineWebLink/index';
 import { queryTestResultSuiteConfList } from '../service'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
@@ -21,6 +21,7 @@ import treeSvg from '@/assets/svg/tree.svg'
 import { AccessTootip } from '@/utils/utils';
 import { getStorageState } from '@/utils/table.hooks';
 import { MetricSelectProvider } from '.'
+import { encode } from 'js-base64'
 
 // const treeSvg = require('@/assets/svg/tree.svg')
 const background = `url(${treeSvg}) center center / 38.6px 32px `
@@ -30,6 +31,8 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
         suite_id, testType, suite_name, server_provider, provider_name, creator, expandedState, expandedCaseRowKeys,
         openAllRows = false, setIndexExpandFlag, parentTableName, columnsChange
     } = props
+    const { formatMessage } = useIntl()
+    const { initialState } = useModel('@@initialState')
 
     const locale = getLocale() === 'en-US';
     const { setOSuite, oSuite } = React.useContext(MetricSelectProvider)
@@ -41,6 +44,7 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
     const [loading, setLoading] = React.useState(true)
     const [source, setSource] = React.useState<any[]>([])
     const [currentState, setCurrentState] = React.useState(expandedState)
+    // const [confLogInfo, setConfLogInfo] = React.useState({})
 
     const init = async () => {
         setLoading(true)
@@ -74,6 +78,39 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
 
     const handleJoinBaseline = (_: any) => {
         joinBaselineDrawer.current.show({ ..._, suite_id })
+    }
+
+    const handlePathClick = async (path: string, state: string) => {
+        let params: any = {
+            path: path,
+            job_id, share_id
+        }
+        
+        if (state === 'download') {
+            params.download = '1'
+        }
+
+        if (BUILD_APP_ENV !== 'opensource') {
+            const username = initialState?.authList?.username;
+            const token = `${username}|${initialState?.token}|${new Date().getTime()}`;
+            const signature = encode(token);
+
+            params.username = username;
+            params.signature = signature
+        }
+
+        if (state === 'download_folder') {
+            params.download = '1';
+            params.is_folder = '1'
+            const downloadUrl = location.origin + `/api/get/oss/url/?` + Object.keys(params).filter((item)=> params[item]).map((key)=> `${key}=${params[key]}`).join('&')
+            window.open(downloadUrl)
+        } else {
+            const data = await request(`/api/get/oss/url/`, { params })
+            if (data) {
+                if (data.code === 200 && data.msg === 'ok') window.open(data.data)
+                else message.warn(`${['download', 'download_folder'].includes(state) ? formatMessage({ id: 'ws.result.details.failed.download.file' }): formatMessage({ id: 'ws.result.details.failed.get.file' })}`)
+            }
+        }
     }
 
     const columns = React.useMemo(() => [
@@ -179,25 +216,29 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
                 showTitle: false,
             },
             render: (_: any, row: any) => (
-                <EllipsisEditColumn
-                    title={_}
-                    width={120}
-                    access={access.WsMemberOperateSelf(creator)}
-                    onEdit={
-                        () => editRemarkDrawer.current.show({
-                            ...row,
-                            suite_name: row.suite_name,
-                            editor_obj: 'test_job_conf'
-                        })
+                <div style={{ display: 'flex'}}>
+                    <EllipsisEditColumn
+                        title={_}
+                        width={row.conf_log_path ? 80: 120}
+                        access={access.WsMemberOperateSelf(creator)}
+                        onEdit={
+                            () => editRemarkDrawer.current.show({
+                                ...row,
+                                suite_name: row.suite_name,
+                                editor_obj: 'test_job_conf'
+                            })
+                        }
+                    />
+                    {row.conf_log_path &&
+                       <a><span onClick={()=> handlePathClick(row.conf_log_path, 'look')}>&nbsp;{formatMessage({ id: 'operation.log' })}</span></a>
                     }
-                />
+                </div>
             )
         },
         !share_id && ['performance', 'business_performance'].includes(testType) &&
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             width: locale ? 180 : 145,
-            // fixed: 'right',
             render: (_: any) => {
                 return (
                     <Access accessible={access.WsTourist()}>
@@ -302,6 +343,9 @@ const CaseTable: React.FC<Record<string, any>> = (props) => {
                         expandedRowRender: (record: any) => (
                             <ResultInfo
                                 {...record}
+                                // confLogInfo={confLogInfo}
+                                // resetLogInfoFn={setConfLogInfo}
+                                lookPathCallback={handlePathClick}
                                 state={currentState}
                                 testType={testType}
                                 server_provider={server_provider}

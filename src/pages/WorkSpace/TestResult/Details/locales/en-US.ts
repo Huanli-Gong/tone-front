@@ -55,7 +55,7 @@ const text = {
   'tab.testProgress': 'Cases',
   'tab.testConfig': 'Test Configurations',
   'tab.monitor': 'Data Monitor',
-  'tab.log': 'Logs',
+  'tab.log': 'Log Details',
   'tab.resultFile': 'Result File',
   'tab.versionInfo': 'Version Info',
   'tab.executionDetails': 'Execution Details',
