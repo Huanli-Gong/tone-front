@@ -51,10 +51,10 @@
     }
 }
 .page_body_content {
-    max-width: 1240px;
-    width: 100%;
-    padding-top: 24px;
-    padding-bottom: 24px;
+    // width: 100%;
+    // padding-top: 24px;
+    // padding-bottom: 24px;
+    width: 1400px;
     background: #ffffff;
     box-shadow: 0 0 15px 8px rgba(0, 0, 0, 0.05);
     border-radius: 5px;
@@ -65,8 +65,7 @@
             width: 100%;
         }
     }
-}
-.page_body {
+
     .yaml_copy_link {
         cursor: pointer;
 
@@ -96,6 +95,27 @@
             }
         }
     }
+
+    
+}
+
+.server_alert_tips {
+    :global {
+        .ant-alert {
+            background-color: #F9F0E3;
+            color: #FE7300;
+            border: none;
+        }
+
+        .ant-alert-message {
+            color: #FE7300;
+        }
+    }
+}
+
+.page_body {
+    padding: 40px;
+    
     .page_body_title {
         font-size: 18px;
         color: rgba(0, 0, 0, 0.85);
@@ -149,25 +169,20 @@
     right: 0;
     z-index: 300;
 }
+
 .yaml_container {
-    width: 100%;
-    height: 400px;
-    // background: rgba(0, 0, 0, 0.85);
-    box-shadow: 0 -9px 28px 8px rgba(0, 0, 0, 0.05);
-    // position: fixed;
-    // bottom: 0;
-    // left: 0;
-    // right: 0;
-    // z-index: 400;
-    // padding: 10px 20px;
+    width: 1400px;
+    height: 440px;
+    box-shadow: 0 -9px 28px 8px rgba(0,0,0,.05);
     box-sizing: border-box;
     .yaml_operate {
         // color: #fff;
         height: 40px;
         line-height: 40px;
-        padding-left: 20px;
+        // padding-left: 20px;
     }
 }
+
 .job_search_inp {
     margin-bottom: 5px;
     margin-top: 10px;

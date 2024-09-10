@@ -1,30 +1,39 @@
-import { useIntl } from 'umi'
-import { Pagination, Row, Col } from 'antd'
-import styled from 'styled-components'
+import { useIntl } from 'umi';
+import { Pagination, Row, Col } from 'antd';
+import styled from 'styled-components';
 
 const CommonPagination = styled(Row)`
-    margin-top:16px;
-    margin-bottom:16px;
-    width : 100%;
-`
+    margin-top: 16px;
+    margin-bottom: 16px;
+    width: 100%;
+`;
 
 interface PaginationProps {
-    size?: string,
-    total: number,
-    pageSize: number,
-    currentPage: number,
-    onPageChange: (page: number, size?: number) => void,
-    style?: any,
-    largePage?: boolean,
+    size?: any;
+    total: number;
+    pageSize: number;
+    currentPage: number;
+    onPageChange: (page: number, size?: number) => void;
+    style?: any;
+    largePage?: boolean;
 }
 
 export default (props: PaginationProps) => {
-    const { formatMessage } = useIntl()
-    const { size = "small", total = 0, largePage = false, pageSize = 10, currentPage = 1, onPageChange, ...rest } = props
-    let sizeNumber = ['10', '20', '50', '100']
-    if (total === 0) return <CommonPagination className="commom_pagination" justify="space-around" {...rest} />
+    const { formatMessage } = useIntl();
+    const {
+        size = 'small',
+        total = 0,
+        largePage = false,
+        pageSize = 10,
+        currentPage = 1,
+        onPageChange,
+        ...rest
+    } = props;
+    let sizeNumber = ['10', '20', '50', '100'];
+    if (total === 0)
+        return <CommonPagination className="commom_pagination" justify="space-around" {...rest} />;
     if (largePage) {
-        sizeNumber = sizeNumber.concat(['200', '500'])
+        sizeNumber = sizeNumber.concat(['200', '500']);
     }
     return (
         <CommonPagination className="commom_pagination" justify="space-around" {...rest}>
@@ -41,9 +50,9 @@ export default (props: PaginationProps) => {
                     pageSizeOptions={sizeNumber}
                     onChange={onPageChange}
                     showQuickJumper={true}
-                    onShowSizeChange={onPageChange}
+                    onShowSizeChange={(page_num, page_size) => onPageChange(1, page_size)}
                 />
             </Col>
         </CommonPagination>
-    )
-}
+    );
+};

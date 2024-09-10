@@ -125,7 +125,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                 layout="horizontal"
                 size="small"
                 labelCol={{
-                    span: 4
+                    span: 2
                 }}
                 /*hideRequiredMark*/
                 style={{ width: '100%' }}

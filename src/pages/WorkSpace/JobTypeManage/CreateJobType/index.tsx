@@ -1,187 +1,225 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-shadow */
-import React, { useState, useEffect, useRef } from 'react'
-import { Row, Col, Form, Radio, Input, Select, Button, Space, message, Spin, Breadcrumb } from 'antd'
+import React, { useState, useEffect, useRef } from 'react';
+import {
+    Row,
+    Col,
+    Form,
+    Radio,
+    Input,
+    Select,
+    Button,
+    Space,
+    message,
+    Spin,
+    Breadcrumb,
+} from 'antd';
 
-import { queryBasicJobItms, createJobType, queryJobTypeDetail, updateJobType, queryJobTypeItems } from './services'
-import { history, FormattedMessage, useIntl, useModel, useParams } from 'umi'
+import {
+    queryBasicJobItms,
+    createJobType,
+    queryJobTypeDetail,
+    updateJobType,
+    queryJobTypeItems,
+} from './services';
+import { history, FormattedMessage, useIntl, useModel, useParams } from 'umi';
 
-import CheckBoxSelect from './components/CheckBoxSelect'
-import { RectSelect } from './components/RectSelect'
-import PreviewComponent from './components/Preview'
-import { SingleTabCard } from '@/components/UpgradeUI'
-import { requestCodeMessage } from '@/utils/utils'
+import CheckBoxSelect from './components/CheckBoxSelect';
+import { RectSelect } from './components/RectSelect';
+import PreviewComponent from './components/Preview';
+import { SingleTabCard } from '@/components/UpgradeUI';
+import { requestCodeMessage } from '@/utils/utils';
+import { SuiteShowTypeItem } from './components/FieldsSet';
 
-const { document }: any = window
+const { document }: any = window;
 
 const CreateJobType: React.FC<Record<string, any>> = (props) => {
-    const { ws_id, jt_id } = useParams() as any
+    const { ws_id, jt_id } = useParams() as any;
 
-    const { setInitialState } = useModel("@@initialState")
+    const { setInitialState } = useModel('@@initialState');
 
-    const intl = useIntl()
-    const { formatMessage } = useIntl()
-    document.title = intl.messages[`Workspace.JobConfig.${props.route.name}`]
-    const { route } = props
-    const isUpdatePage = props.route.name === 'JobTypeUpdate'
+    const intl = useIntl();
+    const { formatMessage } = useIntl();
 
-    const [form] = Form.useForm()
+    const { route } = props;
+    const isUpdatePage = route.name === 'JobTypeUpdate';
 
-    const previewDrawer: React.RefObject<any> = useRef()
+    const [form] = Form.useForm();
+    const test_type = Form.useWatch('test_type', form);
 
-    const [source, setSource] = useState<any>({ basic: [], env: [], server: [], more: [] })
-    const [loading, setLoading] = useState(true)
-    const [padding, setPadding] = useState(false)
+    const previewDrawer: React.RefObject<any> = useRef();
 
-    const [editPagedata, setEditPageData] = useState<any>(false)
+    const [source, setSource] = useState<any>({ basic: [], env: [], server: [], more: [] });
+    const [loading, setLoading] = useState(true);
+    const [padding, setPadding] = useState(false);
 
-    const [previewData, setPreviewData] = useState<any>({})
-    const [defaultSelect, setDefaultSelect] = useState<any>({ more: [], server: [] })
-    const [enabel, setEnabel] = useState(true)
-    const [testType, setTestType] = useState(null)
+    const [editPagedata, setEditPageData] = useState<any>(false);
+
+    const [previewData, setPreviewData] = useState<any>({});
+    const [defaultSelect, setDefaultSelect] = useState<any>({ more: [], server: [] });
+    const [enabel, setEnabel] = useState(true);
+
+    React.useEffect(() => {
+        document.title = intl.messages[`Workspace.JobConfig.${route.name}`];
+    }, [route]);
 
     const getJobItems = async () => {
-        setLoading(true)
-        const { data = {} } = await queryBasicJobItms({ ws_id })
+        setLoading(true);
+        const { data = {} } = await queryBasicJobItms({ ws_id });
         if (isUpdatePage) {
             // 数据回填
-            const { data: [jobTypeData] } = await queryJobTypeDetail({ jt_id })
-            setEditPageData(jobTypeData)
-            const { server_type, test_type, name, description, enable: temlEnable, business_type } = jobTypeData
-            setTestType(test_type)
-            if (test_type === 'business' && business_type) {
-                form.setFieldsValue({ business_type })
+            const {
+                data: [jobTypeData],
+            } = await queryJobTypeDetail({ jt_id });
+            setEditPageData(jobTypeData);
+            const {
+                server_type,
+                test_type: $test_type,
+                name,
+                description,
+                enable: temlEnable,
+                business_type,
+                suite_show_type,
+            } = jobTypeData;
+            if ($test_type === 'business' && business_type) {
+                form.setFieldsValue({ business_type });
             }
-            form.setFieldsValue({ server_type, test_type, name, description, enable: temlEnable })
-            setEnabel(temlEnable)
-            const { data: typeItems } = await queryJobTypeItems({ jt_id })
-            const more: any = []
-            const server: any = []
+            form.setFieldsValue({
+                server_type,
+                test_type: $test_type,
+                name,
+                description,
+                enable: temlEnable,
+                suite_show_type,
+            });
+            setEnabel(temlEnable);
+            const { data: typeItems } = await queryJobTypeItems({ jt_id });
+            const more: any = [];
+            const server: any = [];
             Object.keys(data).forEach((key) => {
                 data[key] = data[key].map((item: any) => {
                     const idx = typeItems.findIndex(
-                        ({ config_index, name }: any) => name === item.name && config_index === item.config_index
-                    )
+                        ({ config_index, name }: any) =>
+                            name === item.name && config_index === item.config_index,
+                    );
                     if (idx > -1) {
-                        if (key === 'more') more.push(item.id)
-                        if (key === 'server') server.push(item.id)
+                        if (key === 'more') more.push(item.id);
+                        if (key === 'server') server.push(item.id);
                         // ...
-                        if (item.name === 'baseline' && test_type === 'business' && business_type === 'business') {
-                            return { ...item, disable: true, select: false }
+                        if (
+                            item.name === 'baseline' &&
+                            $test_type === 'business' &&
+                            business_type === 'business'
+                        ) {
+                            return { ...item, disable: true, select: false };
                         }
                         // ...
-                        return { ...item, select: true, isTouch: true, alias: typeItems[idx].alias }
+                        return {
+                            ...item,
+                            select: true,
+                            isTouch: true,
+                            alias: typeItems[idx].alias,
+                        };
                     }
-                    return item
-                })
-            })
-            setDefaultSelect({ server, more })
+                    return item;
+                });
+            });
+            setDefaultSelect({ server, more });
         }
 
-        setSource(data)
-        setLoading(false)
-    }
+        setSource(data);
+        setLoading(false);
+    };
 
     useEffect(() => {
-        getJobItems()
-    }, [])
+        getJobItems();
+    }, []);
 
     const handleSelect = (name: string, id: any, select: boolean) => {
-        const data: any = {}
-        Object.keys(source).forEach(
-            (key) => {
-                data[key] = key === name ?
-                    source[key].map(
-                        (ctx: any) => ctx.id === id ? { ...ctx, select, isTouch: select } : ctx
-                    ) :
-                    source[key]
-            }
-        )
-        setSource(data)
-    }
+        const data: any = {};
+        Object.keys(source).forEach((key) => {
+            data[key] =
+                key === name
+                    ? source[key].map((ctx: any) =>
+                          ctx.id === id ? { ...ctx, select, isTouch: select } : ctx,
+                      )
+                    : source[key];
+        });
+        setSource(data);
+    };
 
     const hanldeEditName = (name: string, id: number, alias: string) => {
-        const data: any = {}
-        Object.keys(source).forEach(
-            (key) => {
-                data[key] = key === name ?
-                    source[key].map(
-                        (ctx: any) => ctx.id === id ? { ...ctx, alias } : ctx
-                    ) :
-                    source[key]
-            }
-        )
-        setSource(data)
-    }
+        const data: any = {};
+        Object.keys(source).forEach((key) => {
+            data[key] =
+                key === name
+                    ? source[key].map((ctx: any) => (ctx.id === id ? { ...ctx, alias } : ctx))
+                    : source[key];
+        });
+        setSource(data);
+    };
 
     const handleCheckBoxSelect = (vals: any, name: string) => {
-        const data: any = {}
-        Object.keys(source).forEach(
-            key => {
-                data[key] = key === name ?
-                    source[key].map(
-                        (ctx: any) => {
-                            const idx = vals.findIndex((id: any) => id === ctx.id)
-                            const select = idx > -1 ? true : false
-                            const obj = Object.assign({}, defaultSelect)
-                            obj[name] = vals
-                            setDefaultSelect(obj)
-                            return { ...ctx, select }
-                        }
-                    ) :
-                    source[key]
-            }
-        )
-        setSource(data)
-    }
+        const data: any = {};
+        Object.keys(source).forEach((key) => {
+            data[key] =
+                key === name
+                    ? source[key].map((ctx: any) => {
+                          const idx = vals.findIndex((id: any) => id === ctx.id);
+                          const select = idx > -1 ? true : false;
+                          const obj = Object.assign({}, defaultSelect);
+                          obj[name] = vals;
+                          setDefaultSelect(obj);
+                          return { ...ctx, select };
+                      })
+                    : source[key];
+        });
+        setSource(data);
+    };
 
     const handleFinish = async (saveType: string = '') => {
-        const item_dict: any = {}
-        setPadding(true)
-        if (padding) return
+        const item_dict: any = {};
+        setPadding(true);
+        if (padding) return;
         form.validateFields()
             .then(async (values: any) => {
-                Object.keys(source).forEach(key => {
-                    source[key].forEach(
-                        (ctx: any) => {
-                            if (ctx.select) item_dict[ctx.id] = ctx.alias || null
-                        }
-                    )
-                })
+                Object.keys(source).forEach((key) => {
+                    source[key].forEach((ctx: any) => {
+                        if (ctx.select) item_dict[ctx.id] = ctx.alias || null;
+                    });
+                });
 
                 const params: any = {
                     ...values,
                     ws_id,
                     is_default: false,
-                    item_dict
-                }
+                    item_dict,
+                };
 
-                const { code, msg, id } = isUpdatePage ? await updateJobType({ ...params, jt_id }) : await createJobType(params)
+                const { code, msg, id } = isUpdatePage
+                    ? await updateJobType({ ...params, jt_id })
+                    : await createJobType(params);
 
                 if (code === 200) {
                     setInitialState((state: any) => ({
                         ...state,
-                        refreshMenu: !state?.refreshMenu
-                    }))
-                    message.success(formatMessage({ id: 'operation.success' }))
-                    if (saveType === 'job')
-                        history.push(`/ws/${ws_id}/test_job/${id}`)
-                    else
-                        history.push(`/ws/${ws_id}/job/types`)
-                }
-                else
-                    requestCodeMessage(code, msg)
-                setPadding(false)
+                        refreshMenu: !state?.refreshMenu,
+                    }));
+                    message.success(formatMessage({ id: 'operation.success' }));
+                    if (saveType === 'job') history.push(`/ws/${ws_id}/test_job/${id}`);
+                    else history.push(`/ws/${ws_id}/job/types`);
+                } else requestCodeMessage(code, msg);
+                setPadding(false);
             })
             .catch((err: any) => {
-                setPadding(false)
-                console.log(err)
-                const { errorFields } = err
-                const { name } = errorFields[0]
-                form.scrollToField(name)
-                document.querySelector('.create_job_type_content').parentNode.scrollTop = 239
-            })
-    }
+                setPadding(false);
+                console.log(err);
+                const { errorFields } = err;
+                const { name } = errorFields[0];
+                form.scrollToField(name);
+                document.querySelector('.create_job_type_content').parentNode.scrollTop = 239;
+            });
+    };
 
     /**
      * 【 互斥原则 】：
@@ -191,109 +229,97 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
      * 测试类型 性能 performance 基线 （默认选择） baseline
      */
     const handleServerChange = ({ target }: any) => {
-        const data: any = {}
+        const data: any = {};
 
-        Object.keys(source).forEach(
-            (key) => {
-                data[key] = source[key].map(
-                    (ctx: any) => {
-                        if (ctx.name === 'reclone')
-                            return target.value === 'aliyun' ?
-                                { ...ctx, disable: true, select: false } :
-                                { ...ctx, disable: false }
-                        return ctx
-                    }
-                )
-            }
-        )
+        Object.keys(source).forEach((key) => {
+            data[key] = source[key].map((ctx: any) => {
+                if (ctx.name === 'reclone')
+                    return target.value === 'aliyun'
+                        ? { ...ctx, disable: true, select: false }
+                        : { ...ctx, disable: false };
+                return ctx;
+            });
+        });
 
-        setSource(data)
-    }
+        setSource(data);
+    };
 
     const handleEnabelChange = ({ target }: any) => {
-        setEnabel(target.value)
-    }
+        setEnabel(target.value);
+    };
 
-    const handleTestTypeChange = (value: any) => {
-        setTestType(value)
-
-        const data: any = {}
-        Object.keys(source).forEach(
-            (key) => {
-                data[key] = source[key].map((ctx: any) => {
-                    if (ctx.name === 'baseline') {
-                        if (value === 'stability')
-                            return { ...ctx, disable: true, select: false }
-                        if (value === 'performance')
-                            return { ...ctx, disable: false, select: true }
-                        if (value === 'functional') {
-                            if (ctx.isTouch) return { ...ctx, disable: false }
-                            return { ...ctx, disable: false, select: false }
-                        }
-                        if (value === 'business') {
-                            const aa = form.getFieldValue('business_type')
-                            if (['business', undefined].includes(aa)) return { ...ctx, disable: true, select: false }
-                            return { ...ctx, disable: false, select: true }
-                        }
-                    }
-                    return ctx
-                }
-                )
-            }
-        )
-
-        setSource(data)
-    }
-
-    const handleBusinessTypeChange = ({ target }: any) => {
-        const value = target.value
-
-        const data: any = {}
+    React.useEffect(() => {
+        const data: any = {};
         Object.keys(source).forEach((key) => {
             data[key] = source[key].map((ctx: any) => {
                 if (ctx.name === 'baseline') {
-                    if (testType === 'stability')
-                        return { ...ctx, disable: true, select: false }
-                    if (testType === 'performance')
-                        return { ...ctx, disable: false, select: true }
-                    if (testType === 'functional') {
-                        if (ctx.isTouch) return { ...ctx, disable: false }
-                        return { ...ctx, disable: false, select: false }
+                    if (test_type === 'stability') return { ...ctx, disable: true, select: false };
+                    if (test_type === 'performance')
+                        return { ...ctx, disable: false, select: true };
+                    if (test_type === 'functional') {
+                        if (ctx.isTouch) return { ...ctx, disable: false };
+                        return { ...ctx, disable: false, select: false };
                     }
-                    if (testType === 'business') {
-                        if (value === 'business') return { ...ctx, disable: true, select: false }
-                        return { ...ctx, disable: false, select: true }
+                    if (test_type === 'business') {
+                        const aa = form.getFieldValue('business_type');
+                        if (['business', undefined].includes(aa))
+                            return { ...ctx, disable: true, select: false };
+                        return { ...ctx, disable: false, select: true };
                     }
                 }
-                return ctx
-            }
-            )
-        }
-        )
-        setSource(data)
-    }
+                return ctx;
+            });
+        });
+
+        setSource(data);
+    }, [test_type]);
+
+    const handleBusinessTypeChange = ({ target }: any) => {
+        const value = target.value;
+
+        const data: any = {};
+        Object.keys(source).forEach((key) => {
+            data[key] = source[key].map((ctx: any) => {
+                if (ctx.name === 'baseline') {
+                    if (test_type === 'stability') return { ...ctx, disable: true, select: false };
+                    if (test_type === 'performance')
+                        return { ...ctx, disable: false, select: true };
+                    if (test_type === 'functional') {
+                        if (ctx.isTouch) return { ...ctx, disable: false };
+                        return { ...ctx, disable: false, select: false };
+                    }
+                    if (test_type === 'business') {
+                        if (value === 'business') return { ...ctx, disable: true, select: false };
+                        return { ...ctx, disable: false, select: true };
+                    }
+                }
+                return ctx;
+            });
+        });
+        setSource(data);
+    };
 
     const handlePriview = () => {
         const params = {
             ...form.getFieldsValue(),
             item_dict: source,
-        }
+        };
 
-        setPreviewData(params)
-        previewDrawer.current.show()
-    }
+        setPreviewData(params);
+        previewDrawer.current.show();
+    };
 
     return (
         <SingleTabCard
             className="create_job_type_content"
             title={
-                <Breadcrumb >
-                    <Breadcrumb.Item >
+                <Breadcrumb>
+                    <Breadcrumb.Item>
                         <span
                             style={{ cursor: 'pointer' }}
                             onClick={() => history.push(`/ws/${ws_id}/job/types`)}
                         >
-                            <FormattedMessage id={"Workspace.JobConfig.JobTypeManage"} />
+                            <FormattedMessage id={'Workspace.JobConfig.JobTypeManage'} />
                         </span>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
@@ -302,61 +328,92 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
                 </Breadcrumb>
             }
         >
-            <Spin spinning={loading} >
-
-                <h3><FormattedMessage id="job.types.type.configuration" /></h3>
+            <Spin spinning={loading}>
+                <h3>
+                    <FormattedMessage id="job.types.type.configuration" />
+                </h3>
                 <Form
                     form={form}
                     layout="horizontal"
                     labelCol={{ span: 3 }}
                     wrapperCol={{ span: 21 }}
+                    initialValues={{ suite_show_type: 'default', test_type: 'functional' }}
                 >
                     <Form.Item
                         label={<FormattedMessage id="job.types.job.name" />}
                         name="name"
                         required
                         rules={[
-                            { required: true, message: formatMessage({ id: 'job.types.job.name.rules1' }) },
-                            { max: 20, message: formatMessage({ id: 'job.types.job.name.rules2' }) }
+                            {
+                                required: true,
+                                message: formatMessage({ id: 'job.types.job.name.rules1' }),
+                            },
+                            {
+                                max: 20,
+                                message: formatMessage({ id: 'job.types.job.name.rules2' }),
+                            },
                         ]}
                     >
-                        <Input autoComplete="off" placeholder={formatMessage({ id: 'job.types.job.name.placeholder' })} style={{ width: 500 }} />
+                        <Input
+                            autoComplete="off"
+                            placeholder={formatMessage({ id: 'job.types.job.name.placeholder' })}
+                            style={{ width: 500 }}
+                        />
                     </Form.Item>
-                    <Form.Item label={<FormattedMessage id="job.types.server_type" />} initialValue={"aliyun"} name="server_type">
+                    <Form.Item
+                        label={<FormattedMessage id="job.types.server_type" />}
+                        initialValue={'aliyun'}
+                        name="server_type"
+                    >
                         <Radio.Group onChange={handleServerChange}>
                             <Radio value="aligroup">
                                 {formatMessage({ id: 'aligroupServer' })}
                             </Radio>
-                            <Radio value="aliyun">
-                                {formatMessage({ id: 'aliyunServer' })}
-                            </Radio>
+                            <Radio value="aliyun">{formatMessage({ id: 'aliyunServer' })}</Radio>
                         </Radio.Group>
                     </Form.Item>
 
                     <Form.Item
                         label={<FormattedMessage id="job.types.test_type" />}
-                        initialValue={"functional"} name="test_type">
-                        <Select allowClear onChange={handleTestTypeChange} style={{ width: 500 }}>
-                            <Select.Option value="functional"><FormattedMessage id="functional.test" /></Select.Option>
-                            <Select.Option value="performance"><FormattedMessage id="performance.test" /></Select.Option>
-                            <Select.Option value="stability"><FormattedMessage id="stability.test" /></Select.Option>
-                            <Select.Option value="business"><FormattedMessage id="business.test" /></Select.Option>
-                        </Select>
+                        name="test_type"
+                    >
+                        <Select
+                            allowClear
+                            style={{ width: 500 }}
+                            options={['functional', 'performance', 'stability', 'business'].map(
+                                (ctx: any) => ({
+                                    label: formatMessage({ id: `${ctx}.test` }),
+                                    value: ctx,
+                                }),
+                            )}
+                        />
                     </Form.Item>
-                    {testType === 'business' && (
+                    {test_type === 'business' && (
                         <Row>
                             <Col span={3} />
                             <Col span={21}>
-                                <Form.Item label=""
-                                    initialValue={"business"}
+                                <Form.Item
+                                    label=""
+                                    initialValue={'business'}
                                     name="business_type"
-                                    rules={[{ required: true, message: formatMessage({ id: 'job.types.business.message' }) }]}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: formatMessage({
+                                                id: 'job.types.business.message',
+                                            }),
+                                        },
+                                    ]}
                                 >
-                                    <Radio.Group onChange={handleBusinessTypeChange}>
-                                        <Radio value="functional"><FormattedMessage id="functional.test" /></Radio>
-                                        <Radio value="performance"><FormattedMessage id="performance.test" /></Radio>
-                                        <Radio value="business"><FormattedMessage id="access.test" /></Radio>
-                                    </Radio.Group>
+                                    <Radio.Group
+                                        onChange={handleBusinessTypeChange}
+                                        options={['functional', 'performance', 'business'].map(
+                                            (ctx: any) => ({
+                                                label: formatMessage({ id: `${ctx}.test` }),
+                                                value: ctx,
+                                            }),
+                                        )}
+                                    />
                                 </Form.Item>
                             </Col>
                         </Row>
@@ -365,23 +422,36 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
                     <Form.Item
                         label={<FormattedMessage id="job.types.desc.option" />}
                         name="description"
-                        rules={[{
-                            max: 20,
-                            message: formatMessage({ id: 'job.types.desc.message' }),
-                        }]} >
-                        <Input.TextArea placeholder={formatMessage({ id: 'job.types.desc.placeholder' })}
-                            style={{ width: 500 }} />
+                        rules={[
+                            {
+                                max: 20,
+                                message: formatMessage({ id: 'job.types.desc.message' }),
+                            },
+                        ]}
+                    >
+                        <Input.TextArea
+                            placeholder={formatMessage({ id: 'job.types.desc.placeholder' })}
+                            style={{ width: 500 }}
+                        />
                     </Form.Item>
                     <Form.Item
                         label={<FormattedMessage id="job.types.enable" />}
-                        initialValue={true} name="enable" >
+                        initialValue={true}
+                        name="enable"
+                    >
                         <Radio.Group onChange={handleEnabelChange}>
-                            <Radio value={true}><FormattedMessage id="job.types.enable" /></Radio>
-                            <Radio disabled={editPagedata.is_first} value={false}><FormattedMessage id="job.types.stop" /></Radio>
+                            <Radio value={true}>
+                                <FormattedMessage id="job.types.enable" />
+                            </Radio>
+                            <Radio disabled={editPagedata.is_first} value={false}>
+                                <FormattedMessage id="job.types.stop" />
+                            </Radio>
                         </Radio.Group>
                     </Form.Item>
-
-                    <h3><FormattedMessage id="job.types.env.configuration" /></h3>
+                    {test_type === 'functional' && <SuiteShowTypeItem />}
+                    <h3>
+                        <FormattedMessage id="job.types.env.configuration" />
+                    </h3>
                     <RectSelect
                         title={formatMessage({ id: 'job.types.base.config' })}
                         desc={formatMessage({ id: 'job.types.base.config.ps' })}
@@ -418,25 +488,28 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
                     />
                     <Row style={{ marginTop: 24 }}>
                         <Space>
-                            {
-                                enabel &&
-                                <Button type="primary" disabled={padding} onClick={() => handleFinish('job')}>
+                            {enabel && (
+                                <Button
+                                    type="primary"
+                                    disabled={padding}
+                                    onClick={() => handleFinish('job')}
+                                >
                                     <FormattedMessage id="job.types.save.and.create.job" />
                                 </Button>
-                            }
-                            <Button onClick={() => handleFinish()}><FormattedMessage id="job.types.only.save" /></Button>
-                            <Button type="link" onClick={handlePriview}><FormattedMessage id="operation.preview" /></Button>
+                            )}
+                            <Button onClick={() => handleFinish()}>
+                                <FormattedMessage id="job.types.only.save" />
+                            </Button>
+                            <Button type="link" onClick={handlePriview}>
+                                <FormattedMessage id="operation.preview" />
+                            </Button>
                         </Space>
                     </Row>
                 </Form>
             </Spin>
-            <PreviewComponent
-                {...previewData}
-                ref={previewDrawer}
-                onOk={handleFinish}
-            />
+            <PreviewComponent {...previewData} ref={previewDrawer} onOk={handleFinish} />
         </SingleTabCard>
-    )
-}
+    );
+};
 
-export default CreateJobType
+export default CreateJobType;

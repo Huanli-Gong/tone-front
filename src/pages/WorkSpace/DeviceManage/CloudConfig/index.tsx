@@ -808,7 +808,7 @@ const CloudConfig: React.FC<any> = (props) => {
 							current={fetchParams.page_num}
 							defaultCurrent={1}
 							onChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
-							onShowSizeChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
+							onShowSizeChange={(page_num: number, page_size: any) => handlePage(1, page_size)}
 							total={data.total}
 						/>
 					</>
