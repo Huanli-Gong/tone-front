@@ -7,8 +7,9 @@ import CommonTable from '@/components/Public/CommonTable';
 import { test_type_enum, runList, saveRefenerceData } from '@/utils/utils'
 import ConfList from '../ConfList';
 import AddSuiteDrawer from './AddSuiteDrawer';
-import FuncOrPerfConfList from '../../../FuncOrPerfConfList';
+import FuncOrPerfConfList from '../FuncOrPerfConfList';
 import { querySuiteList, getDomain, syncSuite, delSuite, queryDelSuiteAll, deleteBusinessSuiteAll } from '../../../../service';
+import SynchronizeModal from '../../../../BasicTest/components/SynchronizeModal';
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
 import styles from './index.less';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
@@ -35,6 +36,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 	const [deleteState, setDeleteState] = useState<any>({ visible: false, result: '', action: '' }) // action:单个/批量删除
 	const [deleteRow, setDeleteRow] = useState<any>({})
 	const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
+	const synchronizeRef: any = useRef(null)
 
 	// 1.请求列表数据
 	const getTableData = async (query: any) => {
@@ -90,6 +92,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 			setLoading(false)
 		}
 	}
+
 	// 4.单个删除
 	const getDelSuite = async () => {
 		setDeleteLoading(true)
@@ -154,22 +157,44 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 
 		if (type === 'multiple') {
 			const pk = await saveRefenerceData({ name: newData.join(','), id: selectedRowKeys.join(',') })
-			// window.open(`/refenerce/conf/?name=${newData.join(',')}&id=${selectedRowKeys.join(',')}`)
 			window.open(`/refenerce/conf/?pk=${pk}`)
 		} else if (type === 'single') {
 			const { name, id } = deleteRow
 			const pk = await saveRefenerceData({ name, id })
-			// window.open(`/refenerce/suite/?name=${deleteRow.name}&id=${deleteRow.id}`)
 			window.open(`/refenerce/suite/?pk=${pk}`)
 		}
 	}
+	// 7.同步弹窗: 201有引用
+	const onSynchronize = async (row: any) => {
+		const hide = message.loading({ content: formatMessage({ id: 'operation.synchronizing' }), duration: 0 })
+		const res = await syncSuite(row.id) || {}
+		hide()
+		// 判断 200无引用
+		if (res.code === 200) {
+			message.success(formatMessage({ id: 'request.synchronize.success' }))
+			getTableData({ page_num: data.page_num, page_size: data.page_size })
+			// case2.刷新已展开的conf列表
+			if (expandKeys.includes(row.id)) {
+				caseTable.current?.refresh({ refreshId: row.id })
+			} else {
+				const ids = expandKeys.concat([row.id])
+				setExpandKeys(ids)
+			}
+		} else if (res.code === 201) {
+			// 判断 201有引用
+			const { id, name } = row
+			synchronizeRef.current?.show({ id, name, ...res.data })
+		} else {
+			synchronizeRef.current?.show({ code: res.code, msg: res.msg })
+		}
+  }
 
 	// 打开对话框
-	const onOk = (data: any, record: any, action: any) => {
+	const onOk = (res: any, record: any, action: any) => {
 		// 删除查询：200表示有引用，201表示可以直接删除
-		if (data.code === 200) {
+		if (res.code === 200) {
 			setDeleteState({ visible: true, result: 200, action })
-		} else if (data.code === 201) {
+		} else if (res.code === 201) {
 			setDeleteState({ visible: true, result: 201, action })
 		}
 		setDeleteRow(record)
@@ -243,9 +268,9 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 	// 单个删除前查询
 	const queryDeleteSingle = async ({ record = {} }: any) => {
 		try {
-			const data = await queryConfirm({ flag: 'pass', suite_id: record.id }) || {}
-			if (data.code) {
-				onOk(data, record, 'single')
+			const res = await queryConfirm({ flag: 'pass', suite_id: record.id }) || {}
+			if (res.code) {
+				onOk(res, record, 'single')
 			}
 		} catch (e) {
 			console.log(e)
@@ -254,9 +279,9 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 	// 批量删除前查询
 	const queryDeleteAll = async () => {
 		try {
-			const data = await queryDelSuiteAll({ flag: 'pass', suite_id_list: selectedRowKeys.join() }) || {}
-			if (data.code) {
-				onOk(data, {}, 'multiple')
+			const res = await queryDelSuiteAll({ flag: 'pass', suite_id_list: selectedRowKeys.join() }) || {}
+			if (res.code) {
+				onOk(res, {}, 'multiple')
 			}
 		} catch (e) {
 			console.log(e)
@@ -356,10 +381,10 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 			render: (text: any, record: any) => {
 				return (
 					<Space>
-						{(record.test_type === 'business') ? (
+						{record.test_type === 'business' ? (
 							<span>&emsp;&emsp;</span>
 						) : (
-							<a><span onClick={() => getSyncSuite(record.id)}><FormattedMessage id="operation.synchronize" /></span></a>
+							<a><span onClick={() => onSynchronize(record)}><FormattedMessage id="operation.synchronize" /></span></a>
 						)}
 						<a><span onClick={() => handelAddOrEdit({ type: 'edit', record })}><FormattedMessage id="operation.edit" /></span></a>
 						<a><span onClick={() => queryDeleteSingle({ record })}><FormattedMessage id="operation.delete" /></span></a>
@@ -427,10 +452,13 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 						expanded ? (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
 							(<CaretRightFilled onClick={e => onExpand(record, e)} />)
 				}}
-				// scrollType={1250}
 				scroll={{ x: 1250 }}
 				paginationBottom={true}
 			/>
+
+			{/* 同步弹窗 */}
+			<SynchronizeModal ref={synchronizeRef} onOk={()=> {}}/>
+
 			<Modal title={<FormattedMessage id="delete.tips" />}
 				centered={true}
 				okText={<FormattedMessage id="operation.delete" />}
@@ -473,7 +501,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 					)}
 				</>
 			</Modal>
-
+			
 			<AddSuiteDrawer ref={addSuiteDrawer} callback={handelCallback} domainList={domainList} />
 		</div>
 	)

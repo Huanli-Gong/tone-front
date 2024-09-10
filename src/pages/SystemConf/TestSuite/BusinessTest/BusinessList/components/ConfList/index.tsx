@@ -86,11 +86,9 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 	// 4.查看引用
 	const handleDetail = async () => {
 		const type = deleteState.action
-
-		let newData: any = []
-		selectedRow.map((item: any) => newData.push(item.name))
 		let pk
 		if (type == 'multiple') {
+			let newData: any = selectedRow.map((item: any) => item.name)
 			pk = await saveRefenerceData({ name: newData.join(','), id: selectedRowKeys.join(',') })
 			// window.open(`/refenerce/conf/?name=${newData.join(',')}&id=${selectedRowKeys.join(',')}`)
 		} else {
