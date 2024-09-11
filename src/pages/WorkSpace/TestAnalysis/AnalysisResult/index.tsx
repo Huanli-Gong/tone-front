@@ -54,14 +54,14 @@ const Report: React.FC = () => {
   const { height: layoutHeight } = useClientSize();
   // 请求对比数据
   const queryCompareForm = async () => {
-    const data = await queryForm({ form_id });
-    if (data.code == 200) {
-      if (!data?.data) return;
-      setTestDataParam(data?.data.testDataParam);
-      setParamEenvironment(data?.data.envDataParam);
-      setAllGroupData(data?.data.allGroupData);
-      setBaselineGroupIndex(data?.data.baselineGroupIndex);
-      setShareWsId(data?.data.allGroupData[0]?.members[0]?.ws_id);
+    const { data, code } = await queryForm({ form_id });
+    if (code == 200) {
+      if (!data) return;
+      setTestDataParam(data.testDataParam);
+      setParamEenvironment(data.envDataParam);
+      setAllGroupData(data.allGroupData);
+      setBaselineGroupIndex(data.baselineGroupIndex);
+      setShareWsId(data.allGroupData[0]?.members[0]?.ws_id);
     } else if (data.code === 500) {
       redirectErrorPage(500);
     } else {
