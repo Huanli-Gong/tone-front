@@ -108,7 +108,7 @@ const JobTableForSuite: React.FC<any> = ({ suiteList }) => {
                 expandedRowClassName(record) {
                     const { test_suite_id } = record;
                     const hasSuite = filterIds.includes(test_suite_id);
-                    return hasSuite ? 'row-hidden-cls' : '';
+                    return !hasSuite ? 'row-hidden-cls' : '';
                 },
                 onExpandedRowsChange(keys: any) {
                     setExpandedRowKeys(keys);
