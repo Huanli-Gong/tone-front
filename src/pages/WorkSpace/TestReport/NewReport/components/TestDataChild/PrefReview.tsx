@@ -94,7 +94,7 @@ const Performance = (props: any) => {
                 }
             })
         })
-    }, [child, btn])
+    }, [child, btn, chartType])
 
     // 筛选过滤
     const handleConditions = (value: any) => {
@@ -241,7 +241,6 @@ const Performance = (props: any) => {
 
     const { containerRef } = useContext(ReportContext)
     const containerScroll = useScroll(containerRef)
-
     // suite遍历
     const RenderSuite = () => {
         return (
@@ -262,8 +261,15 @@ const Performance = (props: any) => {
                                 <CloseBtn />
                             </Popconfirm>
                         }
-                        <ChartTypeChild btn={btn} isReport={true} obj={perData} suiteId={suite.suite_id} setPerData={setPerData} 
-                            chartType={chartType} setChartType={setChartType} />
+                        <ChartTypeChild 
+                            btn={btn} 
+                            isReport={true} 
+                            obj={perData} 
+                            suiteId={suite.suite_id} 
+                            setPerData={setPerData} 
+                            chartType={chartType} 
+                            setChartType={setChartType} 
+                        />
                     </SuiteName>
                     <TestConfWarpper>
                         {!domainResult.is_default &&

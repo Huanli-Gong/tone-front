@@ -1,8 +1,40 @@
 import { Typography, Space, Select, } from 'antd';
 import { FormattedMessage } from 'umi';
-
+import { useContext, useEffect } from 'react';
+import { ReportContext } from '../../Provider';
 const ChartTypeChild = (props: any) => {
+    const { collapsedTypes, setCollapsedTypes } = useContext(ReportContext)
     const { btn, isReport, obj, suiteId, setPerData, chartType, setChartType } = props;
+  
+    useEffect(() => {
+        const param: any = new URLSearchParams(window.location.search)
+        if (isReport) {
+            setPerData({
+                ...obj, 
+                list: obj.list.map((item: any) => {
+                    if(window.location.search.includes(item.item_suite_id)){
+                        setChartType(param.get(item.item_suite_id))
+                        return {
+                            ...item,
+                            chartType: param.get(item.item_suite_id)
+                        }
+                    }
+                    return item
+                })
+            })
+        } else {
+            setPerData(obj.map((item: any) => {
+                if(window.location.search.includes(item.item_suite_id)){
+                    setChartType(param.get(item.item_suite_id))
+                    return {
+                        ...item,
+                        chartType: param.get(item.item_suite_id)
+                    }
+                }
+                return item
+            }))
+        }
+    },[window.location.search])
     const onChange = (val: string) => {
         setChartType(val)
         if (isReport) {
@@ -10,6 +42,10 @@ const ChartTypeChild = (props: any) => {
                 ...obj, 
                 list: obj.list.map((item: any) => {
                     if (suiteId === item.suite_id) {
+                        setCollapsedTypes({
+                            ...collapsedTypes,
+                            [item.item_suite_id]: val
+                        })
                         return {
                             ...item,
                             chartType: val
@@ -21,6 +57,10 @@ const ChartTypeChild = (props: any) => {
         } else {
             setPerData(obj.map((item: any) => {
                 if (suiteId === item.suite_id) {
+                    setCollapsedTypes({
+                        ...collapsedTypes,
+                        [item.item_suite_id]: val
+                    })
                     return {
                         ...item,
                         chartType: val

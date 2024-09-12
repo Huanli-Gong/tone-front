@@ -129,16 +129,15 @@ const ReportTestPref: React.FC<any> = (props) => {
             btn ? dataArr : dataArr.map((item: any) => {
                 return {
                     ...item,
-                    chartType: '1'
+                    chartType
                 }
             })
         )
-    }, [perf_data_result, btn])
+    }, [perf_data_result, chartType, btn])
 
     // 图表、列表模式切换
     const switchMode = () => {
         setBtn(!btn)
-        // setChartType('1')
     }
 
     useEffect(() => {
