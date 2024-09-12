@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Typography } from 'antd';
+import { Empty, Table, Typography } from 'antd';
 import clsx from 'classnames';
 import { useTestJobContext } from '../provider';
 import { CaseTableWrapper, getServerColumn } from './FieldSet';
@@ -58,59 +58,65 @@ const JobTableForCase: React.FC<any> = (props) => {
         return filters.map((ctx: any) => ctx.id);
     }, [suiteCaseSearchKey, showSelectedOnly]);
 
-    if (filterIds.length === 0) return <></>;
-
     return (
         <CaseTableWrapper list={test_case_list} filterIds={filterIds}>
-            <Table
-                rowKey={'id'}
-                size="small"
-                className={clsx('case-right-table')}
-                columns={columns}
-                dataSource={test_case_list || []}
-                pagination={false}
-                rowClassName={(record) => {
-                    return clsx(
-                        'active-case-table-row',
-                        !filterIds.includes(record.id) && 'row-hidden-cls',
-                    );
-                }}
-                rowSelection={{
-                    selectedRowKeys: selectedRowKeys
-                        ?.find((item: any) => item.id === test_suite_id)
-                        ?.test_case_list?.map((ctx: any) => ctx.id),
-                    hideSelectAll: true,
-                    onChange: (keys, selectedKeys: any) => {
-                        const baseProps = {
-                            ...props,
-                            test_case_list: selectedKeys,
-                        };
-                        if (selectedRowKeys.length === 0) {
-                            setSelectedRowKeys(selectedRowKeys.concat(baseProps));
-                        } else {
-                            const hasKey = selectedRowKeys.find(
-                                (item: any) => item.id === test_suite_id,
+            {
+                filterIds.length === 0 ? <Table dataSource={[]}
+                    className={clsx('case-right-table')}
+                    size="small"
+                    columns={columns}
+                /> :
+                    <Table
+                        rowKey={'id'}
+                        size="small"
+                        className={clsx('case-right-table')}
+                        columns={columns}
+                        dataSource={test_case_list || []}
+                        pagination={false}
+                        rowClassName={(record) => {
+                            return clsx(
+                                'active-case-table-row',
+                                !filterIds.includes(record.id) && 'row-hidden-cls',
                             );
-                            if (hasKey) {
-                                setSelectedRowKeys(
-                                    selectedRowKeys.reduce((pre: any, cur: any) => {
-                                        if (cur.id === test_suite_id) {
-                                            if (selectedKeys.length === 0) return pre;
-                                            return pre.concat({
-                                                ...baseProps,
-                                                test_case_list: selectedKeys,
-                                            });
-                                        }
-                                        return pre.concat(cur);
-                                    }, []),
-                                );
-                            } else {
-                                setSelectedRowKeys(selectedRowKeys.concat(baseProps));
-                            }
-                        }
-                    },
-                }}
-            />
+                        }}
+                        rowSelection={{
+                            selectedRowKeys: selectedRowKeys
+                                ?.find((item: any) => item.id === test_suite_id)
+                                ?.test_case_list?.map((ctx: any) => ctx.id),
+                            hideSelectAll: true,
+                            onChange: (keys, selectedKeys: any) => {
+                                const baseProps = {
+                                    ...props,
+                                    test_case_list: selectedKeys,
+                                };
+                                if (selectedRowKeys.length === 0) {
+                                    setSelectedRowKeys(selectedRowKeys.concat(baseProps));
+                                } else {
+                                    const hasKey = selectedRowKeys.find(
+                                        (item: any) => item.id === test_suite_id,
+                                    );
+                                    if (hasKey) {
+                                        setSelectedRowKeys(
+                                            selectedRowKeys.reduce((pre: any, cur: any) => {
+                                                if (cur.id === test_suite_id) {
+                                                    if (selectedKeys.length === 0) return pre;
+                                                    return pre.concat({
+                                                        ...baseProps,
+                                                        test_case_list: selectedKeys,
+                                                    });
+                                                }
+                                                return pre.concat(cur);
+                                            }, []),
+                                        );
+                                    } else {
+                                        setSelectedRowKeys(selectedRowKeys.concat(baseProps));
+                                    }
+                                }
+                            },
+                        }}
+                    />
+            }
+
         </CaseTableWrapper>
     );
 };
