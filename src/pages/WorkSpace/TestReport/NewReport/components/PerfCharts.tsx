@@ -78,7 +78,7 @@ interface JumpChartProp {
 
 const ChartModal = (props: any) => {
   const { formatMessage } = useIntl();
-  const { chartType, suite_id, conf_list, suite_name, envData, base_index } = props;
+  const { chartType, suite_id, conf_list, suite_name, envData, group_jobs, base_index } = props;
   const [legend, setLegend] = useState<string>('');
   const [current, setCurrent] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -100,25 +100,15 @@ const ChartModal = (props: any) => {
       async_request: 1,
       base_index,
       show_type: 2,
+      group_jobs
     };
-    let jobList: any = [];
     let conf_info: any = [];
-    let arr: any = [];
-
     conf_list?.forEach((conf: any, index: number) => {
-      arr = arr.concat(conf.conf_compare_data || conf.compare_conf_list);
       conf_info.push({
         conf_id: conf.conf_id,
         conf_name: conf.conf_name,
       });
     });
-    arr.forEach((item: any) => {
-      jobList.push({
-        ...item,
-        job_list: [].concat(item.obj_id),
-      });
-    });
-    obj.group_jobs = jobList;
     obj.conf_info = conf_info;
     if (chartType === '2') {
       queryChart(obj);
