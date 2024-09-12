@@ -58,7 +58,7 @@ interface ConfNameProp {
   is_active?: number;
 }
 
-const ConfName = styled(Typography.Text)<ConfNameProp>`
+const ConfName = styled(Typography.Text) <ConfNameProp>`
   cursor: pointer;
   font-family: PingFangSC-Regular;
   font-size: 14px;
@@ -100,8 +100,34 @@ const ChartModal = (props: any) => {
       async_request: 1,
       base_index,
       show_type: 2,
-      group_jobs
     };
+    
+    // "group_jobs": [{ "job_list": [362695, 362547], "is_baseline": 0, "ws_id": "fgq5x4by" }]
+    if (group_jobs) {
+      obj.group_jobs = group_jobs
+    } else {
+      let job_list = []
+      const base_job_length = envData.base_group.base_objs.length
+      for (let i = 0; i < base_job_length; i++) {
+        job_list.push(envData.base_group.base_objs[i].obj_id)
+      }
+      if (envData.compare_groups && envData.compare_groups.length == 0) {
+        obj.group_jobs = [{ job_list, is_baseline: envData.base_group.is_baseline }]
+      } else {
+        let baseObj = [{ job_list, is_baseline: envData.base_group.is_baseline }]
+        let compareObj = []
+        let compare_groups_list = envData.compare_groups
+        for (let j = 0; j < compare_groups_list.length; j++) {
+          compareObj.push({
+            job_list: [].concat(compare_groups_list[j].base_objs.map((item: any) => {
+              return item.obj_id
+            })),
+            is_baseline: compare_groups_list[j].is_baseline
+          })
+        }
+        obj.group_jobs = baseObj.concat(compareObj)
+      }
+    }
     let conf_info: any = [];
     conf_list?.forEach((conf: any, index: number) => {
       conf_info.push({
