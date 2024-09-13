@@ -3,9 +3,11 @@ import { FormattedMessage } from 'umi';
 import { useContext, useEffect } from 'react';
 import { ReportContext } from '../../Provider';
 const ChartTypeChild = (props: any) => {
-    const { collapsedTypes, setCollapsedTypes } = useContext(ReportContext)
+    
     const { btn, isReport, obj, suiteId, setPerData, chartType, setChartType } = props;
-  
+    const reportData = isReport ? useContext(ReportContext) : {};
+    const { collapsedTypes = [], setCollapsedTypes } = reportData;
+
     useEffect(() => {
         const param: any = new URLSearchParams(window.location.search)
         if (isReport) {
