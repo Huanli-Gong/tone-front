@@ -1,6 +1,6 @@
 const fabric = require('@umijs/fabric');
 
 module.exports = {
-  ...fabric.prettier,
-  tabWidth: 4,
+    ...fabric.prettier,
+    tabWidth: 2,
 };
