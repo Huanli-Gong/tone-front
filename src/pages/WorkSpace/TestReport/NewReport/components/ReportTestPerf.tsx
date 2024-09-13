@@ -41,6 +41,7 @@ const GroupBar = styled.div<{ width?: number, y?: number, top?: any }>`
 
 const GroupBarWrapper: React.FC<any> = (props) => {
     const { groupRowRef, parentDom, groupLen, envData } = props
+    
     const { top } = useScroll(document.querySelector('#report-body-container') as any)
     const floatRow = groupRowRef.current
     const testDataEle = parentDom.current
@@ -71,7 +72,7 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 }
 
 const ReportTestPref: React.FC<AnyType> = (props) => {
-    const { btnState, obj, setObj, envData, domainResult, groupLen, isOldReport, routeName, saveReportData } = useContext(ReportContext)
+    const { btnState, obj, setObj, envData, domainResult, groupLen, isOldReport, routeName, saveReportData, collapsedTypes, setCollapsedTypes } = useContext(ReportContext)
     const { report_id } = useParams() as any
     const intl = useIntl()
     const testDataRef = useRef(null)
@@ -81,7 +82,7 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
     const [dataSource, setDataSource] = useState<any>([])
 
     const data = useMemo(() => {
-        setBtn(domainResult.perf_conf?.show_type === 'list')
+        // setBtn(domainResult.perf_conf?.show_type === 'list')
         if (Array.isArray(domainResult.perf_item)) {
             return domainResult.perf_item
         }
@@ -90,7 +91,20 @@ const ReportTestPref: React.FC<AnyType> = (props) => {
 
     const switchMode = () => {
         setBtn(!btn)
+        setCollapsedTypes({
+            ...collapsedTypes,
+            btn: !btn
+        })
     }
+
+    useEffect(() => {
+        const param: any = new URLSearchParams(window.location.search)
+        if(window.location.search.includes('btn')) {
+            setBtn(JSON.parse(param.get('btn')))
+        } else {
+            setBtn(false)
+        }
+    },[window.location.search])
 
     useEffect(() => {
         setBtnName(btn ? 'chart' : 'table')

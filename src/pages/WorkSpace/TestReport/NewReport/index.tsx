@@ -48,21 +48,19 @@ const ReportContainerRow = styled(Row)`
 `
 
 // 面包屑
-const BreadcrumbItem: React.FC<any> = ({ saveReportData, routeName, creator }) => {
+const BreadcrumbItem: React.FC<any> = ({ collapsedTypes, saveReportData, routeName, creator }) => {
     const { report_id, ws_id } = useParams() as any;
     const { formatMessage } = useIntl()
-
     const { pathname } = useLocation()
     const access = useAccess();
     const handleCopyText = useCopyText(formatMessage({ id: 'report.link.copied.successfully' }))
-
     const handleCopyOk = async (key: any) => {
+        const query_string = Object.entries(collapsedTypes).map(([k, v]) => `${k}=${v}`).join('&');
         if (key === 1) {
-            handleCopyText(location.origin + `/ws/${ws_id}/test_report/${report_id}/share`)
-        }
-        else {
+            handleCopyText(location.origin + `/ws/${ws_id}/test_report/${report_id}/share${(collapsedTypes && JSON.stringify(collapsedTypes) !== '{}') ? `?${query_string}` : ''}` )
+        } else {
             const { data: share_id } = await getShareId({ report_id, ws_id })
-            handleCopyText(location.origin + `/share/report/${share_id}`)
+            handleCopyText(location.origin + `/share/report/${share_id}${(collapsedTypes && JSON.stringify(collapsedTypes) !== '{}') ? `?${query_string}` : ''}`)
         }
     }
 
@@ -144,7 +142,7 @@ const Report: React.FC<AnyType> = (props) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any;
     const routeName = props.route.name
-
+    const [collapsedTypes, setCollapsedTypes] = React.useState([])
     const [btnState, setBtnState] = useState<boolean>(routeName === 'EditReport')
     const [btnConfirm, setBtnConfirm] = useState<boolean>(false)
     const [collapsed, setCollapsed] = useState(false)
@@ -273,6 +271,8 @@ const Report: React.FC<AnyType> = (props) => {
 
     const containerRef = React.useRef<HTMLDivElement>(null)
 
+   
+
     return (
         <ReportContext.Provider
             value={{
@@ -298,7 +298,9 @@ const Report: React.FC<AnyType> = (props) => {
                 isOldReport: saveReportData?.old_report,
                 setCollapsed,
                 setObj,
-                containerRef
+                containerRef,
+                collapsedTypes,
+                setCollapsedTypes
             }}
         >
             <Spin spinning={loading}>
@@ -319,6 +321,7 @@ const Report: React.FC<AnyType> = (props) => {
                                 {
                                     !['share_report', 'ShareReport'].includes(routeName) &&
                                     <BreadcrumbItem
+                                        collapsedTypes={collapsedTypes}
                                         saveReportData={saveReportData}
                                         routeName={routeName}
                                         creator={creator}
@@ -334,7 +337,6 @@ const Report: React.FC<AnyType> = (props) => {
                                     <ReportTestPref />
                                 </div>
                             </Col>
-
                             {
                                 ['EditReport', 'CreateReport'].includes(routeName) &&
                                 <ReportContainerRow
