@@ -269,9 +269,9 @@ export default (props: any) => {
                     return (
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <a><span onClick={() => lookPathCallback(row.log_path, 'look')}>{formatMessage({ id: 'operation.log' })}</span></a>
-                            <Divider type="vertical" />
+                            {!!row.extend_info.length && <Divider type="vertical" />}
                             <EllipsisPulic title={row.extend_info} style={{ width: 50, flex: 'none' }} />
-                            <Divider type="vertical" />
+                            {!!row.debug_info.length && <Divider type="vertical" />}
                             <>
                                 {row.debug_info?.map((item: any, index: number) => {
                                     const key = Object.keys(item)[0];
