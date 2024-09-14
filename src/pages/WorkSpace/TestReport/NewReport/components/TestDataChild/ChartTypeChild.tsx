@@ -1,38 +1,8 @@
-import { Typography, Space, Select } from 'antd';
+import { Typography, Space, Select, } from 'antd';
 import { FormattedMessage } from 'umi';
 import { useContext, useEffect } from 'react';
 import { ReportContext } from '../../Provider';
 const ChartTypeChild = (props: any) => {
-<<<<<<< HEAD
-  const { btn, isReport, obj, suiteId, setPerData, chartType, setChartType } = props;
-  const onChange = (val: string) => {
-    setChartType(val);
-    if (isReport) {
-      setPerData({
-        ...obj,
-        list: obj.list.map((item: any) => {
-          if (suiteId === item.suite_id) {
-            return {
-              ...item,
-              chartType: val,
-            };
-          }
-          return item;
-        }),
-      });
-    } else {
-      setPerData(
-        obj.map((item: any) => {
-          if (suiteId === item.suite_id) {
-            return {
-              ...item,
-              chartType: val,
-            };
-          }
-          return item;
-        }),
-      );
-=======
     
     const { btn, isReport, obj, suiteId, setPerData, chartType, setChartType } = props;
     const reportData = isReport ? useContext(ReportContext) : {};
@@ -101,30 +71,20 @@ const ChartTypeChild = (props: any) => {
                 return item
             }))
         }
->>>>>>> anolis/feat/share_report_record_type
     }
-  };
-  return (
-    <>
-      {!btn && (
-        <Space style={{ position: 'absolute', right: 12 }}>
-          <Typography.Text>
-            <FormattedMessage id="report.view" />：
-          </Typography.Text>
-          <Select value={chartType} style={{ width: 395 }} onChange={onChange}>
-            <Select.Option value="1">
-              <FormattedMessage id="report.type1" />
-            </Select.Option>
-            <Select.Option value="2">
-              <FormattedMessage id="report.type2" />
-            </Select.Option>
-            <Select.Option value="3">
-              <FormattedMessage id="report.type3" />
-            </Select.Option>
-          </Select>
-        </Space>
-      )}
-    </>
-  );
-};
+    return (
+        <>
+            {!btn &&
+                <Space style={{ position: 'absolute', right: 12 }}>
+                    <Typography.Text ><FormattedMessage id="report.view" />：</Typography.Text>
+                    <Select value={chartType} style={{ width: 395 }} onChange={onChange}>
+                        <Select.Option value="1"><FormattedMessage id="report.type1" /></Select.Option>
+                        <Select.Option value="2"><FormattedMessage id="report.type2" /></Select.Option>
+                        <Select.Option value="3"><FormattedMessage id="report.type3" /></Select.Option>
+                    </Select>
+                </Space>
+            }
+        </>
+    )
+}
 export default ChartTypeChild;

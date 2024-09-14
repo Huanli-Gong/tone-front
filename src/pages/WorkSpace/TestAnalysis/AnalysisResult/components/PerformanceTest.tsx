@@ -103,55 +103,6 @@ const compare = (prop: any) => {
 };
 
 const ReportTestPref: React.FC<any> = (props) => {
-<<<<<<< HEAD
-  const { formatMessage } = useIntl();
-  const {
-    compareResult,
-    allGroupData,
-    environmentResult,
-    baselineGroupIndex,
-    envData,
-    group,
-    wsId,
-    containerRef,
-  } = useContext(ReportContext);
-  const { parentDom, scrollLeft } = props;
-  const [sortKeys, setSortKeys] = useState<any>([]);
-  // const [sortFlag, setSortFlag] = useState<any>(0)
-  const [dataSource, setDataSource] = useState<any>([]);
-  const [btn, setBtn] = useState<boolean>(true);
-  const [btnName, setBtnName] = useState<string>('');
-  const [filterName, setFilterName] = useState('all');
-  const [chartType, setChartType] = useState('1');
-  const sortRef = useRef();
-  const groupRowRef = useRef<any>(null);
-  const { perf_data_result } = compareResult;
-  // 当没有定义基准组时baseIndex的值
-  const baseIndex = useMemo(() => {
-    if (baselineGroupIndex === -1) return 0;
-    return baselineGroupIndex;
-  }, [baselineGroupIndex]);
-  // 只在列表中调换基准组位置
-  useEffect(() => {
-    let dataArr = _.cloneDeep(perf_data_result);
-    setDataSource(
-      btn
-        ? dataArr
-        : dataArr.map((item: any) => {
-            return {
-              ...item,
-              chartType: '1',
-            };
-          }),
-    );
-  }, [perf_data_result, btn]);
-
-  // 图表、列表模式切换
-  const switchMode = () => {
-    setBtn(!btn);
-    // setChartType('1')
-  };
-=======
     const { formatMessage } = useIntl()
     const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group, wsId, containerRef } = useContext(ReportContext)
     const { parentDom, scrollLeft } = props
@@ -187,7 +138,6 @@ const ReportTestPref: React.FC<any> = (props) => {
     const switchMode = () => {
         setBtn(!btn)
     }
->>>>>>> anolis/feat/share_report_record_type
 
   useEffect(() => {
     setBtnName(btn ? 'chart' : 'list');
