@@ -36,7 +36,6 @@ const jumpLoginPage = () => {
 
     return;
 };
-console.log(version);
 
 marked.setOptions({
     renderer: new marked.Renderer(),
