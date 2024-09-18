@@ -89,7 +89,7 @@ const ReportTestEnv = () => {
                         <Identify envData={envData} group={groupLen} />
                     </EnvGroup>
                     {/* 机器信息 */}
-                    <TestEnv envData={envData} environmentResult={environmentResult} group={groupLen} />
+                    <TestEnv envData={envData} environmentResult={environmentResult} group={groupLen} routeName={routeName} />
                 </>
             }
         </ModuleWrapper>

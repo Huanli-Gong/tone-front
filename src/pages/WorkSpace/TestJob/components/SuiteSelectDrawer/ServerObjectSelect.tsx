@@ -78,6 +78,7 @@ const ServerObjectSelect: React.FC<any> = (props) => {
         const { data, code, total_page } = await queryClusterStandaloneServer({
             ws_id,
             no_page: true,
+            is_temporary: 0,
             is_instance: serverObjectType === 'instance',
             state: ['Available', 'Occupied', 'Reserved'],
             ...search,

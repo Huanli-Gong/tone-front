@@ -662,7 +662,7 @@ const TemplatePage: React.FC<any> = (props) => {
 
         if (data.code === 200)
             history.push(`/ws/${ws_id}/test_report?t=template`)
-        else requestCodeMessage(data.code, data.message)
+        else requestCodeMessage(data.code, data.msg)
         setLoading(false)
     }
 

@@ -26,7 +26,7 @@ const CustomDrawer = (props: any, ref: any) => {
     const [testType, setTestType] = useState('')
     const [expandedKeys, setExpandedKeys] = useState<any>([])
     const { data: domainList } = useRequest(
-        () => getDomain({ ws_id, page_size: 100 }),
+        () => getDomain({ ws_id, page_size: 999 }),
         { initialData: [] }
     )
 
@@ -69,12 +69,12 @@ const CustomDrawer = (props: any, ref: any) => {
 
     const handleDomainChange = (d: any) => {
         setDomain(d)
-        run({ domain: d, ws_id, test_type: testType, name, page_size: 100 })
+        run({ domain: d, ws_id, test_type: testType, name, page_size: 999 })
     }
-
+    
     const onNameChange = (n: any) => {
         setName(n)
-        run({ domain, ws_id, test_type: testType, name: n, page_size: 100 })
+        run({ domain, ws_id, test_type: testType, name: n, page_size: 999 })
             .then((res: any) => {
                 if (!!res.length) {
                     for (let i = 0; i < res.length; i++) {
@@ -108,7 +108,7 @@ const CustomDrawer = (props: any, ref: any) => {
             setTestType(test_type)
             setVisible(true)
 
-            run({ domain, ws_id, test_type, name, page_size: 100 })
+            run({ domain, ws_id, test_type, name, page_size: 999 })
                 .then(ret => {
                     const list = []
 
