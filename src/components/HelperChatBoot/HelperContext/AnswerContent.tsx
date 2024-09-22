@@ -155,7 +155,75 @@ const Server: React.FC<any> = (props) => {
         scrollChange();
     };
 
+    const renderProblemText = (problemText) => {
+        const regex = /<problem>(.*?)<\/problem>/g;
+        let parts = [];
+        let lastIndex = 0;
+        let result = [];
+
+        problemText.replace(regex, (match, p1, offset) => {
+            // 添加匹配前的文本到parts数组，这部分直接作为HTML
+            parts.push({ type: 'html', content: problemText.substring(lastIndex, offset) });
+
+            // 添加问题部分，这部分将作为React组件
+            parts.push({ type: 'link', content: p1 });
+
+            lastIndex = offset + match.length;
+        });
+
+        // 添加最后一个匹配后的文本到parts数组
+        if (lastIndex < problemText.length) {
+            parts.push({ type: 'html', content: problemText.substring(lastIndex) });
+        }
+
+        // 将parts数组中的内容转换为适当的React元素
+        parts.forEach((part, index) => {
+            if (part.type === 'html') {
+                result.push(<span key={index} dangerouslySetInnerHTML={{ __html: part.content }} />);
+            } else if (part.type === 'link') {
+                result.push(
+                    <span><Typography.Link key={index} onClick={() => handleSelectProblem(part.content)} style={{ cursor: 'pointer' }}>
+                        {part.content}
+                    </Typography.Link></span>
+                );
+            }
+        });
+
+        return <>{result}</>;
+    };
+
     const problemRender = React.useMemo(() => {
+        if ('response' in content) {
+            const response = content.response;
+            let result = (
+                <div>
+                    {renderProblemText(response)}
+                </div>
+            );
+            if ('reference' in content && content.reference !== null) {
+                const references = Array.from(content.reference).map(([doc_id, displayText]) => {
+                    const url = `https://tone.openanolis.cn/help_doc/${doc_id}`;
+                    return (
+                        <li key={doc_id}>
+                            <a href={url}>{displayText}</a>
+                        </li>
+                    );
+                });
+                result = (
+                    <>
+                        {result}
+                        参考：
+                        <ul>
+                        {references}
+                        </ul>
+                    </>
+                );
+            }
+
+            return result
+        }
+
+
         if (!isTop && content?.length === 1) {
             const [item] = content;
             return (
@@ -227,7 +295,7 @@ const Server: React.FC<any> = (props) => {
         <div className="chart">
             <div className="date">{date}</div>
             <div className={from}>
-                {(isTop || content?.length) > 0 ? (
+                {(isTop || content?.length || 'response' in content) > 0 ? (
                     problemRender
                 ) : (
                     <div className="empty">
